@@ -657,8 +657,12 @@ impl Realizer {
                 let t = match truth {
                     Truth::Yes => {
                         claims.push(atom.clone());
-                        let c = capitalize(&self.clause(atom));
-                        ["Yes, {c}.", "Yes. {c}.", "That's right: {c}."][self.pick(3)].replace("{c}", &self.clause_mid(&c))
+                        let c = self.clause(atom);
+                        match self.pick(3) {
+                            0 => format!("Yes, {c}."),
+                            1 => format!("Yes. {}.", capitalize(&c)),
+                            _ => format!("That's right: {c}."),
+                        }
                     }
                     Truth::WasTrue => {
                         claims.push(atom.clone());
@@ -759,10 +763,6 @@ impl Realizer {
         Reply { text, intent, claims }
     }
 
-    /// Lowercase the first letter after a lead-in ("Yes, anna..." stays a name if capitalized).
-    fn clause_mid(&self, c: &str) -> String {
-        c.to_string()
-    }
 }
 
 fn cmp_words(op: sla_core::CmpOp) -> &'static str {

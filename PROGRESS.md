@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 6: agent loop** (milestones 1-5 pass and are committed).
+**Milestone 7: learner (pattern counting)** (milestones 1-6 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -17,7 +17,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 3 | Time and confidence | passing, committed | `crates/reasoner/tests/time_conf.rs`, `core/src/kb.rs` tests |
 | 4 | Parser | passing, committed | `crates/parser/tests/dev_set.rs`: dev 200/200 exact; held-out 98/100 exact, 100/100 intent |
 | 5 | Reply generator | passing, committed | `crates/nlg/tests/replies.rs`: 100 replies, grammar checks, claims in KB, claims parse back |
-| 6-10 | Agent loop, learner, curiosity, eval | not started | - |
+| 6 | Agent loop | passing, committed | `crates/agent/tests/session.rs`: 10 facts + 2 rules taught, recalled after restart; history, corrections, hand edits |
+| 7-10 | Learner, curiosity, eval | not started | - |
 
 ## Layout
 
@@ -28,7 +29,7 @@ crates/reasoner  sla_reasoner  runtime Datalog engine with proof traces
 crates/learner   sla_learner   (placeholder)
 crates/nlg       sla_nlg       reply generator: acts -> English, aggregation, pronouns, why-from-proof
 crates/parser    sla_parser    pattern parser (intents + Datalog slots), `Parser` trait
-crates/agent     sla_agent     (placeholder)
+crates/agent     sla_agent     Agent (respond loop), module router, `sla` CLI binary
 crates/eval      sla_eval      (placeholder)
 crates/core/assets/core/   built-in ontology + core rules, copied into vault/core on first open
 vault/  data/synthetic/  eval/
@@ -76,6 +77,18 @@ vault/  data/synthetic/  eval/
   listed in `Reply::claims` (the test checks each claim is true in the model), and
   each claim's sentence is parsed back by our own parser to the same atom.
   Variation rotates templates deterministically, so tests stay repeatable.
+
+- **CLI**: `cargo run -p sla_agent --bin sla -- [--vault DIR] [--speaker NAME] [--source LABEL] [--script FILE]`.
+  `--script` sends each line and prints the transcript (for teacher/judge sub-agents).
+  Commands `:facts`, `:rules`, `:log`, `:reload`. Hand edits are noticed by a vault
+  fingerprint (mtimes/sizes) and reloaded before the next message.
+- **Proper names**: capitalized words inside a sentence are stored as
+  `proper_name(x)` facts (source `parser`) so replies capitalize them after restarts.
+- **User-stated rules** are stored as confirmed with conf 0.9 in their own rule file,
+  filed under a module by the router (`people`, `places`, `things`, `events`, `food`,
+  `work`, `tools`, `general`). A rule that makes the program unsafe or unstratifiable
+  is refused.
+- **"That's wrong"** closes the last answer if stored and records its strong negation.
 
 ## Problems
 
