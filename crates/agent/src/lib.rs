@@ -50,6 +50,8 @@ pub struct Agent {
     pub last_understood: bool,
     /// Last recall (entity, items shown) for "what else?".
     pub last_recall: Option<(String, usize)>,
+    /// The fact count was already mentioned in this session.
+    told_count: bool,
     small_talk_turn: usize,
     pub curiosity: Curiosity,
     /// Add curiosity questions to replies while chatting.
@@ -95,6 +97,7 @@ impl Agent {
             learner: Learner::default(),
             last_understood: true,
             last_recall: None,
+            told_count: false,
             small_talk_turn: 0,
             curiosity: Curiosity::default(),
             ask_in_chat: true,
@@ -270,6 +273,20 @@ impl Agent {
                     true
                 }
             });
+        }
+        // Facts from one message get one acknowledgement: merge the plain tells.
+        if intents.len() > 1 {
+            let mut merged: Vec<Intent> = Vec::new();
+            for i in intents {
+                match (merged.last_mut(), i) {
+                    (Some(Intent::Tell { facts, rules, past: false }), Intent::Tell { facts: f2, rules: r2, past: false }) => {
+                        facts.extend(f2);
+                        rules.extend(r2);
+                    }
+                    (_, i) => merged.push(i),
+                }
+            }
+            intents = merged;
         }
         if intents.len() > 1 {
             // Several intents from one sentence (LLM translator): handle each, join the replies.
@@ -481,15 +498,21 @@ impl Agent {
             Intent::Greet => self.say(Act::Greet),
             Intent::HowAreYou => {
                 // Honest small talk: report its own state instead of pretending feelings.
+                // The fact count is said once per session; after that, short replies.
                 let now = self.now();
                 let n = self.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count();
+                self.small_talk_turn += 1;
                 let text = if n == 0 {
                     "I'm fine, thanks, and ready to learn. I don't know anything yet: tell me something, like \"Anna likes tea.\"".to_string()
+                } else if !self.told_count {
+                    self.told_count = true;
+                    format!("I'm fine, thanks. I know {n} fact{} so far. What would you like to talk about?", if n == 1 { "" } else { "s" })
                 } else {
-                    format!("I'm fine, thanks. I know {n} fact{} so far. What would you like to tell me?", if n == 1 { "" } else { "s" })
+                    ["Good, thanks! And you?", "I'm well. What's on your mind?", "Fine, thanks. Tell me something new!"][self.small_talk_turn % 3].to_string()
                 };
                 self.say(Act::Note(text))
             }
+            Intent::AboutYou(thing) => self.about_me(thing),
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
             Intent::Unknown => self.say(Act::NotUnderstood),
@@ -543,6 +566,38 @@ impl Agent {
         reply
     }
 
+    /// A personal question to the agent: it has no body, taste or experiences,
+    /// so it says so plainly and offers what it knows about the thing instead.
+    fn about_me(&mut self, thing: Option<String>) -> Reply {
+        self.small_talk_turn += 1;
+        let k = self.small_talk_turn;
+        let Some(e) = thing else {
+            let text = ["I don't really do things myself, I only learn and think. Tell me about it!", "I'm a learning program, so I don't have days like you do. What about you?", "Nothing much happens to me; I just learn from talks like this one. What's new with you?"][k % 3];
+            return self.say(Act::Note(text.into()));
+        };
+        let m = self.model(false);
+        let mut facts: Vec<GroundAtom> = m
+            .all_facts()
+            .into_iter()
+            .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(e.as_str()))
+            .filter(|a| !matches!(a.base_pred(), "thing" | "same" | "proper_name"))
+            .collect();
+        facts.sort_by_key(|a| (a.base_pred() != "is_a", a.to_string()));
+        facts.truncate(3);
+        let name = e.replace('_', " ");
+        let lead = ["I can't taste or try things myself", "I don't have likes of my own", "I've never experienced that myself"][k % 3];
+        if facts.is_empty() {
+            self.ctx.last_entity = Some(e.clone());
+            return self.say(Act::Note(format!("{lead}, and I don't know much about {name} yet. What is it like?")));
+        }
+        self.last_answer = facts.first().cloned();
+        let mut reply = self.say(Act::Recall { entity: e, facts, instances: Vec::new(), more: false });
+        // "About soup: Soup is a food." -> "I can't taste..., but I know this about soup: ..."
+        let body = reply.text.splitn(2, ':').nth(1).unwrap_or(&reply.text).trim().to_string();
+        reply.text = format!("{lead}, but here is what I know about {name}: {body}");
+        reply
+    }
+
     /// Friendly small talk, honest about what the agent is.
     fn social(&mut self, kind: Social) -> Reply {
         let now = self.now();
@@ -566,7 +621,14 @@ impl Agent {
                  ask \"Why?\" after an answer, and correct me (\"No, a whale is a mammal.\")."
                 .to_string(),
             Social::DontKnow => "That's okay.".to_string(),
-            Social::AndYou => format!("I'm doing well, thanks. I've learned {facts} facts so far, and I'm always happy to learn more."),
+            Social::AndYou => {
+                if self.told_count {
+                    ["I'm good, thanks!", "Doing well, thanks for asking.", "All good here. I'm enjoying learning."][k % 3].to_string()
+                } else {
+                    self.told_count = true;
+                    format!("I'm doing well, thanks. I've learned {facts} facts so far, and I'm always happy to learn more.")
+                }
+            }
         };
         self.say(Act::Note(text))
     }

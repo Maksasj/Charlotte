@@ -232,6 +232,41 @@ pub struct ConversationConfig {
     pub review: bool,
     /// Natural conversation: everyday phrasing; the agent uses the LLM translator.
     pub natural: bool,
+    /// Friends chatting instead of a teacher giving lessons (implies `natural`).
+    pub chat: bool,
+}
+
+/// Everyday things two friends talk about. Facts come up in passing.
+pub const CHAT_TOPICS: &[&str] = &[
+    "cooking dinner and favourite foods", "what pets are like to live with", "a trip to the seaside", "the weather lately",
+    "gardening and growing vegetables", "going hiking in the mountains", "how a city is different from the countryside",
+    "football and other sports", "music and instruments", "what animals live in a forest", "breakfast around the world",
+    "how cars and bikes work", "a visit to a zoo", "rainy days and what to do", "the night sky and planets", "baking bread and cakes",
+    "fixing things around the house", "what jobs people do in a hospital", "coffee, tea and other drinks", "life on a farm",
+    "fish and the ocean", "winter and snow", "summer and the heat", "trees and flowers in the park", "insects in the garden",
+    "travelling by train and plane", "famous cities in Europe", "countries in Asia and their food", "rivers and lakes",
+    "how the human body stays healthy", "colours and what they remind people of", "kitchen tools", "school subjects",
+    "computers and phones", "birds you see in town", "clothes for different weather", "holidays and seasons",
+    "what wood, metal and glass are used for", "deserts and hot places", "the moon and the sun",
+];
+
+fn chat_prompt(topic: &str, transcript: &[(String, String)]) -> String {
+    let so_far = if transcript.is_empty() {
+        "(you start the conversation)".to_string()
+    } else {
+        transcript.iter().map(|(u, a)| format!("You: {u}\nFriend: {a}")).collect::<Vec<_>>().join("\n")
+    };
+    format!(
+        "You are having a relaxed, friendly chat with a friend. The topic drifts naturally around: {topic}.\n\
+         Talk like a real person in a casual conversation: share things you know as they come up ('oh, I love \
+         pears, they grow on trees, you know'), react to what your friend says, follow up on it, answer their \
+         questions, and sometimes ask what they know or think. Do NOT quiz them or act like a teacher; it is a \
+         conversation between equals. Your friend is still learning about the world and talks a bit stiffly; that's \
+         fine, just keep chatting naturally and say things again more simply if they did not get it. Keep each \
+         message to one to three short sentences. What you say about the world must be true and general (no \
+         made-up stories about specific or private people; you may talk about yourself only in general terms).\n\n\
+         Conversation so far:\n{so_far}\n\nWrite only your next message."
+    )
 }
 
 fn natural_teacher_prompt(topic: &str, transcript: &[(String, String)]) -> String {
@@ -330,21 +365,33 @@ fn review_and_fix(
 /// session changed it, so all teachers build one body of knowledge.
 fn one_conversation(cfg: &ConversationConfig, topic: &str, lock: &std::sync::Mutex<()>) -> ConversationResult {
     let mut res = ConversationResult { topic: topic.into(), ..Default::default() };
+    // In chat mode the friend is a speaker of its own: what they say about
+    // themselves ("I like soup") is about `friend`, never about the user.
+    let speaker = if cfg.chat { "friend" } else { "maksim" };
     let mut agent = {
         let _g = lock.lock().unwrap();
-        match Agent::open(&cfg.vault, "maksim") {
+        match Agent::open(&cfg.vault, speaker) {
             Ok(a) => a,
             Err(_) => return res,
         }
     };
     agent.source = "teacher:pretrain".into();
-    if cfg.natural {
+    if cfg.natural || cfg.chat {
         agent.enable_llm(&cfg.model);
+    }
+    if cfg.chat {
+        agent.source = "teacher:chat".into();
     }
     let mut new_facts: Vec<GroundAtom> = Vec::new();
     let mut new_rules: Vec<String> = Vec::new();
     for _ in 0..cfg.turns {
-        let prompt = if cfg.natural { natural_teacher_prompt(topic, &res.transcript) } else { teacher_prompt(topic, &res.transcript) };
+        let prompt = if cfg.chat {
+            chat_prompt(topic, &res.transcript)
+        } else if cfg.natural {
+            natural_teacher_prompt(topic, &res.transcript)
+        } else {
+            teacher_prompt(topic, &res.transcript)
+        };
         let msg = match claude(&prompt, &cfg.model) {
             Ok(m) => m.lines().map(str::trim).find(|l| !l.is_empty()).unwrap_or("").trim_start_matches("Teacher:").trim_start_matches("You:").trim().trim_matches('"').to_string(),
             Err(_) => break,
@@ -367,6 +414,18 @@ fn one_conversation(cfg: &ConversationConfig, topic: &str, lock: &std::sync::Mut
             res.understood += 1;
         }
         res.transcript.push((msg, reply.text));
+    }
+    if cfg.chat {
+        // Personal remarks of the chat friend are conversation, not general knowledge: close them.
+        let personal = |g: &GroundAtom| g.args.iter().any(|v| v.as_sym().map_or(false, |x| x == "friend" || x.starts_with("my_")));
+        let _g = lock.lock().unwrap();
+        let _ = agent.reload_if_edited();
+        let now = agent.now();
+        for f in new_facts.iter().filter(|f| personal(f)) {
+            agent.kb.close_matching(&f.to_atom(), now, "personal remark in a chat, not general knowledge");
+        }
+        let _ = agent.save();
+        new_facts.retain(|f| !personal(f));
     }
     res.facts_added = new_facts.len();
     res.rules_added = new_rules.len();

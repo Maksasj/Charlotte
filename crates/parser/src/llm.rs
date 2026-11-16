@@ -64,6 +64,8 @@ pub fn from_canonical(line: &str) -> Option<Intent> {
         "why" => Some(Intent::Why(Some(ground(payload)?))),
         "correct" if payload == "none" || payload.is_empty() => Some(Intent::Correct(Vec::new())),
         "correct" => payload.split("; ").map(ground).collect::<Option<Vec<_>>>().map(Intent::Correct),
+        "about_you" if payload == "none" || payload.is_empty() => Some(Intent::AboutYou(None)),
+        "about_you" => Some(Intent::AboutYou(Some(sym(payload)?))),
         "yes" => Some(Intent::Yes),
         "no" => Some(Intent::No),
         "greet" => Some(Intent::Greet),
@@ -180,10 +182,14 @@ impl LlmTranslator {
              Translate this message. A message with several parts becomes several lines (one intent per line). \
              Use the predicates of the specification where they fit; other verbs become their lemma (`play(anna, chess)`). \
              Entities are short singular nouns (one or two words). \
-             Only translate statements the speaker presents as plainly true; leave out apologies, filler, opinions, \
-             hedges, hints, hypotheticals, meta talk ('let me say it simpler') and anything you are unsure about. \
-             Fewer, cleaner atoms are better than many doubtful ones. A question the speaker asks the agent is an `ask:` \
-             (or `why:`) line. If nothing in it can be expressed, output `unknown:`.\n\
+             Translate statements about the world, including general ones said casually with 'usually', 'most', \
+             'often' or 'you know' (state them plainly: 'Jupiter is usually easy to spot' -> `property(jupiter, quality, \
+             easy_to_spot)`); leave out apologies, filler, pure opinions, hypotheticals, meta talk ('let me say it \
+             simpler') and anything you are unsure about. Fewer, cleaner atoms are better than many doubtful ones. \
+             A question about the world is an `ask:` (or `why:`) line. A personal question to the agent about itself \
+             ('Do you like soup?', 'Have you seen the stars tonight?', 'What's your favourite planet?') is \
+             `about_you: <thing>` (`about_you: soup`), or `about_you: none` without a thing. \
+             If nothing in it can be expressed, output `unknown:`.\n\
              Output ONLY the canonical lines, nothing else.\n\nMessage: {text}",
             ctx.speaker, ctx.speaker
         );
@@ -293,6 +299,8 @@ mod tests {
             "how_are_you:",
             "social: thanks",
             "unknown:",
+            "about_you: soup",
+            "about_you: none",
         ] {
             let i = from_canonical(c).unwrap_or_else(|| panic!("{c}"));
             assert_eq!(i.canonical(), c);

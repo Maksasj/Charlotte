@@ -189,7 +189,9 @@ impl KnowledgeBase {
         // What does this fact end?
         let complement = atom.complement();
         let functional = self.functional();
-        let key_len = functional.get(atom.base_pred()).copied();
+        // A thing has one colour or size at a time, but many qualities (soft and sweet).
+        let many_valued = atom.base_pred() == "property" && atom.args.get(1).and_then(|v| v.as_sym()) == Some("quality");
+        let key_len = if many_valued { None } else { functional.get(atom.base_pred()).copied() };
         let negated = atom.is_strong_negation();
         let conflicts = |g: &GroundAtom| -> bool {
             if *g == complement {
@@ -387,6 +389,15 @@ mod tests {
         assert!(now.contains(&"property(car, colour, blue)".to_string()));
         assert!(now.contains(&"property(car, size, big)".to_string()));
         assert!(!now.contains(&"property(car, colour, red)".to_string()));
+    }
+
+    #[test]
+    fn qualities_are_not_functional() {
+        let mut kb = kb();
+        let t = Timestamp::from_ymd(2026, 1, 1);
+        kb.assert_fact(fact("property(pear, quality, soft)"), t, "x");
+        kb.assert_fact(fact("property(pear, quality, sweet)"), t.plus_days(1), "x");
+        assert_eq!(kb.facts_at(t.plus_days(2)).len(), 2);
     }
 
     #[test]

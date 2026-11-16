@@ -27,6 +27,9 @@ pub enum Intent {
     RecallMore(Option<String>),
     /// Everyday conversation: thanks, reactions, questions about the agent itself.
     Social(Social),
+    /// A personal question to the agent about a thing ("Do you like soup?",
+    /// "Have you been to Paris?"): it answers honestly about itself and with what it knows.
+    AboutYou(Option<String>),
     /// "Why ...?" about an atom, or the last answer if `None`.
     Why(Option<Atom>),
     /// A correction: the right statements (empty = "that's wrong").
@@ -66,6 +69,8 @@ impl Intent {
             Intent::RecallMore(Some(e)) => format!("recall_more: {}", Value::sym(e.as_str())),
             Intent::RecallMore(None) => "recall_more: last".into(),
             Intent::Social(k) => format!("social: {}", k.name()),
+            Intent::AboutYou(Some(e)) => format!("about_you: {}", Value::sym(e.as_str())),
+            Intent::AboutYou(None) => "about_you: none".into(),
             Intent::Why(None) => "why: last".into(),
             Intent::Why(Some(a)) => format!("why: {a}"),
             Intent::Correct(v) if v.is_empty() => "correct: none".into(),
@@ -86,6 +91,7 @@ impl Intent {
             Intent::Recall(_) => "recall",
             Intent::RecallMore(_) => "recall_more",
             Intent::Social(_) => "social",
+            Intent::AboutYou(_) => "about_you",
             Intent::Why(_) => "why",
             Intent::Correct(_) => "correct",
             Intent::Yes => "yes",

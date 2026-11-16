@@ -93,6 +93,8 @@ Coordination: `Anna likes tea and coffee` -> `tell: likes(anna, tea); likes(anna
 | | `What can you do?` / `How do you work?` | `social: what_can_you_do` |
 | | `And you?` / `How about you?` | `social: and_you` |
 | | `I don't know.` / `No idea.` | `social: dont_know` |
+| `about_you` | `Do you like soup?` / `Have you ever tried soup?` | `about_you: soup` |
+| | `What do you like doing?` / `Have you been outside tonight?` | `about_you: none` |
 | `how_are_you` | `How are you?` | `how_are_you:` |
 | `unknown` | anything that fits no pattern | `unknown:` |
 

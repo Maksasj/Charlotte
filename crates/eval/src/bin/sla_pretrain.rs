@@ -4,7 +4,7 @@
 //! cargo run --release -p sla_eval --bin sla_pretrain -- [--vault DIR] [--per-topic N] [--topic TEXT]... [--no-review] [--model M]
 //! ```
 
-use sla_eval::pretrain::{conversation_report, converse, pretrain, report, ConversationConfig, PretrainConfig, CONVERSATION_TOPICS, DEFAULT_TOPICS};
+use sla_eval::pretrain::{conversation_report, converse, pretrain, report, ConversationConfig, PretrainConfig, CHAT_TOPICS, CONVERSATION_TOPICS, DEFAULT_TOPICS};
 
 fn main() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
@@ -18,6 +18,8 @@ fn main() {
     };
     let mut conversations = false;
     let mut natural = false;
+    let mut chat = false;
+    let mut rounds = 1;
     let mut parallel = 6;
     let mut turns = 14;
     let mut args = std::env::args().skip(1);
@@ -28,6 +30,11 @@ fn main() {
             "--topic" => cfg.topics.push(args.next().expect("--topic TEXT")),
             "--no-review" => cfg.review = false,
             "--conversations" => conversations = true,
+            "--chat" => {
+                conversations = true;
+                chat = true;
+            }
+            "--rounds" => rounds = args.next().and_then(|v| v.parse().ok()).expect("--rounds N"),
             "--natural" => {
                 conversations = true;
                 natural = true;
@@ -37,7 +44,7 @@ fn main() {
             "--model" => cfg.model = args.next().expect("--model NAME"),
             "-h" | "--help" => {
                 println!("sla_pretrain [--vault DIR] [--per-topic N] [--topic TEXT]... [--no-review] [--model M]
-             [--conversations | --natural] [--parallel N] [--turns N]");
+             [--conversations | --natural | --chat] [--parallel N] [--turns N] [--rounds N]");
                 return;
             }
             other => {
@@ -47,8 +54,16 @@ fn main() {
         }
     }
     if conversations {
-        let topics: Vec<String> = if cfg.topics.is_empty() { CONVERSATION_TOPICS.iter().map(|t| t.to_string()).collect() } else { cfg.topics.clone() };
-        let ccfg = ConversationConfig { vault: cfg.vault.clone(), topics, turns, parallel, model: cfg.model.clone(), review: cfg.review, natural };
+        let base: Vec<String> = if !cfg.topics.is_empty() {
+            cfg.topics.clone()
+        } else if chat {
+            CHAT_TOPICS.iter().map(|t| t.to_string()).collect()
+        } else {
+            CONVERSATION_TOPICS.iter().map(|t| t.to_string()).collect()
+        };
+        // --rounds N repeats the topic list; each round is a new conversation.
+        let topics: Vec<String> = (0..rounds.max(1)).flat_map(|_| base.iter().cloned()).collect();
+        let ccfg = ConversationConfig { vault: cfg.vault.clone(), topics, turns, parallel, model: cfg.model.clone(), review: cfg.review, natural, chat };
         println!("Teaching {} with {} conversations ({} turns each, {} in parallel).", ccfg.vault.display(), ccfg.topics.len(), turns, parallel);
         let results = converse(&ccfg, |m| println!("{m}"));
         let text = conversation_report(&results);
