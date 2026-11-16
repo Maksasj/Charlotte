@@ -1,6 +1,6 @@
 # REPORT_DESIGN_1: The symbolic learning agent, first build and first lessons
 
-*Report date: 2026-11-16. It covers everything from the first commit (`6d4aae5`) to the training app (`99c6fa4`). Repository: this one; the design is in `DESIGN.md`.*
+*Report date: 2026-11-16. It covers everything from the first commit (`6d4aae5`) to the training app (`99c6fa4`). Repository: this one; the design is in `research/DESIGN.md` (alongside this report). The vault this report analyses is archived as `research/vault_before_reset_2026-11-16.zip`.*
 
 This report gathers everything learned in the first build of the agent described in `DESIGN.md`: what was built, every measured result, what goes wrong in conversation and why, how the code holds up, how the work relates to existing research, and what to do next. Four parts were written by independent analysis agents, each working from the repository, the evaluation data and the transcripts. One part is the build log of the session itself. Every number comes from files in this repository: `eval/`, `vault/`, `data/` and the git history.
 

@@ -1,6 +1,6 @@
 # PROGRESS
 
-Build log for the Symbolic Learning Agent (see DESIGN.md).
+Build log for the Symbolic Learning Agent (see research/DESIGN.md).
 
 ## Current milestone
 
