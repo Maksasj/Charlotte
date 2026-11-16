@@ -25,6 +25,9 @@ version = "0.1.0"
 [[package]]
 name = "sla_parser"
 version = "0.1.0"
+dependencies = [
+ "sla_core",
+]
 
 [[package]]
 name = "sla_reasoner"

@@ -5,3 +5,4 @@ edition.workspace = true
 
 [dependencies]
 
+sla_core = { path = "../core" }

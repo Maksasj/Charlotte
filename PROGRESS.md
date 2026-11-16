@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 4: parser** (milestones 1-3 pass and are committed).
+**Milestone 5: reply generator** (milestones 1-4 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -15,7 +15,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 1 | Vault and data model | passing, committed | `crates/core/tests/roundtrip.rs` (100 files) + unit tests |
 | 2 | Datalog interpreter | passing, committed | `crates/reasoner/tests/suite.rs` (54 cases + 8 tests) |
 | 3 | Time and confidence | passing, committed | `crates/reasoner/tests/time_conf.rs`, `core/src/kb.rs` tests |
-| 4-10 | Parser, NLG, agent loop, learner, curiosity, eval | not started | - |
+| 4 | Parser | passing, committed | `crates/parser/tests/dev_set.rs`: dev 200/200 exact; held-out 98/100 exact, 100/100 intent |
+| 5-10 | NLG, agent loop, learner, curiosity, eval | not started | - |
 
 ## Layout
 
@@ -25,7 +26,7 @@ crates/core      sla_core      types, Datalog syntax, vault files, knowledge bas
 crates/reasoner  sla_reasoner  runtime Datalog engine with proof traces
 crates/learner   sla_learner   (placeholder)
 crates/nlg       sla_nlg       (placeholder)
-crates/parser    sla_parser    (placeholder)
+crates/parser    sla_parser    pattern parser (intents + Datalog slots), `Parser` trait
 crates/agent     sla_agent     (placeholder)
 crates/eval      sla_eval      (placeholder)
 crates/core/assets/core/   built-in ontology + core rules, copied into vault/core on first open
@@ -60,6 +61,15 @@ vault/  data/synthetic/  eval/
   is unstratifiable.
 - **Rust toolchain**: the plan is the `x86_64-pc-windows-gnu` host via rustup, because
   this machine has no MSVC build tools and the GNU toolchain bundles its own linker.
+
+- **Parser test data is independent**: a sub-agent wrote `data/synthetic/parser/dev.md`
+  (200) and `held_out.md` (100) from `docs/parser_spec.md` only, without seeing the
+  code. The held-out test prints only a score, never the failing sentences, so it
+  stays untouched by tuning.
+- **Parser output** is an `Intent` with Datalog atoms; `canonical()` gives the one-line
+  form tests compare. "I/me/my" = the speaker (default `maksim`). Plural or "every"
+  subjects with ordinary verbs become rules over `is_a(A, category)`; with
+  have/be they stay facts about the category (core rules inherit them).
 
 ## Problems
 
