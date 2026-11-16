@@ -75,6 +75,21 @@ pub struct Msg {
     pub role: String,
     pub text: String,
     pub at: f64,
+    /// How long this message took to produce, in milliseconds.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ms: Option<u64>,
+    /// Agent answers: time spent translating the message with the model.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub translate_ms: Option<u64>,
+    /// Agent answers: time spent by the agent itself (reasoning, learning, waiting for the vault).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub think_ms: Option<u64>,
+}
+
+impl Msg {
+    fn new(role: &str, text: &str) -> Self {
+        Msg { role: role.into(), text: text.into(), at: now_s(), ms: None, translate_ms: None, think_ms: None }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -119,6 +134,42 @@ pub struct VaultCounts {
     pub entities: usize,
 }
 
+/// One plan usage limit as `/usage` reports it.
+#[derive(Debug, Clone, Serialize, Default)]
+pub struct Limit {
+    pub name: String,
+    pub percent: f64,
+    pub resets: String,
+}
+
+/// Read the plan's usage limits with a headless `/usage` (uses no tokens).
+pub fn fetch_limits() -> Result<Vec<Limit>, String> {
+    let mut child = std::process::Command::new("claude")
+        .args(["-p", "--output-format", "json", "--tools", "", "--no-session-persistence", "--strict-mcp-config"])
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .map_err(|e| format!("cannot run claude: {e}"))?;
+    child.stdin.take().unwrap().write_all(b"/usage").map_err(|e| e.to_string())?;
+    let out = child.wait_with_output().map_err(|e| e.to_string())?;
+    let v: serde_json::Value = serde_json::from_slice(&out.stdout).map_err(|_| "unreadable /usage output".to_string())?;
+    let text = v.get("result").and_then(|r| r.as_str()).unwrap_or("");
+    let mut limits = Vec::new();
+    for line in text.lines().map(str::trim).filter(|l| l.starts_with("Current ")) {
+        // "Current session: 14% used · resets Nov 17, 3:29am (Europe/Kyiv)"
+        let Some((name, rest)) = line.split_once(": ") else { continue };
+        let Some((num, after)) = rest.split_once('%') else { continue };
+        let Ok(percent) = num.trim().parse::<f64>() else { continue };
+        let resets = after.split_once("resets ").map(|(_, r)| r.trim().to_string()).unwrap_or_default();
+        limits.push(Limit { name: name.trim_start_matches("Current ").to_string(), percent, resets });
+    }
+    if limits.is_empty() {
+        return Err(if text.is_empty() { "no answer from /usage".into() } else { text.lines().next().unwrap_or("").to_string() });
+    }
+    Ok(limits)
+}
+
 #[derive(Debug, Clone, Serialize, Default)]
 pub struct TrainState {
     pub running: bool,
@@ -145,6 +196,14 @@ pub struct TrainState {
     pub vault: VaultCounts,
     pub vault_path: String,
     pub scenarios: usize,
+    /// Plan usage limits from `/usage`, refreshed about once a minute.
+    pub limits: Vec<Limit>,
+    pub limits_checked: Option<f64>,
+    pub limits_error: Option<String>,
+    /// Sums over the agent's answers this run (divide by `turns` for averages).
+    pub answer_ms_total: u64,
+    pub translate_ms_total: u64,
+    pub think_ms_total: u64,
 }
 
 pub struct Trainer {
@@ -157,6 +216,7 @@ pub struct Trainer {
     agent_lock: Mutex<()>,
     vault_cache: Mutex<(Instant, VaultCounts)>,
     usage_at_start: Mutex<Usage>,
+    limits: Mutex<(Vec<Limit>, Option<f64>, Option<String>)>,
 }
 
 fn total(m: &BTreeMap<String, Usage>) -> Usage {
@@ -238,7 +298,21 @@ impl Trainer {
             agent_lock: Mutex::new(()),
             vault_cache: Mutex::new((Instant::now() - std::time::Duration::from_secs(60), VaultCounts::default())),
             usage_at_start: Mutex::new(Usage::default()),
+            limits: Mutex::new((Vec::new(), None, None)),
         })
+    }
+
+    /// Check the plan limits now (blocking; call from a background thread).
+    pub fn refresh_limits(&self) {
+        let r = fetch_limits();
+        let mut l = self.limits.lock().unwrap();
+        match r {
+            Ok(v) => *l = (v, Some(now_s()), None),
+            Err(e) => {
+                l.1 = Some(now_s());
+                l.2 = Some(e);
+            }
+        }
     }
 
     /// A snapshot of the state for the UI.
@@ -266,6 +340,10 @@ impl Trainer {
         run.seconds -= base.seconds;
         s.run_usage = run;
         s.vault = vault;
+        let l = self.limits.lock().unwrap();
+        s.limits = l.0.clone();
+        s.limits_checked = l.1;
+        s.limits_error = l.2.clone();
         s
     }
 
@@ -345,7 +423,10 @@ impl Trainer {
     }
 
     fn push(&self, id: usize, role: &str, text: &str) {
-        let m = Msg { role: role.into(), text: text.into(), at: now_s() };
+        self.push_msg(id, Msg::new(role, text));
+    }
+
+    fn push_msg(&self, id: usize, m: Msg) {
         self.update(id, |t| t.transcript.push(m));
     }
 
@@ -388,6 +469,7 @@ impl Trainer {
                 t.status = "thinking".into();
                 t.turn = turn + 1;
             });
+            let teacher_started = Instant::now();
             let raw = match crate::claude_as("teacher", &teacher_prompt(scenario, &transcript), &cfg.model) {
                 Ok(m) => m,
                 Err(e) => {
@@ -404,11 +486,15 @@ impl Trainer {
             if msg.is_empty() {
                 break;
             }
-            self.push(id, "teacher", &msg);
-            transcript.push(Msg { role: "teacher".into(), text: msg.clone(), at: now_s() });
+            let teacher_msg = Msg { ms: Some(teacher_started.elapsed().as_millis() as u64), ..Msg::new("teacher", &msg) };
+            self.push_msg(id, teacher_msg.clone());
+            transcript.push(teacher_msg);
             self.update(id, |t| t.status = "agent".into());
             // Translation runs here in parallel; only the agent's own update is serialized.
+            let translate_started = Instant::now();
             agent.prepare(&msg);
+            let translate_ms = translate_started.elapsed().as_millis() as u64;
+            let think_started = Instant::now();
             let (reply, facts_added, rules_added) = {
                 let _g = self.agent_lock.lock().unwrap();
                 let _ = agent.reload_if_edited();
@@ -438,8 +524,16 @@ impl Trainer {
             });
             new_facts.extend(facts_added);
             new_rules.extend(rules_added);
-            self.push(id, "agent", &reply.text);
-            transcript.push(Msg { role: "agent".into(), text: reply.text.clone(), at: now_s() });
+            let think_ms = think_started.elapsed().as_millis() as u64;
+            let agent_msg = Msg { ms: Some(translate_ms + think_ms), translate_ms: Some(translate_ms), think_ms: Some(think_ms), ..Msg::new("agent", &reply.text) };
+            self.push_msg(id, agent_msg.clone());
+            transcript.push(agent_msg);
+            {
+                let mut st = self.state.lock().unwrap();
+                st.answer_ms_total += translate_ms + think_ms;
+                st.translate_ms_total += translate_ms;
+                st.think_ms_total += think_ms;
+            }
             self.absorb_usage(id);
             if done {
                 break;
@@ -556,6 +650,14 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, mut stream: TcpStream) {
 /// Serve the UI and API until the process ends.
 pub fn serve(trainer: Arc<Trainer>, ui: PathBuf, port: u16) -> std::io::Result<()> {
     let listener = TcpListener::bind(("127.0.0.1", port))?;
+    // Plan limits: check now and then about once a minute.
+    {
+        let t = Arc::clone(&trainer);
+        std::thread::spawn(move || loop {
+            t.refresh_limits();
+            std::thread::sleep(std::time::Duration::from_secs(60));
+        });
+    }
     for stream in listener.incoming().flatten() {
         let t = Arc::clone(&trainer);
         let ui = ui.clone();

@@ -41,7 +41,8 @@
   .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
   .field { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); }
   .field input, .field select { font: inherit; font-size: 14px; color: var(--fg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; width: 92px; }
-  .field.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--fg); padding-bottom: 6px; }
+  .field.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--fg); height: 31px; }
+  .field.check input { width: auto; margin: 0; }
   button { font: inherit; font-weight: 600; border-radius: 6px; padding: 6px 16px; cursor: pointer; border: 1px solid transparent; }
   button:disabled { opacity: 0.45; cursor: not-allowed; }
   button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -56,6 +57,12 @@
   .progress { height: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
   .progress > div { height: 100%; background: var(--accent); transition: width 0.4s ease; }
   @media (prefers-reduced-motion: reduce) { .progress > div { transition: none; } }
+  .limits { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 20px; margin-top: 10px; }
+  .limit-head { display: flex; justify-content: space-between; font-size: 13px; }
+  .limit-head b { font-variant-numeric: tabular-nums; }
+  .progress > div.lvl-ok { background: var(--accent); }
+  .progress > div.lvl-warn { background: var(--warn); }
+  .progress > div.lvl-bad { background: var(--bad); }
   .usage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; }
   @media (max-width: 900px) { .usage { grid-template-columns: 1fr; } }
   .usage-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
@@ -64,29 +71,47 @@
   td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
   th:first-child, td:first-child { text-align: left; }
   .table-wrap { overflow-x: auto; }
-  .teachers { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
-  .teacher { display: flex; flex-direction: column; gap: 8px; min-height: 360px; }
+  .teachers { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 14px; }
+  .teacher { display: flex; flex-direction: column; gap: 8px; }
+  .teacher.wide { grid-column: 1 / -1; }
   .teacher-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .teacher-head-right { display: flex; align-items: center; gap: 8px; }
   .teacher-name { font-weight: 600; }
+  .link-btn { font: inherit; font-size: 12px; font-weight: 500; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
   .status { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 8px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
   .status.thinking { background: var(--teacher-soft); color: var(--teacher); border-color: transparent; }
   .status.agent { background: var(--agent-soft); color: var(--agent); border-color: transparent; }
   .status.reviewing { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); border-color: transparent; }
   .status.error { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border-color: transparent; }
-  .scenario { font-size: 12px; color: var(--muted); min-height: 2.9em; }
+  .scenario { font-size: 12px; color: var(--muted); }
   .turnbar { display: flex; gap: 3px; }
   .turnbar span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
   .turnbar span.on { background: var(--accent); }
-  .chat { flex: 1; overflow-y: auto; max-height: 340px; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
-  .msg { max-width: 92%; border-radius: 10px; padding: 6px 10px; font-size: 13px; overflow-wrap: anywhere; }
-  .msg.teacher { align-self: flex-start; background: var(--teacher-soft); border-top-left-radius: 2px; }
-  .msg.agent { align-self: flex-end; background: var(--agent-soft); border-top-right-radius: 2px; }
-  .msg.note { align-self: center; background: none; color: var(--bad); font-size: 12px; }
-  .who { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1px; }
-  .msg.teacher .who { color: var(--teacher); }
-  .msg.agent .who { color: var(--agent); }
-  .typing { align-self: flex-start; font-size: 12px; color: var(--muted); font-style: italic; }
-  .typing.right { align-self: flex-end; }
+  /* The chat window scrolls; messages are plain rows, so they never get squeezed. */
+  .chat { display: block; height: 440px; overflow-y: auto; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .teacher.wide .chat { height: min(70vh, 760px); }
+  .chat.auto { height: auto; max-height: none; }
+  .row { display: flex; margin: 0 0 10px; }
+  .row.agent { justify-content: flex-end; }
+  .row.note { justify-content: center; }
+  .bubble { max-width: 82%; border-radius: 12px; padding: 7px 11px 8px; font-size: 13.5px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .row.teacher .bubble { background: var(--teacher-soft); border-top-left-radius: 3px; }
+  .row.agent .bubble { background: var(--agent-soft); border-top-right-radius: 3px; }
+  .row.note .bubble { background: none; color: var(--bad); font-size: 12px; text-align: center; }
+  .bubble-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 2px; }
+  .who { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .row.teacher .who { color: var(--teacher); }
+  .row.agent .who { color: var(--agent); }
+  .when { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+  .took { color: var(--fg); font-weight: 500; }
+  .split { color: var(--muted); font-weight: 400; }
+  .typing { font-size: 12px; color: var(--muted); font-style: italic; padding: 2px 4px; }
+  .typing.right { text-align: right; }
+  @media (prefers-reduced-motion: no-preference) {
+    .typing::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4) infinite; }
+    @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+  }
+  .chat-empty { color: var(--muted); font-style: italic; text-align: center; margin-top: 40px; }
   .teacher-foot { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; font-variant-numeric: tabular-nums; }
   .teacher-foot b { color: var(--fg); font-weight: 600; }
   .finished { display: flex; flex-direction: column; gap: 6px; }
@@ -110,12 +135,10 @@ const { useState, useEffect, useRef } = React;
 const html = htm.bind(React.createElement);
 
 const fmtInt = (n) => (n ?? 0).toLocaleString();
-const fmtUsd = (n) => '$' + (n ?? 0).toFixed((n ?? 0) < 1 ? 4 : 2);
 const fmtTok = (n) => (n ?? 0) >= 1e6 ? ((n / 1e6).toFixed(2) + 'M') : (n ?? 0) >= 1e3 ? ((n / 1e3).toFixed(1) + 'k') : String(n ?? 0);
 const fmtDur = (s) => { s = Math.max(0, Math.round(s || 0)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return h ? `${h}h ${m}m` : m ? `${m}m ${r}s` : `${r}s`; };
 const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
 const STATUS = { idle: 'Idle', thinking: 'Teacher writing…', agent: 'Agent answering…', reviewing: 'Reviewing…', done: 'Done', stopped: 'Stopped', error: 'Error' };
-const sumUsage = (m) => Object.values(m || {}).reduce((a, u) => ({ calls: a.calls + u.calls, cost_usd: a.cost_usd + u.cost_usd }), { calls: 0, cost_usd: 0 });
 
 function useTrainerState() {
   const [state, setState] = useState(null);
@@ -193,6 +216,11 @@ function Summary({ s }) {
         <div class="sub">${fmtInt(s.understood)} of ${fmtInt(s.turns)} messages</div>
       </div>
       <div class="card">
+        <div class="label">Agent answer time, average</div>
+        <div class="big">${s.turns && s.answer_ms_total != null ? secs(Math.round(s.answer_ms_total / s.turns)) : '—'}</div>
+        <div class="sub">${s.turns && s.answer_ms_total != null ? 'translate ' + secs(Math.round(s.translate_ms_total / s.turns)) + ' · agent ' + secs(Math.round(s.think_ms_total / s.turns)) : 'appears after the first answer'}</div>
+      </div>
+      <div class="card">
         <div class="label">Learned this run</div>
         <div class="big">+${fmtInt(s.facts)} <small>facts</small></div>
         <div class="sub">+${fmtInt(s.rules)} rules · ${fmtInt(s.rejected)} rejected by the reviewer</div>
@@ -205,72 +233,117 @@ function Summary({ s }) {
     </section>`;
 }
 
+const tokensIn = (u) => (u.input_tokens || 0) + (u.cache_write_tokens || 0) + (u.cache_read_tokens || 0);
+const sumTokens = (m) => Object.values(m || {}).reduce((a, u) => ({ calls: a.calls + u.calls, tin: a.tin + tokensIn(u), tout: a.tout + u.output_tokens }), { calls: 0, tin: 0, tout: 0 });
+
+function LimitBar({ l }) {
+  const level = l.percent >= 85 ? 'bad' : l.percent >= 60 ? 'warn' : 'ok';
+  return html`
+    <div class="limit">
+      <div class="limit-head"><span>${l.name}</span><b>${l.percent}%</b></div>
+      <div class="progress" role="progressbar" aria-valuenow=${l.percent} aria-valuemin="0" aria-valuemax="100" aria-label=${l.name + ' used'}>
+        <div class=${'lvl-' + level} style=${{ width: Math.min(100, l.percent) + '%' }}></div>
+      </div>
+      <div class="sub">Resets ${l.resets || '—'}</div>
+    </div>`;
+}
+
 function Usage({ s }) {
   const run = s.run_usage, all = s.usage_total;
   const elapsed = s.started_at ? (s.finished_at || s.now) - s.started_at : 0;
   const perMin = elapsed > 30 ? (run.calls / elapsed) * 60 : null;
-  const perConv = s.completed ? run.cost_usd / s.completed : null;
+  const perConv = s.completed ? (tokensIn(run) + run.output_tokens) / s.completed : null;
   const roles = Object.entries(s.usage || {});
+  const checked = s.limits_checked ? Math.max(0, Math.round(s.now - s.limits_checked)) : null;
   return html`
     <section class="card" aria-label="Claude usage">
       <h2>Claude usage</h2>
-      <div class="usage" style=${{ marginTop: '8px' }}>
+      <div class="limits">
+        ${(s.limits || []).length ? s.limits.map((l) => html`<${LimitBar} key=${l.name} l=${l} />`)
+          : html`<p class="sub">${s.limits_error ? 'Could not read plan limits: ' + s.limits_error : 'Reading plan limits…'}</p>`}
+      </div>
+      <p class="sub" style=${{ margin: '4px 0 12px' }}>Plan limits from Claude's /usage${checked != null ? ', checked ' + (checked < 5 ? 'just now' : checked + 's ago') : ''}. They include all your Claude use, not only training.</p>
+      <div class="usage">
         <div class="usage-figures">
-          <div><div class="label">This run</div><div class="big">${fmtUsd(run.cost_usd)}</div><div class="sub">${fmtInt(run.calls)} calls${run.errors ? ' · ' + run.errors + ' failed' : ''}</div></div>
-          <div><div class="label">Per conversation</div><div class="big">${perConv != null ? fmtUsd(perConv) : '—'}</div><div class="sub">${perMin != null ? perMin.toFixed(1) + ' calls / min' : ' '}</div></div>
-          <div><div class="label">Tokens this run</div><div class="big">${fmtTok(run.input_tokens + run.cache_write_tokens + run.cache_read_tokens)} <small>in</small></div><div class="sub">${fmtTok(run.output_tokens)} out</div></div>
-          <div><div class="label">Since the app started</div><div class="big">${fmtUsd(all.cost_usd)}</div><div class="sub">${fmtInt(all.calls)} calls</div></div>
+          <div><div class="label">Tokens this run</div><div class="big">${fmtTok(tokensIn(run))} <small>in</small></div><div class="sub">${fmtTok(run.output_tokens)} out · ${fmtInt(run.calls)} calls${run.errors ? ' · ' + run.errors + ' failed' : ''}</div></div>
+          <div><div class="label">Per conversation</div><div class="big">${perConv != null ? fmtTok(perConv) : '—'}</div><div class="sub">tokens in and out</div></div>
+          <div><div class="label">Pace</div><div class="big">${perMin != null ? perMin.toFixed(1) : '—'}</div><div class="sub">calls per minute</div></div>
+          <div><div class="label">Since the app started</div><div class="big">${fmtTok(tokensIn(all) + all.output_tokens)}</div><div class="sub">tokens · ${fmtInt(all.calls)} calls</div></div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Role</th><th>Calls</th><th>Input</th><th>Cache write</th><th>Cache read</th><th>Output</th><th>Avg wait</th><th>Cost</th></tr></thead>
+            <thead><tr><th>Role</th><th>Calls</th><th>Input</th><th>Cache write</th><th>Cache read</th><th>Output</th><th>Avg wait</th></tr></thead>
             <tbody>
-              ${roles.length === 0 ? html`<tr><td colspan="8" class="empty">No calls yet. Usage appears here as soon as training starts.</td></tr>` : roles.map(([role, u]) => html`
+              ${roles.length === 0 ? html`<tr><td colspan="7" class="empty">No calls yet. Token use appears here as soon as training starts.</td></tr>` : roles.map(([role, u]) => html`
                 <tr key=${role}>
                   <td>${role}</td><td>${fmtInt(u.calls)}</td><td>${fmtTok(u.input_tokens)}</td><td>${fmtTok(u.cache_write_tokens)}</td>
-                  <td>${fmtTok(u.cache_read_tokens)}</td><td>${fmtTok(u.output_tokens)}</td><td>${u.calls ? (u.seconds / u.calls).toFixed(1) + 's' : '—'}</td><td>${fmtUsd(u.cost_usd)}</td>
+                  <td>${fmtTok(u.cache_read_tokens)}</td><td>${fmtTok(u.output_tokens)}</td><td>${u.calls ? (u.seconds / u.calls).toFixed(1) + 's' : '—'}</td>
                 </tr>`)}
             </tbody>
           </table>
         </div>
       </div>
-      <p class="sub" style=${{ margin: '8px 0 0' }}>Cost is what the Claude CLI reports per call (list price). On a subscription plan it counts toward your usage limit rather than being billed.</p>
     </section>`;
 }
 
-function Chat({ t }) {
-  const ref = useRef(null);
-  const stick = useRef(true);
-  useEffect(() => { const el = ref.current; if (el && stick.current) el.scrollTop = el.scrollHeight; }, [t.transcript.length, t.status]);
-  const onScroll = () => { const el = ref.current; stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40; };
+const secs = (ms) => ms == null ? '—' : ms < 1000 ? ms + ' ms' : (ms / 1000).toFixed(1) + ' s';
+const clock = (t) => new Date(t * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+function Bubble({ m }) {
+  if (m.role === 'note') return html`<div class="row note"><div class="bubble">${m.text}</div></div>`;
   return html`
-    <div class="chat" ref=${ref} onScroll=${onScroll} aria-live="polite">
-      ${t.transcript.length === 0 && t.status === 'idle' ? html`<p class="empty">Waiting for a conversation.</p>` : null}
-      ${t.transcript.map((m, i) => html`
-        <div key=${i} class=${'msg ' + m.role}>${m.role !== 'note' ? html`<span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>` : null}${m.text}</div>`)}
-      ${t.status === 'thinking' ? html`<div class="typing">Teacher is writing…</div>` : null}
-      ${t.status === 'agent' ? html`<div class="typing right">Agent is thinking…</div>` : null}
-      ${t.status === 'reviewing' ? html`<div class="typing">Reviewer is checking what was learned…</div>` : null}
+    <div class=${'row ' + m.role}>
+      <div class="bubble">
+        <div class="bubble-head">
+          <span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>
+          <span class="when">${m.ms != null ? html`<span class="took" title=${m.role === 'agent' ? 'Translating ' + secs(m.translate_ms) + ' · agent ' + secs(m.think_ms) : 'Time the teacher took to write'}>${m.role === 'agent' ? 'answered in ' : 'wrote in '}${secs(m.ms)}${m.role === 'agent' && m.translate_ms != null ? html` <span class="split">(translate ${secs(m.translate_ms)} · agent ${secs(m.think_ms)})</span>` : null}</span> · ` : null}${clock(m.at)}</span>
+        </div>
+        ${m.text}
+      </div>
     </div>`;
 }
 
-function Teacher({ t }) {
-  const u = sumUsage(t.usage);
+function ChatWindow({ messages, status, auto }) {
+  const ref = useRef(null);
+  const stick = useRef(true);
+  // Follow new messages unless the reader scrolled up to read.
+  useEffect(() => { const el = ref.current; if (el && stick.current) el.scrollTop = el.scrollHeight; }, [messages.length, status]);
+  const onScroll = () => { const el = ref.current; stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60; };
   return html`
-    <article class="card teacher" aria-label=${'Teacher ' + (t.id + 1)}>
+    <div class=${'chat' + (auto ? ' auto' : '')} ref=${ref} onScroll=${onScroll} aria-live="polite">
+      ${messages.length === 0 && (!status || status === 'idle' || status === 'done' || status === 'stopped') ? html`<p class="chat-empty">No messages yet.</p>` : null}
+      ${messages.map((m, i) => html`<${Bubble} key=${i} m=${m} />`)}
+      ${status === 'thinking' ? html`<div class="typing">Teacher is writing</div>` : null}
+      ${status === 'agent' ? html`<div class="typing right">Agent is thinking</div>` : null}
+      ${status === 'reviewing' ? html`<div class="typing">Reviewer is checking what was learned</div>` : null}
+    </div>`;
+}
+
+function Teacher({ t, wide, onToggle }) {
+  const u = sumTokens(t.usage);
+  return html`
+    <article class=${'card teacher' + (wide ? ' wide' : '')} aria-label=${'Teacher ' + (t.id + 1)}>
       <div class="teacher-head">
-        <span class="teacher-name">Teacher ${t.id + 1}${t.conversation ? html` <span class="sub">· chat #${t.conversation}</span>` : null}</span>
-        <span class=${'status ' + t.status}>${STATUS[t.status] || t.status}</span>
+        <span class="teacher-name">Teacher ${t.id + 1}${t.conversation ? html` <span class="sub">· chat #${t.conversation} · turn ${t.turn} of ${t.turns_max}</span>` : null}</span>
+        <span class="teacher-head-right">
+          <span class=${'status ' + t.status}>${STATUS[t.status] || t.status}</span>
+          <button class="link-btn" type="button" onClick=${onToggle} aria-pressed=${wide}>${wide ? 'Collapse' : 'Expand'}</button>
+        </span>
       </div>
-      <div class="scenario">${t.scenario || ' '}</div>
-      <div class="turnbar" aria-label=${'Turn ' + t.turn + ' of ' + t.turns_max}>${Array.from({ length: t.turns_max || 0 }, (_, i) => html`<span key=${i} class=${i < t.turn ? 'on' : ''}></span>`)}</div>
-      <${Chat} t=${t} />
+      <div class="scenario">${t.scenario || '\u00a0'}</div>
+      <div class="turnbar" aria-hidden="true">${Array.from({ length: t.turns_max || 0 }, (_, i) => html`<span key=${i} class=${i < t.turn ? 'on' : ''}></span>`)}</div>
+      <${ChatWindow} messages=${t.transcript} status=${t.status} />
       ${t.last_error ? html`<div class="error-line">${t.last_error}</div>` : null}
       <div class="teacher-foot">
-        <span><b>${t.done}</b> chats</span><span><b>+${t.facts}</b> facts</span><span><b>+${t.rules}</b> rules</span>
-        <span><b>${t.rejected}</b> rejected</span><span><b>${fmtUsd(u.cost_usd)}</b> · ${u.calls} calls</span>
+        <span><b>${t.done}</b> chats done</span><span><b>+${t.facts}</b> facts</span><span><b>+${t.rules}</b> rules</span>
+        <span><b>${t.rejected}</b> rejected</span><span><b>${fmtTok(u.tin + u.tout)}</b> tokens · ${u.calls} calls</span>
       </div>
     </article>`;
+}
+
+function Teachers({ teachers }) {
+  const [wide, setWide] = useState(null);
+  return html`<div class="teachers">${teachers.map((t) => html`<${Teacher} key=${t.id} t=${t} wide=${wide === t.id} onToggle=${() => setWide(wide === t.id ? null : t.id)} />`)}</div>`;
 }
 
 function Finished({ list }) {
@@ -281,9 +354,7 @@ function Finished({ list }) {
         <span>#${f.conversation} · ${f.scenario}</span>
         <span class="meta">Teacher ${f.teacher + 1} · ${f.turns} turns · ${pct(f.understood, f.turns)}% understood · +${f.facts} facts · +${f.rules} rules · ${f.rejected.length} rejected</span>
       </summary>
-      <div class="chat" style=${{ maxHeight: 'none', marginTop: '8px' }}>
-        ${f.transcript.map((m, i) => html`<div key=${i} class=${'msg ' + m.role}><span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>${m.text}</div>`)}
-      </div>
+      <div style=${{ marginTop: '8px' }}><${ChatWindow} messages=${f.transcript} auto=${true} /></div>
       ${f.rejected.length ? html`<ul class="rejected">${f.rejected.map((r, i) => html`<li key=${i}>${r}</li>`)}</ul>` : null}
     </details>`)}</div>`;
 }
@@ -297,14 +368,14 @@ function App() {
       <${Usage} s=${state} />
       <section aria-label="Teachers">
         <h2 style=${{ marginBottom: '8px' }}>Teachers</h2>
-        ${state.teachers.length ? html`<div class="teachers">${state.teachers.map((t) => html`<${Teacher} key=${t.id} t=${t} />`)}</div>`
+        ${state.teachers.length ? html`<${Teachers} teachers=${state.teachers} />`
           : html`<p class="empty">No training yet. Choose how many teachers and conversations, then press Start training. Each teacher holds small everyday conversations with the agent (${state.scenarios} situations) and teaches it when it can't help.</p>`}
       </section>
       <section aria-label="Finished conversations">
         <h2 style=${{ marginBottom: '8px' }}>Finished conversations</h2>
         <${Finished} list=${state.finished} />
       </section>
-      <p class="sub">Vault: <span class="mono">${state.vault_path}</span></p>` : null}`;
+      <p class="sub">Vault: <span class="mono">${state.vault_path.replace(/^\\\\\?\\/, '')}</span></p>` : null}`;
 }
 
 ReactDOM.createRoot(document.getElementById('app')).render(html`<${App} />`);
