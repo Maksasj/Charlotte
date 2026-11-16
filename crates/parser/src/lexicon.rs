@@ -1,6 +1,8 @@
 //! Word lists for the pattern parser.
 
 pub const GREET: &[&str] = &["hi", "hello", "hey", "hi there", "hello there", "hey there", "good morning", "good evening", "good afternoon", "greetings", "howdy", "hiya"];
+/// Small talk about the agent itself.
+pub const HOW_ARE_YOU: &[&str] = &["how are you", "how are you doing", "how is it going", "how do you do", "what is up", "how are things"];
 pub const BYE: &[&str] = &["bye", "goodbye", "bye bye", "see you", "see you later", "good night", "farewell", "later", "see ya", "quit", "exit"];
 pub const YES: &[&str] = &[
     "yes", "yeah", "yep", "yup", "right", "correct", "exactly", "sure", "that is right", "that is correct", "true", "yes that is right",

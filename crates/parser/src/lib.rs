@@ -29,6 +29,8 @@ pub enum Intent {
     Yes,
     No,
     Greet,
+    /// "How are you?"
+    HowAreYou,
     Bye,
     Unknown,
 }
@@ -63,6 +65,7 @@ impl Intent {
             Intent::Yes => "yes:".into(),
             Intent::No => "no:".into(),
             Intent::Greet => "greet:".into(),
+            Intent::HowAreYou => "how_are_you:".into(),
             Intent::Bye => "bye:".into(),
             Intent::Unknown => "unknown:".into(),
         }
@@ -78,6 +81,7 @@ impl Intent {
             Intent::Yes => "yes",
             Intent::No => "no",
             Intent::Greet => "greet",
+            Intent::HowAreYou => "how_are_you",
             Intent::Bye => "bye",
             Intent::Unknown => "unknown",
         }
@@ -169,6 +173,9 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
     }
     if NO.contains(&joined.as_str()) {
         return Intent::No;
+    }
+    if HOW_ARE_YOU.contains(&joined.as_str()) {
+        return Intent::HowAreYou;
     }
     // "I don't know" is a non-answer, never a fact.
     if DONT_KNOW.contains(&joined.as_str()) {

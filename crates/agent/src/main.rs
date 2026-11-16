@@ -49,7 +49,7 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
 
-    println!("Symbolic learning agent. Vault: {vault}. Type :quit to leave.");
+    println!("Symbolic learning agent. Vault: {vault}. Type :quit to leave, :facts / :rules / :log to look inside.");
     let stdin = io::stdin();
     loop {
         print!("> ");
@@ -72,8 +72,8 @@ fn main() -> io::Result<()> {
 
 fn reply_or_command(agent: &mut Agent, line: &str) -> String {
     match line {
-        ":facts" => agent.dump_facts().join("\n"),
-        ":rules" => agent.dump_rules().join("\n"),
+        ":facts" => or_empty(agent.dump_facts(), "No facts yet. Tell me something, like \"Anna likes tea.\""),
+        ":rules" => or_empty(agent.dump_rules(), "No learned rules yet. Try \"If someone likes tea then they want tea.\""),
         ":reload" => match agent.kb.reload() {
             Ok(()) => "Reloaded the vault.".into(),
             Err(e) => format!("Reload failed: {e}"),
@@ -114,5 +114,13 @@ fn demo(agent: &mut Agent, spec: &str) -> String {
             }
         }
         Err(e) => format!("Bad demonstration: {e}"),
+    }
+}
+
+fn or_empty(lines: Vec<String>, empty: &str) -> String {
+    if lines.is_empty() {
+        empty.to_string()
+    } else {
+        lines.join("\n")
     }
 }

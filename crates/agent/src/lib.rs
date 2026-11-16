@@ -372,6 +372,17 @@ impl Agent {
             Intent::Correct(atoms) => self.correct(atoms),
             Intent::Yes | Intent::No => self.answer_pending(pending, matches!(intent, Intent::Yes)),
             Intent::Greet => self.say(Act::Greet),
+            Intent::HowAreYou => {
+                // Honest small talk: report its own state instead of pretending feelings.
+                let now = self.now();
+                let n = self.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count();
+                let text = if n == 0 {
+                    "I'm fine, thanks, and ready to learn. I don't know anything yet: tell me something, like \"Anna likes tea.\"".to_string()
+                } else {
+                    format!("I'm fine, thanks. I know {n} fact{} so far. What would you like to tell me?", if n == 1 { "" } else { "s" })
+                };
+                self.say(Act::Note(text))
+            }
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
             Intent::Unknown if pending.is_some() => self.say(Act::Note("Okay, never mind.".into())),

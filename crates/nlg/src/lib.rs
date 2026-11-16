@@ -534,7 +534,8 @@ impl Realizer {
         }
     }
 
-    fn rule_text(&self, r: &Rule) -> String {
+    /// A rule in words: "if A is a bird then A flies".
+    pub fn rule_text(&self, r: &Rule) -> String {
         let lit = |l: &sla_core::Literal| -> String {
             match l {
                 sla_core::Literal::Pos(a) => self.clause_terms(a),
