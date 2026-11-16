@@ -38,8 +38,8 @@ pub enum Act {
     Recall { entity: String, facts: Vec<GroundAtom> },
     /// Acknowledge a tell: new facts, facts that ended, already-known facts, new rules.
     Acknowledge { added: Vec<GroundAtom>, closed: Vec<GroundAtom>, known: Vec<GroundAtom>, rules: Vec<Rule>, past: bool },
-    /// Acknowledge a correction.
-    Corrected { added: Vec<GroundAtom>, retracted: Vec<GroundAtom> },
+    /// Acknowledge a correction; `rules` are rules that were refined.
+    Corrected { added: Vec<GroundAtom>, retracted: Vec<GroundAtom>, rules: Vec<Rule> },
     /// Curiosity: ask whether a fact holds.
     AskYesNo(GroundAtom),
     /// Curiosity: ask for a missing value (pattern has `W`).
@@ -732,7 +732,7 @@ impl Realizer {
                 }
                 ("acknowledge", parts.join(" "))
             }
-            Act::Corrected { added, retracted } => {
+            Act::Corrected { added, retracted, rules } => {
                 let mut parts = vec!["Thanks for the correction.".to_string()];
                 if !retracted.is_empty() {
                     let r: Vec<String> = retracted.iter().map(|c| self.clause(c)).collect();
@@ -741,6 +741,9 @@ impl Realizer {
                 if !added.is_empty() {
                     claims.extend(added.iter().cloned());
                     parts.push(format!("Now I know: {}", self.aggregate(added, Tense::Present)));
+                }
+                for r in rules {
+                    parts.push(format!("I changed my rule to: {}.", self.rule_text(r)));
                 }
                 ("acknowledge", parts.join(" "))
             }

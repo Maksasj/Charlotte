@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 8: learning from corrections and examples** (milestones 1-7 pass and are committed).
+**Milestone 9: curiosity drive** (milestones 1-8 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -19,7 +19,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 5 | Reply generator | passing, committed | `crates/nlg/tests/replies.rs`: 100 replies, grammar checks, claims in KB, claims parse back |
 | 6 | Agent loop | passing, committed | `crates/agent/tests/session.rs`: 10 facts + 2 rules taught, recalled after restart; history, corrections, hand edits |
 | 7 | Learner: pattern counting | passing, committed | `crates/learner/tests/mornings.rs`: hypothesis after 5 mornings, conf drops after a counterexample; promotion at 20 cases; rejection |
-| 8-10 | Corrections/examples, curiosity, eval | not started | - |
+| 8 | Corrections and demonstrations | passing, committed | `crates/learner/tests/corrections.rs` over `data/synthetic/corrections/cases.md` (10 cases: right rule changes, nothing else lost); demo rules; agent conversation test |
+| 9-10 | Curiosity, eval | not started | - |
 
 ## Layout
 
@@ -103,6 +104,20 @@ vault/  data/synthetic/  eval/
 - With no contrasting data (only mornings), several bodies predict equally well
   (`event`, `agent_of`, `during`); the learner cannot know which matters. Tests give
   contrast (evenings with tea). Multi-feature bodies wait for ILP (milestone 11).
+
+- **Corrections** refine the rule at the top of the wrong conclusion's proof: a
+  `not feature(X)` condition when the wrong case has a feature none of the rule's
+  other cases share (preferring `is_a` categories), else the exception `not -head`.
+  The negative fact is always stored. Core rules are read-only: only the negative
+  fact is stored, leaving a contradiction for the curiosity drive. A wrong *stored*
+  fact is closed instead (its consequences disappear with it).
+- **Demonstrations** (`:demo ACTION | before: ... | after: ...` in the CLI) become
+  effect rules: added facts -> heads, removed facts -> negated heads, action +
+  unchanged facts about the participants -> body, action constants -> variables.
+  Repeated demonstrations intersect the preconditions (incidental details drop out).
+- The correction test set (`data/synthetic/corrections/cases.md`) plays the teacher's
+  part with exact expected outcomes; live Claude teacher sub-agents come with
+  milestone 10.
 
 ## Problems
 

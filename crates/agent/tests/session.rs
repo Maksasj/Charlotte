@@ -124,3 +124,19 @@ fn hand_edits_are_reloaded() {
     assert!(r.contains("jazz"), "{r}");
     let _ = fs::remove_dir_all(&root);
 }
+
+#[test]
+fn correction_refines_rule_in_conversation() {
+    let root = temp_vault("correct");
+    let mut a = Agent::open(&root, "maksim").unwrap();
+    a.clock = Some(Timestamp::from_ymd_hms(2026, 11, 16, 9, 0, 0));
+    for m in ["If something is a bird then it flies.", "Tweety is a bird.", "Robin is a bird.", "Pingu is a bird.", "Pingu is a penguin."] {
+        talk(&mut a, m);
+    }
+    assert!(talk(&mut a, "Does Pingu fly?").contains("Pingu flies"));
+    let r = talk(&mut a, "No, Pingu doesn't fly.");
+    assert!(r.contains("changed my rule") && r.contains("penguin"), "{r}");
+    assert!(talk(&mut a, "Does Pingu fly?").starts_with("No"));
+    assert!(talk(&mut a, "Does Tweety fly?").contains("Tweety flies"));
+    let _ = fs::remove_dir_all(&root);
+}

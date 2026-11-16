@@ -82,6 +82,37 @@ fn reply_or_command(agent: &mut Agent, line: &str) -> String {
             Ok(entries) => entries.iter().rev().take(20).map(|(t, a, s, r)| format!("{t} {a} {s} ({r})")).collect::<Vec<_>>().join("\n"),
             Err(e) => format!("Cannot read log: {e}"),
         },
+        _ if line.starts_with(":demo ") => demo(agent, &line[6..]),
         _ => agent.respond(line).text,
+    }
+}
+
+/// `:demo fill(maksim, cup1) | before: is_a(cup1, cup); property(cup1, quality, empty) | after: is_a(cup1, cup); property(cup1, quality, full)`
+fn demo(agent: &mut Agent, spec: &str) -> String {
+    let parts: Vec<&str> = spec.split('|').map(str::trim).collect();
+    let atoms = |s: &str, key: &str| -> Result<Vec<sla_core::GroundAtom>, String> {
+        let body = s.strip_prefix(key).ok_or(format!("expected `{key}`"))?;
+        body.split(';').map(str::trim).filter(|x| !x.is_empty()).map(|x| sla_core::parse_ground(x).map_err(|e| e.to_string())).collect()
+    };
+    let parsed = (|| -> Result<sla_learner::corrections::Demonstration, String> {
+        if parts.len() != 3 {
+            return Err("use `:demo ACTION | before: A; B | after: C; D`".into());
+        }
+        Ok(sla_learner::corrections::Demonstration {
+            action: sla_core::parse_ground(parts[0]).map_err(|e| e.to_string())?,
+            before: atoms(parts[1], "before:")?,
+            after: atoms(parts[2], "after:")?,
+        })
+    })();
+    match parsed {
+        Ok(d) => {
+            let rules = agent.demonstrate(&d);
+            if rules.is_empty() {
+                "I didn't see any change I could learn from.".into()
+            } else {
+                format!("I learned what {} does ({} rule(s): {}).", d.action.pred, rules.len(), rules.join(", "))
+            }
+        }
+        Err(e) => format!("Bad demonstration: {e}"),
     }
 }

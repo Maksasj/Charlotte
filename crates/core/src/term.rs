@@ -62,7 +62,7 @@ impl fmt::Display for Value {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Term {
     Var(String),
     Val(Value),
@@ -86,7 +86,7 @@ impl fmt::Display for Term {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Atom {
     pub pred: String,
     pub args: Vec<Term>,

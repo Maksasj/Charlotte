@@ -9,6 +9,8 @@
 //! confirmed past a threshold and rejects it when counterexamples dominate.
 //! Every change is written to the rule file and the audit log with its reason.
 
+pub mod corrections;
+
 use sla_core::{Atom, GroundAtom, KnowledgeBase, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
 use sla_reasoner::{evaluate, facts_for, RuleInput};
 use std::collections::{BTreeMap, BTreeSet};
@@ -97,11 +99,11 @@ impl Learner {
     }
 
     /// Count (support, counterexamples) for `head :- body` with one shared variable.
-    pub fn count(features: &BTreeMap<Value, BTreeSet<Feature>>, body: &[Feature], head: &Feature) -> (u64, u64) {
+    pub fn count(features: &BTreeMap<Value, BTreeSet<Feature>>, body: &[Feature], negs: &[Feature], head: &Feature) -> (u64, u64) {
         let mut support = 0;
         let mut counter = 0;
         for fs in features.values() {
-            if body.iter().all(|b| fs.contains(b)) {
+            if body.iter().all(|b| fs.contains(b)) && !negs.iter().any(|n| fs.contains(n)) {
                 let neg = Feature { pred: sla_core::term::complement_pred(&head.pred), rest: head.rest.clone() };
                 if fs.contains(head) {
                     support += 1;
@@ -126,8 +128,8 @@ impl Learner {
             if meta.source != "learner" || meta.status == RuleStatus::Rejected {
                 continue;
             }
-            let Some((body, head)) = rf.rules().first().and_then(rule_features) else { continue };
-            let (support, counter) = Self::count(&features, &body, &head);
+            let Some((body, negs, head)) = rf.rules().first().and_then(rule_features) else { continue };
+            let (support, counter) = Self::count(&features, &body, &negs, &head);
             let conf = self.conf(support, counter);
             let mut m = meta.clone();
             m.evidence = support;
@@ -175,7 +177,7 @@ impl Learner {
                 if body == head || bc < self.min_support || body.pred == head.pred {
                     continue;
                 }
-                let (support, counter) = Self::count(&features, std::slice::from_ref(*body), head);
+                let (support, counter) = Self::count(&features, std::slice::from_ref(*body), &[], head);
                 if support < self.min_support {
                     continue;
                 }
@@ -235,8 +237,9 @@ fn is_open_world(head: &Feature) -> bool {
     matches!(head.pred.trim_start_matches('-'), "knows" | "wants" | "has")
 }
 
-/// `head(X, c..) :- body(X, c..), ...` -> features, if the rule has that shape.
-pub fn rule_features(r: &Rule) -> Option<(Vec<Feature>, Feature)> {
+/// `head(X, c..) :- body(X, c..), ..., not cond(X, c..)` -> (body, negated, head)
+/// features, if the rule has that shape.
+pub fn rule_features(r: &Rule) -> Option<(Vec<Feature>, Vec<Feature>, Feature)> {
     let feat = |a: &Atom| -> Option<Feature> {
         match a.args.first()? {
             Term::Var(v) if v == "X" => {}
@@ -253,13 +256,15 @@ pub fn rule_features(r: &Rule) -> Option<(Vec<Feature>, Feature)> {
     };
     let head = feat(&r.head)?;
     let mut body = Vec::new();
+    let mut negs = Vec::new();
     for l in &r.body {
         match l {
             Literal::Pos(a) => body.push(feat(a)?),
-            _ => return None,
+            Literal::Neg(a) => negs.push(feat(a)?),
+            Literal::Cmp(..) => return None,
         }
     }
-    Some((body, head))
+    Some((body, negs, head))
 }
 
 /// Same routing as the agent's module router (kept here to avoid a dependency cycle).

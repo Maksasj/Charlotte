@@ -183,8 +183,8 @@ fn acts(m: &Model) -> Vec<Act> {
     acts.push(ack(vec![g("-likes(bob, tea)")], vec![g("likes(bob, tea)")], vec![]));
     acts.push(Act::Acknowledge { added: vec![], closed: vec![], known: vec![], rules: vec![parse_rule("wants(X, D) :- likes(X, D).").unwrap()], past: false });
     acts.push(ack(vec![g("located_in(anna, berlin)")], vec![], vec![]));
-    acts.push(Act::Corrected { added: vec![g("is_a(rex, dog)")], retracted: vec![g("is_a(rex, cat)")] });
-    acts.push(Act::Corrected { added: vec![g("property(car, colour, red)")], retracted: vec![] });
+    acts.push(Act::Corrected { added: vec![g("is_a(rex, dog)")], retracted: vec![g("is_a(rex, cat)")], rules: vec![] });
+    acts.push(Act::Corrected { added: vec![g("property(car, colour, red)")], retracted: vec![], rules: vec![] });
     // 10 curiosity questions.
     for a in ["likes(bob, coffee)", "is_a(rex, animal)", "feels(maksim, happy)", "property(anna, job, teacher)"] {
         acts.push(Act::AskYesNo(g(a)));

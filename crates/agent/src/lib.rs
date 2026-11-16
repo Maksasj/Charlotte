@@ -5,6 +5,7 @@
 
 use sla_core::kb::matches;
 use sla_core::{Atom, AssertOutcome, Fact, GroundAtom, KnowledgeBase, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
+use sla_learner::corrections::{self, Change, Demonstration};
 use sla_learner::{LearnReport, Learner};
 use sla_nlg::{Act, Realizer, Reply, Truth};
 use sla_parser::{Context, Intent, Parser, PatternParser};
@@ -375,21 +376,35 @@ impl Agent {
         let now = self.now();
         let mut retracted = Vec::new();
         let mut added = Vec::new();
+        let mut rules = Vec::new();
         let last = self.last_answer.clone();
         if atoms.is_empty() {
             // "That's wrong": the last answer is false.
-            if let Some(a) = last {
-                self.retract(&a, now, &mut retracted);
-                return self.say(Act::Corrected { added, retracted });
+            let Some(a) = last else {
+                return self.say(Act::Note("What is wrong? I haven't said anything yet.".into()));
+            };
+            if let Some(r) = self.make_false(&a, now, &mut retracted) {
+                rules.push(r);
             }
-            return self.say(Act::Note("What is wrong? I haven't said anything yet.".into()));
+            return self.say(Act::Corrected { added, retracted, rules });
         }
+        let model = self.model(false);
         for a in atoms {
             let Some(g) = a.to_ground() else { continue };
-            // The last answer was about the same subject and relation: it was wrong.
+            let mut wrong = Vec::new();
+            // The opposite of the correction is believed: it is wrong.
+            if model.contains(&g.complement()) {
+                wrong.push(g.complement());
+            }
+            // The last answer was about the same subject and relation with another value.
             if let Some(l) = &last {
-                if l.pred == g.pred && l.args.first() == g.args.first() && l != &g && !self.functional_key_differs(l, &g) {
-                    self.retract(l, now, &mut retracted);
+                if l.pred == g.pred && l.args.first() == g.args.first() && l != &g && model.contains(l) {
+                    wrong.push(l.clone());
+                }
+            }
+            for w in wrong {
+                if let Some(r) = self.make_false(&w, now, &mut retracted) {
+                    rules.push(r);
                 }
             }
             let out = self.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "correction");
@@ -401,15 +416,36 @@ impl Agent {
         retracted.sort();
         retracted.dedup();
         self.last_answer = added.first().cloned();
-        self.say(Act::Corrected { added, retracted })
+        self.say(Act::Corrected { added, retracted, rules })
     }
 
-    /// For functional predicates a new value already closes the old one.
-    fn functional_key_differs(&self, a: &GroundAtom, b: &GroundAtom) -> bool {
-        match self.kb.functional().get(a.base_pred()) {
-            Some(&k) => a.args[..k.min(a.args.len())] != b.args[..k.min(b.args.len())],
-            None => false,
+    /// Make `a` false from now on. A stored fact is closed (and its negation
+    /// recorded); a derived one has its rule refined by the learner. Returns
+    /// the refined rule, if any.
+    fn make_false(&mut self, a: &GroundAtom, now: Timestamp, retracted: &mut Vec<GroundAtom>) -> Option<Rule> {
+        let stored = self.kb.all_facts().iter().any(|f| f.atom == *a && f.valid_at(now));
+        if stored {
+            self.retract(a, now, retracted);
+            return None;
         }
+        let out = corrections::correct_derived(&mut self.kb, a, now, &self.source);
+        if !matches!(out.change, Change::NotDerived) {
+            retracted.push(a.clone());
+        }
+        out.new_rule
+    }
+
+    /// Learn effect rules from a before/after demonstration.
+    pub fn demonstrate(&mut self, demo: &Demonstration) -> Vec<String> {
+        let now = self.now();
+        for f in &demo.after {
+            self.kb.assert_fact(Fact::new(f.clone(), &self.source), now, "demonstration");
+        }
+        self.kb.assert_fact(Fact::new(demo.action.clone(), &self.source), now, "demonstration");
+        let learner = self.learner.clone();
+        let out = corrections::learn_from_demo(&mut self.kb, &learner, demo, now);
+        let _ = self.save();
+        out
     }
 
     /// Make `a` false from now on: close it if stored, and record the negation.
