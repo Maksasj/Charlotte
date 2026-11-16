@@ -12,3 +12,4 @@ sla_core = { path = "../core" }
 sla_reasoner = { path = "../reasoner" }
 sla_parser = { path = "../parser" }
 sla_nlg = { path = "../nlg" }
+sla_learner = { path = "../learner" }

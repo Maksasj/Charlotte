@@ -7,6 +7,7 @@ name = "sla_agent"
 version = "0.1.0"
 dependencies = [
  "sla_core",
+ "sla_learner",
  "sla_nlg",
  "sla_parser",
  "sla_reasoner",
@@ -23,6 +24,10 @@ version = "0.1.0"
 [[package]]
 name = "sla_learner"
 version = "0.1.0"
+dependencies = [
+ "sla_core",
+ "sla_reasoner",
+]
 
 [[package]]
 name = "sla_nlg"

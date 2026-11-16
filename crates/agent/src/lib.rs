@@ -5,6 +5,7 @@
 
 use sla_core::kb::matches;
 use sla_core::{Atom, AssertOutcome, Fact, GroundAtom, KnowledgeBase, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
+use sla_learner::{LearnReport, Learner};
 use sla_nlg::{Act, Realizer, Reply, Truth};
 use sla_parser::{Context, Intent, Parser, PatternParser};
 use sla_reasoner::{evaluate_kb, Model};
@@ -40,6 +41,9 @@ pub struct Agent {
     pub clock: Option<Timestamp>,
     /// Source label for facts from this conversation partner.
     pub source: String,
+    pub learner: Learner,
+    /// What the learner did after the last message.
+    pub last_learn: LearnReport,
     vault_stamp: u64,
 }
 
@@ -76,6 +80,8 @@ impl Agent {
             pending: None,
             clock: None,
             source: "user".into(),
+            learner: Learner::default(),
+            last_learn: LearnReport::default(),
             vault_stamp: 0,
         };
         a.vault_stamp = vault_fingerprint(&a.kb.vault.root);
@@ -257,6 +263,10 @@ impl Agent {
         }
         if let Some(a) = added.first().or(known.first()) {
             self.last_answer = Some(a.clone());
+        }
+        // New facts may support, contradict or suggest learned rules.
+        if !added.is_empty() {
+            self.last_learn = self.learner.update(&mut self.kb, now);
         }
         self.say(Act::Acknowledge { added, closed, known, rules: new_rules, past })
     }

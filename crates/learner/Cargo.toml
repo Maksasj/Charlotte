@@ -5,3 +5,5 @@ edition.workspace = true
 
 [dependencies]
 
+sla_core = { path = "../core" }
+sla_reasoner = { path = "../reasoner" }

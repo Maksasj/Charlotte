@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 7: learner (pattern counting)** (milestones 1-6 pass and are committed).
+**Milestone 8: learning from corrections and examples** (milestones 1-7 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -18,7 +18,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 4 | Parser | passing, committed | `crates/parser/tests/dev_set.rs`: dev 200/200 exact; held-out 98/100 exact, 100/100 intent |
 | 5 | Reply generator | passing, committed | `crates/nlg/tests/replies.rs`: 100 replies, grammar checks, claims in KB, claims parse back |
 | 6 | Agent loop | passing, committed | `crates/agent/tests/session.rs`: 10 facts + 2 rules taught, recalled after restart; history, corrections, hand edits |
-| 7-10 | Learner, curiosity, eval | not started | - |
+| 7 | Learner: pattern counting | passing, committed | `crates/learner/tests/mornings.rs`: hypothesis after 5 mornings, conf drops after a counterexample; promotion at 20 cases; rejection |
+| 8-10 | Corrections/examples, curiosity, eval | not started | - |
 
 ## Layout
 
@@ -26,7 +27,7 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 Cargo.toml                 workspace
 crates/core      sla_core      types, Datalog syntax, vault files, knowledge base ops
 crates/reasoner  sla_reasoner  runtime Datalog engine with proof traces
-crates/learner   sla_learner   (placeholder)
+crates/learner   sla_learner   pattern-counting learner (hypothesis rules, confidence, promotion)
 crates/nlg       sla_nlg       reply generator: acts -> English, aggregation, pronouns, why-from-proof
 crates/parser    sla_parser    pattern parser (intents + Datalog slots), `Parser` trait
 crates/agent     sla_agent     Agent (respond loop), module router, `sla` CLI binary
@@ -89,6 +90,19 @@ vault/  data/synthetic/  eval/
   `work`, `tools`, `general`). A rule that makes the program unsafe or unstratifiable
   is refused.
 - **"That's wrong"** closes the last answer if stored and records its strong negation.
+
+- **Learner (pattern counting)**: features = an entity's facts with the entity as
+  variable. Best single-feature body per head (highest ratio, then most specific,
+  then with constants). Confidence `evidence / (evidence + counter + 5)`: starts low,
+  rises with cases, drops with counterexamples; promoted at 0.8 (20 clean cases) or
+  on user confirmation; rejected when counterexamples are at least twice the support.
+  Bookkeeping predicates (event, during, agent_of, is_a, ...) never become heads.
+  Missing head facts count as counterexamples (closed world for observed episodes),
+  except open-world predicates (knows, wants, has) where only explicit negation counts.
+  Learned rules are excluded when counting, so a promoted rule cannot support itself.
+- With no contrasting data (only mornings), several bodies predict equally well
+  (`event`, `agent_of`, `during`); the learner cannot know which matters. Tests give
+  contrast (evenings with tea). Multi-feature bodies wait for ILP (milestone 11).
 
 ## Problems
 
