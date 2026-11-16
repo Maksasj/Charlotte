@@ -311,12 +311,31 @@ pub struct JudgeResult {
 
 /// One judge: chats with a fresh agent for `turns` messages about `topic`, then scores it.
 pub fn run_judge(topic: &str, turns: usize, model: &str) -> JudgeResult {
-    run_judge_with(topic, turns, model, false)
+    run_judge_with(topic, turns, model, false, None)
 }
 
-/// A judge run; with `llm` the agent uses the LLM translator for input.
-pub fn run_judge_with(topic: &str, turns: usize, model: &str, llm: bool) -> JudgeResult {
+/// Copy a directory tree (a vault) without external crates.
+pub fn copy_dir(from: &Path, to: &Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(to)?;
+    for e in std::fs::read_dir(from)? {
+        let e = e?;
+        let target = to.join(e.file_name());
+        if e.file_type()?.is_dir() {
+            copy_dir(&e.path(), &target)?;
+        } else {
+            std::fs::copy(e.path(), target)?;
+        }
+    }
+    Ok(())
+}
+
+/// A judge run; with `llm` the agent uses the LLM translator for input; with
+/// `seed` the agent starts from a copy of that vault instead of an empty one.
+pub fn run_judge_with(topic: &str, turns: usize, model: &str, llm: bool, seed: Option<&Path>) -> JudgeResult {
     let root = temp_dir("judge");
+    if let Some(seed) = seed {
+        let _ = copy_dir(seed, &root);
+    }
     let mut res = JudgeResult { topic: topic.into(), score: None, reason: String::new(), transcript: Vec::new() };
     let mut agent = match Agent::open(&root, "maksim") {
         Ok(a) => a,
@@ -387,6 +406,9 @@ pub const JUDGE_TOPICS: &[&str] = &[
     "your city, your work and your colleagues",
     "hobbies and sports of your friends",
     "tools in a workshop and what they are for",
+    "animals and nature",
+    "food and cooking",
+    "weather and the seasons",
 ];
 
 // ------------------------------------------------------------------ the whole run
@@ -403,6 +425,8 @@ pub struct EvalConfig {
     pub notes: String,
     /// Judges talk to the agent with the LLM translator enabled.
     pub llm: bool,
+    /// Judges' agents start from a copy of this vault (e.g. the pretrained one).
+    pub seed_vault: Option<PathBuf>,
 }
 
 impl EvalConfig {
@@ -418,6 +442,7 @@ impl EvalConfig {
             model: "haiku".into(),
             notes: String::new(),
             llm: false,
+            seed_vault: None,
         }
     }
 }
@@ -565,7 +590,7 @@ pub fn run(cfg: &EvalConfig) -> std::io::Result<EvalReport> {
     }
     if cfg.use_claude {
         for i in 0..cfg.judges {
-            rep.judges.push(run_judge_with(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model, cfg.llm));
+            rep.judges.push(run_judge_with(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model, cfg.llm, cfg.seed_vault.as_deref()));
         }
     }
 

@@ -20,6 +20,7 @@ fn main() {
             "--teacher-questions" => cfg.teacher_questions = num("--teacher-questions"),
             "--no-claude" => cfg.use_claude = false,
             "--llm" => cfg.llm = true,
+            "--seed-vault" => cfg.seed_vault = Some(args.next().expect("--seed-vault DIR").into()),
             "--model" => cfg.model = args.next().expect("--model NAME"),
             "--notes" => cfg.notes = args.next().expect("--notes TEXT"),
             "--history" => cfg.history = args.next().expect("--history PATH").into(),
