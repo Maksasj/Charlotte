@@ -4,6 +4,7 @@
 //! to `eval/history.csv` so trends are visible over time.
 
 pub mod pretrain;
+pub mod trainer;
 
 use sla_agent::curiosity::Teacher;
 use sla_agent::Agent;
@@ -12,7 +13,7 @@ use sla_parser::{parse, Context};
 use std::fmt::Write as _;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Command;
 
 // ------------------------------------------------------------------ dialogues
 
@@ -252,21 +253,14 @@ pub fn parser_accuracy(set: &[(String, String)]) -> f64 {
 
 // ------------------------------------------------------------------ Claude
 
-/// Run `claude -p` with the prompt on stdin.
+/// One model call (lean, with usage accounting under the role "eval").
 pub fn claude(prompt: &str, model: &str) -> Result<String, String> {
-    let mut child = Command::new("claude")
-        .args(["-p", "--model", model])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|e| format!("cannot start claude: {e}"))?;
-    child.stdin.take().unwrap().write_all(prompt.as_bytes()).map_err(|e| e.to_string())?;
-    let out = child.wait_with_output().map_err(|e| e.to_string())?;
-    if !out.status.success() {
-        return Err(format!("claude failed: {}", String::from_utf8_lossy(&out.stderr)));
-    }
-    Ok(String::from_utf8_lossy(&out.stdout).trim().to_string())
+    sla_parser::claude::call("eval", model, prompt)
+}
+
+/// A model call recorded under a specific role ("teacher", "reviewer", "judge").
+pub fn claude_as(role: &str, prompt: &str, model: &str) -> Result<String, String> {
+    sla_parser::claude::call(role, model, prompt)
 }
 
 const AGENT_ABILITIES: &str = "The agent only understands short, simple English sentences such as: \

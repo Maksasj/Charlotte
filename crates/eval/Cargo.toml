@@ -8,3 +8,5 @@ default-run = "sla_eval"
 sla_core = { path = "../core" }
 sla_parser = { path = "../parser" }
 sla_agent = { path = "../agent" }
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }

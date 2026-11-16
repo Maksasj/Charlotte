@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: control bar, summary row, usage, teacher cards grid, finished conversations. */
+  :root {
+    --bg: #f3f4f1; --panel: #ffffff; --panel-2: #f7f8f5; --fg: #1b211e; --muted: #5d6862; --line: #dde2dc;
+    --accent: #2a6b5a; --accent-soft: #e3efea; --teacher: #8a4b14; --teacher-soft: #f6ece2; --agent: #24507e; --agent-soft: #e6eef7;
+    --ok: #2f7d4f; --warn: #a66a00; --bad: #b23b3b;
+    --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121614; --panel: #1a1f1c; --panel-2: #161a18; --fg: #e5eae6; --muted: #98a49d; --line: #2b322e;
+      --accent: #5fb39a; --accent-soft: #1e302a; --teacher: #e3a467; --teacher-soft: #2c2219; --agent: #87b2e6; --agent-soft: #1b2635;
+      --ok: #6cc08b; --warn: #e0b04a; --bad: #e07a7a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121614; --panel: #1a1f1c; --panel-2: #161a18; --fg: #e5eae6; --muted: #98a49d; --line: #2b322e;
+    --accent: #5fb39a; --accent-soft: #1e302a; --teacher: #e3a467; --teacher-soft: #2c2219; --agent: #87b2e6; --agent-soft: #1b2635;
+    --ok: #6cc08b; --warn: #e0b04a; --bad: #e07a7a; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--sans); }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left)) 48px; display: flex; flex-direction: column; gap: 16px; }
+  h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  h2 { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+  .bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pill { font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 10px; }
+  .pill.running { background: var(--accent-soft); color: var(--accent); }
+  .pill.stopping { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .pill.idle { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); }
+  .pill.offline { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .field { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); }
+  .field input, .field select { font: inherit; font-size: 14px; color: var(--fg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; width: 92px; }
+  .field.check { flex-direction: row; align-items: center; gap: 6px; font-size: 13px; color: var(--fg); padding-bottom: 6px; }
+  button { font: inherit; font-weight: 600; border-radius: 6px; padding: 6px 16px; cursor: pointer; border: 1px solid transparent; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-start { background: var(--accent); color: var(--panel); }
+  .btn-stop { background: var(--panel); color: var(--bad); border-color: color-mix(in srgb, var(--bad) 50%, transparent); }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .label { font-size: 12px; color: var(--muted); }
+  .big { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .big small { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .sub { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
+  .progress > div { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+  @media (prefers-reduced-motion: reduce) { .progress > div { transition: none; } }
+  .usage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; }
+  @media (max-width: 900px) { .usage { grid-template-columns: 1fr; } }
+  .usage-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th { text-align: right; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  .table-wrap { overflow-x: auto; }
+  .teachers { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  .teacher { display: flex; flex-direction: column; gap: 8px; min-height: 360px; }
+  .teacher-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .teacher-name { font-weight: 600; }
+  .status { font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 8px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+  .status.thinking { background: var(--teacher-soft); color: var(--teacher); border-color: transparent; }
+  .status.agent { background: var(--agent-soft); color: var(--agent); border-color: transparent; }
+  .status.reviewing { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); border-color: transparent; }
+  .status.error { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); border-color: transparent; }
+  .scenario { font-size: 12px; color: var(--muted); min-height: 2.9em; }
+  .turnbar { display: flex; gap: 3px; }
+  .turnbar span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .turnbar span.on { background: var(--accent); }
+  .chat { flex: 1; overflow-y: auto; max-height: 340px; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
+  .msg { max-width: 92%; border-radius: 10px; padding: 6px 10px; font-size: 13px; overflow-wrap: anywhere; }
+  .msg.teacher { align-self: flex-start; background: var(--teacher-soft); border-top-left-radius: 2px; }
+  .msg.agent { align-self: flex-end; background: var(--agent-soft); border-top-right-radius: 2px; }
+  .msg.note { align-self: center; background: none; color: var(--bad); font-size: 12px; }
+  .who { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1px; }
+  .msg.teacher .who { color: var(--teacher); }
+  .msg.agent .who { color: var(--agent); }
+  .typing { align-self: flex-start; font-size: 12px; color: var(--muted); font-style: italic; }
+  .typing.right { align-self: flex-end; }
+  .teacher-foot { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; font-variant-numeric: tabular-nums; }
+  .teacher-foot b { color: var(--fg); font-weight: 600; }
+  .finished { display: flex; flex-direction: column; gap: 6px; }
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+  summary { cursor: pointer; display: flex; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+  summary .meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rejected { margin: 8px 0 0; padding-left: 18px; font-size: 12px; color: var(--bad); }
+  .empty { color: var(--muted); font-style: italic; }
+  .error-line { color: var(--bad); font-size: 12px; }
+  .mono { font-family: var(--mono); font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="app" class="wrap"><p class="empty">Loading the trainer…</p></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const { useState, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+
+const fmtInt = (n) => (n ?? 0).toLocaleString();
+const fmtUsd = (n) => '$' + (n ?? 0).toFixed((n ?? 0) < 1 ? 4 : 2);
+const fmtTok = (n) => (n ?? 0) >= 1e6 ? ((n / 1e6).toFixed(2) + 'M') : (n ?? 0) >= 1e3 ? ((n / 1e3).toFixed(1) + 'k') : String(n ?? 0);
+const fmtDur = (s) => { s = Math.max(0, Math.round(s || 0)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60; return h ? `${h}h ${m}m` : m ? `${m}m ${r}s` : `${r}s`; };
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const STATUS = { idle: 'Idle', thinking: 'Teacher writing…', agent: 'Agent answering…', reviewing: 'Reviewing…', done: 'Done', stopped: 'Stopped', error: 'Error' };
+const sumUsage = (m) => Object.values(m || {}).reduce((a, u) => ({ calls: a.calls + u.calls, cost_usd: a.cost_usd + u.cost_usd }), { calls: 0, cost_usd: 0 });
+
+function useTrainerState() {
+  const [state, setState] = useState(null);
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    let alive = true, timer;
+    const tick = async () => {
+      try {
+        const r = await fetch('/api/state', { cache: 'no-store' });
+        if (!r.ok) throw new Error(r.status);
+        const s = await r.json();
+        if (alive) { setState(s); setOffline(false); }
+      } catch (e) { if (alive) setOffline(true); }
+      if (alive) timer = setTimeout(tick, 1000);
+    };
+    tick();
+    return () => { alive = false; clearTimeout(timer); };
+  }, []);
+  return [state, offline];
+}
+
+function Controls({ state, offline }) {
+  const saved = (() => { try { return JSON.parse(localStorage.getItem('trainer-config') || 'null'); } catch (e) { return null; } })();
+  const [cfg, setCfg] = useState(saved || { teachers: 4, turns: 10, conversations: 20, model: 'haiku', review: true });
+  const [error, setError] = useState(null);
+  const running = state && state.running;
+  const set = (k) => (e) => setCfg({ ...cfg, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'number' ? +e.target.value : e.target.value });
+  const start = async () => {
+    setError(null);
+    try { localStorage.setItem('trainer-config', JSON.stringify(cfg)); } catch (e) {}
+    const r = await fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error || 'Could not start training.'); }
+  };
+  const stop = () => fetch('/api/stop', { method: 'POST' });
+  const status = offline ? ['offline', 'Trainer not reachable'] : !state ? ['idle', 'Connecting'] : state.stopping ? ['stopping', 'Stopping after current turns'] : running ? ['running', 'Training'] : ['idle', 'Stopped'];
+  const elapsed = state && state.started_at ? (state.finished_at || state.now) - state.started_at : 0;
+  return html`
+    <section class="bar" aria-label="Training controls">
+      <div class="bar-left">
+        <h1>Agent Trainer</h1>
+        <span class=${'pill ' + status[0]}>${status[1]}</span>
+        ${state && state.started_at ? html`<span class="sub">${running ? 'Running for' : 'Last run took'} ${fmtDur(elapsed)}</span>` : null}
+      </div>
+      <div class="controls">
+        <label class="field" for="c-teachers">Teachers<input id="c-teachers" type="number" min="1" max="24" value=${cfg.teachers} onInput=${set('teachers')} disabled=${running} /></label>
+        <label class="field" for="c-turns">Turns per chat<input id="c-turns" type="number" min="2" max="30" value=${cfg.turns} onInput=${set('turns')} disabled=${running} /></label>
+        <label class="field" for="c-convs">Conversations<input id="c-convs" type="number" min="1" max="1000" value=${cfg.conversations} onInput=${set('conversations')} disabled=${running} /></label>
+        <label class="field" for="c-model">Model<select id="c-model" value=${cfg.model} onChange=${set('model')} disabled=${running}><option value="haiku">Haiku</option><option value="sonnet">Sonnet</option></select></label>
+        <label class="field check" for="c-review"><input id="c-review" type="checkbox" checked=${cfg.review} onChange=${set('review')} disabled=${running} />Review</label>
+        ${running
+          ? html`<button class="btn-stop" onClick=${stop} disabled=${state.stopping}>Stop</button>`
+          : html`<button class="btn-start" onClick=${start} disabled=${offline || !state}>Start training</button>`}
+      </div>
+      ${error ? html`<div class="error-line" role="alert">${error}</div>` : null}
+    </section>`;
+}
+
+function Summary({ s }) {
+  const done = s.completed, planned = s.planned;
+  const elapsed = s.started_at ? (s.finished_at || s.now) - s.started_at : 0;
+  const rate = elapsed > 0 ? done / elapsed : 0;
+  const eta = s.running && rate > 0 ? (planned - done) / rate : null;
+  const v = s.vault;
+  return html`
+    <section class="summary" aria-label="Progress">
+      <div class="card">
+        <div class="label">Conversations done</div>
+        <div class="big">${done} <small>of ${planned || '—'}</small></div>
+        <div class="progress" role="progressbar" aria-valuenow=${done} aria-valuemin="0" aria-valuemax=${planned}><div style=${{ width: pct(done, planned) + '%' }}></div></div>
+        <div class="sub">${eta != null ? 'About ' + fmtDur(eta) + ' left' : s.running ? 'Estimating…' : ' '}</div>
+      </div>
+      <div class="card">
+        <div class="label">Teacher messages understood</div>
+        <div class="big">${pct(s.understood, s.turns)}%</div>
+        <div class="sub">${fmtInt(s.understood)} of ${fmtInt(s.turns)} messages</div>
+      </div>
+      <div class="card">
+        <div class="label">Learned this run</div>
+        <div class="big">+${fmtInt(s.facts)} <small>facts</small></div>
+        <div class="sub">+${fmtInt(s.rules)} rules · ${fmtInt(s.rejected)} rejected by the reviewer</div>
+      </div>
+      <div class="card">
+        <div class="label">Vault now</div>
+        <div class="big">${fmtInt(v.facts)} <small>facts</small></div>
+        <div class="sub">${fmtInt(v.rules_confirmed)} rules confirmed · ${fmtInt(v.rules_hypothesis)} hypotheses · ${fmtInt(v.entities)} things</div>
+      </div>
+    </section>`;
+}
+
+function Usage({ s }) {
+  const run = s.run_usage, all = s.usage_total;
+  const elapsed = s.started_at ? (s.finished_at || s.now) - s.started_at : 0;
+  const perMin = elapsed > 30 ? (run.calls / elapsed) * 60 : null;
+  const perConv = s.completed ? run.cost_usd / s.completed : null;
+  const roles = Object.entries(s.usage || {});
+  return html`
+    <section class="card" aria-label="Claude usage">
+      <h2>Claude usage</h2>
+      <div class="usage" style=${{ marginTop: '8px' }}>
+        <div class="usage-figures">
+          <div><div class="label">This run</div><div class="big">${fmtUsd(run.cost_usd)}</div><div class="sub">${fmtInt(run.calls)} calls${run.errors ? ' · ' + run.errors + ' failed' : ''}</div></div>
+          <div><div class="label">Per conversation</div><div class="big">${perConv != null ? fmtUsd(perConv) : '—'}</div><div class="sub">${perMin != null ? perMin.toFixed(1) + ' calls / min' : ' '}</div></div>
+          <div><div class="label">Tokens this run</div><div class="big">${fmtTok(run.input_tokens + run.cache_write_tokens + run.cache_read_tokens)} <small>in</small></div><div class="sub">${fmtTok(run.output_tokens)} out</div></div>
+          <div><div class="label">Since the app started</div><div class="big">${fmtUsd(all.cost_usd)}</div><div class="sub">${fmtInt(all.calls)} calls</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Calls</th><th>Input</th><th>Cache write</th><th>Cache read</th><th>Output</th><th>Avg wait</th><th>Cost</th></tr></thead>
+            <tbody>
+              ${roles.length === 0 ? html`<tr><td colspan="8" class="empty">No calls yet. Usage appears here as soon as training starts.</td></tr>` : roles.map(([role, u]) => html`
+                <tr key=${role}>
+                  <td>${role}</td><td>${fmtInt(u.calls)}</td><td>${fmtTok(u.input_tokens)}</td><td>${fmtTok(u.cache_write_tokens)}</td>
+                  <td>${fmtTok(u.cache_read_tokens)}</td><td>${fmtTok(u.output_tokens)}</td><td>${u.calls ? (u.seconds / u.calls).toFixed(1) + 's' : '—'}</td><td>${fmtUsd(u.cost_usd)}</td>
+                </tr>`)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="sub" style=${{ margin: '8px 0 0' }}>Cost is what the Claude CLI reports per call (list price). On a subscription plan it counts toward your usage limit rather than being billed.</p>
+    </section>`;
+}
+
+function Chat({ t }) {
+  const ref = useRef(null);
+  const stick = useRef(true);
+  useEffect(() => { const el = ref.current; if (el && stick.current) el.scrollTop = el.scrollHeight; }, [t.transcript.length, t.status]);
+  const onScroll = () => { const el = ref.current; stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 40; };
+  return html`
+    <div class="chat" ref=${ref} onScroll=${onScroll} aria-live="polite">
+      ${t.transcript.length === 0 && t.status === 'idle' ? html`<p class="empty">Waiting for a conversation.</p>` : null}
+      ${t.transcript.map((m, i) => html`
+        <div key=${i} class=${'msg ' + m.role}>${m.role !== 'note' ? html`<span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>` : null}${m.text}</div>`)}
+      ${t.status === 'thinking' ? html`<div class="typing">Teacher is writing…</div>` : null}
+      ${t.status === 'agent' ? html`<div class="typing right">Agent is thinking…</div>` : null}
+      ${t.status === 'reviewing' ? html`<div class="typing">Reviewer is checking what was learned…</div>` : null}
+    </div>`;
+}
+
+function Teacher({ t }) {
+  const u = sumUsage(t.usage);
+  return html`
+    <article class="card teacher" aria-label=${'Teacher ' + (t.id + 1)}>
+      <div class="teacher-head">
+        <span class="teacher-name">Teacher ${t.id + 1}${t.conversation ? html` <span class="sub">· chat #${t.conversation}</span>` : null}</span>
+        <span class=${'status ' + t.status}>${STATUS[t.status] || t.status}</span>
+      </div>
+      <div class="scenario">${t.scenario || ' '}</div>
+      <div class="turnbar" aria-label=${'Turn ' + t.turn + ' of ' + t.turns_max}>${Array.from({ length: t.turns_max || 0 }, (_, i) => html`<span key=${i} class=${i < t.turn ? 'on' : ''}></span>`)}</div>
+      <${Chat} t=${t} />
+      ${t.last_error ? html`<div class="error-line">${t.last_error}</div>` : null}
+      <div class="teacher-foot">
+        <span><b>${t.done}</b> chats</span><span><b>+${t.facts}</b> facts</span><span><b>+${t.rules}</b> rules</span>
+        <span><b>${t.rejected}</b> rejected</span><span><b>${fmtUsd(u.cost_usd)}</b> · ${u.calls} calls</span>
+      </div>
+    </article>`;
+}
+
+function Finished({ list }) {
+  if (!list.length) return html`<p class="empty">Finished conversations appear here.</p>`;
+  return html`<div class="finished">${list.map((f) => html`
+    <details key=${f.teacher + '-' + f.conversation + '-' + f.at}>
+      <summary>
+        <span>#${f.conversation} · ${f.scenario}</span>
+        <span class="meta">Teacher ${f.teacher + 1} · ${f.turns} turns · ${pct(f.understood, f.turns)}% understood · +${f.facts} facts · +${f.rules} rules · ${f.rejected.length} rejected</span>
+      </summary>
+      <div class="chat" style=${{ maxHeight: 'none', marginTop: '8px' }}>
+        ${f.transcript.map((m, i) => html`<div key=${i} class=${'msg ' + m.role}><span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>${m.text}</div>`)}
+      </div>
+      ${f.rejected.length ? html`<ul class="rejected">${f.rejected.map((r, i) => html`<li key=${i}>${r}</li>`)}</ul>` : null}
+    </details>`)}</div>`;
+}
+
+function App() {
+  const [state, offline] = useTrainerState();
+  return html`
+    <${Controls} state=${state} offline=${offline} />
+    ${state ? html`
+      <${Summary} s=${state} />
+      <${Usage} s=${state} />
+      <section aria-label="Teachers">
+        <h2 style=${{ marginBottom: '8px' }}>Teachers</h2>
+        ${state.teachers.length ? html`<div class="teachers">${state.teachers.map((t) => html`<${Teacher} key=${t.id} t=${t} />`)}</div>`
+          : html`<p class="empty">No training yet. Choose how many teachers and conversations, then press Start training. Each teacher holds small everyday conversations with the agent (${state.scenarios} situations) and teaches it when it can't help.</p>`}
+      </section>
+      <section aria-label="Finished conversations">
+        <h2 style=${{ marginBottom: '8px' }}>Finished conversations</h2>
+        <${Finished} list=${state.finished} />
+      </section>
+      <p class="sub">Vault: <span class="mono">${state.vault_path}</span></p>` : null}`;
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(html`<${App} />`);
+</script>
+</body>
+</html>

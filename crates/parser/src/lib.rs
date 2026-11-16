@@ -4,6 +4,7 @@
 //! The output format is specified in `docs/parser_spec.md`. The [`Parser`]
 //! trait lets an LLM translator be plugged in later.
 
+pub mod claude;
 pub mod lexicon;
 pub mod llm;
 mod words;

@@ -309,7 +309,7 @@ fn teacher_prompt(topic: &str, transcript: &[(String, String)]) -> String {
     )
 }
 
-fn review_and_fix(
+pub(crate) fn review_and_fix(
     agent: &mut Agent,
     lock: &std::sync::Mutex<()>,
     new_facts: &[GroundAtom],
@@ -331,7 +331,7 @@ fn review_and_fix(
          exceptions.\n\n{listing}\nFor every number, output one line 'N: OK' or 'N: WRONG <short reason>'. Mark WRONG \
          only if false for typical cases or garbled into a different meaning."
     );
-    let Ok(verdicts) = claude(&prompt, model) else { return };
+    let Ok(verdicts) = crate::claude_as("reviewer", &prompt, model) else { return };
     let _g = lock.lock().unwrap();
     let _ = agent.reload_if_edited();
     let now = agent.now();

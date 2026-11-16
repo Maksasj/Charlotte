@@ -10,7 +10,6 @@ use sla_core::{parse_atom, parse_query, parse_rule, Atom, Rule, Term, Value};
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
 
 const SPEC: &str = include_str!("../../../docs/parser_spec.md");
 
@@ -194,19 +193,8 @@ impl LlmTranslator {
             ctx.speaker, ctx.speaker
         );
         self.calls += 1;
-        let out = Command::new("claude")
-            .args(["-p", "--model", &self.model])
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()
-            .and_then(|mut c| {
-                c.stdin.take().unwrap().write_all(prompt.as_bytes())?;
-                c.wait_with_output()
-            });
-        let Ok(out) = out else { return Vec::new() };
-        String::from_utf8_lossy(&out.stdout)
-            .lines()
+        let Ok(out) = crate::claude::call("translator", &self.model, &prompt) else { return Vec::new() };
+        out.lines()
             .map(|l| l.trim().trim_matches('`').trim().to_string())
             .filter(|l| from_canonical(l).map_or(false, |i| acceptable(&i)))
             .collect()
