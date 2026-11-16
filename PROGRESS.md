@@ -4,7 +4,21 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 10: synthetic teaching and evaluation** (milestones 1-9 pass and are committed).
+**First run done**: milestones 1-10 pass their acceptance tests and the
+evaluation baseline is recorded. Next: milestone 11 (optional) and the
+conversation-quality issues listed under *Baseline* below.
+
+## How to run
+
+From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
+
+- chat: `cargo run --release -p sla_agent --bin sla` (`-- --vault DIR`, `--script FILE`);
+  commands `:facts`, `:rules`, `:log`, `:reload`, `:demo ...`, `:quit`
+- all tests: `cargo test`
+- full evaluation, appends a row to `eval/history.csv` and writes
+  `eval/last_report.md`: `cargo run --release -p sla_eval`
+  (`--no-claude` for the fixed tests only; `--judges N`, `--turns N`,
+  `--teacher-questions N`, `--model M`, `--notes TEXT`)
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -21,7 +35,34 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 7 | Learner: pattern counting | passing, committed | `crates/learner/tests/mornings.rs`: hypothesis after 5 mornings, conf drops after a counterexample; promotion at 20 cases; rejection |
 | 8 | Corrections and demonstrations | passing, committed | `crates/learner/tests/corrections.rs` over `data/synthetic/corrections/cases.md` (10 cases: right rule changes, nothing else lost); demo rules; agent conversation test |
 | 9 | Curiosity drive | passing, committed | `crates/agent/tests/curiosity.rs`: asks about a stated contradiction and an unconfirmed hypothesis; gap questions; daily cap; asked-memory across restarts |
-| 10 | Synthetic teaching and evaluation | not started | - |
+| 10 | Synthetic teaching and evaluation | passing, committed | `crates/eval/tests/one_command.rs`; `cargo run --release -p sla_eval` appended the baseline row |
+
+## Baseline (2026-11-16, commit e16d620)
+
+| Score | Dev | Held-out |
+|---|---|---|
+| Parser exact accuracy | 100% (200/200) | 98% (98/100) |
+| Teaching-dialogue checks | 96/96 | 45/47 |
+| Knowledge score (checks + facts + rules) | 100% | 97.8% |
+| Conversation quality (3 Haiku judges, 6 turns) | 3.33 / 10 (scores 2, 3, 5) | |
+
+Judges' main complaints, to work on next (watch the trend, not single scores):
+- long compound sentences ("X, and she is a teacher at a school near my office")
+  are not understood; only short sentence patterns work (a known limit in DESIGN.md);
+- "I already knew that" when the user repeats a fact sounds odd in conversation;
+- failure replies rotate wording for the same input, which reads as inconsistent;
+- multi-word possessives get mangled ("Anna's cat Mia is a nice pet");
+- "lives in" is echoed back as "is in".
+
+Live teacher phase: the baseline run asked 0 questions. Two causes: (1) in scripted
+dialogues the agent asked its curiosity questions in chat and the scripted next line
+ignored them (fixed: no in-chat questions during scripted dialogues); (2) the
+dialogues are small worlds that rarely leave a gap or pattern open (partly addressed:
+named subjects now form a category for gap questions). A third bug showed up: the
+teacher's "I don't know." was stored as `-know(maksim)`; "I don't know" / "no idea"
+are now non-answers. After the fixes the live run asked 1 question and learned
+nothing false (row 3 of `eval/history.csv`). Richer dialogues are needed for this
+metric to mean much.
 
 ## Layout
 
@@ -33,7 +74,7 @@ crates/learner   sla_learner   pattern-counting learner (hypothesis rules, confi
 crates/nlg       sla_nlg       reply generator: acts -> English, aggregation, pronouns, why-from-proof
 crates/parser    sla_parser    pattern parser (intents + Datalog slots), `Parser` trait
 crates/agent     sla_agent     Agent (respond loop), module router, `sla` CLI binary
-crates/eval      sla_eval      (placeholder)
+crates/eval      sla_eval      evaluation: parser sets, teaching dialogues, Claude teachers, Haiku judges, history.csv
 crates/core/assets/core/   built-in ontology + core rules, copied into vault/core on first open
 vault/  data/synthetic/  eval/
 ```
@@ -133,6 +174,17 @@ vault/  data/synthetic/  eval/
   singular verb and not a function word ("Pingu is", "Tweety flies").
 - Parser: a single capitalized word after "is" is an adjective ("Anna is British"
   -> `property(anna, quality, british)`); dev and held-out scores unchanged.
+
+- **Evaluation**: knowledge tests are exact and repeatable (parser sets, 18
+  teaching dialogues written by a teacher sub-agent from `docs/dialogue_format.md`).
+  Held-out failures are reported only as counts. Live Claude teachers answer the
+  agent's curiosity questions from each dialogue's ground truth only; a teacher
+  answer counts as consistent if what the agent learned does not contradict that
+  truth. Haiku judges role-play a user for N turns, then score 1-10 with a reason;
+  transcripts are in `eval/reports/`.
+- **Agent conversation handling** added for the judges: messages with several
+  sentences are handled one by one, "he/she/it/they" refer to the last entity
+  talked about, "Hi, I'm Maksim" is a greeting, "likes to eat X" -> `likes(_, X)`.
 
 ## Problems
 

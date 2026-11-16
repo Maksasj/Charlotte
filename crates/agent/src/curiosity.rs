@@ -104,6 +104,19 @@ impl Curiosity {
         for g in m.facts_of("person") {
             cats.entry(Value::sym("person")).or_default().insert(g.args[0].clone());
         }
+        // Named things the user talks about (subjects of facts) form a category too:
+        // if most named subjects have a job, the one without is a gap.
+        let subjects: BTreeSet<Value> = m
+            .all_facts()
+            .into_iter()
+            .filter(|g| !matches!(g.base_pred(), "proper_name" | "thing" | "same" | "is_a" | "person" | "place"))
+            .filter_map(|g| g.args.first().cloned())
+            .collect();
+        for g in m.facts_of("proper_name") {
+            if subjects.contains(&g.args[0]) {
+                cats.entry(Value::sym("named things")).or_default().insert(g.args[0].clone());
+            }
+        }
         // (entity, gap key) present
         let mut has: BTreeSet<(Value, String)> = BTreeSet::new();
         for p in GAP_PREDS {

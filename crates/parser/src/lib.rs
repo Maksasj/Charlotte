@@ -170,6 +170,10 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
     if NO.contains(&joined.as_str()) {
         return Intent::No;
     }
+    // "I don't know" is a non-answer, never a fact.
+    if DONT_KNOW.contains(&joined.as_str()) {
+        return Intent::Unknown;
+    }
     if WRONG.contains(&joined.as_str()) {
         return Intent::Correct(Vec::new());
     }
@@ -902,6 +906,8 @@ mod tests {
             ("Hello!", "greet:"),
             ("goodbye", "bye:"),
             ("asdf", "unknown:"),
+            ("I don't know.", "unknown:"),
+            ("No idea", "unknown:"),
             ("If someone is a doctor, then they are a person.", "tell: is_a(A, person) :- is_a(A, doctor)."),
             ("If something is a bird then it flies.", "tell: fly(A) :- is_a(A, bird)."),
             ("If someone likes coffee then they drink coffee.", "tell: drink(A, coffee) :- likes(A, coffee)."),

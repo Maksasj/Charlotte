@@ -373,6 +373,8 @@ impl Agent {
             Intent::Yes | Intent::No => self.answer_pending(pending, matches!(intent, Intent::Yes)),
             Intent::Greet => self.say(Act::Greet),
             Intent::Bye => self.say(Act::Bye),
+            // A non-answer to the agent's own question: let it go.
+            Intent::Unknown if pending.is_some() => self.say(Act::Note("Okay, never mind.".into())),
             Intent::Unknown => self.say(Act::NotUnderstood),
         }
     }

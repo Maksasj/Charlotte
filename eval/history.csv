@@ -1,0 +1,4 @@
+timestamp,commit,parser_dev,parser_held_out,dialogue_checks_dev,dialogue_checks_held_out,knowledge_dev,knowledge_held_out,teacher_questions,teacher_consistent,conversation_score,judges,notes
+2026-11-16T19:06:24,e16d620,1.000,0.980,96/96,45/47,1.000,0.978,0,0,3.33,3,first-run baseline
+2026-11-16T19:08:04,e16d620,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,teacher phase check after ask_in_chat fix
+2026-11-16T19:09:35,e16d620,1.000,0.980,96/96,45/47,1.000,0.978,1,1,,0,live teacher phase after fixes

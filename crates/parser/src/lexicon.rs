@@ -7,6 +7,11 @@ pub const YES: &[&str] = &[
     "yes it is", "indeed", "of course", "yes correct", "yes exactly", "absolutely", "that is true", "you are right", "yes please",
 ];
 pub const NO: &[&str] = &["no", "nope", "nah", "no it is not", "not really", "no thanks", "no thank you"];
+/// Non-answers to the agent's questions.
+pub const DONT_KNOW: &[&str] = &[
+    "i do not know", "i do not know yet", "i have no idea", "no idea", "not sure", "i am not sure", "i do not remember", "dunno",
+    "i can not say", "i do not know that",
+];
 pub const WRONG: &[&str] = &[
     "wrong", "that is wrong", "that is not right", "that is incorrect", "incorrect", "not true", "that is not true", "you are wrong",
     "that is false", "no that is wrong", "no that is not right", "that is not correct", "you are mistaken", "no wrong",

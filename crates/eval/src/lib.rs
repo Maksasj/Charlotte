@@ -167,6 +167,9 @@ pub fn run_dialogue(d: &Dialogue, teacher: Option<&mut dyn Teacher>, teacher_que
             return res;
         }
     };
+    // Scripted lines don't answer questions, so the agent keeps its curiosity
+    // questions for the teacher phase instead of asking them in chat.
+    agent.ask_in_chat = false;
     let mut t = Timestamp::from_ymd_hms(2026, 1, 5, 9, 0, 0);
     for (msg, check) in &d.script {
         t = t.plus_secs(60);
