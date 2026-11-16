@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/reasoner",
+    "crates/learner",
+    "crates/nlg",
+    "crates/parser",
+    "crates/agent",
+    "crates/eval",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"

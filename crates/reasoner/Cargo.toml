@@ -1,0 +1,7 @@
+[package]
+name = "sla_reasoner"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+sla_core = { path = "../core" }
