@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 9: curiosity drive** (milestones 1-8 pass and are committed).
+**Milestone 10: synthetic teaching and evaluation** (milestones 1-9 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -20,7 +20,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 6 | Agent loop | passing, committed | `crates/agent/tests/session.rs`: 10 facts + 2 rules taught, recalled after restart; history, corrections, hand edits |
 | 7 | Learner: pattern counting | passing, committed | `crates/learner/tests/mornings.rs`: hypothesis after 5 mornings, conf drops after a counterexample; promotion at 20 cases; rejection |
 | 8 | Corrections and demonstrations | passing, committed | `crates/learner/tests/corrections.rs` over `data/synthetic/corrections/cases.md` (10 cases: right rule changes, nothing else lost); demo rules; agent conversation test |
-| 9-10 | Curiosity, eval | not started | - |
+| 9 | Curiosity drive | passing, committed | `crates/agent/tests/curiosity.rs`: asks about a stated contradiction and an unconfirmed hypothesis; gap questions; daily cap; asked-memory across restarts |
+| 10 | Synthetic teaching and evaluation | not started | - |
 
 ## Layout
 
@@ -118,6 +119,20 @@ vault/  data/synthetic/  eval/
 - The correction test set (`data/synthetic/corrections/cases.md`) plays the teacher's
   part with exact expected outcomes; live Claude teacher sub-agents come with
   milestone 10.
+
+- **Curiosity**: goals are contradictions (1.0), hypotheses (0.5-0.9 by evidence) and
+  gaps (0.3-0.5: a category member lacks a predicate most peers have). The drive
+  level rises with open goals and drops on learning progress (more when the answer
+  was to its own question). A small HTN-style `plan` turns a goal into one question
+  and a `Pending` answer slot. Questions go to a `Teacher` (`Agent::ask_teacher`),
+  are appended to replies while chatting (cap 8/day), or start a conversation
+  (`Agent::proactive`, cap 3/day). Asked goals are logged and never asked twice.
+- Answering a contradiction question with one side ("Pingu does not fly") is
+  handled as a correction of the other side, so the rule gets refined.
+- A sentence-initial capitalized word counts as a proper name when followed by a
+  singular verb and not a function word ("Pingu is", "Tweety flies").
+- Parser: a single capitalized word after "is" is an adjective ("Anna is British"
+  -> `property(anna, quality, british)`); dev and held-out scores unchanged.
 
 ## Problems
 

@@ -15,7 +15,10 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
+pub mod curiosity;
 pub mod router;
+
+use curiosity::{Curiosity, Teacher};
 
 /// Something the agent asked and is waiting for an answer to.
 #[derive(Debug, Clone, PartialEq)]
@@ -43,6 +46,9 @@ pub struct Agent {
     /// Source label for facts from this conversation partner.
     pub source: String,
     pub learner: Learner,
+    pub curiosity: Curiosity,
+    /// Add curiosity questions to replies while chatting.
+    pub ask_in_chat: bool,
     /// What the learner did after the last message.
     pub last_learn: LearnReport,
     vault_stamp: u64,
@@ -82,11 +88,21 @@ impl Agent {
             clock: None,
             source: "user".into(),
             learner: Learner::default(),
+            curiosity: Curiosity::default(),
+            ask_in_chat: true,
             last_learn: LearnReport::default(),
             vault_stamp: 0,
         };
         a.vault_stamp = vault_fingerprint(&a.kb.vault.root);
         a.refresh_names();
+        // Questions asked in earlier sessions are not asked again.
+        if let Ok(log) = a.kb.vault.read_log() {
+            for (_, action, subject, _) in log {
+                if action == "ask" || action == "proactive" {
+                    a.curiosity.asked.insert(subject);
+                }
+            }
+        }
         Ok(a)
     }
 
@@ -169,11 +185,79 @@ impl Agent {
         self.learn_names(text);
         self.refresh_names();
         let intent = self.parser.parse(text, &self.ctx);
-        let reply = self.handle(intent);
+        let was_pending = self.pending.is_some();
+        let facts_before = self.kb.all_facts().len();
+        let mut reply = self.handle(intent);
         self.refresh_names();
+        // Learning progress lowers curiosity; answering its question lowers it most.
+        let learned = self.kb.all_facts().len() > facts_before;
+        if learned {
+            self.curiosity.reward(if was_pending { 0.3 } else { 0.05 });
+        }
+        if self.ask_in_chat && self.pending.is_none() && reply.intent != "ask" {
+            if let Some((q, key)) = self.next_question(self.curiosity.chat_cap, "ask") {
+                reply.text = format!("{} {q}", reply.text);
+                self.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
+            }
+        }
         let _ = self.save();
         self.kb.log_change(self.now(), "turn", text, &reply.text);
         reply
+    }
+
+    /// Questions logged today under `action`.
+    fn asked_today(&self, action: &str) -> usize {
+        let today = self.now().to_string()[..10].to_string();
+        self.kb
+            .vault
+            .read_log()
+            .map(|l| l.iter().filter(|(t, a, _, _)| a == action && t.starts_with(&today)).count())
+            .unwrap_or(0)
+    }
+
+    /// Pick the best curiosity goal (if the drive is high enough and the daily
+    /// cap allows), plan it into a question and set it as pending.
+    /// Returns (question text, goal key).
+    fn next_question(&mut self, cap: usize, action: &str) -> Option<(String, String)> {
+        let m = self.model(false);
+        let goals = self.curiosity.goals(&self.kb, &m);
+        self.curiosity.update(&goals);
+        if !self.curiosity.wants_to_ask(&goals) || self.asked_today(action) >= cap {
+            return None;
+        }
+        let g = goals.into_iter().next()?;
+        let key = g.goal.key();
+        let (act, pending) = curiosity::plan(&g.goal);
+        self.curiosity.asked.insert(key.clone());
+        self.pending = Some(pending);
+        Some((self.say(act).text, key))
+    }
+
+    /// Ask the teacher the most useful question and learn from the answer.
+    /// Returns (question, answer, the agent's reply), or `None` if nothing to ask.
+    pub fn ask_teacher(&mut self, teacher: &mut dyn Teacher) -> Option<(String, String, Reply)> {
+        let saved = self.curiosity.level;
+        self.curiosity.level = 1.0; // asked explicitly: ignore the drive level
+        let q = self.next_question(usize::MAX, "ask");
+        if q.is_none() {
+            self.curiosity.level = saved;
+        }
+        let (question, key) = q?;
+        self.kb.log_change(self.now(), "ask", &key, "question for the teacher");
+        let answer = teacher.answer(&question);
+        let was_ask = self.ask_in_chat;
+        self.ask_in_chat = false;
+        let reply = self.respond(&answer);
+        self.ask_in_chat = was_ask;
+        Some((question, answer, reply))
+    }
+
+    /// A message the agent starts by itself, at most `proactive_cap` per day.
+    pub fn proactive(&mut self) -> Option<Reply> {
+        let cap = self.curiosity.proactive_cap;
+        let (q, key) = self.next_question(cap, "proactive")?;
+        self.kb.log_change(self.now(), "proactive", &key, "curiosity");
+        Some(Reply { text: q, intent: "ask", claims: Vec::new() })
     }
 
     fn say(&self, act: Act) -> Reply {
@@ -184,6 +268,13 @@ impl Agent {
         let pending = self.pending.take();
         match intent {
             Intent::Tell { facts, rules, past } => {
+                // The answer to "which one is true?" settles the contradiction:
+                // the side the user states is kept, the other is made false.
+                if let Some(Pending::Contradiction(a, b)) = &pending {
+                    if facts.iter().any(|f| f.to_ground().map_or(false, |g| &g == a || &g == b)) {
+                        return self.correct(facts);
+                    }
+                }
                 // An answer to "What does Bob like?" arrives as a statement.
                 self.tell(facts, rules, past)
             }
@@ -484,8 +575,7 @@ impl Agent {
             Some(Pending::Contradiction(a, b)) => {
                 // "yes" keeps the first, "no" the second.
                 let keep = if yes { a } else { b };
-                self.kb.assert_fact(Fact::new(keep.clone(), &self.source), now, "resolved a contradiction");
-                self.say(Act::Acknowledge { added: vec![keep], closed: vec![], known: vec![], rules: vec![], past: false })
+                self.correct(vec![keep.to_atom()])
             }
             Some(Pending::Wh(_)) | None => self.say(Act::Note(if yes { "Good.".into() } else { "Okay.".into() })),
         }
@@ -515,6 +605,14 @@ pub fn sym(s: &str) -> Term {
     Term::Val(Value::sym(s))
 }
 
+/// Words that start sentences without being names.
+const FUNCTION_WORDS: &[&str] = &[
+    "the", "a", "an", "if", "is", "are", "do", "does", "did", "what", "who", "where", "why", "how", "when", "which", "my", "your", "yes", "no",
+    "hello", "hi", "hey", "well", "ok", "okay", "so", "um", "actually", "that", "this", "these", "those", "there", "it", "he", "she", "they",
+    "we", "you", "every", "all", "some", "each", "tell", "please", "thanks", "good", "bye", "nobody", "everyone", "someone", "something",
+    "nothing", "everything", "people", "today", "now", "then", "also", "but", "and", "or", "maybe",
+];
+
 /// Capitalized words that are not the first word of a sentence, joined when
 /// adjacent ("New York" -> new_york). "I" and its contractions are skipped.
 pub fn proper_names(text: &str) -> Vec<String> {
@@ -530,14 +628,26 @@ pub fn proper_names(text: &str) -> Vec<String> {
             current.clear();
         }
     };
-    for raw in text.split_whitespace() {
+    let words: Vec<&str> = text.split_whitespace().collect();
+    for (i, raw) in words.iter().enumerate() {
+        let raw = *raw;
         let ends_sentence = raw.ends_with(['.', '!', '?']);
         let breaks = ends_sentence || raw.ends_with([',', ';', ':']);
         let w = raw.trim_matches(|c: char| !c.is_alphanumeric() && c != '\'');
         let w = w.strip_suffix("'s").unwrap_or(w).trim_matches('\'');
         let is_i = w == "I" || w.starts_with("I'");
         let cap = w.chars().next().map_or(false, |c| c.is_uppercase()) && w.chars().skip(1).all(|c| c.is_lowercase() || c == '-');
-        if cap && !is_i && !sentence_start && w.len() > 1 {
+        // At the start of a sentence a capital proves nothing, unless the word is
+        // followed by a singular verb and is not a common function word ("Pingu is", "Tweety flies").
+        let initial_name = sentence_start && cap && !breaks && {
+            let lw = w.to_lowercase();
+            let next = words.get(i + 1).map(|n| n.trim_matches(|c: char| !c.is_alphanumeric() && c != '\'').to_lowercase()).unwrap_or_default();
+            !FUNCTION_WORDS.contains(&lw.as_str())
+                && !(lw.ends_with('s') && matches!(next.as_str(), "are" | "were" | "have"))
+                && (matches!(next.as_str(), "is" | "was" | "has" | "doesn't" | "does" | "isn't" | "and")
+                    || (next.ends_with('s') && !next.ends_with("ss") && next.len() > 2))
+        };
+        if cap && !is_i && (!sentence_start || initial_name) && w.len() > 1 {
             current.push(w.to_lowercase());
         } else {
             flush(&mut current, &mut out);
@@ -555,7 +665,8 @@ pub fn proper_names(text: &str) -> Vec<String> {
 mod tests {
     #[test]
     fn names() {
-        assert_eq!(super::proper_names("Anna lives in New York. Is Rex a dog? I'm Maksim"), vec!["new_york", "rex", "maksim"]);
+        assert_eq!(super::proper_names("Anna lives in New York. Is Rex a dog? I'm Maksim"), vec!["anna", "new_york", "rex", "maksim"]);
+        assert_eq!(super::proper_names("Pingu doesn't fly. Tweety flies. Dogs are animals. The car is red. If it rains"), vec!["pingu", "tweety"]);
         assert!(super::proper_names("Hello there.").is_empty());
     }
 }
