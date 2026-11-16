@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Learning Live</title>
+<style>
+  /* Layout: counters on top, growth chart, then the conversation feed beside the learning events. */
+  :root {
+    --bg: #f6f7f4; --panel: #ffffff; --fg: #1d2420; --muted: #5f6b64; --line: #dde2dc;
+    --accent: #2f6f5e; --accent-2: #b5651d; --learn: #2f7d4f; --close: #8a8f8b; --rule: #2d5f9a; --reject: #b23b3b;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131715; --panel: #1b201d; --fg: #e6ebe7; --muted: #9aa69f; --line: #2c332f;
+      --accent: #63b39a; --accent-2: #e09a5a; --learn: #6cc08b; --close: #7d847f; --rule: #7aa7e0; --reject: #e07a7a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131715; --panel: #1b201d; --fg: #e6ebe7; --muted: #9aa69f; --line: #2c332f;
+    --accent: #63b39a; --accent-2: #e09a5a; --learn: #6cc08b; --close: #7d847f; --rule: #7aa7e0; --reject: #e07a7a;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--sans); }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-left)) 40px; display: flex; flex-direction: column; gap: 18px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  h2 { margin: 0 0 8px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .status { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--learn); }
+  .dot.stale { background: var(--reject); }
+  @media (prefers-reduced-motion: no-preference) { .dot.pulse { animation: pulse 0.8s ease-out; } }
+  @keyframes pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--learn) 60%, transparent); } to { box-shadow: 0 0 0 10px transparent; } }
+  button { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .counters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .counter { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .counter .label { font-size: 12px; color: var(--muted); }
+  .counter .value { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .counter .sub { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
+  canvas { width: 100%; display: block; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 12px; height: 3px; margin-right: 5px; vertical-align: middle; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+  .feed { display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+  .turn { border-left: 3px solid var(--accent); padding: 4px 0 4px 10px; }
+  .turn .time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .turn .msg { margin: 2px 0; }
+  .turn .reply { color: var(--muted); }
+  .turn .reply::before { content: "Agent: "; color: var(--accent); font-weight: 600; }
+  .turn .msg::before { content: "Teacher: "; color: var(--accent-2); font-weight: 600; }
+  .events { display: flex; flex-direction: column; gap: 4px; max-height: 70vh; overflow-y: auto; font-size: 13px; }
+  .ev { display: grid; grid-template-columns: 52px 92px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 2px 0; border-bottom: 1px solid var(--line); }
+  .ev .t { color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .ev .k { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ev code { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+  .ev .why { display: block; color: var(--muted); font-size: 12px; }
+  .k.learn { color: var(--learn); } .k.close { color: var(--close); } .k.rule { color: var(--rule); } .k.reject { color: var(--reject); } .k.other { color: var(--muted); }
+  .filters { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .filters label { display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+  .empty { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Agent learning, live</h1>
+    <div class="status"><span class="dot" id="dot"></span><span id="status">Connecting…</span><button id="pause" type="button">Pause</button></div>
+  </header>
+
+  <section class="counters" aria-label="Current totals">
+    <div class="counter"><div class="label">Facts believed now</div><div class="value" id="c-facts">—</div><div class="sub" id="c-facts-sub">—</div></div>
+    <div class="counter"><div class="label">Rules</div><div class="value" id="c-rules">—</div><div class="sub" id="c-rules-sub">—</div></div>
+    <div class="counter"><div class="label">Things it knows about</div><div class="value" id="c-entities">—</div><div class="sub">entity files in the vault</div></div>
+    <div class="counter"><div class="label">Messages, last 5 minutes</div><div class="value" id="c-rate">—</div><div class="sub" id="c-rate-sub">—</div></div>
+  </section>
+
+  <section class="panel" aria-label="Growth over time">
+    <h2>Growth</h2>
+    <div class="legend"><span><i style="background: var(--learn)"></i>Facts (added minus closed)</span><span><i style="background: var(--rule)"></i>Rules created</span><span><i style="background: var(--reject)"></i>Rules rejected</span><span><i style="background: var(--line); height: 8px"></i>Messages per minute</span></div>
+    <canvas id="growth" height="220" role="img" aria-label="Facts and rules over time, with messages per minute"></canvas>
+  </section>
+
+  <div class="cols">
+    <section class="panel" aria-label="Conversation feed">
+      <h2>Conversation feed</h2>
+      <div class="feed" id="feed"><p class="empty">Waiting for messages…</p></div>
+    </section>
+    <section class="panel" aria-label="Learning events">
+      <h2>What it learned</h2>
+      <div class="filters" id="filters">
+        <label><input type="checkbox" id="f-learn" data-k="learn" checked>Facts</label>
+        <label><input type="checkbox" id="f-rule" data-k="rule" checked>Rules</label>
+        <label><input type="checkbox" id="f-reject" data-k="reject" checked>Rejections</label>
+        <label><input type="checkbox" id="f-close" data-k="close" checked>Closed facts</label>
+        <label><input type="checkbox" id="f-other" data-k="other">Confirmations</label>
+      </div>
+      <div class="events" id="events"><p class="empty">Waiting for events…</p></div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const KINDS = {
+    add: ['learn', 'Learned'], close: ['close', 'Closed'], add_rule: ['rule', 'New rule'], propose_rule: ['rule', 'Pattern'],
+    demo_rule: ['rule', 'Demo rule'], update_demo_rule: ['rule', 'Demo rule'], refine_rule: ['rule', 'Refined'], promote_rule: ['rule', 'Promoted'],
+    confirm_rule: ['rule', 'Confirmed'], reject_rule: ['reject', 'Rejected'], demote_rule: ['reject', 'Demoted'], correction: ['reject', 'Corrected'],
+    confirm: ['other', 'Seen again'], rule_conf: ['other', 'Rule conf'], set_conf: ['other', 'Conf'], ask: ['other', 'Asked'], pretrain: ['other', 'Pretrain'],
+  };
+  const MAX_FEED = 150, MAX_EVENTS = 300;
+  let since = 0, paused = false, first = true, lastOk = 0;
+  const feed = document.getElementById('feed'), events = document.getElementById('events');
+  const show = { learn: true, rule: true, reject: true, close: true, other: false };
+
+  document.getElementById('pause').addEventListener('click', (e) => {
+    paused = !paused;
+    e.target.textContent = paused ? 'Resume' : 'Pause';
+  });
+  document.querySelectorAll('#filters input').forEach((cb) => cb.addEventListener('change', () => {
+    show[cb.dataset.k] = cb.checked;
+    events.querySelectorAll('.ev').forEach((el) => { el.hidden = !show[el.dataset.k]; });
+  }));
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const hhmm = (at) => (at.split('T')[1] || '').slice(0, 5);
+
+  function addTurn(e) {
+    if (feed.querySelector('.empty')) feed.replaceChildren();
+    const d = el('div', 'turn');
+    d.append(el('div', 'time', e.at.replace('T', ' ')), el('div', 'msg', e.subject), el('div', 'reply', e.reason));
+    feed.prepend(d);
+    while (feed.children.length > MAX_FEED) feed.lastChild.remove();
+  }
+  function addEvent(e) {
+    const [k, label] = KINDS[e.action] || ['other', e.action];
+    if (events.querySelector('.empty')) events.replaceChildren();
+    const row = el('div', 'ev'); row.dataset.k = k; row.hidden = !show[k];
+    const body = el('div');
+    body.append(el('code', null, e.subject));
+    if (e.reason && e.action !== 'add') body.append(el('span', 'why', e.reason));
+    row.append(el('span', 't', hhmm(e.at)), el('span', 'k ' + k, label), body);
+    events.prepend(row);
+    while (events.children.length > MAX_EVENTS) events.lastChild.remove();
+  }
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function drawGrowth(series) {
+    const c = document.getElementById('growth');
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = 220;
+    c.width = w * dpr; c.height = h * dpr;
+    const g = c.getContext('2d'); g.scale(dpr, dpr); g.clearRect(0, 0, w, h);
+    if (series.length < 2) { g.fillStyle = css('--muted'); g.font = '13px ' + css('--sans'); g.fillText('Not enough history yet.', 10, 24); return; }
+    const m = { l: 44, r: 44, t: 10, b: 24 };
+    const maxFacts = Math.max(...series.map((s) => s.facts), 1), maxRules = Math.max(...series.map((s) => s.rules), 1);
+    const maxTurns = Math.max(...series.map((s) => s.turns), 1);
+    const x = (i) => m.l + (i / (series.length - 1)) * (w - m.l - m.r);
+    const yF = (v) => h - m.b - (v / maxFacts) * (h - m.t - m.b);
+    const yR = (v) => h - m.b - (v / maxRules) * (h - m.t - m.b);
+    // Messages per minute as faint bars behind.
+    g.fillStyle = css('--line');
+    const bw = Math.max(1, (w - m.l - m.r) / series.length - 1);
+    series.forEach((s, i) => { const bh = (s.turns / maxTurns) * (h - m.t - m.b) * 0.5; g.fillRect(x(i) - bw / 2, h - m.b - bh, bw, bh); });
+    // Axes labels: facts left, rules right.
+    g.fillStyle = css('--muted'); g.font = '11px ' + css('--sans');
+    [0, 0.5, 1].forEach((f) => {
+      g.textAlign = 'right'; g.fillText(Math.round(maxFacts * f), m.l - 6, yF(maxFacts * f) + 4);
+      g.textAlign = 'left'; g.fillText(Math.round(maxRules * f), w - m.r + 6, yR(maxRules * f) + 4);
+      g.strokeStyle = css('--line'); g.beginPath(); g.moveTo(m.l, yF(maxFacts * f)); g.lineTo(w - m.r, yF(maxFacts * f)); g.stroke();
+    });
+    g.textAlign = 'left'; g.fillText(series[0].minute.replace('T', ' '), m.l, h - 6);
+    g.textAlign = 'right'; g.fillText(series[series.length - 1].minute.split('T')[1], w - m.r, h - 6);
+    const line = (key, y, color) => {
+      g.strokeStyle = color; g.lineWidth = 2; g.beginPath();
+      series.forEach((s, i) => (i ? g.lineTo(x(i), y(s[key])) : g.moveTo(x(i), y(s[key]))));
+      g.stroke();
+      const last = series[series.length - 1];
+      g.fillStyle = color; g.beginPath(); g.arc(x(series.length - 1), y(last[key]), 3.5, 0, Math.PI * 2); g.fill();
+    };
+    line('facts', yF, css('--learn'));
+    line('rules', yR, css('--rule'));
+    line('rejected', yR, css('--reject'));
+  }
+
+  function setCounters(d) {
+    const s = d.stats;
+    const facts = s.facts.teacher + s.facts.user + s.facts.other;
+    document.getElementById('c-facts').textContent = facts.toLocaleString();
+    document.getElementById('c-facts-sub').textContent = `${s.facts.teacher} from teachers, ${s.facts.user} from you, ${s.closed} closed`;
+    const r = s.rules;
+    document.getElementById('c-rules').textContent = (r.confirmed + r.hypothesis).toLocaleString();
+    document.getElementById('c-rules-sub').textContent = `${r.confirmed} confirmed, ${r.hypothesis} hypotheses, ${r.rejected} rejected`;
+    document.getElementById('c-entities').textContent = s.entities.toLocaleString();
+    const recent = d.growth.slice(-5);
+    const msgs = recent.reduce((a, b) => a + b.turns, 0);
+    document.getElementById('c-rate').textContent = msgs;
+    document.getElementById('c-rate-sub').textContent = recent.length ? `since ${recent[0].minute.split('T')[1]}` : 'no messages yet';
+  }
+
+  async function poll() {
+    if (!paused) {
+      try {
+        const res = await fetch('/api?since=' + since, { cache: 'no-store' });
+        const d = await res.json();
+        // First load: show only the recent part of the history.
+        const entries = first ? d.entries.slice(-200) : d.entries;
+        entries.forEach((e) => (e.action === 'turn' ? addTurn(e) : addEvent(e)));
+        since = d.total;
+        setCounters(d);
+        drawGrowth(d.growth);
+        lastOk = Date.now();
+        const dot = document.getElementById('dot');
+        dot.classList.remove('stale');
+        if (d.entries.length && !first) { dot.classList.remove('pulse'); void dot.offsetWidth; dot.classList.add('pulse'); }
+        document.getElementById('status').textContent = `Updated ${d.now} · ${d.total.toLocaleString()} log entries`;
+        first = false;
+      } catch (err) {
+        document.getElementById('dot').classList.add('stale');
+        document.getElementById('status').textContent = 'Lost connection to live.py. Is it still running?';
+      }
+    }
+    setTimeout(poll, 2000);
+  }
+  window.addEventListener('resize', () => { since = since; });
+  poll();
+</script>
+</body>
+</html>
