@@ -35,7 +35,11 @@ pub enum Act {
     /// Asked why, but the atom is not believed.
     ExplainUnknown(GroundAtom),
     /// Everything known about an entity.
-    Recall { entity: String, facts: Vec<GroundAtom> },
+    /// `more`: continuing an earlier recall ("what else?"); `instances` are
+    /// things of this kind (`is_a(x, entity)`), said as "Penguins and robins are birds."
+    Recall { entity: String, facts: Vec<GroundAtom>, instances: Vec<GroundAtom>, more: bool },
+    /// Nothing more to tell about an entity.
+    RecallDone(String),
     /// Acknowledge a tell: new facts, facts that ended, already-known facts, new rules.
     Acknowledge { added: Vec<GroundAtom>, closed: Vec<GroundAtom>, known: Vec<GroundAtom>, rules: Vec<Rule>, past: bool },
     /// Acknowledge a correction; `rules` are rules that were refined.
@@ -198,6 +202,26 @@ impl Realizer {
         } else {
             Person::Third
         }
+    }
+
+    /// Plural noun phrase for a kind ("penguins", "berries"); names stay as they are.
+    fn plural_np(&self, v: &Value) -> String {
+        let np = self.np(v);
+        if self.is_person(v) || v.as_sym().map_or(false, |s| self.names.contains(s)) || matches!(v, Value::Int(_)) {
+            return np;
+        }
+        let (head, last) = match np.rsplit_once(' ') {
+            Some((h, l)) => (format!("{h} "), l.to_string()),
+            None => (String::new(), np.clone()),
+        };
+        let pl = if last.ends_with('y') && !last.ends_with("ay") && !last.ends_with("ey") && !last.ends_with("oy") {
+            format!("{}ies", &last[..last.len() - 1])
+        } else if last.ends_with('s') || last.ends_with('x') || last.ends_with("ch") || last.ends_with("sh") {
+            format!("{last}es")
+        } else {
+            format!("{last}s")
+        };
+        format!("{head}{pl}")
     }
 
     /// Conjugate: (verb phrase with subject agreement, negation, tense).
@@ -703,15 +727,41 @@ impl Realizer {
                 ("explain", out.join(" "))
             }
             Act::ExplainUnknown(a) => ("explain", format!("I don't believe that {}, so I can't say why.", self.clause(a))),
-            Act::Recall { entity, facts } => {
+            Act::Recall { entity, facts, instances, more } => {
                 let name = self.np(&Value::sym(entity.as_str()));
-                if facts.is_empty() {
+                if facts.is_empty() && instances.is_empty() {
                     ("recall", format!("I don't know anything about {name} yet."))
                 } else {
                     claims.extend(facts.iter().cloned());
-                    let lead = ["Here is what I know about {n}:", "About {n}:", "This is what I know about {n}:"][self.pick(3)].replace("{n}", &name);
-                    ("recall", format!("{lead} {}", self.aggregate(facts, Tense::Present)))
+                    claims.extend(instances.iter().cloned());
+                    let lead = if *more {
+                        ["I also know this about {n}:", "And there is more about {n}:", "Something else about {n}:"][self.pick(3)]
+                    } else {
+                        ["Here is what I know about {n}:", "About {n}:", "This is what I know about {n}:"][self.pick(3)]
+                    }
+                    .replace("{n}", &name);
+                    let mut body = String::new();
+                    if !facts.is_empty() {
+                        body.push_str(&self.aggregate(facts, Tense::Present));
+                    }
+                    if !instances.is_empty() {
+                        let items: Vec<String> = instances.iter().map(|g| self.plural_np(&g.args[0])).collect();
+                        let sentence = if instances.len() == 1 && self.names.contains(instances[0].args[0].as_sym().unwrap_or("")) {
+                            format!("{} is {}.", capitalize(&items[0]), article(&self.np(&Value::sym(entity.as_str()))))
+                        } else {
+                            format!("{} are {}.", capitalize(&list(&items)), self.plural_np(&Value::sym(entity.as_str())))
+                        };
+                        if !body.is_empty() {
+                            body.push(' ');
+                        }
+                        body.push_str(&sentence);
+                    }
+                    ("recall", format!("{lead} {body}"))
                 }
+            }
+            Act::RecallDone(entity) => {
+                let name = self.np(&Value::sym(entity.as_str()));
+                ("recall", ["That's everything I know about {n} so far.", "That's all I know about {n} for now.", "I don't know anything else about {n} yet. You could teach me!"][self.pick(3)].replace("{n}", &name))
             }
             Act::Acknowledge { added, closed, known, rules, past } => {
                 let mut parts = Vec::new();

@@ -8,7 +8,7 @@ use sla_core::{Atom, AssertOutcome, Fact, GroundAtom, KnowledgeBase, Literal, Ru
 use sla_learner::corrections::{self, Change, Demonstration};
 use sla_learner::{LearnReport, Learner};
 use sla_nlg::{Act, Realizer, Reply, Truth};
-use sla_parser::{Context, Intent, Parser, PatternParser};
+use sla_parser::{Context, Intent, Parser, PatternParser, Social};
 use sla_reasoner::{evaluate_kb, Model};
 use std::collections::HashSet;
 use std::io;
@@ -46,6 +46,9 @@ pub struct Agent {
     /// Source label for facts from this conversation partner.
     pub source: String,
     pub learner: Learner,
+    /// Last recall (entity, items shown) for "what else?".
+    pub last_recall: Option<(String, usize)>,
+    small_talk_turn: usize,
     pub curiosity: Curiosity,
     /// Add curiosity questions to replies while chatting.
     pub ask_in_chat: bool,
@@ -88,6 +91,8 @@ impl Agent {
             clock: None,
             source: "user".into(),
             learner: Learner::default(),
+            last_recall: None,
+            small_talk_turn: 0,
             curiosity: Curiosity::default(),
             ask_in_chat: true,
             last_learn: LearnReport::default(),
@@ -345,18 +350,20 @@ impl Agent {
                 self.tell(facts, rules, past)
             }
             Intent::Ask { query, history } => self.ask(query, history),
-            Intent::Recall(e) => {
-                let m = self.model(false);
-                let mut facts: Vec<GroundAtom> = m
-                    .all_facts()
-                    .into_iter()
-                    .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(e.as_str()))
-                    .filter(|a| !matches!(a.base_pred(), "thing" | "same" | "proper_name"))
-                    .collect();
-                facts.truncate(15);
-                self.record_uses(&m, &facts);
-                self.say(Act::Recall { entity: e, facts })
+            Intent::Recall(e) => self.recall(e, 0),
+            Intent::RecallMore(target) => {
+                let last = self.last_recall.clone();
+                match (target, last) {
+                    (Some(e), Some((le, shown))) if e == le => self.recall(e, shown),
+                    (Some(e), _) => self.recall(e, 0),
+                    (None, Some((le, shown))) => self.recall(le, shown),
+                    (None, None) => match self.ctx.last_entity.clone() {
+                        Some(e) => self.recall(e, 0),
+                        None => self.say(Act::Note("What would you like to know more about?".into())),
+                    },
+                }
             }
+            Intent::Social(kind) => self.social(kind),
             Intent::Why(target) => {
                 let atom = match target.and_then(|a| a.to_ground()) {
                     Some(a) => Some(a),
@@ -396,6 +403,80 @@ impl Agent {
             Intent::Unknown if pending.is_some() => self.say(Act::Note("Okay, never mind.".into())),
             Intent::Unknown => self.say(Act::NotUnderstood),
         }
+    }
+
+    /// Everything known about `e`, `RECALL_PAGE` items at a time from `offset`.
+    /// Facts about `e` come first (kinds, parts, qualities, then the rest),
+    /// then things of kind `e` ("penguins and robins are birds").
+    fn recall(&mut self, e: String, offset: usize) -> Reply {
+        const RECALL_PAGE: usize = 8;
+        let m = self.model(false);
+        let rank = |p: &str| match p {
+            "is_a" => 0,
+            "has" | "part_of" => 1,
+            "property" | "feels" => 2,
+            "located_in" => 3,
+            _ => 4,
+        };
+        let mut about: Vec<GroundAtom> = m
+            .all_facts()
+            .into_iter()
+            .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(e.as_str()))
+            .filter(|a| !matches!(a.base_pred(), "thing" | "same" | "proper_name"))
+            .collect();
+        about.sort_by_key(|a| (rank(a.base_pred()), a.to_string()));
+        let mut instances: Vec<GroundAtom> = m
+            .facts_of("is_a")
+            .into_iter()
+            .filter(|a| a.args.get(1).and_then(|v| v.as_sym()) == Some(e.as_str()) && a.args[0] != a.args[1])
+            .collect();
+        instances.sort();
+        // One list: facts first, then instances; page through it.
+        let total = about.len() + instances.len();
+        if offset >= total && total > 0 {
+            self.last_recall = Some((e.clone(), offset));
+            return self.say(Act::RecallDone(e));
+        }
+        let end = (offset + RECALL_PAGE).min(total);
+        let facts: Vec<GroundAtom> = about.iter().skip(offset).take(end.saturating_sub(offset)).cloned().collect();
+        let inst_from = offset.saturating_sub(about.len());
+        let inst_take = end.saturating_sub(about.len().max(offset));
+        let inst: Vec<GroundAtom> = instances.iter().skip(inst_from).take(inst_take).cloned().collect();
+        self.record_uses(&m, &facts);
+        self.last_recall = Some((e.clone(), end));
+        self.last_answer = facts.first().or(inst.first()).cloned();
+        let mut reply = self.say(Act::Recall { entity: e, facts, instances: inst, more: offset > 0 });
+        if end < total {
+            reply.text.push_str(" Ask me \"what else?\" for more.");
+        }
+        reply
+    }
+
+    /// Friendly small talk, honest about what the agent is.
+    fn social(&mut self, kind: Social) -> Reply {
+        let now = self.now();
+        let facts = self.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count();
+        let rules = self.kb.rules(false).iter().filter(|r| r.module != "core").count();
+        self.small_talk_turn += 1;
+        let k = self.small_talk_turn;
+        let text = match kind {
+            Social::Thanks => ["You're welcome!", "Glad I could help.", "Any time!"][k % 3].to_string(),
+            Social::Reaction => [
+                "Yes! Tell me something new, or ask me a question.",
+                "I think so too. What else would you like to talk about?",
+                "Right. What else can you tell me?",
+            ][k % 3]
+                .to_string(),
+            Social::WhoAreYou => format!(
+                "I'm a small learning agent. I remember what you tell me, reason with it, and can explain why I believe things. \
+                 So far I know {facts} facts and {rules} rules."
+            ),
+            Social::WhatCanYouDo => "You can teach me facts (\"Dogs are animals.\"), ask me questions (\"What is a dog?\", \"What do you know about birds?\"), \
+                 ask \"Why?\" after an answer, and correct me (\"No, a whale is a mammal.\")."
+                .to_string(),
+            Social::AndYou => format!("I'm doing well, thanks. I've learned {facts} facts so far, and I'm always happy to learn more."),
+        };
+        self.say(Act::Note(text))
     }
 
     fn tell(&mut self, facts: Vec<Atom>, rules: Vec<Rule>, past: bool) -> Reply {

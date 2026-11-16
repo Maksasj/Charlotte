@@ -22,6 +22,10 @@ pub enum Intent {
     Ask { query: Vec<Literal>, history: bool },
     /// "What do you know about X?"
     Recall(String),
+    /// "What else do you know (about X)?", "Tell me more": continue the last recall.
+    RecallMore(Option<String>),
+    /// Everyday conversation: thanks, reactions, questions about the agent itself.
+    Social(Social),
     /// "Why ...?" about an atom, or the last answer if `None`.
     Why(Option<Atom>),
     /// A correction: the right statements (empty = "that's wrong").
@@ -58,6 +62,9 @@ impl Intent {
                 }
             }
             Intent::Recall(e) => format!("recall: {}", Value::sym(e.as_str())),
+            Intent::RecallMore(Some(e)) => format!("recall_more: {}", Value::sym(e.as_str())),
+            Intent::RecallMore(None) => "recall_more: last".into(),
+            Intent::Social(k) => format!("social: {}", k.name()),
             Intent::Why(None) => "why: last".into(),
             Intent::Why(Some(a)) => format!("why: {a}"),
             Intent::Correct(v) if v.is_empty() => "correct: none".into(),
@@ -76,6 +83,8 @@ impl Intent {
             Intent::Tell { .. } => "tell",
             Intent::Ask { .. } => "ask",
             Intent::Recall(_) => "recall",
+            Intent::RecallMore(_) => "recall_more",
+            Intent::Social(_) => "social",
             Intent::Why(_) => "why",
             Intent::Correct(_) => "correct",
             Intent::Yes => "yes",
@@ -84,6 +93,33 @@ impl Intent {
             Intent::HowAreYou => "how_are_you",
             Intent::Bye => "bye",
             Intent::Unknown => "unknown",
+        }
+    }
+}
+
+/// Small-talk moves between friends.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Social {
+    /// "thanks", "thank you"
+    Thanks,
+    /// "cool", "nice", "really?", "I see"
+    Reaction,
+    /// "who are you?", "what is your name?"
+    WhoAreYou,
+    /// "what can you do?", "how do you work?"
+    WhatCanYouDo,
+    /// "and you?", "how about you?"
+    AndYou,
+}
+
+impl Social {
+    pub fn name(self) -> &'static str {
+        match self {
+            Social::Thanks => "thanks",
+            Social::Reaction => "reaction",
+            Social::WhoAreYou => "who_are_you",
+            Social::WhatCanYouDo => "what_can_you_do",
+            Social::AndYou => "and_you",
         }
     }
 }
@@ -137,6 +173,25 @@ fn tok(w: &str) -> Tok {
 /// Parse one message.
 pub fn parse(text: &str, ctx: &Context) -> Intent {
     let (mut toks, question) = tokenize(text);
+    {
+        let raw: Vec<&str> = toks.iter().map(|t| t.w.as_str()).filter(|w| *w != ",").collect();
+        let raw = raw.join(" ");
+        let raw = raw.trim_start_matches("oh ").trim_start_matches("well ");
+        for (list, kind) in [
+            (THANKS, Social::Thanks),
+            (REACTIONS, Social::Reaction),
+            (WHO_ARE_YOU, Social::WhoAreYou),
+            (WHAT_CAN_YOU_DO, Social::WhatCanYouDo),
+            (AND_YOU, Social::AndYou),
+        ] {
+            if list.contains(&raw) {
+                return Intent::Social(kind);
+            }
+        }
+        if MORE.contains(&raw) {
+            return Intent::RecallMore(None);
+        }
+    }
     strip_fillers(&mut toks);
     if toks.first().map_or(false, |t| t.w != "if") {
         toks.retain(|t| t.w != ",");
@@ -195,6 +250,22 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
         }
     }
 
+    // "What else do you know about X?", "Tell me more about X".
+    for lead in [
+        &["what", "else", "do", "you", "know", "about"][..],
+        &["what", "more", "do", "you", "know", "about"],
+        &["tell", "me", "more", "about"],
+        &["anything", "else", "about"],
+        &["what", "else", "about"],
+        &["what", "else", "can", "you", "tell", "me", "about"],
+        &["more", "about"],
+    ] {
+        if starts(&toks, lead) && toks.len() > lead.len() {
+            if let Some(Term::Val(Value::Sym(e))) = entity(&toks[lead.len()..], ctx, true) {
+                return Intent::RecallMore(Some(e));
+            }
+        }
+    }
     // Recall.
     for lead in [&["what", "do", "you", "know", "about"][..], &["tell", "me", "about"], &["what", "about"], &["tell", "me", "everything", "about"]] {
         if starts(&toks, lead) && toks.len() > lead.len() {
@@ -913,6 +984,16 @@ mod tests {
             ("Hello!", "greet:"),
             ("goodbye", "bye:"),
             ("asdf", "unknown:"),
+            ("What else do you know about birds?", "recall_more: bird"),
+            ("Tell me more about Anna.", "recall_more: anna"),
+            ("What else?", "recall_more: last"),
+            ("Anything else?", "recall_more: last"),
+            ("Really?", "social: reaction"),
+            ("Oh cool", "social: reaction"),
+            ("Thank you!", "social: thanks"),
+            ("Who are you?", "social: who_are_you"),
+            ("What can you do?", "social: what_can_you_do"),
+            ("And you?", "social: and_you"),
             ("I don't know.", "unknown:"),
             ("No idea", "unknown:"),
             ("If someone is a doctor, then they are a person.", "tell: is_a(A, person) :- is_a(A, doctor)."),

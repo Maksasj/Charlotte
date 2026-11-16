@@ -3,6 +3,27 @@
 pub const GREET: &[&str] = &["hi", "hello", "hey", "hi there", "hello there", "hey there", "good morning", "good evening", "good afternoon", "greetings", "howdy", "hiya"];
 /// Small talk about the agent itself.
 pub const HOW_ARE_YOU: &[&str] = &["how are you", "how are you doing", "how is it going", "how do you do", "what is up", "how are things"];
+pub const THANKS: &[&str] = &["thanks", "thank you", "thanks a lot", "thank you very much", "thanks so much", "cheers", "many thanks", "ok thanks", "okay thanks", "thx"];
+pub const REACTIONS: &[&str] = &[
+    "cool", "nice", "great", "interesting", "wow", "really", "i see", "good", "awesome", "ok", "okay", "alright", "perfect", "amazing",
+    "good to know", "nice to know", "oh", "fine", "sounds good", "got it", "ah", "aha", "hmm ok", "ok cool", "okay cool", "very good",
+    "well done", "good job", "that is nice", "that is cool", "that is great", "that is interesting", "neat", "fair enough", "makes sense",
+    "that makes sense", "lol", "haha", "nice one", "excellent", "good boy", "good girl", "is that so",
+];
+pub const WHO_ARE_YOU: &[&str] = &[
+    "who are you", "what are you", "what is your name", "tell me about yourself", "introduce yourself", "what should i call you",
+    "do you have a name", "are you a robot", "are you a bot", "are you human", "are you an ai",
+];
+pub const WHAT_CAN_YOU_DO: &[&str] = &[
+    "what can you do", "how do you work", "what do you do", "help", "how can i use you", "what should i say", "what can i ask",
+    "what can i ask you", "what do you know", "what can you tell me", "how can you help me", "what are you good at",
+];
+pub const AND_YOU: &[&str] = &["and you", "how about you", "what about you", "and yourself", "you", "and how are you"];
+/// "What else?" without a subject: continue the last recall.
+pub const MORE: &[&str] = &[
+    "what else", "what else do you know", "tell me more", "anything else", "more", "go on", "what more", "anything more",
+    "tell me something else", "and what else", "keep going", "continue", "what else can you tell me", "and", "something else",
+];
 pub const BYE: &[&str] = &["bye", "goodbye", "bye bye", "see you", "see you later", "good night", "farewell", "later", "see ya", "quit", "exit"];
 pub const YES: &[&str] = &[
     "yes", "yeah", "yep", "yup", "right", "correct", "exactly", "sure", "that is right", "that is correct", "true", "yes that is right",

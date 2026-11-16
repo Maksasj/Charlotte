@@ -171,7 +171,7 @@ fn acts(m: &Model) -> Vec<Act> {
     // 8 recalls.
     for e in ["anna", "bob", "rex", "maksim", "tweety", "car", "berlin", "zorg"] {
         let facts: Vec<GroundAtom> = m.all_facts().into_iter().filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(e)).collect();
-        acts.push(Act::Recall { entity: e.into(), facts });
+        acts.push(Act::Recall { entity: e.into(), facts, instances: vec![], more: false });
     }
     // 10 acknowledgements.
     let ack = |added: Vec<GroundAtom>, closed: Vec<GroundAtom>, known: Vec<GroundAtom>| Act::Acknowledge { added, closed, known, rules: vec![], past: false };

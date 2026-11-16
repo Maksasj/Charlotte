@@ -119,6 +119,13 @@ impl Learner {
     pub fn update(&self, kb: &mut KnowledgeBase, now: Timestamp) -> LearnReport {
         let mut report = LearnReport::default();
         let features = self.features(kb, now);
+        // Stated (stored) features, to tell discoveries from consequences of known rules.
+        let mut stated: BTreeMap<Value, BTreeSet<Feature>> = BTreeMap::new();
+        for f in kb.all_facts() {
+            if f.valid_at(now) && !f.atom.args.is_empty() {
+                stated.entry(f.atom.args[0].clone()).or_default().insert(Feature { pred: f.atom.pred.clone(), rest: f.atom.args[1..].to_vec() });
+            }
+        }
 
         // 1. Re-score existing learner hypotheses.
         let ids: Vec<String> = kb.vault.rules.keys().cloned().collect();
@@ -179,6 +186,15 @@ impl Learner {
                 }
                 let (support, counter) = Self::count(&features, std::slice::from_ref(*body), &[], head);
                 if support < self.min_support {
+                    continue;
+                }
+                // A pattern is a discovery only if enough cases state the head themselves;
+                // otherwise existing rules already explain it (e.g. inherited parts).
+                let stated_support = features
+                    .iter()
+                    .filter(|(e, fs)| fs.contains(*body) && stated.get(*e).map_or(false, |st| st.contains(*head)))
+                    .count() as u64;
+                if stated_support < self.min_support {
                     continue;
                 }
                 let ratio = support as f64 / bc as f64;
