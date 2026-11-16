@@ -4,12 +4,14 @@
 //! The output format is specified in `docs/parser_spec.md`. The [`Parser`]
 //! trait lets an LLM translator be plugged in later.
 
-mod lexicon;
+pub mod lexicon;
 mod words;
+
+pub use words::lemma;
 
 use lexicon::*;
 use sla_core::{Atom, Literal, Rule, Term, Value};
-use words::{lemma, singularize, tokenize, Tok};
+use words::{singularize, tokenize, Tok};
 
 /// What the user wants, with slots as atoms.
 #[derive(Debug, Clone, PartialEq)]

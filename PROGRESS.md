@@ -4,7 +4,7 @@ Build log for the Symbolic Learning Agent (see DESIGN.md).
 
 ## Current milestone
 
-**Milestone 5: reply generator** (milestones 1-4 pass and are committed).
+**Milestone 6: agent loop** (milestones 1-5 pass and are committed).
 
 Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 
@@ -16,7 +16,8 @@ Run everything with `cargo test` (Rust toolchain: stable-x86_64-pc-windows-gnu).
 | 2 | Datalog interpreter | passing, committed | `crates/reasoner/tests/suite.rs` (54 cases + 8 tests) |
 | 3 | Time and confidence | passing, committed | `crates/reasoner/tests/time_conf.rs`, `core/src/kb.rs` tests |
 | 4 | Parser | passing, committed | `crates/parser/tests/dev_set.rs`: dev 200/200 exact; held-out 98/100 exact, 100/100 intent |
-| 5-10 | NLG, agent loop, learner, curiosity, eval | not started | - |
+| 5 | Reply generator | passing, committed | `crates/nlg/tests/replies.rs`: 100 replies, grammar checks, claims in KB, claims parse back |
+| 6-10 | Agent loop, learner, curiosity, eval | not started | - |
 
 ## Layout
 
@@ -25,7 +26,7 @@ Cargo.toml                 workspace
 crates/core      sla_core      types, Datalog syntax, vault files, knowledge base ops
 crates/reasoner  sla_reasoner  runtime Datalog engine with proof traces
 crates/learner   sla_learner   (placeholder)
-crates/nlg       sla_nlg       (placeholder)
+crates/nlg       sla_nlg       reply generator: acts -> English, aggregation, pronouns, why-from-proof
 crates/parser    sla_parser    pattern parser (intents + Datalog slots), `Parser` trait
 crates/agent     sla_agent     (placeholder)
 crates/eval      sla_eval      (placeholder)
@@ -70,6 +71,11 @@ vault/  data/synthetic/  eval/
   form tests compare. "I/me/my" = the speaker (default `maksim`). Plural or "every"
   subjects with ordinary verbs become rules over `is_a(A, category)`; with
   have/be they stay facts about the category (core rules inherit them).
+
+- **NLG faithfulness** is checked two ways: every clause is generated from an atom
+  listed in `Reply::claims` (the test checks each claim is true in the model), and
+  each claim's sentence is parsed back by our own parser to the same atom.
+  Variation rotates templates deterministically, so tests stay repeatable.
 
 ## Problems
 
