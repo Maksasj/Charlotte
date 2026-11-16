@@ -176,6 +176,14 @@ impl Agent {
                 _ => {}
             }
         }
+        // Categories are not names ("Fruit is a kind of food" starts with a capital).
+        for f in self.kb.all_facts() {
+            if f.atom.base_pred() == "is_a" {
+                if let Some(c) = f.atom.args.get(1).and_then(|v| v.as_sym()) {
+                    names.remove(c);
+                }
+            }
+        }
         self.realizer.names = names;
     }
 
@@ -745,6 +753,8 @@ mod tests {
 /// Split a message into sentences at . ! ? followed by a space (not inside
 /// numbers or abbreviations like "e.g.").
 pub fn split_sentences(text: &str) -> Vec<String> {
+    // Clauses joined by ", and" / ", but" / "; " are separate statements.
+    let text = &text.replace(", and ", ". ").replace(", but ", ". ").replace("; ", ". ");
     let mut out = Vec::new();
     let mut cur = String::new();
     let chars: Vec<char> = text.chars().collect();

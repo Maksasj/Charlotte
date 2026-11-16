@@ -3,6 +3,8 @@
 //! chat with the agent and score conversation quality. Scores are appended
 //! to `eval/history.csv` so trends are visible over time.
 
+pub mod pretrain;
+
 use sla_agent::curiosity::Teacher;
 use sla_agent::Agent;
 use sla_core::{parse_ground, parse_rule, GroundAtom, Rule, Timestamp};
