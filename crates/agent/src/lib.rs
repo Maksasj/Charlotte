@@ -302,7 +302,7 @@ impl Agent {
                 if has_content && (matches!(i, Intent::Social(Social::Reaction) | Intent::Unknown | Intent::Greet) || stray_yes_no) {
                     continue;
                 }
-                let r = self.respond_intent(i, text);
+                let r = self.respond_intent(i);
                 if r.intent != "social" {
                     intent_name = r.intent;
                 }
@@ -311,13 +311,18 @@ impl Agent {
                     texts.push(r.text);
                 }
             }
-            return Reply { text: texts.join(" "), intent: intent_name, claims };
+            let reply = Reply { text: texts.join(" "), intent: intent_name, claims };
+            // One log entry per message, with the whole reply.
+            self.kb.log_change(self.now(), "turn", text, &reply.text);
+            return reply;
         }
         let intent = intents.into_iter().next().unwrap_or(Intent::Unknown);
-        self.respond_intent(intent, text)
+        let reply = self.respond_intent(intent);
+        self.kb.log_change(self.now(), "turn", text, &reply.text);
+        reply
     }
 
-    fn respond_intent(&mut self, intent: Intent, text: &str) -> Reply {
+    fn respond_intent(&mut self, intent: Intent) -> Reply {
         // Remember who we talk about, for "he", "she", "it", "they" next time.
         let subject = match &intent {
             // "My mom is Olga": the person named is who "she" will mean.
@@ -367,7 +372,6 @@ impl Agent {
             }
         }
         let _ = self.save();
-        self.kb.log_change(self.now(), "turn", text, &reply.text);
         reply
     }
 
