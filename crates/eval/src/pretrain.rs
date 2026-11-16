@@ -399,6 +399,9 @@ fn one_conversation(cfg: &ConversationConfig, topic: &str, lock: &std::sync::Mut
         if msg.is_empty() {
             break;
         }
+        // Translation (a model call) happens here, in parallel; only the agent's own
+        // fast update below is serialized by the lock.
+        agent.prepare(&msg);
         let reply = {
             let _g = lock.lock().unwrap();
             let _ = agent.reload_if_edited();

@@ -133,6 +133,14 @@ impl Agent {
         self.parser.name()
     }
 
+    /// Translate a message ahead of `respond` (fills the translator's cache).
+    /// Lets slow LLM translation run outside any lock that serializes `respond`.
+    pub fn prepare(&mut self, text: &str) {
+        if self.parser.name() != "pattern" {
+            let _ = self.parser.parse_many(text, &self.ctx);
+        }
+    }
+
     pub fn now(&self) -> Timestamp {
         self.clock.unwrap_or_else(Timestamp::now)
     }
