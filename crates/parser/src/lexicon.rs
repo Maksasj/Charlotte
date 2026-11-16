@@ -22,6 +22,8 @@ pub const LEAD_FILLERS: &[&str] = &["well", "um", "umm", "uhm", "uh", "ok", "oka
 
 pub const DETERMINERS: &[&str] = &["a", "an", "the", "some", "every", "all", "each", "any", "this", "these", "those"];
 pub const SPEAKER: &[&str] = &["i", "me", "my", "myself", "mine"];
+/// Outside rules these refer to the last entity mentioned.
+pub const PERSONAL_PRONOUNS: &[&str] = &["he", "she", "him", "her", "it", "they", "them"];
 pub const VAR_PRONOUNS: &[&str] = &["someone", "something", "somebody", "anyone", "anything", "anybody", "they", "it", "he", "she", "them", "him", "her"];
 
 pub const AUX: &[&str] = &["is", "are", "am", "was", "were", "does", "do", "did", "has", "have", "had", "never", "used", "will", "can", "would"];

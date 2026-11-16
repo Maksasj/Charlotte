@@ -89,11 +89,13 @@ impl Intent {
 pub struct Context {
     /// Who "I"/"me"/"my" refers to.
     pub speaker: String,
+    /// The last entity talked about: "he", "she", "it", "they" refer to it.
+    pub last_entity: Option<String>,
 }
 
 impl Default for Context {
     fn default() -> Self {
-        Context { speaker: "maksim".into() }
+        Context { speaker: "maksim".into(), last_entity: None }
     }
 }
 
@@ -141,6 +143,20 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
     let w = ws(&toks);
     let joined = w.join(" ");
 
+    // A greeting word followed by more: the rest is the message ("Hi, Anna likes tea"),
+    // and a self-introduction ("Hi, I'm Maksim") is just a greeting.
+    if GREET.contains(&w[0]) && w.len() > 2 && !starts(&toks, &["hey", "there"]) && !starts(&toks, &["hi", "there"]) && !starts(&toks, &["hello", "there"]) {
+        let rest: Vec<&str> = w[1..].to_vec();
+        if rest.len() <= 3 && (rest.starts_with(&["i", "am"]) || rest.starts_with(&["my", "name", "is"]) || rest == ["there"]) {
+            return Intent::Greet;
+        }
+        let rest_text: Vec<String> = toks[1..].iter().map(|t| if t.cap { capitalize_word(&t.w) } else { t.w.clone() }).collect();
+        let inner = parse(&format!("{}{}", rest_text.join(" "), if question { "?" } else { "" }), ctx);
+        return if inner == Intent::Unknown { Intent::Greet } else { inner };
+    }
+    if starts(&toks, &["i", "am"]) && toks.len() == 3 && toks[2].cap && toks[2].w == ctx.speaker {
+        return Intent::Greet;
+    }
     // Fixed phrases.
     if GREET.contains(&joined.as_str()) || (GREET.contains(&w[0]) && w.len() <= 2) || starts(&toks, &["good", "morning"]) || starts(&toks, &["good", "evening"]) || starts(&toks, &["good", "afternoon"]) {
         return Intent::Greet;
@@ -243,7 +259,9 @@ fn strip_fillers(toks: &mut Vec<Tok>) {
     let mut i = 0;
     while i + 1 < toks.len() {
         let pair = (toks[i].w.as_str(), toks[i + 1].w.as_str());
-        if matches!(pair, ("a", "lot") | ("very", "much") | ("every", "day") | ("these", "days") | ("every", "morning") | ("at", "all")) {
+        if pair == ("a", "lot") && toks.get(i + 2).map_or(false, |t| t.w == "of") {
+            toks.drain(i..i + 3);
+        } else if matches!(pair, ("a", "lot") | ("very", "much") | ("every", "day") | ("these", "days") | ("every", "morning") | ("at", "all")) {
             toks.drain(i..i + 2);
         } else {
             i += 1;
@@ -289,6 +307,9 @@ fn entity(toks: &[Tok], ctx: &Context, singular: bool) -> Option<Term> {
         }
         if w == VAR_A || (VAR_PRONOUNS.contains(&w) && ctx_in_rule()) {
             return Some(Term::var("A"));
+        }
+        if PERSONAL_PRONOUNS.contains(&w) {
+            return ctx.last_entity.as_ref().map(|e| Term::sym(e));
         }
         if SPEAKER.contains(&w) {
             return Some(Term::sym(&ctx.speaker));
@@ -358,8 +379,10 @@ fn subject_end(toks: &[Tok]) -> Option<usize> {
     if toks.is_empty() {
         return None;
     }
+    // "my family likes ...": a possessive noun phrase, not the pronoun alone.
+    let possessive_np = toks[0].w == "my" && toks.len() > 2 && !is_verbish(&toks[1].w);
     // Pronouns and placeholders are one token.
-    if SPEAKER.contains(&toks[0].w.as_str()) || VAR_PRONOUNS.contains(&toks[0].w.as_str()) || toks[0].w == VAR_W || toks[0].w == VAR_A {
+    if !possessive_np && SPEAKER.contains(&toks[0].w.as_str()) || VAR_PRONOUNS.contains(&toks[0].w.as_str()) || toks[0].w == VAR_W || toks[0].w == VAR_A {
         return if toks.len() > 1 { Some(1) } else { None };
     }
     for i in 1..toks.len() {
@@ -585,7 +608,11 @@ fn statement(toks: &[Tok], ctx: &Context) -> Option<Statement> {
         if !is_plausible_verb(v) {
             return None;
         }
-        let rest = &obj[skip..];
+        let mut rest = &obj[skip..];
+        // "likes to eat rice", "wants to visit Paris": the object after the second verb.
+        if matches!(pred.as_str(), "likes" | "wants") && rest.len() >= 3 && rest[0].w == "to" && (VERBS.contains(&rest[1].w.as_str())) {
+            rest = &rest[2..];
+        }
         if rest.is_empty() {
             if skip > 0 {
                 return None;
@@ -887,5 +914,13 @@ mod tests {
             }
         }
         assert!(bad.is_empty(), "{}", bad.join("\n"));
+    }
+}
+
+fn capitalize_word(w: &str) -> String {
+    let mut c = w.chars();
+    match c.next() {
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+        None => String::new(),
     }
 }

@@ -20,6 +20,11 @@ version = "0.1.0"
 [[package]]
 name = "sla_eval"
 version = "0.1.0"
+dependencies = [
+ "sla_agent",
+ "sla_core",
+ "sla_parser",
+]
 
 [[package]]
 name = "sla_learner"

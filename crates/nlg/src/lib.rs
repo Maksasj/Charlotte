@@ -170,6 +170,11 @@ impl Realizer {
             Value::Int(n) => n.to_string(),
             Value::Sym(s) if s == &self.speaker => "you".into(),
             Value::Sym(s) => {
+                // "my_family" was said by the user: it is "your family" to them.
+                let s = &match s.strip_prefix("my_") {
+                    Some(rest) => format!("your_{rest}"),
+                    None => s.clone(),
+                };
                 let words = s.replace('_', " ");
                 if self.names.contains(s) {
                     words.split(' ').map(capitalize).collect::<Vec<_>>().join(" ")
@@ -684,7 +689,7 @@ impl Realizer {
             Act::Wh { pattern, found, past } => {
                 if found.is_empty() {
                     let e = self.embedded_wh(pattern);
-                    ("answer", ["I don't know {e}.", "I don't know {e} yet.", "Nobody has told me {e}."][self.pick(3)].replace("{e}", &e))
+                    ("answer", ["I don't know {e}.", "I don't know {e} yet.", "Nobody has told me {e}, so I don't know."][self.pick(3)].replace("{e}", &e))
                 } else {
                     claims.extend(found.iter().cloned());
                     let tense = if *past { Tense::UsedTo } else { Tense::Present };

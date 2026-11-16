@@ -81,7 +81,7 @@ impl Agent {
         let mut a = Agent {
             kb,
             parser: Box::new(PatternParser),
-            ctx: Context { speaker: speaker.to_string() },
+            ctx: Context { speaker: speaker.to_string(), last_entity: None },
             realizer: Realizer::new(speaker),
             last_answer: None,
             pending: None,
@@ -179,12 +179,70 @@ impl Agent {
         self.realizer.names = names;
     }
 
-    /// Handle one user message and return the reply.
+    /// Handle one user message and return the reply. A message with several
+    /// sentences is handled sentence by sentence.
     pub fn respond(&mut self, text: &str) -> Reply {
+        let sentences = split_sentences(text);
+        if sentences.len() <= 1 {
+            return self.respond_one(text);
+        }
+        let mut texts: Vec<String> = Vec::new();
+        let mut claims = Vec::new();
+        let mut intent = "social";
+        let mut not_understood = 0;
+        for s in &sentences {
+            let r = self.respond_one(s);
+            if r.intent == "social" && matches!(self.parser.parse(s, &self.ctx), Intent::Unknown) {
+                not_understood += 1;
+                continue;
+            }
+            if r.intent != "social" || texts.is_empty() {
+                intent = r.intent;
+            }
+            claims.extend(r.claims);
+            if !texts.contains(&r.text) {
+                texts.push(r.text);
+            }
+        }
+        if not_understood > 0 {
+            texts.push(if texts.is_empty() {
+                "Sorry, I didn't understand that. Short sentences like \"Anna likes tea.\" work best.".to_string()
+            } else {
+                format!("I didn't understand {} of your sentences.", if not_understood == 1 { "one".to_string() } else { not_understood.to_string() })
+            });
+        }
+        Reply { text: texts.join(" "), intent, claims }
+    }
+
+    fn respond_one(&mut self, text: &str) -> Reply {
         let _ = self.reload_if_edited();
         self.learn_names(text);
         self.refresh_names();
         let intent = self.parser.parse(text, &self.ctx);
+        // Remember who we talk about, for "he", "she", "it", "they" next time.
+        let subject = match &intent {
+            // "My mom is Olga": the person named is who "she" will mean.
+            Intent::Tell { facts, .. } => facts.first().and_then(|a| {
+                let owner_is_me = a.args.first() == Some(&Term::Val(Value::sym(self.ctx.speaker.as_str())));
+                if a.pred == "property" && a.args.len() == 3 && owner_is_me {
+                    a.args.get(2).cloned()
+                } else {
+                    a.args.first().cloned()
+                }
+            }),
+            Intent::Ask { query, .. } => query.iter().find_map(|l| match l {
+                Literal::Pos(a) => a.args.first().cloned(),
+                _ => None,
+            }),
+            Intent::Recall(e) => Some(Term::Val(Value::sym(e.as_str()))),
+            Intent::Correct(v) => v.first().and_then(|a| a.args.first().cloned()),
+            _ => None,
+        };
+        if let Some(Term::Val(Value::Sym(e))) = subject {
+            if e != self.ctx.speaker {
+                self.ctx.last_entity = Some(e);
+            }
+        }
         let was_pending = self.pending.is_some();
         let facts_before = self.kb.all_facts().len();
         let mut reply = self.handle(intent);
@@ -669,4 +727,29 @@ mod tests {
         assert_eq!(super::proper_names("Pingu doesn't fly. Tweety flies. Dogs are animals. The car is red. If it rains"), vec!["pingu", "tweety"]);
         assert!(super::proper_names("Hello there.").is_empty());
     }
+}
+
+/// Split a message into sentences at . ! ? followed by a space (not inside
+/// numbers or abbreviations like "e.g.").
+pub fn split_sentences(text: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut cur = String::new();
+    let chars: Vec<char> = text.chars().collect();
+    for (i, &c) in chars.iter().enumerate() {
+        cur.push(c);
+        let end = matches!(c, '.' | '!' | '?') && chars.get(i + 1).map_or(true, |n| n.is_whitespace());
+        if end {
+            let t = cur.trim().to_string();
+            // Keep a lone greeting word attached to nothing: it is its own sentence anyway.
+            if t.chars().any(|c| c.is_alphanumeric()) {
+                out.push(t);
+            }
+            cur.clear();
+        }
+    }
+    let t = cur.trim().to_string();
+    if t.chars().any(|c| c.is_alphanumeric()) {
+        out.push(t);
+    }
+    out
 }

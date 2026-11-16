@@ -4,4 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-
+sla_core = { path = "../core" }
+sla_parser = { path = "../parser" }
+sla_agent = { path = "../agent" }
