@@ -204,6 +204,14 @@ impl Realizer {
         }
     }
 
+    /// A property value: the speaker's own name is written as a name ("Your name is Maksim").
+    fn value_np(&self, v: &Value) -> String {
+        if self.is_speaker(v) {
+            return v.as_sym().map(|s| s.split('_').map(capitalize).collect::<Vec<_>>().join(" ")).unwrap_or_default();
+        }
+        self.np(v)
+    }
+
     /// Plural noun phrase for a kind ("penguins", "berries"); names stay as they are.
     fn plural_np(&self, v: &Value) -> String {
         let np = self.np(v);
@@ -327,7 +335,7 @@ impl Realizer {
             if self.vp(a).is_none() {
                 let owner = &a.args[0];
                 let poss = if self.is_speaker(owner) { "your".to_string() } else { format!("{}'s", self.np(owner)) };
-                let vp = Vp { verb: "be".into(), rest: self.np(&a.args[2]) };
+                let vp = Vp { verb: "be".into(), rest: self.value_np(&a.args[2]) };
                 return format!("{poss} {} {}", self.np(&a.args[1]), self.conj(&vp, Person::Third, neg, tense));
             }
         }
@@ -361,7 +369,7 @@ impl Realizer {
         match self.vp(a) {
             Some(vp) => format!("{pron} {}", self.conj(&vp, p, neg, Tense::Present)),
             None if a.base_pred() == "property" && a.args.len() == 3 => {
-                let vp = Vp { verb: "be".into(), rest: self.np(&a.args[2]) };
+                let vp = Vp { verb: "be".into(), rest: self.value_np(&a.args[2]) };
                 format!("{poss} {} {}", self.np(&a.args[1]), self.conj(&vp, Person::Third, neg, Tense::Present))
             }
             None => self.clause(a),
@@ -777,7 +785,8 @@ impl Realizer {
                 }
                 if !known.is_empty() {
                     claims.extend(known.iter().cloned());
-                    parts.push(format!("I already knew that. {}", self.aggregate(known, Tense::Present)));
+                    // Known already: say so briefly, without restating old facts.
+                    parts.push(if added.is_empty() { "I know, you told me before.".to_string() } else { "The rest I already knew.".to_string() });
                 }
                 if !closed.is_empty() {
                     let ended: Vec<String> = closed.iter().map(|c| self.clause_t(c, Tense::UsedTo)).collect();
@@ -870,7 +879,7 @@ mod tests {
             ("feels(maksim, happy)", "you are happy"),
             ("property(car, colour, red)", "car is red"),
             ("property(anna, job, teacher)", "Anna's job is teacher"),
-            ("property(maksim, name, maksim)", "your name is you"),
+            ("property(maksim, name, maksim)", "your name is Maksim"),
             ("located_in(anna, new_york)", "Anna is in New York"),
             ("fly(tweety)", "tweety flies"),
             ("work_at(bob, acme)", "Bob works at acme"),

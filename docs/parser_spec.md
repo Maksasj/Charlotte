@@ -95,6 +95,25 @@ Coordination: `Anna likes tea and coffee` -> `tell: likes(anna, tea); likes(anna
 | `how_are_you` | `How are you?` | `how_are_you:` |
 | `unknown` | anything that fits no pattern | `unknown:` |
 
+## More examples (for free-form messages)
+
+| Message | Canonical |
+|---|---|
+| `I'm Maksim.` / `Hi, I'm Maksim!` | `greet:` |
+| `My name is Maksim.` | `tell: property(maksim, name, maksim)` |
+| `What's your name?` / `Who are you?` | `social: who_are_you` |
+| `Anna is my sister.` | `tell: property(maksim, sister, anna)` |
+| `Bob is my colleague and works with me at the bank.` | `tell: property(maksim, colleague, bob); work_at(bob, bank)` |
+| `My family likes to eat rice.` | `tell: likes(my_family, rice)` |
+| `I love playing chess.` | `tell: likes(maksim, chess)` |
+| `What kind of animal is Rex?` / `What is Rex?` | `ask: is_a(rex, W)` |
+| `Rex is a golden retriever, a kind of dog.` | `tell: is_a(rex, golden_retriever); is_a(golden_retriever, dog)` |
+| `Do you remember what Anna likes?` | `ask: likes(anna, W)` |
+
+"you" in a message is the agent itself: never use `you` as an entity. A
+question about the agent is a `social:` line; everything else about "you"
+is `unknown:`.
+
 ## Rules
 
 - `If someone is a doctor, then they are a person.` ->
