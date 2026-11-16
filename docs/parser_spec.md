@@ -92,6 +92,7 @@ Coordination: `Anna likes tea and coffee` -> `tell: likes(anna, tea); likes(anna
 | | `Who are you?` / `What is your name?` | `social: who_are_you` |
 | | `What can you do?` / `How do you work?` | `social: what_can_you_do` |
 | | `And you?` / `How about you?` | `social: and_you` |
+| | `I don't know.` / `No idea.` | `social: dont_know` |
 | `how_are_you` | `How are you?` | `how_are_you:` |
 | `unknown` | anything that fits no pattern | `unknown:` |
 
@@ -106,6 +107,11 @@ Coordination: `Anna likes tea and coffee` -> `tell: likes(anna, tea); likes(anna
 | `Bob is my colleague and works with me at the bank.` | `tell: property(maksim, colleague, bob); work_at(bob, bank)` |
 | `My family likes to eat rice.` | `tell: likes(my_family, rice)` |
 | `I love playing chess.` | `tell: likes(maksim, chess)` |
+| `Anna likes to play tennis on weekends.` | `tell: likes(anna, tennis)` |
+| `A screwdriver turns screws.` | `tell: turn(screwdriver, screw)` |
+| `Cows say moo.` | `tell: say(A, moo) :- is_a(A, cow).` |
+| `Spring comes after winter.` | `tell: come_after(spring, winter)` |
+| `Hi! Rex is my dog.` | `greet:` and `tell: property(maksim, dog, rex)` (two lines) |
 | `What kind of animal is Rex?` / `What is Rex?` | `ask: is_a(rex, W)` |
 | `Rex is a golden retriever, a kind of dog.` | `tell: is_a(rex, golden_retriever); is_a(golden_retriever, dog)` |
 | `Do you remember what Anna likes?` | `ask: likes(anna, W)` |

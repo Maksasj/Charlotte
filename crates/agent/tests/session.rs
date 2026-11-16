@@ -56,7 +56,7 @@ fn teach_then_recall_after_restart() {
     let checks = [
         ("Do I like coffee?", "Yes"),
         ("What does Anna like?", "Anna likes tea"),
-        ("Where does Anna live?", "Anna is in Berlin"),
+        ("Where does Anna live?", "Anna lives in Berlin"),
         ("Is Rex an animal?", "Rex is an animal"),
         ("What colour is the car?", "ar is red"),
         ("Who works at Acme?", "Bob works at Acme"),
@@ -67,7 +67,7 @@ fn teach_then_recall_after_restart() {
         // Rule 1: derived want.
         ("Does Anna want tea?", "Anna wants tea"),
         // Rule 2: derived location.
-        ("Is Anna in Germany?", "Anna is in Germany"),
+        ("Is Anna in Germany?", "Anna lives in Germany"),
     ];
     for (q, want) in checks {
         let r = talk(&mut b, q);

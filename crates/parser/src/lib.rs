@@ -111,6 +111,8 @@ pub enum Social {
     WhatCanYouDo,
     /// "and you?", "how about you?"
     AndYou,
+    /// "I don't know", "no idea": a non-answer, never a fact.
+    DontKnow,
 }
 
 impl Social {
@@ -121,6 +123,7 @@ impl Social {
             Social::WhoAreYou => "who_are_you",
             Social::WhatCanYouDo => "what_can_you_do",
             Social::AndYou => "and_you",
+            Social::DontKnow => "dont_know",
         }
     }
 }
@@ -244,7 +247,7 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
     }
     // "I don't know" is a non-answer, never a fact.
     if DONT_KNOW.contains(&joined.as_str()) {
-        return Intent::Unknown;
+        return Intent::Social(Social::DontKnow);
     }
     if WRONG.contains(&joined.as_str()) {
         return Intent::Correct(Vec::new());
@@ -1004,8 +1007,8 @@ mod tests {
             ("Who are you?", "social: who_are_you"),
             ("What can you do?", "social: what_can_you_do"),
             ("And you?", "social: and_you"),
-            ("I don't know.", "unknown:"),
-            ("No idea", "unknown:"),
+            ("I don't know.", "social: dont_know"),
+            ("No idea", "social: dont_know"),
             ("If someone is a doctor, then they are a person.", "tell: is_a(A, person) :- is_a(A, doctor)."),
             ("If something is a bird then it flies.", "tell: fly(A) :- is_a(A, bird)."),
             ("If someone likes coffee then they drink coffee.", "tell: drink(A, coffee) :- likes(A, coffee)."),

@@ -117,6 +117,10 @@ fn third(v: &str) -> String {
 }
 
 fn article(np: &str) -> String {
+    // Possessives and plural-only nouns take no article: "your family", "clothes".
+    if np.starts_with("your ") || np.starts_with("my ") || matches!(np, "clothes" | "scissors" | "trousers" | "glasses" | "jeans" | "people") {
+        return np.to_string();
+    }
     let first = np.chars().next().unwrap_or('x').to_ascii_lowercase();
     let an = matches!(first, 'a' | 'e' | 'i' | 'o') || (first == 'u' && !np.starts_with("uni") && !np.starts_with("use")) || np.starts_with("hour") || np.starts_with("honest");
     if an {
@@ -145,6 +149,18 @@ fn list(items: &[String]) -> String {
 
 fn is_verb(w: &str) -> bool {
     VERBS.contains(&w)
+}
+
+const PREPOSITIONS: &[&str] = &["in", "at", "on", "with", "for", "to", "from", "about", "into", "near", "by", "under", "over", "after", "before", "through", "of", "inside", "behind", "above", "below"];
+
+/// Relation names that read as nouns ("ancestor(anna, bob)": "Anna is an ancestor of Bob").
+fn looks_like_noun(w: &str) -> bool {
+    const NOUNS: &[&str] = &[
+        "ancestor", "parent", "child", "friend", "sibling", "brother", "sister", "mother", "father", "owner", "member", "capital", "neighbour",
+        "neighbor", "colleague", "teacher", "student", "boss", "partner", "cousin", "uncle", "aunt", "son", "daughter", "wife", "husband",
+        "author", "creator", "leader", "part", "type", "kind", "example", "symbol", "home", "source", "relative",
+    ];
+    NOUNS.contains(&w) || ["or", "er", "ist", "ian", "ent", "ant", "ion", "ness", "ship", "hood"].iter().any(|s| w.ends_with(s) && w.len() > s.len() + 2)
 }
 
 
@@ -278,6 +294,8 @@ impl Realizer {
             ("does", 2) => verb("do", o(1)),
             ("feels", 2) => be(o(1)),
             ("is_a", 2) => be(article(&o(1))),
+            // People live in places; things are in them.
+            ("located_in", 2) if matches!(&args[0], Term::Val(v) if self.is_person(v)) => verb("live", format!("in {}", o(1))),
             ("located_in", 2) => be(format!("in {}", o(1))),
             ("part_of", 2) => be(format!("part of {}", o(1))),
             ("same", 2) => be(format!("the same as {}", o(1))),
@@ -301,9 +319,15 @@ impl Realizer {
                     let mid = words[1..].join(" ");
                     let rest = format!("{mid}{obj}").trim().to_string();
                     verb(&v0, rest)
-                } else if n == 1 && words.len() == 1 {
-                    // One-word properties of a thing are verbs ("cats hide"); nouns come as is_a.
-                    verb(&v0, String::new())
+                } else if words.len() == 1 && PREPOSITIONS.contains(&words[0]) {
+                    // "after(spring, winter)": "spring is after winter".
+                    be(format!("{}{obj}", words[0]))
+                } else if words.len() == 1 && !looks_like_noun(words[0]) {
+                    // Relations are verbs unless they look like nouns: "turns screws", "says moo", "cats hide".
+                    verb(&v0, obj.trim().to_string())
+                } else if words.len() >= 2 && PREPOSITIONS.contains(words.last().unwrap()) && !looks_like_noun(words[0]) {
+                    // "grow_on(banana, plant)": "bananas grow on plants".
+                    verb(&sla_parser::lemma(words[0]), format!("{}{obj}", words[1..].join(" ")))
                 } else if n == 1 {
                     be(article(&words.join(" ")))
                 } else {
@@ -785,8 +809,10 @@ impl Realizer {
                 }
                 if !known.is_empty() {
                     claims.extend(known.iter().cloned());
-                    // Known already: say so briefly, without restating old facts.
-                    parts.push(if added.is_empty() { "I know, you told me before.".to_string() } else { "The rest I already knew.".to_string() });
+                    // Known already: say so briefly, and only when nothing else was new.
+                    if added.is_empty() {
+                        parts.push(["I already knew that.", "Yes, I know that.", "Right, I knew that already."][self.pick(3)].to_string());
+                    }
                 }
                 if !closed.is_empty() {
                     let ended: Vec<String> = closed.iter().map(|c| self.clause_t(c, Tense::UsedTo)).collect();
@@ -880,7 +906,7 @@ mod tests {
             ("property(car, colour, red)", "car is red"),
             ("property(anna, job, teacher)", "Anna's job is teacher"),
             ("property(maksim, name, maksim)", "your name is Maksim"),
-            ("located_in(anna, new_york)", "Anna is in New York"),
+            ("located_in(anna, new_york)", "Anna lives in New York"),
             ("fly(tweety)", "tweety flies"),
             ("work_at(bob, acme)", "Bob works at acme"),
             ("drink(anna, tea)", "Anna drinks tea"),

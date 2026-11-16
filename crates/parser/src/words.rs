@@ -155,6 +155,10 @@ pub fn lemma(w: &str) -> String {
 
 /// Singular form of a plural common noun.
 pub fn singularize(w: &str) -> String {
+    // Plural-only nouns stay as they are.
+    if matches!(w, "clothes" | "scissors" | "trousers" | "pants" | "glasses" | "jeans" | "news" | "series" | "species" | "people") {
+        return w.to_string();
+    }
     if w.len() <= 3 || !w.ends_with('s') || w.ends_with("ss") || w.ends_with("us") || w.ends_with("is") {
         return w.to_string();
     }

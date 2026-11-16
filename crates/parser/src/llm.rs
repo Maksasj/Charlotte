@@ -76,6 +76,7 @@ pub fn from_canonical(line: &str) -> Option<Intent> {
             "who_are_you" => Social::WhoAreYou,
             "what_can_you_do" => Social::WhatCanYouDo,
             "and_you" => Social::AndYou,
+            "dont_know" => Social::DontKnow,
             _ => return None,
         })),
         _ => None,

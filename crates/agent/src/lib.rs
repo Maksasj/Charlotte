@@ -258,6 +258,19 @@ impl Agent {
         self.refresh_names();
         let intents = self.parser.parse_many(text, &self.ctx);
         self.last_understood = !matches!(intents.as_slice(), [Intent::Unknown]);
+        let mut intents = intents;
+        {
+            let mut seen: Vec<String> = Vec::new();
+            intents.retain(|i| {
+                let c = i.canonical();
+                if seen.contains(&c) {
+                    false
+                } else {
+                    seen.push(c);
+                    true
+                }
+            });
+        }
         if intents.len() > 1 {
             // Several intents from one sentence (LLM translator): handle each, join the replies.
             let mut texts: Vec<String> = Vec::new();
@@ -266,7 +279,10 @@ impl Agent {
             // Reactions and small talk only matter when the message had nothing else.
             let has_content = intents.iter().any(|i| !matches!(i, Intent::Social(_) | Intent::Greet | Intent::Unknown));
             for i in intents {
-                if has_content && matches!(i, Intent::Social(Social::Reaction) | Intent::Unknown) {
+                // Greetings, reactions and stray yes/no are noise next to content
+                // (a yes/no still counts when the agent asked something).
+                let stray_yes_no = matches!(i, Intent::Yes | Intent::No) && self.pending.is_none();
+                if has_content && (matches!(i, Intent::Social(Social::Reaction) | Intent::Unknown | Intent::Greet) || stray_yes_no) {
                     continue;
                 }
                 let r = self.respond_intent(i, text);
@@ -319,7 +335,16 @@ impl Agent {
             self.curiosity.reward(if was_pending { 0.3 } else { 0.05 });
         }
         if self.ask_in_chat && self.pending.is_none() && reply.intent != "ask" {
-            if let Some((q, key)) = self.next_question(self.curiosity.chat_cap, "ask") {
+            // Only ask about what this turn talked about.
+            let topic: Vec<String> = reply
+                .claims
+                .iter()
+                .flat_map(|c| c.args.iter().filter_map(|v| v.as_sym().map(String::from)))
+                .chain(self.ctx.last_entity.clone())
+                .filter(|e| e != &self.ctx.speaker)
+                .collect();
+            let cap = self.curiosity.chat_cap;
+            if let Some((q, key)) = (!topic.is_empty()).then(|| self.next_question_about(cap, "ask", Some(&topic))).flatten() {
                 reply.text = format!("{} {q}", reply.text);
                 self.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
             }
@@ -343,8 +368,21 @@ impl Agent {
     /// cap allows), plan it into a question and set it as pending.
     /// Returns (question text, goal key).
     fn next_question(&mut self, cap: usize, action: &str) -> Option<(String, String)> {
+        self.next_question_about(cap, action, None)
+    }
+
+    /// Like `next_question`, but if `topic` is given, only goals mentioning one
+    /// of those entities count (chat: stay on what is being talked about).
+    fn next_question_about(&mut self, cap: usize, action: &str, topic: Option<&[String]>) -> Option<(String, String)> {
         let m = self.model(false);
-        let goals = self.curiosity.goals(&self.kb, &m);
+        let mut goals = self.curiosity.goals(&self.kb, &m);
+        if let Some(topic) = topic {
+            goals.retain(|g| {
+                let key = g.goal.key();
+                let words: Vec<&str> = key.split(|c: char| !(c.is_alphanumeric() || c == '_')).collect();
+                topic.iter().any(|e| words.contains(&e.as_str()))
+            });
+        }
         self.curiosity.update(&goals);
         if !self.curiosity.wants_to_ask(&goals) || self.asked_today(action) >= cap {
             return None;
@@ -416,6 +454,7 @@ impl Agent {
                     },
                 }
             }
+            Intent::Social(Social::DontKnow) => self.say(Act::Note(if pending.is_some() { "Okay, never mind.".into() } else { "That's okay.".into() })),
             Intent::Social(kind) => self.social(kind),
             Intent::Why(target) => {
                 let atom = match target.and_then(|a| a.to_ground()) {
@@ -453,7 +492,6 @@ impl Agent {
             }
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
-            Intent::Unknown if pending.is_some() => self.say(Act::Note("Okay, never mind.".into())),
             Intent::Unknown => self.say(Act::NotUnderstood),
         }
     }
@@ -527,6 +565,7 @@ impl Agent {
             Social::WhatCanYouDo => "You can teach me facts (\"Dogs are animals.\"), ask me questions (\"What is a dog?\", \"What do you know about birds?\"), \
                  ask \"Why?\" after an answer, and correct me (\"No, a whale is a mammal.\")."
                 .to_string(),
+            Social::DontKnow => "That's okay.".to_string(),
             Social::AndYou => format!("I'm doing well, thanks. I've learned {facts} facts so far, and I'm always happy to learn more."),
         };
         self.say(Act::Note(text))
