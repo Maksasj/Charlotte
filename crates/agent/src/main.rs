@@ -15,6 +15,7 @@ fn main() -> io::Result<()> {
     let mut speaker = "maksim".to_string();
     let mut script: Option<String> = None;
     let mut source: Option<String> = None;
+    let mut llm: Option<String> = None;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         match a.as_str() {
@@ -22,8 +23,10 @@ fn main() -> io::Result<()> {
             "--speaker" => speaker = args.next().expect("--speaker NAME"),
             "--script" => script = Some(args.next().expect("--script FILE")),
             "--source" => source = Some(args.next().expect("--source LABEL")),
+            "--llm" => llm = Some("haiku".into()),
+            "--llm-model" => llm = Some(args.next().expect("--llm-model NAME")),
             "-h" | "--help" => {
-                println!("sla [--vault DIR] [--speaker NAME] [--source LABEL] [--script FILE]");
+                println!("sla [--vault DIR] [--speaker NAME] [--source LABEL] [--script FILE] [--llm | --llm-model NAME]");
                 return Ok(());
             }
             other => {
@@ -35,6 +38,9 @@ fn main() -> io::Result<()> {
     let mut agent = Agent::open(&vault, &speaker)?;
     if let Some(s) = source {
         agent.source = s;
+    }
+    if let Some(m) = &llm {
+        agent.enable_llm(m);
     }
     for (file, line, err) in agent.kb.vault.errors() {
         eprintln!("warning: {file}: cannot read `{line}`: {err}");
@@ -49,7 +55,7 @@ fn main() -> io::Result<()> {
         return Ok(());
     }
 
-    println!("Symbolic learning agent. Vault: {vault}. Type :quit to leave, :facts / :rules / :log to look inside.");
+    println!("Symbolic learning agent ({} parser). Vault: {vault}. Type :quit to leave, :facts / :rules / :log to look inside.", agent.parser_name());
     let stdin = io::stdin();
     loop {
         print!("> ");

@@ -19,6 +19,7 @@ fn main() {
             "--turns" => cfg.turns = num("--turns"),
             "--teacher-questions" => cfg.teacher_questions = num("--teacher-questions"),
             "--no-claude" => cfg.use_claude = false,
+            "--llm" => cfg.llm = true,
             "--model" => cfg.model = args.next().expect("--model NAME"),
             "--notes" => cfg.notes = args.next().expect("--notes TEXT"),
             "--history" => cfg.history = args.next().expect("--history PATH").into(),

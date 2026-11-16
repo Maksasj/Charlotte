@@ -17,6 +17,9 @@ The speaker is **maksim**: `I`, `me`, `my`, `myself` refer to `maksim`.
 - Plural common nouns are singularized: `apples` -> `apple`, `berries` -> `berry`,
   `boxes` -> `box`, `wings` -> `wing`. Capitalized names are never singularized
   (`James` stays `james`).
+- `my X` for a thing or person that is not a property (`my mother`, `my car`) is the
+  entity `my_x`: `My mother likes soup.` -> `tell: likes(my_mother, soup)`.
+  (`My P is V` stays a property of the speaker: `My name is Maksim.`)
 - Question variables are written `W` (who/what/where). Rule variables are `A`.
 - Negated facts start with `-`: `-likes(anna, tea)`.
 - Several atoms are separated by `; ` in the order they appear.
@@ -82,6 +85,14 @@ Coordination: `Anna likes tea and coffee` -> `tell: likes(anna, tea); likes(anna
 | `no` | `no`, `nope`, `nah` | `no:` |
 | `greet` | `hi`, `hello`, `hey`, `good morning` | `greet:` |
 | `bye` | `bye`, `goodbye`, `see you` | `bye:` |
+| `recall_more` | `What else do you know about birds?` / `Tell me more about Anna.` | `recall_more: bird` |
+| | `What else?` / `Anything else?` / `Tell me more.` | `recall_more: last` |
+| `social` | `Thanks!` | `social: thanks` |
+| | `Cool!` / `Really?` / `I see.` / `Nice.` | `social: reaction` |
+| | `Who are you?` / `What is your name?` | `social: who_are_you` |
+| | `What can you do?` / `How do you work?` | `social: what_can_you_do` |
+| | `And you?` / `How about you?` | `social: and_you` |
+| `how_are_you` | `How are you?` | `how_are_you:` |
 | `unknown` | anything that fits no pattern | `unknown:` |
 
 ## Rules

@@ -46,6 +46,8 @@ pub struct Agent {
     /// Source label for facts from this conversation partner.
     pub source: String,
     pub learner: Learner,
+    /// Whether the last message (sentence) was understood.
+    pub last_understood: bool,
     /// Last recall (entity, items shown) for "what else?".
     pub last_recall: Option<(String, usize)>,
     small_talk_turn: usize,
@@ -91,6 +93,7 @@ impl Agent {
             clock: None,
             source: "user".into(),
             learner: Learner::default(),
+            last_understood: true,
             last_recall: None,
             small_talk_turn: 0,
             curiosity: Curiosity::default(),
@@ -114,6 +117,17 @@ impl Agent {
     /// Swap the parser (for example an LLM translator).
     pub fn set_parser(&mut self, p: Box<dyn Parser>) {
         self.parser = p;
+    }
+
+    /// Use the LLM translator (Claude CLI, headless) for messages the pattern
+    /// parser does not understand. Translations are cached in the vault.
+    pub fn enable_llm(&mut self, model: &str) {
+        let cache = self.kb.vault.root.join("llm_cache.tsv");
+        self.parser = Box::new(sla_parser::llm::LlmTranslator::new(model, Some(cache)));
+    }
+
+    pub fn parser_name(&self) -> &str {
+        self.parser.name()
     }
 
     pub fn now(&self) -> Timestamp {
@@ -205,7 +219,7 @@ impl Agent {
         let mut not_understood = 0;
         for s in &sentences {
             let r = self.respond_one(s);
-            if r.intent == "social" && matches!(self.parser.parse(s, &self.ctx), Intent::Unknown) {
+            if !self.last_understood {
                 not_understood += 1;
                 continue;
             }
@@ -231,7 +245,30 @@ impl Agent {
         let _ = self.reload_if_edited();
         self.learn_names(text);
         self.refresh_names();
-        let intent = self.parser.parse(text, &self.ctx);
+        let intents = self.parser.parse_many(text, &self.ctx);
+        self.last_understood = !matches!(intents.as_slice(), [Intent::Unknown]);
+        if intents.len() > 1 {
+            // Several intents from one sentence (LLM translator): handle each, join the replies.
+            let mut texts: Vec<String> = Vec::new();
+            let mut claims = Vec::new();
+            let mut intent_name = "social";
+            for i in intents {
+                let r = self.respond_intent(i, text);
+                if r.intent != "social" {
+                    intent_name = r.intent;
+                }
+                claims.extend(r.claims);
+                if !texts.contains(&r.text) {
+                    texts.push(r.text);
+                }
+            }
+            return Reply { text: texts.join(" "), intent: intent_name, claims };
+        }
+        let intent = intents.into_iter().next().unwrap_or(Intent::Unknown);
+        self.respond_intent(intent, text)
+    }
+
+    fn respond_intent(&mut self, intent: Intent, text: &str) -> Reply {
         // Remember who we talk about, for "he", "she", "it", "they" next time.
         let subject = match &intent {
             // "My mom is Olga": the person named is who "she" will mean.

@@ -5,6 +5,7 @@
 //! trait lets an LLM translator be plugged in later.
 
 pub mod lexicon;
+pub mod llm;
 mod words;
 
 pub use words::lemma;
@@ -143,6 +144,15 @@ impl Default for Context {
 /// an LLM translator can implement this trait later.
 pub trait Parser {
     fn parse(&mut self, text: &str, ctx: &Context) -> Intent;
+
+    /// A message may carry several intents ("Anna is a teacher and she likes tea. Who likes tea?").
+    fn parse_many(&mut self, text: &str, ctx: &Context) -> Vec<Intent> {
+        vec![self.parse(text, ctx)]
+    }
+
+    fn name(&self) -> &str {
+        "pattern"
+    }
 }
 
 #[derive(Debug, Default, Clone)]

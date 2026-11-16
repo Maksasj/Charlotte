@@ -311,6 +311,11 @@ pub struct JudgeResult {
 
 /// One judge: chats with a fresh agent for `turns` messages about `topic`, then scores it.
 pub fn run_judge(topic: &str, turns: usize, model: &str) -> JudgeResult {
+    run_judge_with(topic, turns, model, false)
+}
+
+/// A judge run; with `llm` the agent uses the LLM translator for input.
+pub fn run_judge_with(topic: &str, turns: usize, model: &str, llm: bool) -> JudgeResult {
     let root = temp_dir("judge");
     let mut res = JudgeResult { topic: topic.into(), score: None, reason: String::new(), transcript: Vec::new() };
     let mut agent = match Agent::open(&root, "maksim") {
@@ -320,6 +325,9 @@ pub fn run_judge(topic: &str, turns: usize, model: &str) -> JudgeResult {
             return res;
         }
     };
+    if llm {
+        agent.enable_llm(model);
+    }
     let mut t = Timestamp::from_ymd_hms(2026, 1, 5, 9, 0, 0);
     let render = |tr: &[(String, String)]| tr.iter().map(|(u, a)| format!("User: {u}\nAgent: {a}")).collect::<Vec<_>>().join("\n");
     for _ in 0..turns {
@@ -393,6 +401,8 @@ pub struct EvalConfig {
     pub use_claude: bool,
     pub model: String,
     pub notes: String,
+    /// Judges talk to the agent with the LLM translator enabled.
+    pub llm: bool,
 }
 
 impl EvalConfig {
@@ -407,6 +417,7 @@ impl EvalConfig {
             use_claude: true,
             model: "haiku".into(),
             notes: String::new(),
+            llm: false,
         }
     }
 }
@@ -554,7 +565,7 @@ pub fn run(cfg: &EvalConfig) -> std::io::Result<EvalReport> {
     }
     if cfg.use_claude {
         for i in 0..cfg.judges {
-            rep.judges.push(run_judge(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model));
+            rep.judges.push(run_judge_with(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model, cfg.llm));
         }
     }
 
