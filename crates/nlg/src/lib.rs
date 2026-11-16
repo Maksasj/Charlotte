@@ -293,6 +293,9 @@ impl Realizer {
                     let mid = words[1..].join(" ");
                     let rest = format!("{mid}{obj}").trim().to_string();
                     verb(&v0, rest)
+                } else if n == 1 && words.len() == 1 {
+                    // One-word properties of a thing are verbs ("cats hide"); nouns come as is_a.
+                    verb(&v0, String::new())
                 } else if n == 1 {
                     be(article(&words.join(" ")))
                 } else {

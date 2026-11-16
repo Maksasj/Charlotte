@@ -195,6 +195,16 @@ impl Agent {
                 _ => {}
             }
         }
+        // Things in general knowledge are common nouns, not names ("Rain is wet" starts with a capital).
+        for f in self.kb.all_facts() {
+            if f.source.starts_with("teacher") {
+                for v in &f.atom.args {
+                    if let Some(x) = v.as_sym() {
+                        names.remove(x);
+                    }
+                }
+            }
+        }
         // Categories are not names ("Fruit is a kind of food" starts with a capital).
         for f in self.kb.all_facts() {
             if f.atom.base_pred() == "is_a" {
@@ -210,7 +220,8 @@ impl Agent {
     /// sentences is handled sentence by sentence.
     pub fn respond(&mut self, text: &str) -> Reply {
         let sentences = split_sentences(text);
-        if sentences.len() <= 1 {
+        // With the LLM translator the whole message is translated at once (it needs the context).
+        if sentences.len() <= 1 || self.parser.name() != "pattern" {
             return self.respond_one(text);
         }
         let mut texts: Vec<String> = Vec::new();
@@ -252,7 +263,12 @@ impl Agent {
             let mut texts: Vec<String> = Vec::new();
             let mut claims = Vec::new();
             let mut intent_name = "social";
+            // Reactions and small talk only matter when the message had nothing else.
+            let has_content = intents.iter().any(|i| !matches!(i, Intent::Social(_) | Intent::Greet | Intent::Unknown));
             for i in intents {
+                if has_content && matches!(i, Intent::Social(Social::Reaction) | Intent::Unknown) {
+                    continue;
+                }
                 let r = self.respond_intent(i, text);
                 if r.intent != "social" {
                     intent_name = r.intent;

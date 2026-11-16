@@ -230,6 +230,26 @@ pub struct ConversationConfig {
     pub parallel: usize,
     pub model: String,
     pub review: bool,
+    /// Natural conversation: everyday phrasing; the agent uses the LLM translator.
+    pub natural: bool,
+}
+
+fn natural_teacher_prompt(topic: &str, transcript: &[(String, String)]) -> String {
+    let so_far = if transcript.is_empty() {
+        "(nothing yet)".to_string()
+    } else {
+        transcript.iter().map(|(u, a)| format!("You: {u}\nAgent: {a}")).collect::<Vec<_>>().join("\n")
+    };
+    format!(
+        "You are chatting with a curious young learning agent, like a friendly teacher or an older friend, about: {topic}.\n\
+         Talk naturally, the way people really talk: everyday phrasing, small reactions ('oh nice', 'right'), follow-up \
+         questions ('what else do you know about it?', 'what is a ...?'), sometimes two facts in one sentence. Keep each \
+         message to one or two sentences. It is a beginner: teach it facts first, and only ask about facts you already \
+         taught it; never ask for its opinion, feelings or guesses ('do you think...', 'who is better...'). Share only true, general facts (never about specific or private people). Now and \
+         then check what it learned by asking it. If it gets something wrong, correct it naturally ('no, actually ...'). If it \
+         asks you something, answer it. If it did not understand, say it again more simply.\n\n\
+         Conversation so far:\n{so_far}\n\nWrite only your next message."
+    )
 }
 
 fn teacher_prompt(topic: &str, transcript: &[(String, String)]) -> String {
@@ -318,11 +338,15 @@ fn one_conversation(cfg: &ConversationConfig, topic: &str, lock: &std::sync::Mut
         }
     };
     agent.source = "teacher:pretrain".into();
+    if cfg.natural {
+        agent.enable_llm(&cfg.model);
+    }
     let mut new_facts: Vec<GroundAtom> = Vec::new();
     let mut new_rules: Vec<String> = Vec::new();
     for _ in 0..cfg.turns {
-        let msg = match claude(&teacher_prompt(topic, &res.transcript), &cfg.model) {
-            Ok(m) => m.lines().map(str::trim).find(|l| !l.is_empty()).unwrap_or("").trim_start_matches("Teacher:").trim().trim_matches('"').to_string(),
+        let prompt = if cfg.natural { natural_teacher_prompt(topic, &res.transcript) } else { teacher_prompt(topic, &res.transcript) };
+        let msg = match claude(&prompt, &cfg.model) {
+            Ok(m) => m.lines().map(str::trim).find(|l| !l.is_empty()).unwrap_or("").trim_start_matches("Teacher:").trim_start_matches("You:").trim().trim_matches('"').to_string(),
             Err(_) => break,
         };
         if msg.is_empty() {

@@ -178,8 +178,11 @@ impl LlmTranslator {
              Context: the speaker is `{}` (\"I\" = {}). {last}\n\n\
              Translate this message. A message with several parts becomes several lines (one intent per line). \
              Use the predicates of the specification where they fit; other verbs become their lemma (`play(anna, chess)`). \
-             Leave out filler, opinions and parts that are not facts, questions or the listed social moves. \
-             If nothing in it can be expressed, output `unknown:`.\n\
+             Entities are short singular nouns (one or two words). \
+             Only translate statements the speaker presents as plainly true; leave out apologies, filler, opinions, \
+             hedges, hints, hypotheticals, meta talk ('let me say it simpler') and anything you are unsure about. \
+             Fewer, cleaner atoms are better than many doubtful ones. A question the speaker asks the agent is an `ask:` \
+             (or `why:`) line. If nothing in it can be expressed, output `unknown:`.\n\
              Output ONLY the canonical lines, nothing else.\n\nMessage: {text}",
             ctx.speaker, ctx.speaker
         );
@@ -228,6 +231,14 @@ impl Parser for LlmTranslator {
     /// Pattern parser first; the model only for what it does not understand,
     /// or when the pattern parse looks garbled (see [`suspicious`]).
     fn parse_many(&mut self, text: &str, ctx: &Context) -> Vec<Intent> {
+        // Natural speech (several sentences or long ones) goes to the model as a whole,
+        // so it has the context; only short, single, clean sentences stay with the patterns.
+        let words = text.split_whitespace().count();
+        let sentences = text.matches(['.', '!', '?']).filter(|_| true).count();
+        if words > 10 || sentences > 1 {
+            let v = self.translate(text, ctx);
+            return if v.is_empty() { vec![Intent::Unknown] } else { v };
+        }
         let p = parse(text, ctx);
         if p != Intent::Unknown && !suspicious(&p) {
             return vec![p];

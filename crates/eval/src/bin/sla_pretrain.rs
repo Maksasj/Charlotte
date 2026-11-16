@@ -17,6 +17,7 @@ fn main() {
         review: true,
     };
     let mut conversations = false;
+    let mut natural = false;
     let mut parallel = 6;
     let mut turns = 14;
     let mut args = std::env::args().skip(1);
@@ -27,12 +28,16 @@ fn main() {
             "--topic" => cfg.topics.push(args.next().expect("--topic TEXT")),
             "--no-review" => cfg.review = false,
             "--conversations" => conversations = true,
+            "--natural" => {
+                conversations = true;
+                natural = true;
+            }
             "--parallel" => parallel = args.next().and_then(|v| v.parse().ok()).expect("--parallel N"),
             "--turns" => turns = args.next().and_then(|v| v.parse().ok()).expect("--turns N"),
             "--model" => cfg.model = args.next().expect("--model NAME"),
             "-h" | "--help" => {
                 println!("sla_pretrain [--vault DIR] [--per-topic N] [--topic TEXT]... [--no-review] [--model M]
-             [--conversations [--parallel N] [--turns N]]");
+             [--conversations | --natural] [--parallel N] [--turns N]");
                 return;
             }
             other => {
@@ -43,7 +48,7 @@ fn main() {
     }
     if conversations {
         let topics: Vec<String> = if cfg.topics.is_empty() { CONVERSATION_TOPICS.iter().map(|t| t.to_string()).collect() } else { cfg.topics.clone() };
-        let ccfg = ConversationConfig { vault: cfg.vault.clone(), topics, turns, parallel, model: cfg.model.clone(), review: cfg.review };
+        let ccfg = ConversationConfig { vault: cfg.vault.clone(), topics, turns, parallel, model: cfg.model.clone(), review: cfg.review, natural };
         println!("Teaching {} with {} conversations ({} turns each, {} in parallel).", ccfg.vault.display(), ccfg.topics.len(), turns, parallel);
         let results = converse(&ccfg, |m| println!("{m}"));
         let text = conversation_report(&results);
