@@ -357,3 +357,26 @@ fn duration_question_that_asks_for_steps_gets_them() {
     assert!(!r.contains("Boil the pasta") && r.contains("15 to 20 minutes"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// A taught substitute shows up when the user lacks the item.
+#[test]
+fn known_substitute_is_offered() {
+    let dir = temp("substitute");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut teach: Vec<(&str, &[&str])> = TEACH.to_vec();
+    teach.push(("A shallot can replace garlic.", &["tell: substitute(garlic, shallot)"]));
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(&teach)));
+    for (m, _) in &teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[("How do I make garlic tomato pasta without garlic?", &["ask_how: garlic_tomato_pasta", "inform: -available(garlic)"])];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("You can use a shallot instead of the garlic"), "{r}");
+    assert!(!r.contains("I don't know what can replace"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

@@ -340,6 +340,13 @@ the report's own regex found 57).
   in **20 of 20** pairs (100%, 83.9 to 100), target 70%: met. After the same teach
   lines the milestone 12 build answers "Sorry, I didn't understand that." or
   "I'm not sure whether you boil egg."
+- 2026-11-17, transfer: the scenario files teach the base task only, so no amount
+  of repeating could teach a variant ("no kettle: heat the water in a pot"). Built:
+  the in-role teacher (Haiku, `--teacher MODEL`, training only) writes up to three
+  teach lines for a failed variant from the variant and the ground truth; a checker
+  keeps only lines in the fixed frames (now also "B can replace A."); the variant is
+  tried once more. Help replies offer a known substitute ("You can use a pot
+  instead of the kettle."). Measured in the training run, which waits for the user.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

@@ -117,6 +117,7 @@ fn curriculum_command(args: &[String]) {
         judge: Box::new(sla_eval::curriculum::ModelJudge::new(judge.clone(), Some(root.join("eval").join("curriculum_judge_cache.jsonl")))),
         labeller: Some(sla_eval::outcome::Labeller::new(Some(judge.clone()), Some(root.join("eval").join("label_cache.jsonl")))),
         max_turns: 4,
+        teacher_model: None,
     };
     let live = root.join("data").join("training").join("curriculum").join("live").join(format!("{ts}.jsonl"));
     sla_eval::curriculum::set_live(live.clone());
@@ -126,7 +127,10 @@ fn curriculum_command(args: &[String]) {
     if args.iter().any(|a| a == "--train") {
         let train = sla_eval::curriculum::load_scenarios(&root.join("data/curriculum/training"));
         eprintln!("training on {} scenarios first", train.len());
+        // In training the in-role teacher (Haiku by default) also teaches variants.
+        cfg.teacher_model = Some(arg("--teacher").unwrap_or_else(|| "haiku".into()));
         let t = sla_eval::curriculum::run(&mut cfg, &brain, &train, seeds);
+        cfg.teacher_model = None;
         let tmd = sla_eval::curriculum::markdown(&t);
         let dir = root.join("eval").join("curriculum");
         let _ = std::fs::create_dir_all(&dir);

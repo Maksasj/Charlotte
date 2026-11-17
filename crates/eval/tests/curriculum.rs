@@ -115,6 +115,7 @@ fn encounters_teach_repeat_transfer_retention() {
         judge: Box::new(StepsJudge),
         labeller: None,
         max_turns: 4,
+        teacher_model: None,
     };
     let r = curriculum::run(&mut cfg, &brain, &[s], 0);
     println!("{}", curriculum::markdown(&r));
@@ -252,4 +253,24 @@ fn ground_truth_teacher_answers_from_the_scenario() {
     assert!(t.answer("How do I make tea? What do I need, and what is the first step?").contains("Step 1 of making tea"));
     assert_eq!(t.answer("How do I fix a bike?"), "I don't know.");
     assert_eq!(t.answered, 3);
+}
+
+/// The in-role teacher's variant lines are kept only in the fixed frames.
+#[test]
+fn variant_teacher_lines_keep_to_the_frames() {
+    assert!(curriculum::in_teach_frame("A pot can replace a kettle."));
+    assert!(curriculum::in_teach_frame("Step 1 of making tea: heat the water in a pot for 4 minutes."));
+    assert!(!curriculum::in_teach_frame("Sure! Here is what you should know about tea."));
+    assert!(!curriculum::in_teach_frame("Please say it back to me as a list."));
+    let s = curriculum::parse_scenario(SCENARIO);
+    let v = s.variant.clone().unwrap();
+    sla_parser::claude::set_thread_mock(std::sync::Arc::new(|_role: &str, _prompt: &str| {
+        Ok("Here you go:
+- A pot can replace a kettle.
+Step 1 of making tea: heat the water in the pot.
+Thanks for asking!".to_string())
+    }));
+    let lines = curriculum::variant_teach_lines("haiku", &s, &v);
+    sla_parser::claude::clear_thread_mock();
+    assert_eq!(lines, vec!["A pot can replace a kettle.".to_string(), "Step 1 of making tea: heat the water in the pot.".to_string()]);
 }

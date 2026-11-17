@@ -417,6 +417,26 @@ impl Agent {
             .filter(|x| used.contains(x) && !m.contains(&g("covered", &[x])))
             .collect();
         lacking.dedup();
+        // A known substitute: "You can use a pot instead of the kettle."
+        let lacking_all: Vec<String> = self
+            .session_facts
+            .iter()
+            .filter(|a| a.pred == "-available")
+            .filter_map(|a| a.args.first()?.as_sym().map(String::from))
+            .filter(|x| used.contains(x))
+            .collect();
+        for x in &lacking_all {
+            let subs: Vec<String> = m
+                .facts_of("substitute")
+                .into_iter()
+                .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str()))
+                .filter_map(|a| a.args.get(1)?.as_sym().map(String::from))
+                .collect();
+            if let Some(sub) = subs.first() {
+                out.push_str(&format!(" You can use {} instead of the {}.", with_article(sub), words(x)));
+            }
+        }
+        lacking.retain(|x| !m.facts_of("substitute").iter().any(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())));
         if !lacking.is_empty() {
             let l = list(&lacking.iter().map(|x| words(x)).collect::<Vec<_>>());
             out.push_str(&format!(" You don't have {l}, and I don't know what can replace it yet."));

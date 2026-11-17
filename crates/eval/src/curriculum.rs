@@ -252,6 +252,11 @@ pub struct CurriculumConfig {
     /// Labels every user turn (helpful, clarify, not understood ...); `None` skips labels.
     pub labeller: Option<Labeller>,
     pub max_turns: usize,
+    /// The in-role teacher model (training only): when a transfer variant
+    /// fails, it writes a short teach block for the variant in the fixed
+    /// frames, the checker keeps only lines in those frames, and the variant is
+    /// tried once more. `None`: no variant teaching (a held-out measurement).
+    pub teacher_model: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Default)]
@@ -282,6 +287,12 @@ pub struct CurriculumReport {
     pub teacher_meta_requests: usize,
     /// Questions the agent asked its teacher between encounters, and how many
     /// the teacher could answer from a ground truth.
+    #[serde(default)]
+    pub variant_teach_lines: usize,
+    #[serde(default)]
+    pub transfer_retry_passed: usize,
+    #[serde(default)]
+    pub transfer_retry_total: usize,
     #[serde(default)]
     pub curiosity_asked: usize,
     #[serde(default)]
@@ -375,6 +386,39 @@ impl CurriculumConfig {
         }
         s.teach.len() + fixes.len()
     }
+}
+
+/// Is a teach line in one of the protocol's fixed frames?
+pub fn in_teach_frame(line: &str) -> bool {
+    let l = line.trim();
+    let lower = l.to_lowercase();
+    let ends = l.ends_with('.');
+    let words = l.split_whitespace().count();
+    ends && words <= 30
+        && (lower.starts_with("to ") && lower.contains(" you need ")
+            || lower.contains(" takes ") && lower.contains(" minutes")
+            || lower.starts_with("step ") && lower.contains(" of ") && l.contains(':')
+            || lower.starts_with("while step ") && l.contains(':')
+            || lower.contains(" can replace ") && words <= 10)
+}
+
+/// The in-role teacher writes a teach block for a transfer variant from the
+/// variant and the ground truth (protocol rules 2 and 6). Lines outside the
+/// fixed frames are dropped.
+pub fn variant_teach_lines(model: &str, s: &Scenario, v: &Variant) -> Vec<String> {
+    let truth: String = s.teach.iter().map(|l| format!("- {l}\n")).collect();
+    let prompt = format!(
+        "You teach a small assistant by fixed sentence frames only. It knows this task:\n{truth}\n\
+         A user now has a changed situation: {}. The user asked: \"{}\" and said: \"{}\". A good answer must: {}\n\n\
+         Write 1 to 3 teaching sentences that give the assistant exactly the knowledge it needs for this change. Use ONLY these frames:\n\
+         - \"B can replace A.\" (B is an item that can be used in place of item A)\n\
+         - \"To <task in words> you need A, B and C.\"\n\
+         - \"Step K of <task in -ing words>: <imperative sentence>.\"\n\
+         Output only the sentences, one per line, nothing else.",
+        v.change, v.request, v.situation, v.expect
+    );
+    let Ok(out) = crate::claude_as("variant_teacher", &prompt, model) else { return Vec::new() };
+    out.lines().map(|l| l.trim().trim_start_matches(['-', '*', ' ']).trim().trim_matches('"').to_string()).filter(|l| in_teach_frame(l)).take(3).collect()
 }
 
 /// Answers the agent's questions from the scenarios' teach lines only
@@ -515,7 +559,25 @@ pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenari
         let e = cfg.encounter(brain, s, "transfer", &v.request, &[v.situation.clone()], true, next());
         rep.transfer_total += 1;
         rep.transfer_passed += e.passed as usize;
+        let failed = !e.passed;
         rep.encounters.push(e);
+        if let (true, Some(model)) = (failed, cfg.teacher_model.clone()) {
+            let lines = variant_teach_lines(&model, s, v);
+            if !lines.is_empty() {
+                let mut t = (cfg.teacher_agent)(brain);
+                live(0, "teach_block", &s.id, "phase", &format!("variant teach block for {} ({})", s.id, v.change));
+                for line in &lines {
+                    live(0, "teach_block", &s.id, "teacher", line);
+                    let r = t.respond(line).text;
+                    live(0, "teach_block", &s.id, "agent", &r);
+                }
+                rep.variant_teach_lines += lines.len();
+                let e = cfg.encounter(brain, s, "transfer_retry", &v.request, &[v.situation.clone()], true, next());
+                rep.transfer_retry_passed += e.passed as usize;
+                rep.transfer_retry_total += 1;
+                rep.encounters.push(e);
+            }
+        }
     }
     // Curiosity: the agent asks its teacher about what failed (unknown tasks,
     // gaps in procedures); the teacher answers from the ground truth only.
@@ -636,7 +698,8 @@ pub fn markdown(r: &CurriculumReport) -> String {
          | Helpful + clarify | {} of {} labelled turns ({:.1}%) | 60% |\n\
          | Stored facts contradicting ground truth | {} of {} ({:.1}%) | 1% or less |\n\
          | Teacher meta requests | {} | 0 |\n\
-         | Questions the agent asked its teacher (answered from the ground truth) | {} ({}) | |\n",
+         | Questions the agent asked its teacher (answered from the ground truth) | {} ({}) | |\n\
+         | Transfer after a variant teach block (training) | {} of {} ({} teach lines) | |\n",
         r.scenarios,
         r.seeds,
         r.teach_first_try,
@@ -665,7 +728,10 @@ pub fn markdown(r: &CurriculumReport) -> String {
         pct(r.contradicting.len(), r.stored_facts),
         r.teacher_meta_requests,
         r.curiosity_asked,
-        r.curiosity_answered
+        r.curiosity_answered,
+        r.transfer_retry_passed,
+        r.transfer_retry_total,
+        r.variant_teach_lines
     );
     s.push_str(&format!(
         "| Encounter 2 by the symbolic check (needs, step order, time from the ground truth) | {} of {} ({:.1}%) | 70% |
