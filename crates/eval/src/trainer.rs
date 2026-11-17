@@ -441,18 +441,18 @@ impl Trainer {
     /// Check the plan limits now (blocking; call from a background thread).
     pub fn refresh_limits(&self) {
         let r = fetch_limits();
-        // Alert with an action: a curriculum run stops at 80% of the session
-        // limit or 70% of the weekly one (Design 2.0, alerts).
+        // Alert with an action: a curriculum run stops at 95% of the session
+        // limit or 70% of the weekly one (Design 2.0, alerts; session raised
+        // from 80% by the user on 2026-11-17).
         if let Ok(v) = &r {
             let over = v.iter().any(|l| {
                 let n = l.name.to_lowercase();
-                (n.contains("session") && l.percent >= 80.0) || (n.contains("week") && l.percent >= 70.0)
+                (n.contains("session") && l.percent >= SESSION_STOP) || (n.contains("week") && l.percent >= WEEK_STOP)
             });
             if over && curriculum_running() {
-                if let Some(mut c) = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()).take() {
-                    let _ = c.kill();
-                }
-                *LIMIT_STOP.lock().unwrap_or_else(|e| e.into_inner()) = Some("the curriculum run was stopped: plan limit above 80% of the session or 70% of the week".into());
+                stop_curriculum();
+                *LIMIT_STOP.lock().unwrap_or_else(|e| e.into_inner()) =
+                    Some(format!("the curriculum run was stopped: plan limit above {SESSION_STOP:.0}% of the session or {WEEK_STOP:.0}% of the week"));
             }
         }
         let mut l = self.limits.lock().unwrap_or_else(|e| e.into_inner());
@@ -834,17 +834,43 @@ static LIMIT_STOP: Mutex<Option<String>> = Mutex::new(None);
 /// The curriculum training process started from the dashboard (one at a time).
 static CURRICULUM: Mutex<Option<std::process::Child>> = Mutex::new(None);
 
+/// Plan limits at which a curriculum run is stopped.
+pub const SESSION_STOP: f64 = 95.0;
+pub const WEEK_STOP: f64 = 70.0;
+
+/// Is a curriculum run going: the one this server started, or one started
+/// some other way (an sla_eval process, e.g. from before a server restart)?
 fn curriculum_running() -> bool {
-    let mut g = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner());
-    match g.as_mut() {
-        Some(c) => match c.try_wait() {
-            Ok(None) => true,
-            _ => {
-                *g = None;
-                false
+    {
+        let mut g = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner());
+        if let Some(c) = g.as_mut() {
+            match c.try_wait() {
+                Ok(None) => return true,
+                _ => *g = None,
             }
-        },
-        None => false,
+        }
+    }
+    other_run_pids().is_some()
+}
+
+/// sla_eval processes not started by this server (Windows: tasklist).
+fn other_run_pids() -> Option<Vec<String>> {
+    if !cfg!(windows) {
+        return None;
+    }
+    let out = std::process::Command::new("tasklist").args(["/FI", "IMAGENAME eq sla_eval.exe", "/FO", "CSV", "/NH"]).output().ok()?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let pids: Vec<String> = text.lines().filter(|l| l.starts_with("\"sla_eval.exe\"")).filter_map(|l| l.split("\",\"").nth(1).map(String::from)).collect();
+    (!pids.is_empty()).then_some(pids)
+}
+
+/// Stop the curriculum run, whoever started it.
+fn stop_curriculum() {
+    if let Some(mut c) = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()).take() {
+        let _ = c.kill();
+    }
+    for pid in other_run_pids().unwrap_or_default() {
+        let _ = std::process::Command::new("taskkill").args(["/PID", &pid, "/F"]).output();
     }
 }
 
@@ -933,9 +959,7 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
             }
         }
         ("POST", "/api/curriculum/stop") => {
-            if let Some(mut c) = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()).take() {
-                let _ = c.kill();
-            }
+            stop_curriculum();
             respond(&mut stream, 200, "application/json", b"{\"ok\":true}");
         }
         ("POST", "/api/stop") => {

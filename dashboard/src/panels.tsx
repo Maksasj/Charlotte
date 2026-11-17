@@ -34,7 +34,7 @@ export function Controls({ c }: { c: Curriculum | null }) {
             onClick={() =>
               post(
                 '/api/curriculum/start',
-                `Start the curriculum training run with ${teachers} parallel teacher(s)? It trains on the 55 training scenarios, then measures on the 20 held-out ones: about 2,000-2,500 Haiku calls.`,
+                `Start the curriculum training run with ${teachers} parallel teacher(s)? It trains on the 55 training scenarios, then measures on the 20 held-out ones: about 2,000-2,500 Haiku calls. It stops by itself at 95% of the session limit or 70% of the week.`,
                 { teachers },
               )
             }
