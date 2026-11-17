@@ -22,6 +22,7 @@ fn main() {
             "--ui" => ui = args.next().expect("--ui FILE").into(),
             // Every model role is played by a mock (no plan limits spent): for trying the dashboard.
             "--mock" => {
+                sla_eval::trainer::MOCK_MODELS.store(true, std::sync::atomic::Ordering::SeqCst);
                 if let Err(e) = sla_eval::ops::install_mock_models(&root) {
                     eprintln!("cannot install the mock models: {e}");
                     std::process::exit(1);

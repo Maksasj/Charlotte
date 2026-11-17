@@ -498,12 +498,32 @@ function useCurriculum() {
 const KIND_TOTALS = { teach: 20, repeat: 20, transfer: 15, retention: 20 };
 const WHO_COLOR = { user: 'var(--accent, #2563eb)', agent: 'inherit', teacher: '#b45309', phase: '#7c3aed' };
 
+function CurriculumControls({ c }) {
+  const [msg, setMsg] = useState('');
+  const post = async (path, confirmText) => {
+    if (confirmText && !window.confirm(confirmText)) return;
+    try {
+      const r = await api(path, { method: 'POST' });
+      const j = await r.json().catch(() => ({}));
+      setMsg(r.ok ? '' : (j.error || 'failed'));
+    } catch (e) { setMsg(String(e)); }
+  };
+  return html`<div style=${{ margin: '6px 0 10px' }}>
+    ${c && c.running
+      ? html`<button class="btn-stop" onClick=${() => post('/api/curriculum/stop', 'Stop the curriculum run?')}>Stop curriculum run</button> <span class="sub">running…</span>`
+      : html`<button class="btn-start" disabled=${!c || c.mock} onClick=${() => post('/api/curriculum/start', 'Start the curriculum training run? It trains on the 55 training scenarios, then measures on the 20 held-out ones: about 2,000-2,500 Haiku calls and 1.5-2 hours.')}>Start curriculum training</button>
+          ${c && c.mock ? html` <span class="sub">(not on mock models)</span>` : null}`}
+    ${msg ? html` <span class="sub" style=${{ color: '#b91c1c' }}>${msg}</span>` : null}
+  </div>`;
+}
+
 function Curriculum() {
   const c = useCurriculum();
-  if (!c || (!c.run && !c.health)) return html`<p class="empty">No curriculum run yet. Start one with <span class="mono">sla_eval curriculum</span>; it shows up here live.</p>`;
+  if (!c || (!c.run && !c.health)) return html`<div><${CurriculumControls} c=${c} /><p class="empty">No curriculum run yet; it shows up here live.</p></div>`;
   const run = c.run, h = c.health;
   const ago = run ? Math.max(0, Math.round(Date.now() / 1000 - run.last_t)) : 0;
   return html`<div>
+    <${CurriculumControls} c=${c} />
     ${run ? html`<div>
       <p class="sub">Run <span class="mono">${run.name}</span> · ${fmtInt(run.messages)} messages · last message ${ago} s ago</p>
       <table style=${{ width: '100%', maxWidth: '640px', borderCollapse: 'collapse' }}>

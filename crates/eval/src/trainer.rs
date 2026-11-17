@@ -810,6 +810,49 @@ pub fn refuse(req: &Request, token: &str, port: u16) -> Option<(u16, &'static st
     None
 }
 
+/// Set when the dashboard runs on mock models (`--mock`): nothing that spends
+/// real model calls may start then.
+pub static MOCK_MODELS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// The curriculum training process started from the dashboard (one at a time).
+static CURRICULUM: Mutex<Option<std::process::Child>> = Mutex::new(None);
+
+fn curriculum_running() -> bool {
+    let mut g = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner());
+    match g.as_mut() {
+        Some(c) => match c.try_wait() {
+            Ok(None) => true,
+            _ => {
+                *g = None;
+                false
+            }
+        },
+        None => false,
+    }
+}
+
+/// Start `sla_eval curriculum --train` (the binary beside this one) in the
+/// repo root; its output goes to data/training/curriculum/dashboard_run.txt.
+fn start_curriculum() -> Result<(), String> {
+    if curriculum_running() {
+        return Err("a curriculum run is already going".into());
+    }
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let name = if cfg!(windows) { "sla_eval.exe" } else { "sla_eval" };
+    let bin = exe.parent().map(|d| d.join(name)).ok_or("no binary directory")?;
+    if !bin.exists() {
+        return Err(format!("{} not found: build it with cargo build --release -p sla_eval", bin.display()));
+    }
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
+    let out_path = root.join("data").join("training").join("curriculum").join("dashboard_run.txt");
+    let _ = std::fs::create_dir_all(out_path.parent().unwrap());
+    let out = std::fs::File::create(&out_path).map_err(|e| e.to_string())?;
+    let err = out.try_clone().map_err(|e| e.to_string())?;
+    let child = std::process::Command::new(bin).args(["curriculum", "--train"]).current_dir(&root).stdout(out).stderr(err).spawn().map_err(|e| e.to_string())?;
+    *CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()) = Some(child);
+    Ok(())
+}
+
 fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream) {
     let Some(req) = read_request(&stream) else { return };
     if req.path.starts_with("/api/") {
@@ -841,8 +884,25 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
         }
         ("GET", "/api/curriculum") => {
             let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
-            let s = serde_json::to_vec(&crate::curriculum::dashboard_status(&root)).unwrap_or_default();
+            let mut v = crate::curriculum::dashboard_status(&root);
+            v["running"] = serde_json::json!(curriculum_running());
+            v["mock"] = serde_json::json!(MOCK_MODELS.load(std::sync::atomic::Ordering::SeqCst));
+            let s = serde_json::to_vec(&v).unwrap_or_default();
             respond(&mut stream, 200, "application/json", &s);
+        }
+        ("POST", "/api/curriculum/start") => {
+            // Starting it spends real model calls: never on a mock trainer.
+            let r = if MOCK_MODELS.load(std::sync::atomic::Ordering::SeqCst) { Err("the dashboard runs on mock models (--mock); a curriculum run would use real ones".to_string()) } else { start_curriculum() };
+            match r {
+                Ok(()) => respond(&mut stream, 200, "application/json", b"{\"ok\":true}"),
+                Err(e) => respond(&mut stream, 409, "application/json", serde_json::json!({ "ok": false, "error": e }).to_string().as_bytes()),
+            }
+        }
+        ("POST", "/api/curriculum/stop") => {
+            if let Some(mut c) = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()).take() {
+                let _ = c.kill();
+            }
+            respond(&mut stream, 200, "application/json", b"{\"ok\":true}");
         }
         ("POST", "/api/stop") => {
             trainer.request_stop();
