@@ -246,3 +246,38 @@ fn guessed_rule_answers_as_a_guess() {
     assert!(r.starts_with("Yes") || r.contains("That's right"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Steps taught by number without an order are ordered by their numbers; a
+/// differently worded task name lands in the same procedure.
+#[test]
+fn numbered_steps_are_ordered_and_names_merge() {
+    let dir = temp("order");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let gold: &[(&str, &[&str])] = &[
+        ("To boil an egg you need an egg and a pot.", &["tell: task(boil_egg); needs(boil_egg, egg); needs(boil_egg, pot)"]),
+        ("Step 1 of boiling an egg: boil water in the pot.", &["tell: step(boil_egg, boil_egg_s1); action(boil_egg_s1, boil); object_of(boil_egg_s1, water)"]),
+        ("Step 2 of boiling an egg: add the egg.", &["tell: step(cook_egg, cook_egg_s2); action(cook_egg_s2, add); object_of(cook_egg_s2, egg)"]),
+        ("Step 3 of boiling an egg: cool the egg.", &["tell: step(boil_egg, boil_egg_s3); action(boil_egg_s3, cool); object_of(boil_egg_s3, egg)"]),
+        ("How do I cook an egg?", &["ask_how: cook_egg"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(gold)));
+    for (m, _) in &gold[..4] {
+        talk(&mut t, m);
+    }
+    {
+        let b = sla_agent::brain::lock(&brain);
+        assert!(!b.kb.vault.procedures.contains_key("cook_egg"), "cook_egg is boil_egg");
+        let facts: Vec<String> = b.kb.vault.procedures["boil_egg"].facts().iter().map(|f| f.atom.to_string()).collect();
+        assert!(facts.contains(&"before(boil_egg_s1, boil_egg_s2)".to_string()), "{facts:?}");
+        assert!(facts.contains(&"before(boil_egg_s2, boil_egg_s3)".to_string()), "{facts:?}");
+    }
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[4].0);
+    let (x, y, z) = (r.find("Boil").unwrap_or(usize::MAX), r.find("Add").unwrap_or(usize::MAX), r.find("Cool").unwrap_or(usize::MAX));
+    assert!(x < y && y < z && z != usize::MAX, "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

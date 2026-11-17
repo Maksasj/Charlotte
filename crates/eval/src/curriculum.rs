@@ -403,13 +403,12 @@ pub fn contradictions(stored: &[GroundAtom], truth: &[GroundAtom], task: &str) -
             out.push(a.to_string());
         }
     }
-    // Steps by position (the order they were listed in).
-    let steps = |set: &[GroundAtom]| -> Vec<String> { set.iter().filter(|g| g.pred == "step" && sym(g, 0) == task).map(|g| sym(g, 1)).collect() };
+    // Steps by id (`<task>_sN`: step N in both).
     let action = |set: &[GroundAtom], st: &str| set.iter().find(|g| g.pred == "action" && sym(g, 0) == st).map(|g| sym(g, 1));
-    for (a, b) in steps(stored).iter().zip(steps(truth).iter()) {
-        if let (Some(x), Some(y)) = (action(stored, a), action(truth, b)) {
+    for st in stored.iter().filter(|g| g.pred == "step" && sym(g, 0) == task).map(|g| sym(g, 1)) {
+        if let (Some(x), Some(y)) = (action(stored, &st), action(truth, &st)) {
             if x != y {
-                out.push(format!("action({a}, {x})"));
+                out.push(format!("action({st}, {x})"));
             }
         }
     }

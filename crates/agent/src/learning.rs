@@ -67,6 +67,26 @@ impl Agent {
                 rest.push(a);
                 continue;
             };
+            // The same task worded differently goes to the same procedure:
+            // rename it (and its step ids) in the fact.
+            let (task, g) = if b.kb.vault.procedures.contains_key(&sla_core::vault::file_stem(&task)) {
+                (task, g)
+            } else {
+                match crate::tasks::similar_task(&task, b.kb.vault.procedures.keys().map(String::as_str)) {
+                    Some(k) => {
+                        let rename = |v: &Value| -> Value {
+                            match v.as_sym() {
+                                Some(s) if s == task => Value::sym(k.as_str()),
+                                Some(s) if s.starts_with(&format!("{task}_s")) => Value::sym(format!("{k}{}", &s[task.len()..]).as_str()),
+                                _ => v.clone(),
+                            }
+                        };
+                        let g2 = GroundAtom::new(&g.pred, g.args.iter().map(rename).collect());
+                        (k, g2)
+                    }
+                    None => (task, g),
+                }
+            };
             let stem = sla_core::vault::file_stem(&task);
             let pf = b.kb.vault.procedures.entry(stem.clone()).or_insert_with(|| {
                 let meta = ProcedureMeta { id: task.clone(), status: RuleStatus::Hypothesis, source: self.source.clone(), uses: 0, successes: 0 };
@@ -80,6 +100,30 @@ impl Agent {
                 b.kb.log_change(now, "learn_procedure", &format!("{task}: {g}"), &format!("{} taught it", self.source));
             }
             learned.push(g);
+        }
+        // A numbered step told without an order comes after the step before
+        // it (and after what that step runs alongside).
+        let new_steps: Vec<(String, String)> = learned.iter().filter(|g| g.pred == "step").filter_map(|g| Some((g.args[0].as_sym()?.to_string(), g.args.get(1)?.as_sym()?.to_string()))).collect();
+        for (task, st) in new_steps {
+            let ordered = learned.iter().any(|g| (g.pred == "before" && g.args.get(1).and_then(|v| v.as_sym()) == Some(&st)) || (g.pred == "overlaps" && g.args.first().and_then(|v| v.as_sym()) == Some(&st)));
+            let num = |s: &str| s.rsplit_once("_s").and_then(|(_, n)| n.parse::<u32>().ok());
+            let (Some(k), false) = (num(&st), ordered) else { continue };
+            let stem = sla_core::vault::file_stem(&task);
+            let Some(pf) = b.kb.vault.procedures.get(&stem) else { continue };
+            let facts: Vec<GroundAtom> = pf.facts().iter().map(|f| f.atom.clone()).collect();
+            let prev = facts.iter().filter(|g| g.pred == "step" && g.args[0].as_sym() == Some(&task)).filter_map(|g| g.args.get(1)?.as_sym().map(String::from)).filter(|s| num(s).map_or(false, |n| n < k)).max_by_key(|s| num(s));
+            let Some(prev) = prev else { continue };
+            let mut add = vec![prev.clone()];
+            add.extend(facts.iter().filter(|g| g.pred == "overlaps" && g.args[0].as_sym() == Some(&prev)).filter_map(|g| g.args.get(1)?.as_sym().map(String::from)));
+            let pf = b.kb.vault.procedures.get_mut(&stem).unwrap();
+            for a in add {
+                let bf = GroundAtom::new("before", vec![Value::sym(a.as_str()), Value::sym(st.as_str())]);
+                if !pf.facts().iter().any(|f| f.atom == bf) {
+                    pf.doc.push(sla_core::doc::Item::Fact(Fact::new(bf.clone(), &self.source).with_conv(&self.session_id)));
+                    learned.push(bf);
+                }
+            }
+            b.kb.vault.mark_procedure_dirty(ProcedureKind::Procedure, &stem);
         }
         (learned, rest)
     }

@@ -59,6 +59,52 @@ fn range(lo: &Value, hi: &Value, unit: &str) -> String {
     }
 }
 
+/// Verbs that say only "do the task": `cook_egg` may be `boil_egg`.
+const GENERIC: &[&str] = &["make", "cook", "prepare", "do", "get", "have", "fix", "help"];
+
+fn singular(w: &str) -> String {
+    if let Some(r) = w.strip_suffix("ies") {
+        return format!("{r}y");
+    }
+    if w.ends_with("oes") || w.ends_with("ches") || w.ends_with("shes") {
+        return w[..w.len() - 2].to_string();
+    }
+    match w.strip_suffix('s') {
+        Some(r) if !w.ends_with("ss") && r.len() > 2 => r.to_string(),
+        _ => w.to_string(),
+    }
+}
+
+/// A known task that a differently worded task name means: the same thing
+/// done, and the same verb or a generic one (`make_potato` -> `bake_potato`,
+/// `make_garlic_tomato_pasta` -> `garlic_tomato_pasta`). Only an unambiguous
+/// match counts.
+pub(crate) fn similar_task<'a>(t: &str, known: impl Iterator<Item = &'a str>) -> Option<String> {
+    let split = |x: &str| -> (String, String) {
+        match x.split_once('_') {
+            Some((v, rest)) => (v.to_string(), rest.split('_').map(singular).collect::<Vec<_>>().join("_")),
+            None => (String::new(), singular(x)),
+        }
+    };
+    let (tv, to) = split(t);
+    let whole = t.split('_').map(singular).collect::<Vec<_>>().join("_");
+    let mut hits: Vec<&str> = Vec::new();
+    for k in known {
+        if k == t {
+            return Some(k.to_string());
+        }
+        let (kv, ko) = split(k);
+        let kwhole = k.split('_').map(singular).collect::<Vec<_>>().join("_");
+        let same_thing = (!to.is_empty() && to == ko && (tv == kv || GENERIC.contains(&tv.as_str()) || GENERIC.contains(&kv.as_str())))
+            || (GENERIC.contains(&tv.as_str()) && to == kwhole)
+            || (GENERIC.contains(&kv.as_str()) && ko == whole);
+        if same_thing && !hits.contains(&k) {
+            hits.push(k);
+        }
+    }
+    (hits.len() == 1).then(|| hits[0].to_string())
+}
+
 impl Agent {
     /// The task a request names: itself if known, a known task that solves
     /// it (a feasible one first), or one said to be the same.
@@ -80,7 +126,8 @@ impl Agent {
                 }
             }
         }
-        None
+        let known: Vec<String> = m.facts_of("task").iter().filter_map(|a| a.args.first().and_then(|v| v.as_sym()).map(String::from)).collect();
+        similar_task(t, known.iter().map(String::as_str))
     }
 
     /// The model with this conversation's situation facts on top of the vault.
@@ -274,4 +321,21 @@ impl Agent {
 fn capitalize(s: &str) -> String {
     let mut c = s.chars();
     c.next().map(|f| f.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default()
+}
+
+#[cfg(test)]
+mod similar_tests {
+    use super::similar_task;
+
+    #[test]
+    fn differently_worded_tasks() {
+        let known = ["boil_egg", "bake_potato", "garlic_tomato_pasta", "fry_egg_white"];
+        let f = |t: &str| similar_task(t, known.iter().copied());
+        assert_eq!(f("cook_egg").as_deref(), Some("boil_egg"));
+        assert_eq!(f("cook_eggs").as_deref(), Some("boil_egg"));
+        assert_eq!(f("make_potato").as_deref(), Some("bake_potato"));
+        assert_eq!(f("make_garlic_tomato_pasta").as_deref(), Some("garlic_tomato_pasta"));
+        assert_eq!(f("fry_egg"), None, "a different verb is a different task");
+        assert_eq!(f("wash_car"), None);
+    }
 }
