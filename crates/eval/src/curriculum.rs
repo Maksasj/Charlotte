@@ -418,15 +418,19 @@ pub fn variant_teach_lines(model: &str, s: &Scenario, v: &Variant) -> Vec<String
     let prompt = format!(
         "You teach a small assistant by fixed sentence frames only. It knows this task:\n{truth}\n\
          A user now has a changed situation: {}. The user asked: \"{}\" and said: \"{}\". A good answer must: {}\n\n\
-         Write 1 to 3 teaching sentences that give the assistant exactly the knowledge it needs for this change. Use ONLY these frames:\n\
-         - \"B can replace A.\" (B is an item that can be used in place of item A)\n\
-         - \"To <task in words> you need A, B and C.\"\n\
-         - \"Step K of <task in -ing words>: <imperative sentence>.\"\n\
+         If the change is about using one item in place of another, write 1 to 3 sentences, ONLY in this frame:\n\
+         - \"B can replace A.\" (B is an item the user has, A is an item of the task they lack)\n\
+         If no item replaces another in this change, output exactly: NONE\n\
          Output only the sentences, one per line, nothing else.",
         v.change, v.request, v.situation, v.expect
     );
     let Ok(out) = crate::claude_as("variant_teacher", &prompt, model) else { return Vec::new() };
-    out.lines().map(|l| l.trim().trim_start_matches(['-', '*', ' ']).trim().trim_matches('"').to_string()).filter(|l| in_teach_frame(l)).take(3).collect()
+    // Only substitutes: a variant must not change the steps of the base task.
+    out.lines()
+        .map(|l| l.trim().trim_start_matches(['-', '*', ' ']).trim().trim_matches('"').to_string())
+        .filter(|l| in_teach_frame(l) && l.to_lowercase().contains(" can replace "))
+        .take(3)
+        .collect()
 }
 
 /// Answers the agent's questions from the scenarios' teach lines only

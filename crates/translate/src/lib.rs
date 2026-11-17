@@ -299,6 +299,20 @@ fn sentence_rules(sentence: &str, acts: &mut [Intent], ctx: &TContext) {
     let words: Vec<&str> = low.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).collect();
     let speaker_word = words.iter().any(|w| matches!(*w, "i" | "me" | "my" | "i'm" | "i've" | "i'd" | "mine" | "myself"));
     for a in acts.iter_mut() {
+        // "B can replace A" / "B can be used instead of A" is a substitute:
+        // substitute(A, B), not the verb `replace(B, A)`.
+        if low.contains(" can replace ") || low.contains("instead of") {
+            if let Intent::Tell { facts, .. } | Intent::Inform(facts) = a {
+                for f in facts.iter_mut() {
+                    if matches!(f.pred.as_str(), "replace" | "replaces" | "use_instead_of" | "instead_of") && f.args.len() == 2 {
+                        let b = f.args[0].clone();
+                        f.args[0] = f.args[1].clone();
+                        f.args[1] = b;
+                        f.pred = "substitute".into();
+                    }
+                }
+            }
+        }
         if low.contains("used to") {
             let facts = match a {
                 Intent::Inform(f) => Some(f.clone()),
@@ -834,6 +848,21 @@ mod tests {
         sla_parser::claude::clear_thread_mock();
         assert!(!a.parts[0].understood() && !b.parts[0].understood());
         assert_eq!(t.calls, 1, "the failure is remembered for the session");
+    }
+}
+
+#[cfg(test)]
+mod substitute_tests {
+    use super::*;
+
+    #[test]
+    fn can_replace_is_a_substitute() {
+        let mut acts = vec![Intent::Tell { facts: vec![sla_core::parse_atom("replace(ceramic_cartridge, washer)").unwrap()], rules: Vec::new(), past: false, hedge: None }];
+        sentence_rules("Ceramic cartridge can replace washer.", &mut acts, &TContext::default());
+        match &acts[0] {
+            Intent::Tell { facts, .. } => assert_eq!(facts[0].to_string(), "substitute(washer, ceramic_cartridge)"),
+            other => panic!("{other:?}"),
+        }
     }
 }
 

@@ -135,6 +135,33 @@ starting point the next milestones are compared with. 80 "requests" are
 counted by surface cues over all 296 user messages (61 in the trainer set;
 the report's own regex found 57).
 
+## Training run (2026-11-17)
+
+16 parallel Haiku teachers on one vault, 55 training scenarios, then the 20
+held-out scenarios on the trained vault (`data/training/curriculum/live/2026-11-17T20-11-13.jsonl`,
+`eval/curriculum/2026-11-17T20-25-21.md`; about 1,800 calls, none failed). The run stopped once at
+80% of the session limit while labelling the training stage (the limit is now 95%); the held-out
+stage was resumed on the trained vault.
+
+| Measure | Before training (run 7) | After training | Target |
+|---|---|---|---|
+| Second encounter (Haiku judge) | 13 of 20 (65%) | 13 of 20 (65%) | 70% |
+| Transfer | 0 of 15 | 0 of 15 | 40% |
+| Retention | 11 of 20 | 10 of 20 | |
+| Not understood | 0.9% | 1.3% | 10% or less |
+| Helpful + clarify | 67.0% | 67.2% | 60% |
+| Contradicting facts | 0.6% | 0.6% | 1% or less |
+
+Training stage itself: second encounter 23 of 55, retention 8 of 55, transfer 0 of 37, and 0 of 36
+after the Haiku teacher taught a variant. Causes found in the teach log: "B can replace A" was
+stored as the verb `replace(B, A)`, never as `substitute(A, B)`, so no reply could use it; and
+variant lessons taught "Step K of ..." into the base procedure, giving a step two actions. Fixed:
+"can replace" / "instead of" always becomes `substitute`; the variant teacher teaches substitutes
+only. Held-out transfer is measured without teaching, and the held-out variants need substitutes
+(a pot for a kettle) that no training scenario teaches, so training cannot move it unless they
+happen to overlap. Training also did not move the second encounter: the held-out tasks are taught
+in their own encounter 1 either way, and the training tasks are different ones.
+
 ## Notes for Design 3.0 (after all of 2.0 is done)
 
 - **Training lab with a real-time dashboard.** In 2.0 the dashboard (`dashboard/`,

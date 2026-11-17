@@ -272,7 +272,8 @@ Thanks for asking!".to_string())
     }));
     let lines = curriculum::variant_teach_lines("haiku", &s, &v);
     sla_parser::claude::clear_thread_mock();
-    assert_eq!(lines, vec!["A pot can replace a kettle.".to_string(), "Step 1 of making tea: heat the water in the pot.".to_string()]);
+    // Only the substitute: a variant must not rewrite the base task's steps.
+    assert_eq!(lines, vec!["A pot can replace a kettle.".to_string()]);
 }
 
 /// Parallel teachers on one vault: two teachers at once, reports added up.
