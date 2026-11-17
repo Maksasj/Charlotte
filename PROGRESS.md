@@ -261,8 +261,9 @@ the report's own regex found 57).
 - 2026-11-17, milestone 15: the help-turn replay gives 24.6% fitting moves (target
   80%). The replayed v1 conversations ask for things the vault was never taught.
 - 2026-11-17, milestone 14: act accuracy 92% (target 95%) and translation 4.1 s
-  median (target 2 s). The Claude CLI costs about 1.3 s per call; calling the API
-  directly is the open decision.
+  median (target 2 s). The Claude CLI costs about 1.3 s per call. Decided
+  2026-11-17 (user): model calls stay on the Claude CLI; speeding up model queries
+  is out of scope, so the 2 s translation target is not pursued.
 
 - 2026-11-17: the first benchmark on the v1 vault gave a 95th percentile of 639 ms with
   5 evaluations per turn. Causes: answering recorded usage in fact files (invalidating
