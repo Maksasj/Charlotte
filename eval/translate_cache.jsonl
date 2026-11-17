@@ -797,3 +797,418 @@
 {"key":"0bd3583de318dd53:2,3,4","lines":[[2,["request: paint_fence"]],[3,["inform: time_available(2.5, hour); available(brush); available(paint)"]],[4,["unknown:"]]]}
 {"key":"caaa1618bb075cb3:5:retry","lines":[[5,["unknown:"]]]}
 {"key":"cd3a556a07c7b147:2,3,4,5","lines":[[2,["tell: step(make_lemonade, make_lemonade_s1); action(make_lemonade_s1, squeeze); object_of(make_lemonade_s1, lemon)"]],[3,["tell: step(make_lemonade, make_lemonade_s2); action(make_lemonade_s2, mix); object_of(make_lemonade_s2, juice); uses(make_lemonade_s2, water); uses(make_lemonade_s2, sugar); before(make_lemonade_s1, make_lemonade_s2)"]],[4,["tell: step(make_lemonade, make_lemonade_s3); action(make_lemonade_s3, chill); object_of(make_lemonade_s3, lemonade); takes_time(make_lemonade_s3, 1, 1, hour); before(make_lemonade_s2, make_lemonade_s3)"]],[5,["unknown:"]]]}
+{"key":"6aa35ceb087c0e18:1","lines":[[1,["feedback: negative"]]]}
+{"key":"432a582f9cc46128:1","lines":[[1,["tell: likes(maksim, cocoa)"]]]}
+{"key":"73638151246aa285:1","lines":[[1,["inform: likes(maksim, cocoa)"]]]}
+{"key":"5f4042fe121ec39a:1","lines":[[1,["tell: -likes(maksim, tea)"]]]}
+{"key":"20529b3e6c752065:1","lines":[[1,["tell: -likes(maksim, tea) @past"]]]}
+{"key":"434589b05b6adc54:1","lines":[[1,["inform: feels(maksim, like_tea)"]]]}
+{"key":"e97068e22a0b7d6b:1","lines":[[1,["inform: -likes(maksim, coffee)"]]]}
+{"key":"f67c666278776b17:1","lines":[[1,["inform: drink(maksim, coffee)"]]]}
+{"key":"432a582f9cc46128:1","lines":[[1,["tell: likes(maksim, cocoa)"]]]}
+{"key":"59e8ea0c0a115a92:1","lines":[[1,["tell: is_a(maksim, person)"]]]}
+{"key":"f67c666278776b17:1","lines":[[1,["inform: drink(maksim, coffee)"]]]}
+{"key":"5f4042fe121ec39a:1","lines":[[1,["tell: -likes(maksim, tea)"]]]}
+{"key":"9cd3ebf724a91cab:1","lines":[[1,["correct: -fly(pingu)"]]]}
+{"key":"434589b05b6adc54:1:retry","lines":[[1,["inform: feels(maksim, tea)","inform: likes(maksim, tea)"]]]}
+{"key":"41f1c7db67d97396:1","lines":[[1,["unknown:"]]]}
+{"key":"526e556fd4cfda7a:1","lines":[[1,["tell: is_a(tweety, bird)"]]]}
+{"key":"6b4f879683b2641c:1","lines":[[1,["tell: is_a(polly, bird)"]]]}
+{"key":"df377584d4048ef4:1","lines":[[1,["tell: is_a(pingu, penguin)"]]]}
+{"key":"49e8108a90a44f64:1","lines":[[1,["ask: flies(tweety)"]]]}
+{"key":"57f6202efec87903:1","lines":[[1,["tell: swim(penguin) @usually"]]]}
+{"key":"05b2cb003f610960:1","lines":[[1,["tell: swim(pingu)"]]]}
+{"key":"14d98ce4b5a8a3f0:1","lines":[[1,["ask: fly(polly)"]]]}
+{"key":"6b4f879683b2641c:1","lines":[[1,["tell: is_a(polly, bird)"]]]}
+{"key":"526e556fd4cfda7a:1","lines":[[1,["tell: is_a(tweety, bird)"]]]}
+{"key":"cd84f98a35e3dffb:1","lines":[[1,["tell: is_a(pingu, bird)"]]]}
+{"key":"49e8108a90a44f64:1","lines":[[1,["ask: fly(tweety)"]]]}
+{"key":"14d98ce4b5a8a3f0:1","lines":[[1,["ask: fly(polly)"]]]}
+{"key":"6aa35ceb087c0e18:1","lines":[[1,["feedback: negative"]]]}
+{"key":"6f5d90edcffed45c:1","lines":[[1,["tell: -fly(pingu)"]]]}
+{"key":"fb33ee0ddbcd6216:1","lines":[[1,["tell: :- is_a(A, person) — rule form: `tell: is_a(A, person) :- is_a(A, doctor)."]]]}
+{"key":"e71d3907580aa1dc:1","lines":[[1,["tell: is_a(anna, doctor)"]]]}
+{"key":"99d9cf31ce64e916:1","lines":[[1,["tell: is_a(bob, teacher)"]]]}
+{"key":"0005f48114c3d730:1","lines":[[1,["tell: work_at(anna, mercy)"]]]}
+{"key":"47623a0c4174f0b6:1","lines":[[1,["tell: is_a(anna, person)"]]]}
+{"key":"5470799df6051e2d:1","lines":[[1,["tell: is_a(bob, person)"]]]}
+{"key":"176e14b9ed3da458:1","lines":[[1,["tell: knows(anna, bob)"]]]}
+{"key":"fb33ee0ddbcd6216:1:retry","lines":[[1,["tell: is_a(A, person) :- is_a(A, doctor)."]]]}
+{"key":"1676e3a2e49ee51e:1","lines":[[1,["tell: is_a(A, person) :- is_a(A, teacher)."]]]}
+{"key":"e71d3907580aa1dc:1","lines":[[1,["tell: is_a(anna, doctor)"]]]}
+{"key":"889798f9bbb6f49d:1","lines":[[1,["tell: is_a(A, person) :- is_a(A, doctor)."]]]}
+{"key":"5470799df6051e2d:1","lines":[[1,["tell: is_a(bob, person)"]]]}
+{"key":"99d9cf31ce64e916:1","lines":[[1,["tell: is_a(bob, teacher)"]]]}
+{"key":"0005f48114c3d730:1","lines":[[1,["tell: work_at(anna, mercy)"]]]}
+{"key":"dd17f05a876d40dd:1","lines":[[1,["inform: has(my_dog)"]]]}
+{"key":"ae41158c4750d79a:1","lines":[[1,["unknown:"]]]}
+{"key":"cc596a42411119d6:1","lines":[[1,["tell: is_a(rex, dog)"]]]}
+{"key":"d9448aeae7f5d678:1","lines":[[1,["tell: likes(rex, bone)"]]]}
+{"key":"caf0c2e04f10579f:1","lines":[[1,["tell: property(rex, colour, brown)"]]]}
+{"key":"037c5f0a80571d46:1","lines":[[1,["feels(rex, hungry)"]]]}
+{"key":"6e779bca7596950d:1","lines":[[1,["tell: likes(dog, bone) @usually"]]]}
+{"key":"e7f758b49b53b9a2:1","lines":[[1,["tell: has(maksim, dog)"]]]}
+{"key":"59e8ea0c0a115a92:1","lines":[[1,["tell: is_a(maksim, person)"]]]}
+{"key":"dd17f05a876d40dd:1","lines":[[1,["inform: has(my_dog)"]]]}
+{"key":"cc596a42411119d6:1","lines":[[1,["tell: is_a(rex, dog)"]]]}
+{"key":"d9448aeae7f5d678:1","lines":[[1,["tell: likes(rex, bone)"]]]}
+{"key":"037c5f0a80571d46:1:retry","lines":[[1,["inform: feels(rex, hungry)"]]]}
+{"key":"caf0c2e04f10579f:1","lines":[[1,["tell: property(rex, colour, brown)"]]]}
+{"key":"037c5f0a80571d46:1","lines":[[1,["inform: feels(rex, hungry)"]]]}
+{"key":"bb16403710c4d237:1","lines":[[1,["inform: feels(maksim, play_chess)"]]]}
+{"key":"52d7f6a3f635a9d9:1","lines":[[1,["inform: has(maksim, guitar)"]]]}
+{"key":"dd17f05a876d40dd:1:retry","lines":[[1,["inform: has(maksim, dog)"]]]}
+{"key":"af505755bc1231f4:1","lines":[[1,["inform: feels(maksim, enjoy_hiking)"]]]}
+{"key":"0bb6450f3dee5070:1","lines":[[1,["unknown:"]]]}
+{"key":"4f1dc3c0202fab8e:1","lines":[[1,["tell: -likes(maksim, chess)"]]]}
+{"key":"c225aa494ebd4a6e:1","lines":[[1,["tell: play(maksim, chess) @past"]]]}
+{"key":"dd17f05a876d40dd:1:retry","lines":[[1,["tell: has(maksim, dog)"]]]}
+{"key":"3e2ad062417445db:1","lines":[[1,["tell: plays(maksim, guitar)"]]]}
+{"key":"a6cebef42a10bf75:1","lines":[[1,["tell: likes(maksim, hiking)"]]]}
+{"key":"a1dabb3605817799:1","lines":[[1,["inform: has(my_boot)"]]]}
+{"key":"8d236ef1dc260ecb:1","lines":[[1,["tell: has(boot, ...)"]]]}
+{"key":"59e8ea0c0a115a92:1","lines":[[1,["tell: is_a(maksim, person)"]]]}
+{"key":"c225aa494ebd4a6e:1","lines":[[1,["tell: play(maksim, chess) @negated"]]]}
+{"key":"3e2ad062417445db:1","lines":[[1,["tell: plays(maksim, guitar)"]]]}
+{"key":"a6cebef42a10bf75:1","lines":[[1,["tell: likes(maksim, hiking)"]]]}
+{"key":"a1dabb3605817799:1","lines":[[1,["inform: has(my_boot)"]]]}
+{"key":"b39f70ca5d62154c:1","lines":[[1,["unknown:"]]]}
+{"key":"59f7ba2b545d06d4:1","lines":[[1,["tell: is_a(anna, mother)"]]]}
+{"key":"c326790d01295d75:1","lines":[[1,["tell: has(anna, daughter)"]]]}
+{"key":"8e97106457efe793:1","lines":[[1,["tell: has(anna, son)"]]]}
+{"key":"c225aa494ebd4a6e:1:retry","lines":[[1,["tell: -play(maksim, chess)"]]]}
+{"key":"8d236ef1dc260ecb:1:retry","lines":[[1,["tell: has(A, boot) :- likes(A, hiking)."]]]}
+{"key":"26b4e8d170677abf:1","lines":[[1,["tell: property(anna, daughter, lisa)"]]]}
+{"key":"a1dabb3605817799:1:retry","lines":[[1,["inform: has(maksim, boot)"]]]}
+{"key":"89a31196e984791f:1","lines":[[1,["tell: likes(anna, tom)"]]]}
+{"key":"a1dabb3605817799:1:retry","lines":[[1,["inform: available(boot)"]]]}
+{"key":"dc6cb484d4d5c387:1","lines":[[1,["tell: located_in(tom, berlin)"]]]}
+{"key":"1526da65780f872c:1","lines":[[1,["tell: is_a(A, parent) :- is_a(A, mother)."]]]}
+{"key":"59f7ba2b545d06d4:1","lines":[[1,["tell: is_a(anna, mother)"]]]}
+{"key":"47623a0c4174f0b6:1","lines":[[1,["tell: is_a(anna, person)"]]]}
+{"key":"8e97106457efe793:1","lines":[[1,["tell: has(anna, son)"]]]}
+{"key":"61c81ad188244ceb:1","lines":[[1,["tell: is_a(anna, parent)"]]]}
+{"key":"c326790d01295d75:1","lines":[[1,["tell: has(anna, daughter)"]]]}
+{"key":"61c81ad188244ceb:1","lines":[[1,["tell: is_a(anna, parent)"]]]}
+{"key":"26b4e8d170677abf:1","lines":[[1,["tell: property(anna, daughter, lisa)"]]]}
+{"key":"89a31196e984791f:1","lines":[[1,["tell: likes(anna, tom)"]]]}
+{"key":"dc6cb484d4d5c387:1","lines":[[1,["tell: located_in(tom, berlin)"]]]}
+{"key":"4c8fe2a5717d8f7d:1","lines":[[1,["correct: -needs(sparky, fuel)"]]]}
+{"key":"c629b7374b61edc6:1","lines":[[1,["feedback: negative"]]]}
+{"key":"a1116f4eb6389773:1","lines":[[1,["tell: is_a(bus, vehicle)"]]]}
+{"key":"f14ba57db58324e8:1","lines":[[1,["tell: is_a(truck, vehicle)"]]]}
+{"key":"e496fd8aea6eaf63:1","lines":[[1,["tell: is_a(sparky, vehicle)"]]]}
+{"key":"bd086ed2eb69ee94:1","lines":[[1,["tell: property(sparky, power, electric)"]]]}
+{"key":"2fdd5ae7e517902c:1","lines":[[1,["tell: wants(bus, fuel)"]]]}
+{"key":"378bf54ed547b630:1","lines":[[1,["inform: property(my_truck, colour, red)"]]]}
+{"key":"6df28f44570b46fd:1","lines":[[1,["tell: wants(truck, fuel)"]]]}
+{"key":"a1116f4eb6389773:1","lines":[[1,["tell: is_a(bus, vehicle)"]]]}
+{"key":"e496fd8aea6eaf63:1","lines":[[1,["tell: is_a(sparky, vehicle)"]]]}
+{"key":"bd086ed2eb69ee94:1","lines":[[1,["tell: property(sparky, power, electric)"]]]}
+{"key":"f14ba57db58324e8:1","lines":[[1,["tell: is_a(truck, vehicle)"]]]}
+{"key":"2fdd5ae7e517902c:1","lines":[[1,["tell: wants(bus, fuel)"]]]}
+{"key":"6df28f44570b46fd:1","lines":[[1,["tell: wants(truck, fuel)"]]]}
+{"key":"378bf54ed547b630:1","lines":[[1,["inform: has(my_truck, colour)"]]]}
+{"key":"437b3ee16c67a7d7:1","lines":[[1,["tell: wants(sparky, fuel) @...","tell: -wants(sparky, fuel)"]]]}
+{"key":"ef1c8e6541ffd4ed:1","lines":[[1,["inform: located_in(maksim, oslo)"]]]}
+{"key":"49b46ba587b6a50e:1","lines":[[1,["tell: located_in(anna, paris)"]]]}
+{"key":"5cbf8ba132789ce0:1","lines":[[1,["unknown:"]]]}
+{"key":"7798773430534d37:1","lines":[[1,["correct: located_in(paris, france)"]]]}
+{"key":"6fdc01bbb1462977:1","lines":[[1,["tell: is_a(paris, city)"]]]}
+{"key":"9f76b70900202cd0:1","lines":[[1,["tell: -located_in(bob, rome)"]]]}
+{"key":"68b8a742710b8bad:1","lines":[[1,["tell: located_in(bob, milan)"]]]}
+{"key":"b2f63a51e412cc20:1","lines":[[1,["tell: located_in(maksim, oslo)"]]]}
+{"key":"437b3ee16c67a7d7:1:retry","lines":[[1,["tell: -wants(sparky, fuel)"]]]}
+{"key":"0baf690af49ac248:1","lines":[[1,["tell: property(rome, size, big)"]]]}
+{"key":"49b46ba587b6a50e:1","lines":[[1,["tell: located_in(anna, paris)"]]]}
+{"key":"7798773430534d37:1","lines":[[1,["correct: located_in(paris, france)"]]]}
+{"key":"6fdc01bbb1462977:1","lines":[[1,["tell: is_a(paris, city)"]]]}
+{"key":"15eff961c6ce478f:1","lines":[[1,["tell: is_a(rome, city)"]]]}
+{"key":"68b8a742710b8bad:1","lines":[[1,["tell: located_in(bob, milan)"]]]}
+{"key":"9f76b70900202cd0:1","lines":[[1,["tell: -located_in(bob, rome)"]]]}
+{"key":"ac614cd396c0bdca:1","lines":[[1,["tell: property(A, size, big) :- is_a(A, city)."]]]}
+{"key":"b2f63a51e412cc20:1","lines":[[1,["tell: located_in(maksim, oslo)"]]]}
+{"key":"0baf690af49ac248:1","lines":[[1,["tell: property(rome, size, big)"]]]}
+{"key":"c35053a8527e7c08:1","lines":[[1,["inform: has(maksim, hammer)"]]]}
+{"key":"3f7774ff33d178cd:1","lines":[[1,["inform: has(maksim, saw)"]]]}
+{"key":"6aa35ceb087c0e18:1","lines":[[1,["unknown:"]]]}
+{"key":"ee054b448bc0afc0:1","lines":[[1,["inform: -available(saw)"]]]}
+{"key":"cbb7f1c9d2a17222:1","lines":[[1,["tell: property(paris, size, big)"]]]}
+{"key":"9f4d20d12e36feaf:1","lines":[[1,["inform: has(my_hammer)"]]]}
+{"key":"4496df97771ea6af:1","lines":[[1,["inform: has(bob, drill)"]]]}
+{"key":"c24d4583caf07ca7:1","lines":[[1,["tell: property(hammer, weight, heavy)"]]]}
+{"key":"19e820f4084e3c6b:1","lines":[[1,["unknown:"]]]}
+{"key":"59e8ea0c0a115a92:1","lines":[[1,["tell: is_a(maksim, person)"]]]}
+{"key":"9f4d20d12e36feaf:1","lines":[[1,["inform: has(my_hammer)"]]]}
+{"key":"9f4d20d12e36feaf:1:retry","lines":[[1,["inform: has(maksim, hammer)"]]]}
+{"key":"18387973f16abddd:1","lines":[[1,["inform: -available(saw)"]]]}
+{"key":"c24d4583caf07ca7:1","lines":[[1,["tell: property(hammer, weight, heavy)"]]]}
+{"key":"18387973f16abddd:1","lines":[[1,["unknown:"]]]}
+{"key":"a07d40bf9ed1f880:1","lines":[[1,["tell: located_in(concert, stadium)"]]]}
+{"key":"379996160d43a75a:1","lines":[[1,["inform: property(party, appeal, fun)"]]]}
+{"key":"9f4d20d12e36feaf:1:retry","lines":[[1,["inform: has(maksim, hammer)"]]]}
+{"key":"e7fbf6ff6be0362f:1","lines":[[1,["tell: located_in(party, club)"]]]}
+{"key":"da8558ed13ce66fb:1","lines":[[1,["tell: likes(anna, party)"]]]}
+{"key":"bf0e727b5559dddf:1","lines":[[1,["feels(bob, excited)"]]]}
+{"key":"83fbc7764b34d249:1","lines":[[1,["tell: likes(bob, music)"]]]}
+{"key":"9af2be048cf7037c:1","lines":[[1,["tell: likes(bob, concert)"]]]}
+{"key":"6bbb95898d7b6d02:1","lines":[[1,["tell: likes(A, concert) :- likes(A, music)."]]]}
+{"key":"a07d40bf9ed1f880:1","lines":[[1,["tell: located_in(concert, stadium)"]]]}
+{"key":"379996160d43a75a:1","lines":[[1,["inform: property(party, appeal, fun)"]]]}
+{"key":"83fbc7764b34d249:1","lines":[[1,["tell: likes(bob, music)"]]]}
+{"key":"bf0e727b5559dddf:1","lines":[[1,["feels(bob, excited)"]]]}
+{"key":"e7fbf6ff6be0362f:1","lines":[[1,["tell: located_in(party, club)"]]]}
+{"key":"f2e4127e0d31ceb4:1","lines":[[1,["unknown:"]]]}
+{"key":"dcdb280bcfefe37c:1","lines":[[1,["tell: is_a(lena, nurse)"]]]}
+{"key":"bf0e727b5559dddf:1:retry","lines":[[1,["tell: feels(bob, excited)"]]]}
+{"key":"475ff5fd6178bc6c:1","lines":[[1,["tell: property(lena, salary, low)"]]]}
+{"key":"64fe0d58d85f148e:1","lines":[[1,["tell: -work_at(lena, northwind)"]]]}
+{"key":"d5d94d8fabbd0763:1","lines":[[1,["tell: work_at(lena, globex)"]]]}
+{"key":"3800bcac4c7e139b:1","lines":[[1,["tell: help(lena, patient)"]]]}
+{"key":"5e0c57ac56a63908:1","lines":[[1,["tell: help(A, patient) :- is_a(A, nurse)."]]]}
+{"key":"dcdb280bcfefe37c:1","lines":[[1,["tell: is_a(lena, nurse)"]]]}
+{"key":"be46115a0fe0b7ee:1","lines":[[1,["tell: is_a(lena, person)"]]]}
+{"key":"bf0e727b5559dddf:1:retry","lines":[[1,["tell: feels(bob, excited)"]]]}
+{"key":"d1782c6ad2a3a71c:1","lines":[[1,["tell: feels(lena, tired)"]]]}
+{"key":"475ff5fd6178bc6c:1","lines":[[1,["tell: property(lena, salary, low)"]]]}
+{"key":"3800bcac4c7e139b:1","lines":[[1,["tell: help(lena, patient)"]]]}
+{"key":"d5d94d8fabbd0763:1","lines":[[1,["tell: work_at(lena, globex)"]]]}
+{"key":"3d12ba1ba16458ec:1","lines":[[1,["unknown:"]]]}
+{"key":"4c4abd9b2c8653e7:1","lines":[[1,["tell: is_a(apple, fruit)"]]]}
+{"key":"a4a1cc6a03d4aea1:1","lines":[[1,["tell: is_a(carrot, vegetable)"]]]}
+{"key":"508c1a6eba3853bf:1","lines":[[1,["tell: likes(anna, apple)"]]]}
+{"key":"4d58cba85d86b5eb:1","lines":[[1,["tell: -likes(anna, carrot)"]]]}
+{"key":"d1782c6ad2a3a71c:1","lines":[[1,["tell: feels(lena, tired)"]]]}
+{"key":"52c7132aad724dcc:1","lines":[[1,["tell: likes(bob, ice_cream)"]]]}
+{"key":"ec2954a9ba2f403e:1","lines":[[1,["tell: wants(A, fruit) :- likes(A, apple)."]]]}
+{"key":"f730cca38cabaa96:1","lines":[[1,["tell: wants(anna, fruit)"]]]}
+{"key":"a4a1cc6a03d4aea1:1","lines":[[1,["tell: is_a(carrot, vegetable)"]]]}
+{"key":"508c1a6eba3853bf:1","lines":[[1,["tell: likes(anna, apple)"]]]}
+{"key":"4d58cba85d86b5eb:1","lines":[[1,["tell: -likes(anna, carrot)"]]]}
+{"key":"52c7132aad724dcc:1","lines":[[1,["tell: likes(bob, ice_cream)"]]]}
+{"key":"f730cca38cabaa96:1","lines":[[1,["tell: wants(anna, fruit)"]]]}
+{"key":"9ce9254b0aef6472:1","lines":[[1,["tell: -play(kofi, football)"]]]}
+{"key":"4ed175f533dd15b3:1","lines":[[1,["tell: plays(kofi, cricket)"]]]}
+{"key":"ee4289972d3185c3:1","lines":[[1,["tell: likes(kofi, running)"]]]}
+{"key":"149b360f3027789b:1","lines":[[1,["tell: has(kofi, bat)"]]]}
+{"key":"b664048298029baa:1","lines":[[1,["tell: is_a(kofi, striker)"]]]}
+{"key":"b664048298029baa:1","lines":[[1,["tell: is_a(kofi, striker)"]]]}
+{"key":"d248d2a229c6665f:1","lines":[[1,["tell: is_a(kofi, person)"]]]}
+{"key":"4ed175f533dd15b3:1","lines":[[1,["tell: plays(kofi, cricket)"]]]}
+{"key":"04dfa377986417e7:1","lines":[[1,["tell: has(A, bat) :- play(A, cricket)."]]]}
+{"key":"149b360f3027789b:1","lines":[[1,["tell: has(kofi, bat)"]]]}
+{"key":"ee4289972d3185c3:1","lines":[[1,["tell: likes(kofi, running)"]]]}
+{"key":"4a684013068acf7d:1","lines":[[1,["correct: -walk(willy)"]]]}
+{"key":"41f1c7db67d97396:1","lines":[[1,["unknown:"]]]}
+{"key":"8d8c51005b7aa41b:1","lines":[[1,["tell: is_a(bessie, cow)"]]]}
+{"key":"ae527d44adb889c5:1","lines":[[1,["tell: is_a(bessie, mammal)"]]]}
+{"key":"7a83cb51565f1bdd:1","lines":[[1,["tell: is_a(willy, whale)"]]]}
+{"key":"b2a6834206c8ac8f:1","lines":[[1,["inform: -available(bessie)"]]]}
+{"key":"1e158086a55e110c:1","lines":[[1,["tell: swim(willy)"]]]}
+{"key":"e23fee82e1dc3fec:1","lines":[[1,["tell: swim(A) :- is_a(A, whale)."]]]}
+{"key":"ae527d44adb889c5:1","lines":[[1,["tell: is_a(bessie, mammal)"]]]}
+{"key":"7a83cb51565f1bdd:1","lines":[[1,["tell: is_a(willy, whale)"]]]}
+{"key":"d5b5033ba18c2a0d:1","lines":[[1,["tell: is_a(willy, mammal)"]]]}
+{"key":"8ff9f7bde923922a:1","lines":[[1,["tell: property(willy, size, big)"]]]}
+{"key":"b2a6834206c8ac8f:1","lines":[[1,["tell: walk(bessie)"]]]}
+{"key":"89e7b5f58199bda0:1","lines":[[1,["tell: -walk(willy)"]]]}
+{"key":"8ff9f7bde923922a:1","lines":[[1,["property(willy, size, big)"]]]}
+{"key":"1e158086a55e110c:1","lines":[[1,["tell: swim(willy)"]]]}
+{"key":"92828af75c15f090:1","lines":[[1,["unknown:"]]]}
+{"key":"f3935cd9586b5b45:1","lines":[[1,["tell: is_a(mei, student)"]]]}
+{"key":"490cdc2134b36867:1","lines":[[1,["tell: is_a(omar, professor)"]]]}
+{"key":"3ae1d2ee91f51908:1","lines":[[1,["tell: is_a(omar, teacher)"]]]}
+{"key":"61749e828c3a4083:1","lines":[[1,["tell: read(mei, book)"]]]}
+{"key":"14cc424795eac195:1","lines":[[1,["tell: knows(omar, mei)"]]]}
+{"key":"993766f7ae7b0d09:1","lines":[[1,["feels(mei, nervous)"]]]}
+{"key":"8ff9f7bde923922a:1:retry","lines":[[1,["tell: property(willy, size, big)"]]]}
+{"key":"1b19ba87f8241736:1","lines":[[1,["tell: study_at(mei, kingsford)"]]]}
+{"key":"7b0ea7def5f8688a:1","lines":[[1,["tell: is_a(teacher, professor)"]]]}
+{"key":"5edc559be8678e69:1","lines":[[1,["tell: read(A, book) :- is_a(A, student)."]]]}
+{"key":"f3935cd9586b5b45:1","lines":[[1,["tell: is_a(mei, student)"]]]}
+{"key":"7e59422b25e873b3:1","lines":[[1,["tell: is_a(mei, person)"]]]}
+{"key":"490cdc2134b36867:1","lines":[[1,["tell: is_a(omar, professor)"]]]}
+{"key":"19edaa37eca117d3:1","lines":[[1,["tell: is_a(omar, person)"]]]}
+{"key":"61749e828c3a4083:1","lines":[[1,["ask: read(mei, book)"]]]}
+{"key":"14cc424795eac195:1","lines":[[1,["tell: knows(omar, mei)"]]]}
+{"key":"993766f7ae7b0d09:1:retry","lines":[[1,["tell: feels(mei, nervous)"]]]}
+{"key":"3ae1d2ee91f51908:1","lines":[[1,["tell: is_a(omar, teacher)"]]]}
+{"key":"993766f7ae7b0d09:1","lines":[[1,["feels(mei, nervous)"]]]}
+{"key":"eb436a63919ec053:1","lines":[[1,["inform: has(maksim, traffic_problem)"]]]}
+{"key":"1b19ba87f8241736:1","lines":[[1,["tell: study_at(mei, kingsford)"]]]}
+{"key":"f6a1c4e7e3abc455:1","lines":[[1,["tell: has(priya, scooter)"]]]}
+{"key":"3d30c835071a1cc6:1","lines":[[1,["tell: -drive(priya, van)"]]]}
+{"key":"5eba4fa1bf3a6166:1","lines":[[1,["tell: wants(A, helmet) :- has(A, scooter)."]]]}
+{"key":"624b07df0316da20:1","lines":[[1,["tell: wants(priya, helmet)"]]]}
+{"key":"1f83a0f436de3319:1","lines":[[1,["tell: is_a(priya, person)"]]]}
+{"key":"eb436a63919ec053:1:retry","lines":[[1,["ugh, traffic — the speaker expresses a feeling and mentions traffic, which is not a grounded fact about the speaker's situation. The closest grounded option is a feeling, but \"ugh\" alone is only a reaction, not a feeling word, so the sentence is not expressible as a fact.","unknown:"]]]}
+{"key":"6d218b550caeb51c:1","lines":[[1,["inform: property(my_scooter, colour, green)"]]]}
+{"key":"6d218b550caeb51c:1","lines":[[1,["inform: property(scooter, colour, green)"]]]}
+{"key":"624b07df0316da20:1","lines":[[1,["tell: wants(priya, helmet)"]]]}
+{"key":"993766f7ae7b0d09:1:retry","lines":[[1,["tell: feels(mei, nervous)"]]]}
+{"key":"6a268a0e3aee4ca9:1","lines":[[1,["correct: -eats(sam, meat)"]]]}
+{"key":"4fa1af3b0b757c4d:1","lines":[[1,["tell: is_a(carlos, chef)"]]]}
+{"key":"d6d38720c8579d14:1","lines":[[1,["feedback: positive"]]]}
+{"key":"3b0d9d50b2af8504:1","lines":[[1,["tell: is_a(sam, chef)"]]]}
+{"key":"8cdbc0f9db7a1fdc:1","lines":[[1,["tell: property(sam, diet, vegan)"]]]}
+{"key":"7b058bf7d791ac1e:1","lines":[[1,["tell: likes(yuki, soup)"]]]}
+{"key":"03dda26a2788c3a0:1","lines":[[1,["tell: eat(yuki, meat)"]]]}
+{"key":"56d68d0a69dcd14e:1","lines":[[1,["tell: eats(carlos, meat)"]]]}
+{"key":"87097c25f845b776:1","lines":[[1,["feels(carlos, happy)"]]]}
+{"key":"00817820c9cce417:1","lines":[[1,["tell: is_a(yuki, chef)"]]]}
+{"key":"3b0d9d50b2af8504:1","lines":[[1,["tell: is_a(sam, chef)"]]]}
+{"key":"8cdbc0f9db7a1fdc:1","lines":[[1,["tell: property(sam, diet, vegan)"]]]}
+{"key":"56d68d0a69dcd14e:1","lines":[[1,["tell: eats(carlos, meat)"]]]}
+{"key":"03dda26a2788c3a0:1","lines":[[1,["tell: eat(yuki, meat)"]]]}
+{"key":"7b058bf7d791ac1e:1","lines":[[1,["tell: likes(yuki, soup)"]]]}
+{"key":"4a57bfbf53a375fc:1","lines":[[1,["tell: -eat(sam, meat)"]]]}
+{"key":"7e290fc529bcf7e5:1","lines":[[1,["social: reaction","dont_know:"]]]}
+{"key":"87097c25f845b776:1","lines":[[1,["feels(carlos, happy)"]]]}
+{"key":"87097c25f845b776:1:retry","lines":[[1,["tell: feels(carlos, happy)"]]]}
+{"key":"4827dc9ee2d7ec26:1","lines":[[1,["tell: located_in(zara, lisbon)"]]]}
+{"key":"3be67256aac562b2:1","lines":[[1,["tell: knows(zara, hugo)"]]]}
+{"key":"17e1e2ef2df06a9f:1","lines":[[1,["tell: paint(zara)"]]]}
+{"key":"a4898e7903dea2d2:1","lines":[[1,["tell: is_a(hugo, pilot)"]]]}
+{"key":"7e290fc529bcf7e5:1:retry","lines":[[1,["social: reaction","yes:"]]]}
+{"key":"87097c25f845b776:1:retry","lines":[[1,["inform: feels(maksim, happy)"]]]}
+{"key":"12cf26b12dfc0369:1","lines":[[1,["tell: fly(hugo)"]]]}
+{"key":"0063c0c5df46f54c:1","lines":[[1,["tell: -likes(hugo, lisbon)"]]]}
+{"key":"7a1eb89fc1e3ad90:1","lines":[[1,["tell: fly(A) :- is_a(A, pilot)."]]]}
+{"key":"43b9652491713474:1","lines":[[1,["tell: property(hugo, hobby, sailing)"]]]}
+{"key":"7b39d0ea72b5d4b0:1","lines":[[1,["tell: is_a(zara, person)"]]]}
+{"key":"ba2644236236e85d:1","lines":[[1,["tell: is_a(hugo, person)"]]]}
+{"key":"4827dc9ee2d7ec26:1","lines":[[1,["tell: located_in(zara, lisbon)"]]]}
+{"key":"3be67256aac562b2:1","lines":[[1,["tell: knows(zara, hugo)"]]]}
+{"key":"17e1e2ef2df06a9f:1","lines":[[1,["tell: paint(zara)"]]]}
+{"key":"a4898e7903dea2d2:1","lines":[[1,["tell: is_a(hugo, pilot)"]]]}
+{"key":"12cf26b12dfc0369:1","lines":[[1,["tell: fly(hugo)"]]]}
+{"key":"0063c0c5df46f54c:1","lines":[[1,["tell: -likes(hugo, lisbon)"]]]}
+{"key":"43b9652491713474:1","lines":[[1,["tell: property(hugo, hobby, sailing)"]]]}
+{"key":"abfbe82f8d2271a8:1","lines":[[1,["inform: feels(maksim, hungry)"]]]}
+{"key":"fc2209a503bc4925:1","lines":[[1,["feedback: negative"]]]}
+{"key":"ff69bdde7c496806:1","lines":[[1,["inform: available(butter); available(sugar); available(lemon)"]]]}
+{"key":"63fb84510c22a648:1","lines":[[1,["inform: -available(butter)"]]]}
+{"key":"34992fbc2de155fe:1,2","lines":[[1,["inform: available(egg); available(milk); available(flour)"]],[2,["inform: time_available(1, hour)"]]]}
+{"key":"79d0e54227da6432:1","lines":[[1,["done: last","ask_next:"]]]}
+{"key":"0620cd1c9632603a:1","lines":[[1,["feels(maksim, dislike_rain)"]]]}
+{"key":"097848c1326242bc:1","lines":[[1,["correct: located_in(anna, rome)"]]]}
+{"key":"ba72d2c32d6e021b:2","lines":[[2,["social: thanks","request: help"]]]}
+{"key":"251306733ab88e0b:1","lines":[[1,["feels(diego, angry)"]]]}
+{"key":"49cfad60a19ba2bf:1","lines":[[1,["correct: is_a(rex, cat)"]]]}
+{"key":"d415be66a16ae125:1","lines":[[1,["correct: is_a(rex, cat)"]]]}
+{"key":"bf11aea343a5387b:1","lines":[[1,["tell: step(cook_rice, cook_rice_s1); action(cook_rice_s1, rinse); object_of(cook_rice_s1, rice); step(cook_rice, cook_rice_s2); action(cook_rice_s2, simmer); object_of(cook_rice_s2, rice); takes_time(cook_rice_s2, 15, 20, minute); before(cook_rice_s1, cook_rice_s2)"]]]}
+{"key":"0620cd1c9632603a:1:retry","lines":[[1,["tell: -likes(maksim, rain)"]]]}
+{"key":"b6b976c0a28edb69:1","lines":[[1,["unknown:"]]]}
+{"key":"251306733ab88e0b:1:retry","lines":[[1,["inform: feels(maksim, angry)","tell: feels(diego, angry)"]]]}
+{"key":"d6c07793f766fdb4:1,2","lines":[[1,["unknown:"]],[2,["unknown:"]]]}
+{"key":"d9285330171cd0db:1","lines":[[1,["correct: is_a(tomato, fruit)"]]]}
+{"key":"9d46ad80e85200bc:1","lines":[[1,["tell: step(drain_pasta, drain_pasta_s1); action(drain_pasta_s1, drain); object_of(drain_pasta_s1, pasta); uses(drain_pasta_s1, colander)"]]]}
+{"key":"42bf50ee9226a3fa:1,2","lines":[[1,["inform: -available(egg)"]],[2,["ask: substitute(egg, W)"]]]}
+{"key":"56fab0ec7c8b27ed:1","lines":[[1,["unknown:"]]]}
+{"key":"df376f3be75eca89:1","lines":[[1,["done: last","inform: has(maksim, water)"]]]}
+{"key":"bd5b8ab83095c40b:1","lines":[[1,["inform: feels(maksim, love(ice_cream))"]]]}
+{"key":"e51b6fae7f8b1881:1","lines":[[1,["ask_next:"]]]}
+{"key":"d6da3f1ff8c1892b:1","lines":[[1,["tell: step(make_dough, make_dough_s1); action(make_dough_s1, mix); object_of(make_dough_s1, flour); uses(make_dough_s1, water); step(make_dough, make_dough_s2); action(make_dough_s2, bake); object_of(make_dough_s2, dough); takes_time(make_dough_s2, 40, 40, minute); before(make_dough_s1, make_dough_s2)"]]]}
+{"key":"c561131342e81309:1","lines":[[1,["tell: -smokes(igor)"]]]}
+{"key":"3b8b5a6801ee3fcb:1","lines":[[1,["inform: -available(opera)"]]]}
+{"key":"d832ba5a5dbb2673:1","lines":[[1,["inform: time_available(0.5, hour)"]]]}
+{"key":"0403f9bf8798819c:1","lines":[[1,["inform: -has(maksim, passport)"]]]}
+{"key":"bd5b8ab83095c40b:1:retry","lines":[[1,["inform: feels(maksim, love); object_of(maksim, ice_cream)"]]]}
+{"key":"92f5ac87d395c5b8:1","lines":[[1,["correct: takes_time(boil_egg, 10, 10, minute)"]]]}
+{"key":"630f9768b905de8e:1","lines":[[1,["tell: likes(maksim, tea) @past"]]]}
+{"key":"0617d50d968442d6:1","lines":[[1,["inform: located_in(maksim, home); time_available(90, minute)"]]]}
+{"key":"1e2f1affa5312e1e:1,2","lines":[[1,["inform: available(spinach); available(egg); available(cheese)"]],[2,["inform: time_available(15, minute)"]]]}
+{"key":"c6f4afd595c3237a:1","lines":[[1,["feedback: positive"]]]}
+{"key":"479f6d6eb1a1899e:1","lines":[[1,["inform: available(rice); available(bean); available(onion)"]]]}
+{"key":"045516cab08ff717:1","lines":[[1,["inform: time_available(1.5, hour)"]]]}
+{"key":"52d00ff705fa55d2:1","lines":[[1,["correct: -likes(anna, coffee)"]]]}
+{"key":"1307486f807087bc:1","lines":[[1,["correct: is_a(biscuit, gerbil)"]]]}
+{"key":"20034fb1df38c0e8:1","lines":[[1,["reject:","social: thanks"]]]}
+{"key":"bb30dc74dfbc31dd:1,2","lines":[[1,["done: last"]],[2,["ask_next:"]]]}
+{"key":"01632a9dfe65fabf:1","lines":[[1,["inform: step_completed(maksim, 2)"]]]}
+{"key":"fc3d1508ce02b3b8:1","lines":[[1,["tell: is_a(maksim, engineer)"]]]}
+{"key":"f4b3e6118ba1b745:1","lines":[[1,["inform: time_available(3, hour)"]]]}
+{"key":"1660aaf570851e9c:1","lines":[[1,["inform: available(battery)"]]]}
+{"key":"e85b9582d88fc373:2","lines":[[1,["ask_need: clean_window"]]]}
+{"key":"a53113cab8e5579d:1","lines":[[1,["inform: located_in(maksim, berlin); time_available(2, hour)"]]]}
+{"key":"2a983ad021ffcc05:1","lines":[[1,["feedback: ...","tell: likes(maksim, gardening)"]]]}
+{"key":"f17b3a4c0d049f94:1","lines":[[1,["unknown:"]]]}
+{"key":"d6d53e0c6a50fc76:1,2","lines":[[1,["unknown:"]],[2,["unknown:"]]]}
+{"key":"f1f817d806723970:1","lines":[[1,["inform: available(potato); available(carrot); available(chicken)"]]]}
+{"key":"4211312bcf3512ae:1","lines":[[1,["tell: is_a(tom, nervous)"]]]}
+{"key":"e85b9582d88fc373:2:retry","lines":[[2,["ask_need: clean_window"]]]}
+{"key":"a9717db30158e7e2:2","lines":[[2,["feedback: positive"]]]}
+{"key":"2a983ad021ffcc05:1:retry","lines":[[1,["inform: -available(gardening)"]]]}
+{"key":"01632a9dfe65fabf:1:retry","lines":[[1,["done: last"]]]}
+{"key":"fe8cb33103874654:1","lines":[[1,["correct: property(tulip, colour, purple)"]]]}
+{"key":"3473b0bf4e3eec7b:1","lines":[[1,["tell: step(make_onion, make_onion_s1); action(make_onion_s1, chop); object_of(make_onion_s1, onion)","tell: step(make_onion, make_onion_s2); action(make_onion_s2, fry); object_of(make_onion_s2, onion); uses(make_onion_s2, butter); takes_time(make_onion_s2, 5, 5, minute); before(make_onion_s1, make_onion_s2)"]]]}
+{"key":"49279c1a1f3a4958:1","lines":[[1,["tell: likes(mary_jane, cherry)"]]]}
+{"key":"d172231bb3f929e7:1","lines":[[1,["tell: step(make_batter, make_batter_s1); action(make_batter_s1, whisk); object_of(make_batter_s1, batter); step(make_batter, make_batter_s2); action(make_batter_s2, fry); object_of(make_batter_s2, batter); uses(make_batter_s2, pan); takes_time(make_batter_s2, 2, 2, minute); before(make_batter_s1, make_batter_s2)"]]]}
+{"key":"9aa9a38665896ae3:1","lines":[[1,["feedback: negative","correct: likes(maksim, coffee)"]]]}
+{"key":"57d314d889c10a5e:1,2","lines":[[1,["feedback: negative"]],[2,["ask_how: make_omelette"]]]}
+{"key":"a1f66bc86938f761:1","lines":[[1,["tell: likes(lena, apple)"]]]}
+{"key":"8d56d4350a6759b3:1","lines":[[1,["correct: is_a(kenji, osaka)"]]]}
+{"key":"765df0a1c0d4b9f3:1","lines":[[1,["inform: available(hammer); available(nail); available(wood)"]]]}
+{"key":"67ab011173307486:1","lines":[[1,["unknown:"]]]}
+{"key":"7c87bbebca4ddd60:1","lines":[[1,["correct: is_a(tweety, penguin)"]]]}
+{"key":"1f318a80b2a956b2:1","lines":[[1,["inform: time_available(45, minute)"]]]}
+{"key":"1201ee4d9cc2120b:1","lines":[[1,["inform: located_in(maksim, new_york)"]]]}
+{"key":"27e0467667c75652:1","lines":[[1,["tell: -likes(maksim, coffee) @past"]]]}
+{"key":"c508fd1378261d7b:1","lines":[[1,["correct: is_a(rex, dog)"]]]}
+{"key":"2bc0c56b9ba15ca8:1","lines":[[1,["unknown:"]]]}
+{"key":"d4274c50cbafbb19:1,2","lines":[[1,["tell: step(make_pasta, make_pasta_s1); action(make_pasta_s1, boil); object_of(make_pasta_s1, pasta)"]],[2,["tell: step(make_pasta, make_pasta_s2); action(make_pasta_s2, chop); object_of(make_pasta_s2, garlic); overlaps(make_pasta_s2, make_pasta_s1)"]]]}
+{"key":"7d96451b9cae9cb4:1","lines":[[1,["tell: likes(anna, coffee); likes(bob, coffee)"]]]}
+{"key":"638c26f5a34667db:1","lines":[[1,["correct: works_at(bob, library)"]]]}
+{"key":"cf0fcc3300e39e63:2","lines":[[2,["feedback: negative","tell: burn(toast) @sometimes"]]]}
+{"key":"8e37e32ad327a959:1","lines":[[1,["inform: available(bike_pump); available(patch_kit)"]]]}
+{"key":"36831b982c7952fb:1","lines":[[1,["accept:"]]]}
+{"key":"036098cbb4bd7e33:1","lines":[[1,["inform: feels(maksim, bored)"]]]}
+{"key":"2bb3942f4865e0eb:1","lines":[[1,["correct: is_a(olga, pilot)"]]]}
+{"key":"20b546f7707fa8fd:1","lines":[[1,["inform: located_in(maksim, kitchen); available(flour); available(yeast); available(water)"]]]}
+{"key":"3687a0b16464e72e:1","lines":[[1,["inform: knows(maksim, james)"]]]}
+{"key":"f1ebbc2f7a7ab56e:2","lines":[[2,["inform: available(oat); available(banana); available(milk)"]]]}
+{"key":"cf0fcc3300e39e63:2:retry","lines":[[2,["tell: burn(toast) @sometimes"]]]}
+{"key":"db7458298e6da128:1","lines":[[1,["correct: works_at(tom, initech)"]]]}
+{"key":"71505bb34cf9896a:1","lines":[[1,["accept:"]]]}
+{"key":"f01a56829f18f2cc:1","lines":[[1,["reject:","inform: wants(maksim, -cook(maksim, fish))"]]]}
+{"key":"db4894f6bd913b13:1","lines":[[1,["tell: is_a(A, france) :- located_in(A, paris)."]]]}
+{"key":"c2bdc6def5bdae4e:1","lines":[[1,["feedback: negative","correct: is_a(sara, happy)"]]]}
+{"key":"6775271ed942cce7:1","lines":[[1,["accept:"]]]}
+{"key":"bce05f8a6e62e47c:1","lines":[[1,["inform: -available(colander)"]]]}
+{"key":"451de425b7d4045b:2","lines":[[1,["ask_next:"]]]}
+{"key":"9ed4e5e30318a76e:1","lines":[[1,["tell: is_a(A, person) :- is_a(A, nurse)."]]]}
+{"key":"d24e4385a9c37d0f:1","lines":[[1,["inform: -available(chess)","tell: play(maksim, chess) @past"]]]}
+{"key":"5571616ff33e96e5:1","lines":[[1,["inform: available(pasta); available(garlic); available(olive_oil); available(cherry_tomato)"]]]}
+{"key":"f01a56829f18f2cc:1:retry","lines":[[1,["reject:","inform: wants(maksim, -cook(maksim, fish)); time_available(today, day)"]]]}
+{"key":"814686e42e3d93e6:1","lines":[[1,["inform: has(maksim, dog)"]]]}
+{"key":"cfdd6cdb9959f4dd:1","lines":[[1,["feedback: negative"]]]}
+{"key":"e9874dcf4b81d3d5:1","lines":[[1,["correct: -has(bob, car)"]]]}
+{"key":"451de425b7d4045b:2:retry","lines":[[2,["ask_next:"]]]}
+{"key":"f89495018a6c0c7e:1","lines":[[1,["correct: -likes(anna, tea)"]]]}
+{"key":"d43cee0635dadb2a:1","lines":[[1,["inform: available(pan); available(pot); -available(small_pot)"]]]}
+{"key":"c5da516637c0f538:1","lines":[[1,["correct: -owns(hans, boat)"]]]}
+{"key":"8d4861082c9b1bd4:1","lines":[[1,["inform: property(oven, size, small)","inform: available(oven)","inform: available(big_frying_pan)"]]]}
+{"key":"53258ff8e6556486:1","lines":[[1,["tell: eats(tom, meat) @never"]]]}
+{"key":"e1525298a7f89dbb:1","lines":[[1,["tell: step(cook_carrot, cook_carrot_s1); action(cook_carrot_s1, cook); object_of(cook_carrot_s1, carrot); until(cook_carrot_s1, soft)"]]]}
+{"key":"2ad0802b42d801e9:1","lines":[[1,["accept:"]]]}
+{"key":"c7dcfeb6f8f74e66:1","lines":[[1,["correct: property(car, colour, blue)"]]]}
+{"key":"a73b44f57ab47379:1","lines":[[1,["unknown:"]]]}
+{"key":"ed64c07c8d94a2bb:1","lines":[[1,["correct: property(nina, age, 12)"]]]}
+{"key":"312197e883bb679a:1","lines":[[1,["correct: lives_in(anna, rome)"]]]}
+{"key":"6976275739d0687a:1","lines":[[1,["is_a(maksim, programmer)","tell: is_a(maksim, programmer)"]]]}
+{"key":"53258ff8e6556486:1:retry","lines":[[1,["tell: eats(tom, meat) @never"]]]}
+{"key":"2b7a0835655072d5:1","lines":[[1,["feedback: positive","social: thanks"]]]}
+{"key":"ab28708626082e26:1","lines":[[1,["inform: -available(printer)"]]]}
+{"key":"6bcbcd77e3fed12b:1","lines":[[1,["inform: feels(maksim, tired)"]]]}
+{"key":"8a7bb2a314c73c4c:1,2","lines":[[1,["tell: step(make_tea, make_tea_s1); action(make_tea_s1, boil); object_of(make_tea_s1, water)"]],[2,["tell: step(make_tea, make_tea_s2); action(make_tea_s2, steep); object_of(make_tea_s2, tea_bag); takes_time(make_tea_s2, 3, 3, minute); before(make_tea_s1, make_tea_s2)"]]]}
+{"key":"93fe43a3f1e36509:1","lines":[[1,["unknown:"]]]}
+{"key":"e983067a72f4f2a5:1,2","lines":[[1,["social: thanks"]],[2,["request: wash_dish"]]]}
+{"key":"6976275739d0687a:1:retry","lines":[[1,["inform: is_a(maksim, programmer)"]]]}
+{"key":"c2f79eaf9302e16d:1","lines":[[1,["tell: property(maksim, name, maksim)"]]]}
+{"key":"b2b17a28b92ae0ab:1","lines":[[1,["lack: garlic"]]]}
+{"key":"9d4656931b9a6bfb:2","lines":[[1,["request: clean_bathroom"]]]}
+{"key":"30b1f0df4fb2e7fe:2","lines":[[2,["unknown:"]]]}
+{"key":"94e1969d8c6f77f3:2","lines":[[1,["request: wash_car"]]]}
+{"key":"9d4656931b9a6bfb:2:retry","lines":[[2,["request: clean_bathroom","ask_next:"]]]}
+{"key":"94e1969d8c6f77f3:2:retry","lines":[[2,["request: wash_car"]]]}
+{"key":"4235f7678077aa88:1","lines":[[1,["tell: step(boil_egg, boil_egg_s1); action(boil_egg_s1, put); object_of(boil_egg_s1, egg); uses(boil_egg_s1, water); takes_time(boil_egg_s1, 8, 10, minute)"]]]}

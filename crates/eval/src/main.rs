@@ -95,6 +95,31 @@ fn gold_command(args: &[String]) {
     }
 }
 
+/// `sla_eval patterns [--model haiku] [--teach 300]`
+fn patterns_command(args: &[String]) {
+    let model = args.iter().position(|a| a == "--model").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
+    let teach = args.iter().position(|a| a == "--teach").and_then(|i| args.get(i + 1)).and_then(|v| v.parse().ok()).unwrap_or(300);
+    let root = root();
+    let r = sla_eval::patterns::run(&root, &model, teach, 8);
+    let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
+    let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
+    if calls > 0 && failed * 10 > calls {
+        eprintln!("WARNING: {failed} of {calls} model calls failed; nothing recorded.");
+        std::process::exit(1);
+    }
+    let md = sla_eval::patterns::markdown(&r);
+    for l in md.lines().skip(2).take(5).filter(|l| !l.is_empty()) {
+        println!("{l}");
+    }
+    let ts = sla_core::Timestamp::now().to_string().replace(':', "-");
+    let dir = root.join("eval").join("patterns");
+    let _ = std::fs::create_dir_all(&dir);
+    let file = dir.join(format!("{ts}.md"));
+    let _ = std::fs::write(&file, md);
+    let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "patterns", &r);
+    println!("model calls: {calls}; wrote {}", file.display());
+}
+
 /// `sla_eval wording [--model haiku] [--ceiling] [--parallel 8]`
 fn wording_command(args: &[String]) {
     let model = args.iter().position(|a| a == "--model").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
@@ -128,6 +153,7 @@ fn main() {
         Some("stress") => return sla_eval::ops::stress_command(&root(), &all[1..]),
         Some("gold") => return gold_command(&all[1..]),
         Some("wording") => return wording_command(&all[1..]),
+        Some("patterns") => return patterns_command(&all[1..]),
         _ => {}
     }
     let root = root();

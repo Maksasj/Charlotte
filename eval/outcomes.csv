@@ -5,3 +5,4 @@ timestamp,commit,key,n,helpful,partial,clarify,teach_me,not_understood,wrong_mov
 2026-11-17T08:53:10,016feb8,v1|-|haiku|gold|all,296,0.074,0.010,0.003,0.030,0.162,0.199,0.236,0.284,0.000,0.078,0.052,0.114,0.113,80,0.0,0.0,v1 recorded replies; hand labels for trainer turns; Haiku judge for content replies
 2026-11-17T13:38:35,ded83d3,replay|llm:haiku|haiku|nogold|all,296,0.098,0.017,0.037,0.142,0.111,0.088,0.240,0.267,0.000,0.135,0.101,0.179,0.300,80,1.6,7.7,M14 replay: translator (patterns + Haiku; validator); interim task handlers
 2026-11-17T14:02:56,9b67613,replay|llm:haiku|haiku|nogold|trainer,68,0.000,0.074,0.029,0.221,0.191,0.015,0.471,0.000,0.000,0.029,0.008,0.101,0.328,61,4.6,21.0,M15: dialogue manager; help turns
+2026-11-17T14:28:23,f4c7a50,replay|llm:haiku|haiku|nogold|trainer,68,0.000,0.000,0.000,0.221,0.294,0.103,0.368,0.015,0.000,0.000,0.000,0.053,0.246,61,3.9,19.2,M16: generation; help turns

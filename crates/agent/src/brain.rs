@@ -190,6 +190,14 @@ impl Brain {
         model
     }
 
+    /// The tentative layer: the model with guessed (hypothesis) rules too.
+    /// What only it derives is a guess, said as one.
+    pub fn tentative_at(&mut self, at: Timestamp) -> Arc<Model> {
+        let rules = self.runnable_rules(true, at);
+        let inputs = facts_for(&self.kb.reasoning_facts(), Some(at));
+        Arc::new(self.eval(&inputs, &rules).unwrap_or_default())
+    }
+
     /// The model at `at` with extra facts (a conversation's situation) on top.
     /// Not cached: the extra facts belong to one conversation.
     pub fn model_with(&mut self, at: Timestamp, extra: &[GroundAtom]) -> Arc<Model> {

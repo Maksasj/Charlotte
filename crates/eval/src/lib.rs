@@ -9,6 +9,7 @@ pub mod gold;
 pub mod ops;
 pub mod outcome;
 pub mod regression;
+pub mod patterns;
 pub mod trainer;
 pub mod wording;
 

@@ -7,9 +7,10 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
 
 ## Current milestone
 
-**Milestones 12 and 13 done.** Every acceptance check passes (tables below).
-Next: milestone 14 (understanding: segmenter, dialogue acts, three-tier
-translator, validator).
+**Milestones 12 to 17 built.** Milestones 13 and 16 pass every acceptance
+check. Milestones 14, 15 and 17 each miss one or more targets, listed with
+their numbers below and under "2.0 problems". Next: milestone 18
+(curriculum training and hygiene).
 
 ## How to run
 
@@ -40,10 +41,10 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 1-10 | v1 | passing | see the v1 table below |
 | 12 | Honest measurement and safe ground | built; model-run parts pending | `crates/agent/tests/safe_ground.rs`, `crates/eval/tests/measurement.rs`, `sla_eval bench`, `sla_eval stress` |
 | 13 | Knowledge model | done | `crates/reasoner/tests/knowledge_model.rs` (44 cases), `crates/core/tests/procedures.rs`, `crates/lexicon/tests/v1_facts.rs`, `crates/agent/tests/knowledge_model.rs` |
-| 14 | Understanding | not started | |
-| 15 | Dialogue manager | not started | |
-| 16 | Generation | not started | |
-| 17 | Learning | not started | |
+| 14 | Understanding | built; act accuracy and speed below target | `crates/translate` (unit tests), `sla_eval gold` |
+| 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
+| 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
+| 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
 | 18 | Curriculum training and hygiene | not started | |
 
 ### Milestone 12 acceptance
@@ -66,6 +67,46 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | A "used to" test shows facts from different times are never joined | `safe_ground.rs::history_never_joins_different_times` (built in milestone 12) |
 
 The speed budget still holds with the new core layers: 95th percentile 69 ms on the v1 vault.
+
+### Milestone 14 acceptance
+
+| Acceptance | Result |
+|---|---|
+| Gold set (200 messages): act accuracy 95%, argument F1 0.90 | cold run with Haiku: F1 **0.945** (met), act accuracy **92%** (not met) |
+| Long messages: 90% of parts recovered, no ungrounded facts | **97%** recovered, **0** ungrounded (met) |
+| Real turns: not understood 15% or less | **11.1%** (met) |
+| Translation median under 2 s | **4.1 s** per turn (not met; the Claude CLI adds about 1.3 s per call, see problems) |
+
+### Milestone 15 acceptance
+
+| Acceptance | Result |
+|---|---|
+| The dinner dialogue passes end to end | passes with the oracle parser and live with Haiku (`dialogue.rs`), including the closest option, a side remark and the return to the open question, "why" from the move's proof, and sessions kept apart |
+| Requests answered with a fitting move 80% or more, echo 5% or less (v1 trainer turns replayed, Haiku translator and judge) | echo **1.5%** (met); fitting move **15 of 61 (24.6%)** (not met). These turns ask for recipes, outfits and plant advice the replay vault was never taught, so most fitting moves are "teach me", and the judge often labels those as wrong content. The second encounter (milestone 18) is the real test of this. |
+
+### Milestone 16 acceptance
+
+| Acceptance | Result |
+|---|---|
+| 200 content plans: grammar checks, every claim true, every claim reads back | all 200 pass (`plans.rs`): frame-worded claims read back through the realizer's own frames, the rest through the v1 parser |
+| No identical reply twice in a 12-turn conversation | passes, with repeated questions, statements, greetings and thanks |
+| Judges prefer the new wording over the old in 65% or more of pairs | **64 of 91** differing pairs (**70.3%**, interval 60.3 to 78.7); 109 plans read the same both ways (`eval/wording/`) |
+| The ceiling run is recorded with its gap | a fluent model rewrite of the 2.0 reply is preferred in **131 of 167** pairs (78.4%): most of the remaining gap is wording, not content |
+
+### Milestone 17 acceptance
+
+| Acceptance | Result |
+|---|---|
+| Garlic tomato pasta taught in one session; after a restart and an unrelated session the dinner dialogue passes in new words with no teaching | passes (`learning.rs::recipe_taught_once_is_used_later_in_new_words`): the recipe is stored as a procedure file (a hypothesis, offered as "I was taught this once"), and a successful use confirms it |
+| One counterexample stores only an exception; two with a shared feature change the rule | passes (`corrections.rs`, two new cases; `session.rs::correction_refines_rule_in_conversation`) |
+| Scripted teacher run: 80% or more of guessed rules end confirmed or rejected | **6 of 6** settled; the 3 true patterns confirmed, the 3 reversed guesses rejected (`learning.rs::guessed_rules_end_confirmed_or_rejected`) |
+| After 300 teaching turns, learned patterns handle 20% or more of turns and agree with the model 95% of the time | agreement **21 of 22 (95.5%)** (met); coverage **16 of 482 turns (3.3%)**, 10.8% of the turns that needed the model (not met; see problems) |
+| A new word enters as pending and cannot be spoken until approved | passes (`learning.rs::new_word_is_pending_until_approved`) |
+
+Also built: the tentative layer (a guessed rule answers as a guess, "I'm not
+sure, but I'd guess so ... Is that right?", and the answer settles the rule).
+The consolidation pass is not built yet: rule guessing still runs during the
+turn, as the two-pass learner from milestone 12.
 
 ### Baselines with the new labels (2026-11-17)
 
@@ -208,6 +249,20 @@ the report's own regex found 57).
   files keep one per line.
 
 ## 2.0 problems
+
+- 2026-11-17, milestone 17: learned input patterns cover 3.3% of turns, not 20%.
+  The fixed v1 pattern tier already takes 69% of turns without the model, and the
+  rest (task requests, corrections, step lists) is too varied to repeat within 300
+  turns. Templates must be seen twice before use: after one sighting coverage
+  doubles (6.6%), but agreement falls to 68%, partly because the model itself is
+  inconsistent ("I have a saw" comes back as `has` or as `available`). More
+  teaching turns, or treating the fixed tier as part of the measure, are the
+  options; the threshold is your call.
+- 2026-11-17, milestone 15: the help-turn replay gives 24.6% fitting moves (target
+  80%). The replayed v1 conversations ask for things the vault was never taught.
+- 2026-11-17, milestone 14: act accuracy 92% (target 95%) and translation 4.1 s
+  median (target 2 s). The Claude CLI costs about 1.3 s per call; calling the API
+  directly is the open decision.
 
 - 2026-11-17: the first benchmark on the v1 vault gave a 95th percentile of 639 ms with
   5 evaluations per turn. Causes: answering recorded usage in fact files (invalidating

@@ -261,13 +261,9 @@ impl Agent {
     /// A relation no registered predicate fits goes to the review queue.
     pub(crate) fn new_pred(&mut self, b: &mut Brain, atom: Atom, definition: String) -> Reply {
         let now = self.now();
-        let line = format!("- {now} | new_pred | {atom} | {definition} | from {}\n", self.source);
-        let dir = b.kb.vault.root.join("queue");
-        if std::fs::create_dir_all(&dir).is_ok() {
-            use std::io::Write;
-            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(dir.join("predicates.md")) {
-                let _ = f.write_all(line.as_bytes());
-            }
+        // Pending, not believed: the fact waits with the word in the queue.
+        if let Some(g) = atom.to_ground() {
+            let _ = crate::queue::enqueue(b, &g, &definition, &self.source);
         }
         b.kb.log_change(now, "queue", &format!("new_pred {atom}"), &definition);
         let name = atom.pred.replace('_', " ");

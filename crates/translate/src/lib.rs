@@ -19,6 +19,7 @@
 //! as they are, and every constant must be grounded in the message, the
 //! conversation or the registry.
 
+pub mod learned;
 pub mod segment;
 pub mod validate;
 
@@ -229,6 +230,10 @@ pub struct Translator {
     cache: HashMap<String, HashMap<usize, Vec<String>>>,
     cache_path: Option<PathBuf>,
     pub calls: u64,
+    /// Tier 2: templates generalized from validated model translations.
+    pub learned: learned::LearnedPatterns,
+    /// Learn new templates from model translations.
+    pub learn: bool,
 }
 
 /// The cache key includes the prompt (system prompt and examples), so a
@@ -301,7 +306,16 @@ fn subject_of(intents: &[Intent], speaker: &str) -> Option<String> {
 
 impl Translator {
     pub fn new(registry: Registry) -> Self {
-        Translator { registry: std::sync::Arc::new(registry), model: None, pattern_words: 12, cache: HashMap::new(), cache_path: None, calls: 0 }
+        Translator {
+            registry: std::sync::Arc::new(registry),
+            model: None,
+            pattern_words: 12,
+            cache: HashMap::new(),
+            cache_path: None,
+            calls: 0,
+            learned: Default::default(),
+            learn: true,
+        }
     }
 
     /// Keep model results in a file (one JSON line per call).
@@ -563,10 +577,25 @@ impl Translator {
                 }
             }
         }
-        // Tier 2: learned patterns come with milestone 17.
-        // Tier 3: one model call for every sentence still open, with the whole message as context.
         let reg = std::sync::Arc::clone(&self.registry);
         let v = Validator::new(&reg);
+        // Tier 2: learned patterns; their output is validated like the model's.
+        for (i, s) in sentences.iter().enumerate() {
+            if parts[i].is_some() {
+                continue;
+            }
+            if self.learned.classes.is_empty() {
+            self.learned.classes = self.registry.adjectives.clone();
+        }
+        let Some(lines) = self.learned.apply(s, &ctx.speaker) else { continue };
+            if let Some(mut acts) = self.read(&lines, ctx) {
+                sentence_rules(s, &mut acts, ctx);
+                if v.check_in(s, message, &acts, ctx).is_empty() {
+                    parts[i] = Some(Part { text: s.clone(), acts, tier: Tier::Learned, ok: true, problems: Vec::new(), retried: false });
+                }
+            }
+        }
+        // Tier 3: one model call for every sentence still open, with the whole message as context.
         let open: Vec<usize> = (0..sentences.len()).filter(|i| parts[*i].is_none()).map(|i| i + 1).collect();
         if !open.is_empty() && self.model.is_some() {
             let lines = self.model_lines(&sentences, &open, ctx, &[]);
@@ -582,6 +611,11 @@ impl Translator {
                         let ok = problems.is_empty();
                         if !ok {
                             retry.push((n, got.clone(), problems.clone()));
+                        } else if self.learn {
+                            if self.learned.classes.is_empty() {
+                                self.learned.classes = self.registry.adjectives.clone();
+                            }
+                            self.learned.observe(s, &got, &ctx.speaker);
                         }
                         parts[n - 1] = Some(Part { text: s.clone(), acts, tier: Tier::Model, ok, problems, retried: false });
                     }

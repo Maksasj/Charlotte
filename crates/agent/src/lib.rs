@@ -26,6 +26,7 @@ pub mod curiosity;
 pub mod dialogue;
 pub mod events;
 pub mod learning;
+pub mod queue;
 pub mod router;
 pub mod tasks;
 pub mod trace;
@@ -191,8 +192,11 @@ impl Agent {
     pub fn enable_llm(&mut self, model: &str) {
         let cache = self.brain().kb.vault.root.join("translate_cache.jsonl");
         let registry = std::sync::Arc::clone(&self.translator.registry);
+        let patterns = self.brain().kb.vault.root.join("grammar").join("input_patterns.json");
         let mut t = sla_translate::Translator::new((*registry).clone()).with_cache(cache);
         t.model = Some(sla_translate::ModelTier::new(model));
+        // Learned input patterns live in the vault and grow with every validated translation.
+        t.learned = sla_translate::learned::LearnedPatterns::load(patterns);
         self.translator = t;
     }
 
@@ -1089,6 +1093,24 @@ impl Agent {
         self.say(Act::Acknowledge { added, closed, known, rules: new_rules, past })
     }
 
+    /// A guess from a hypothesis rule: "I'm not sure, but I'd guess so ... Is that right?"
+    fn tentative_answer(&mut self, b: &mut Brain, g: &GroundAtom, now: Timestamp) -> Option<Reply> {
+        let tent = b.tentative_at(now);
+        let proof = tent.proof(g)?;
+        let sla_reasoner::ProofStep::Rule { id, rule, .. } = &proof.step else { return None };
+        let stem = id.split('#').next().unwrap_or("").to_string();
+        let meta = b.kb.vault.rules.get(&stem)?.meta();
+        if meta.status != RuleStatus::Hypothesis {
+            return None;
+        }
+        let clause = self.realizer.clause(g);
+        let why = self.realizer.rule_text(rule);
+        b.kb.log_change(now, "tentative_answer", &g.to_string(), &format!("from guessed rule {stem}"));
+        self.pending = Some(Pending::Rule(stem));
+        let text = format!("I'm not sure, but I'd guess so: {clause}. I noticed a pattern: {why}. Is that right?");
+        Some(Reply { text, intent: "ask", claims: Vec::new() })
+    }
+
     /// Store a rule in its own file. Returns false if it already exists.
     /// An unsafe or unstratifiable rule is refused.
     pub fn add_rule(&mut self, rule: Rule, status: RuleStatus, conf: f64, source: &str, note: &str) -> Result<bool, String> {
@@ -1124,6 +1146,13 @@ impl Agent {
                 if truth == Truth::Yes {
                     if let Some(p) = now_model.proof(&g) {
                         self.record_uses(b, &now_model, &p.leaves());
+                    }
+                }
+                // The tentative layer: a guessed rule may answer, said as a
+                // guess, and the guess becomes a question about the rule.
+                if truth == Truth::Unknown {
+                    if let Some(r) = self.tentative_answer(b, &g, now) {
+                        return r;
                     }
                 }
                 return self.say(Act::YesNo { atom: g, truth });
