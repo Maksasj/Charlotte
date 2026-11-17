@@ -101,6 +101,9 @@ pub fn take_thread_usage() -> BTreeMap<String, Usage> {
     LOCAL.with(|l| std::mem::take(&mut *l.borrow_mut()))
 }
 
+/// Longest wait for one model call.
+pub const TIMEOUT: std::time::Duration = std::time::Duration::from_secs(90);
+
 const SYSTEM: &str = "You are a careful assistant inside a training program. Follow the user's instructions exactly and output only what they ask for.";
 
 /// One model call. Returns the text of the answer.
@@ -125,9 +128,33 @@ pub fn call_system(role: &str, model: &str, system: &str, prompt: &str) -> Resul
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn();
+    // A hung CLI process must not block a run forever: give up after TIMEOUT.
     let out = child.and_then(|mut c| {
         c.stdin.take().unwrap().write_all(prompt.as_bytes())?;
-        c.wait_with_output()
+        let mut stdout = c.stdout.take().unwrap();
+        let mut stderr = c.stderr.take().unwrap();
+        let reader = std::thread::spawn(move || {
+            use std::io::Read;
+            let mut o = Vec::new();
+            let mut e = Vec::new();
+            let _ = stdout.read_to_end(&mut o);
+            let _ = stderr.read_to_end(&mut e);
+            (o, e)
+        });
+        let deadline = std::time::Instant::now() + TIMEOUT;
+        let status = loop {
+            if let Some(s) = c.try_wait()? {
+                break s;
+            }
+            if std::time::Instant::now() >= deadline {
+                let _ = c.kill();
+                let _ = c.wait();
+                return Err(std::io::Error::new(std::io::ErrorKind::TimedOut, format!("no answer within {} s", TIMEOUT.as_secs())));
+            }
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        };
+        let (stdout, stderr) = reader.join().unwrap_or_default();
+        Ok(std::process::Output { status, stdout, stderr })
     });
     let mut u = Usage { calls: 1, seconds: start.elapsed().as_secs_f64(), ..Default::default() };
     let out = match out {
