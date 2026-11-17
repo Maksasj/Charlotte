@@ -441,6 +441,20 @@ impl Trainer {
     /// Check the plan limits now (blocking; call from a background thread).
     pub fn refresh_limits(&self) {
         let r = fetch_limits();
+        // Alert with an action: a curriculum run stops at 80% of the session
+        // limit or 70% of the weekly one (Design 2.0, alerts).
+        if let Ok(v) = &r {
+            let over = v.iter().any(|l| {
+                let n = l.name.to_lowercase();
+                (n.contains("session") && l.percent >= 80.0) || (n.contains("week") && l.percent >= 70.0)
+            });
+            if over && curriculum_running() {
+                if let Some(mut c) = CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()).take() {
+                    let _ = c.kill();
+                }
+                *LIMIT_STOP.lock().unwrap_or_else(|e| e.into_inner()) = Some("the curriculum run was stopped: plan limit above 80% of the session or 70% of the week".into());
+            }
+        }
         let mut l = self.limits.lock().unwrap_or_else(|e| e.into_inner());
         match r {
             Ok(v) => *l = (v, Some(now_s()), None),
@@ -814,6 +828,9 @@ pub fn refuse(req: &Request, token: &str, port: u16) -> Option<(u16, &'static st
 /// real model calls may start then.
 pub static MOCK_MODELS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
+/// Set when an alert stopped the curriculum run.
+static LIMIT_STOP: Mutex<Option<String>> = Mutex::new(None);
+
 /// The curriculum training process started from the dashboard (one at a time).
 static CURRICULUM: Mutex<Option<std::process::Child>> = Mutex::new(None);
 
@@ -887,6 +904,11 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
             let mut v = crate::curriculum::dashboard_status(&root);
             v["running"] = serde_json::json!(curriculum_running());
             v["mock"] = serde_json::json!(MOCK_MODELS.load(std::sync::atomic::Ordering::SeqCst));
+            if let Some(m) = LIMIT_STOP.lock().unwrap_or_else(|e| e.into_inner()).clone() {
+                if let Some(a) = v["run"]["alerts"].as_array_mut() {
+                    a.insert(0, serde_json::json!(m));
+                }
+            }
             let s = serde_json::to_vec(&v).unwrap_or_default();
             respond(&mut stream, 200, "application/json", &s);
         }

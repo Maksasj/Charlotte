@@ -121,6 +121,7 @@ fn curriculum_command(args: &[String]) {
     };
     let live = root.join("data").join("training").join("curriculum").join("live").join(format!("{ts}.jsonl"));
     sla_eval::curriculum::set_live(live.clone());
+    sla_eval::curriculum::live_vault(&vault);
     eprintln!("live transcript: {} (watch: python tools/curriculum_live.py)", live.display());
     // Training mode: the curriculum over the training scenarios first (never the
     // held-out ones), on the same vault; then the held-out measurement below.

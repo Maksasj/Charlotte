@@ -315,7 +315,12 @@ pub fn set_live(path: PathBuf) {
     *LIVE.lock().unwrap_or_else(|e| e.into_inner()) = Some(path);
 }
 
-/// One live event: `who` is user, agent, teacher, judge or phase.
+/// Record where the run's vault is (the dashboard reads its change log).
+pub fn live_vault(path: &Path) {
+    live(0, "run", "", "vault", &path.display().to_string());
+}
+
+/// One live event: `who` is user, agent, teacher, judge, stored, vault or phase.
 fn live(enc: usize, kind: &str, scenario: &str, who: &str, text: &str) {
     let g = LIVE.lock().unwrap_or_else(|e| e.into_inner());
     let Some(p) = g.as_ref() else { return };
@@ -372,8 +377,9 @@ impl CurriculumConfig {
         live(0, "teach_block", &s.id, "phase", &format!("teach blocks for {}", s.id));
         for line in &s.teach {
             live(0, "teach_block", &s.id, "teacher", line);
-            let r = t.respond(line).text;
-            live(0, "teach_block", &s.id, "agent", &r);
+            let rr = t.respond(line);
+            live(0, "teach_block", &s.id, "agent", &rr.text);
+            live(0, "teach_block", &s.id, "stored", &rr.claims.iter().map(|c| c.to_string()).collect::<Vec<_>>().join("; "));
         }
         // Protocol rule 3: the teacher sees what was stored and fixes only what
         // is wrong: a step lost or stored with another action, or needs missing,
@@ -381,8 +387,9 @@ impl CurriculumConfig {
         let fixes = fix_lines(brain, s, &t.session_id);
         for line in &fixes {
             live(0, "teach_block", &s.id, "teacher", &format!("(fix) {line}"));
-            let r = t.respond(line).text;
-            live(0, "teach_block", &s.id, "agent", &r);
+            let rr = t.respond(line);
+            live(0, "teach_block", &s.id, "agent", &rr.text);
+            live(0, "teach_block", &s.id, "stored", &rr.claims.iter().map(|c| c.to_string()).collect::<Vec<_>>().join("; "));
         }
         s.teach.len() + fixes.len()
     }
@@ -568,8 +575,9 @@ pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenari
                 live(0, "teach_block", &s.id, "phase", &format!("variant teach block for {} ({})", s.id, v.change));
                 for line in &lines {
                     live(0, "teach_block", &s.id, "teacher", line);
-                    let r = t.respond(line).text;
-                    live(0, "teach_block", &s.id, "agent", &r);
+                    let rr = t.respond(line);
+                    live(0, "teach_block", &s.id, "agent", &rr.text);
+                    live(0, "teach_block", &s.id, "stored", &rr.claims.iter().map(|c| c.to_string()).collect::<Vec<_>>().join("; "));
                 }
                 rep.variant_teach_lines += lines.len();
                 let e = cfg.encounter(brain, s, "transfer_retry", &v.request, &[v.situation.clone()], true, next());
@@ -913,24 +921,107 @@ pub fn dashboard_status(root: &Path) -> serde_json::Value {
     };
     let cur = root.join("data").join("training").join("curriculum");
     let mut out = serde_json::json!({});
+    let mut run_vault: Option<PathBuf> = None;
     if let Some(live) = newest(cur.join("live"), false) {
         let events: Vec<serde_json::Value> = std::fs::read_to_string(&live).unwrap_or_default().lines().filter_map(|l| serde_json::from_str(l).ok()).collect();
+        let txt = |e: &serde_json::Value| e["text"].as_str().unwrap_or("").to_string();
         let mut kinds: std::collections::BTreeMap<String, (usize, usize)> = Default::default();
+        // Scenario grid: scenario -> kind -> PASS/FAIL (the last verdict).
+        let mut grid: std::collections::BTreeMap<String, std::collections::BTreeMap<String, bool>> = Default::default();
         for e in events.iter().filter(|e| e["who"] == "judge") {
-            let k = kinds.entry(e["kind"].as_str().unwrap_or("").to_string()).or_default();
-            k.0 += 1;
-            k.1 += e["text"].as_str().map_or(false, |t| t.starts_with("PASS")) as usize;
+            let k = e["kind"].as_str().unwrap_or("").to_string();
+            let pass = txt(e).starts_with("PASS");
+            let c = kinds.entry(k.clone()).or_default();
+            c.0 += 1;
+            c.1 += pass as usize;
+            grid.entry(e["scenario"].as_str().unwrap_or("").to_string()).or_default().insert(k, pass);
         }
+        // Question stream: curiosity rounds (agent question, teacher answer, agent reply).
+        let mut questions = Vec::new();
+        let cq: Vec<&serde_json::Value> = events.iter().filter(|e| e["kind"] == "curiosity").collect();
+        for w in cq.chunks(3) {
+            if let [q, a, r] = w {
+                questions.push(serde_json::json!({"t": q["t"], "question": txt(q), "answer": txt(a), "reply": txt(r)}));
+            }
+        }
+        // Teach log: per scenario block, each line with its reply and what was stored.
+        let mut teach: Vec<serde_json::Value> = Vec::new();
+        let mut cur_block: Option<serde_json::Value> = None;
+        let mut pending_line: Option<serde_json::Value> = None;
+        for e in events.iter().filter(|e| e["kind"] == "teach_block") {
+            match e["who"].as_str().unwrap_or("") {
+                "phase" => {
+                    if let Some(b) = cur_block.take() {
+                        teach.push(b);
+                    }
+                    cur_block = Some(serde_json::json!({"scenario": e["scenario"], "t": e["t"], "title": txt(e), "lines": []}));
+                }
+                "teacher" => pending_line = Some(serde_json::json!({"text": txt(e), "reply": "", "stored": ""})),
+                "agent" => {
+                    if let Some(l) = pending_line.as_mut() {
+                        l["reply"] = serde_json::json!(txt(e));
+                    }
+                }
+                "stored" => {
+                    if let (Some(mut l), Some(b)) = (pending_line.take(), cur_block.as_mut()) {
+                        l["stored"] = serde_json::json!(txt(e));
+                        b["lines"].as_array_mut().unwrap().push(l);
+                    }
+                }
+                _ => {}
+            }
+        }
+        if let Some(b) = cur_block.take() {
+            teach.push(b);
+        }
+        // Teacher quality: meta requests, and facts stored per teach line.
+        let teacher_lines: Vec<String> = events.iter().filter(|e| e["who"] == "teacher").map(|e| txt(e)).collect();
+        let meta = teacher_lines.iter().filter(|l| META.iter().any(|m| l.to_lowercase().contains(m))).count();
+        let stored: Vec<usize> = events.iter().filter(|e| e["who"] == "stored").map(|e| txt(e).split("; ").filter(|x| !x.is_empty()).count()).collect();
+        let nothing = stored.iter().filter(|n| **n == 0).count();
+        // Alerts.
+        let mut alerts: Vec<String> = Vec::new();
+        let mut streak = 0;
+        for e in events.iter().filter(|e| e["who"] == "agent") {
+            if txt(e).trim() == NOT_UNDERSTOOD {
+                streak += 1;
+                if streak == 4 {
+                    alerts.push(format!("4 replies in a row not understood ({})", e["scenario"].as_str().unwrap_or("")));
+                }
+            } else {
+                streak = 0;
+            }
+        }
+        let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0);
+        let recent_q = questions.iter().filter(|q| q["t"].as_f64().map_or(false, |t| now - t < 60.0)).count();
+        if recent_q > 10 {
+            alerts.push(format!("question rate {recent_q} a minute (above 10)"));
+        }
+        if meta > 0 {
+            alerts.push(format!("{meta} teacher meta request(s)"));
+        }
+        if !stored.is_empty() && nothing * 2 > stored.len() {
+            alerts.push(format!("{nothing} of {} teach lines stored nothing", stored.len()));
+        }
+        run_vault = events.iter().find(|e| e["who"] == "vault").map(|e| PathBuf::from(txt(e)));
         let last_t = events.last().and_then(|e| e["t"].as_f64()).unwrap_or(0.0);
         out["run"] = serde_json::json!({
             "name": live.file_stem().and_then(|s| s.to_str()).unwrap_or(""),
             "messages": events.len(),
             "last_t": last_t,
             "kinds": kinds.iter().map(|(k, (n, p))| serde_json::json!({"kind": k, "done": n, "passed": p})).collect::<Vec<_>>(),
+            "grid": grid.iter().map(|(s, m)| serde_json::json!({"scenario": s, "cells": m})).collect::<Vec<_>>(),
+            "questions": questions,
+            "teach": teach.into_iter().rev().take(40).collect::<Vec<_>>(),
+            "teacher_quality": {"teach_lines": teacher_lines.len(), "meta_requests": meta, "lines_storing_nothing": nothing,
+                                 "facts_per_line": if stored.is_empty() { 0.0 } else { stored.iter().sum::<usize>() as f64 / stored.len() as f64 }},
+            "alerts": alerts,
             "recent": events.iter().rev().take(80).rev().cloned().collect::<Vec<_>>(),
         });
     }
-    if let Some(v) = newest(cur.join("vaults"), true) {
+    // Learning feed and knowledge health: the running vault if known, else the newest kept one.
+    let v = run_vault.filter(|p| p.exists()).or_else(|| newest(cur.join("vaults"), true));
+    if let Some(v) = v {
         let lines = |p: PathBuf| std::fs::read_to_string(p).unwrap_or_default().lines().count();
         let words_pending = std::fs::read_to_string(v.join("queue").join("words.jsonl")).unwrap_or_default().lines().filter(|l| l.contains("\"pending\"")).count();
         let mut on_trial = 0;
@@ -939,6 +1030,15 @@ pub fn dashboard_status(root: &Path) -> serde_json::Value {
             procedures += 1;
             on_trial += std::fs::read_to_string(e.path()).unwrap_or_default().contains("status: hypothesis") as usize;
         }
+        let mut feed: Vec<String> = Vec::new();
+        for f in std::fs::read_dir(v.join("log")).into_iter().flatten().flatten() {
+            for l in std::fs::read_to_string(f.path()).unwrap_or_default().lines() {
+                if ["confirm_procedure", "refine_rule", "confirm_rule", "reject_rule", "approve_word", "reject_word", "queue", "hygiene", "consolidate", "tentative_answer", "new_rule", "hypothesis"].iter().any(|k| l.contains(&format!("| {k} |"))) {
+                    feed.push(l.trim_start_matches("- ").to_string());
+                }
+            }
+        }
+        let feed_len = feed.len();
         out["health"] = serde_json::json!({
             "vault": v.file_name().and_then(|s| s.to_str()).unwrap_or(""),
             "procedures": procedures,
@@ -947,6 +1047,7 @@ pub fn dashboard_status(root: &Path) -> serde_json::Value {
             "merges_queued": lines(v.join("queue").join("merges.jsonl")),
             "failed_turns": lines(v.join("queue").join("failures.jsonl")),
         });
+        out["feed"] = serde_json::json!(feed.into_iter().skip(feed_len.saturating_sub(60)).collect::<Vec<_>>());
     }
     out
 }

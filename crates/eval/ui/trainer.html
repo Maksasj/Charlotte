@@ -517,6 +517,20 @@ function CurriculumControls({ c }) {
   </div>`;
 }
 
+const GRID_COLS = [['teach', 'teach'], ['teach_retry', 'after teaching'], ['repeat', '2. repeat'], ['transfer', '3. transfer'], ['transfer_retry', 'transfer, taught'], ['spaced_repeat', 'spaced'], ['retention', '4. retention']];
+
+function ScenarioGrid({ grid }) {
+  if (!grid || !grid.length) return null;
+  const cell = (v) => v === undefined ? html`<td style=${{ textAlign: 'center', color: '#9ca3af' }}>·</td>`
+    : html`<td style=${{ textAlign: 'center', color: v ? '#15803d' : '#b91c1c', fontWeight: 600 }} title=${v ? 'solved' : 'failed'}>${v ? '✓' : '✗'}</td>`;
+  const cols = GRID_COLS.filter(([k]) => grid.some((r) => r.cells[k] !== undefined));
+  return html`<details open style=${{ marginTop: '8px' }}><summary>Scenario grid (${grid.length} scenarios)</summary>
+    <div style=${{ overflowX: 'auto' }}><table style=${{ borderCollapse: 'collapse', fontSize: '0.9em' }}>
+      <thead><tr><th style=${{ textAlign: 'left', paddingRight: '10px' }}>Scenario</th>${cols.map(([k, label]) => html`<th key=${k} style=${{ padding: '0 6px' }}>${label}</th>`)}</tr></thead>
+      <tbody>${grid.map((r) => html`<tr key=${r.scenario}><td class="mono" style=${{ paddingRight: '10px' }}>${r.scenario}</td>${cols.map(([k]) => cell(r.cells[k]))}</tr>`)}</tbody>
+    </table></div></details>`;
+}
+
 function Curriculum() {
   const c = useCurriculum();
   if (!c || (!c.run && !c.health)) return html`<div><${CurriculumControls} c=${c} /><p class="empty">No curriculum run yet; it shows up here live.</p></div>`;
@@ -540,6 +554,25 @@ function Curriculum() {
           ${e.who === 'phase' ? html`<strong>${e.text}</strong>` : html`<span class="mono" style=${{ display: 'inline-block', minWidth: '64px' }}>${e.who}</span> ${e.text}`}
         </div>`)}</div>
       </details>
+    </div>` : null}
+    ${run && run.alerts && run.alerts.length ? html`<div role="alert" style=${{ margin: '8px 0', padding: '8px 10px', border: '1px solid #b91c1c', borderRadius: '6px', color: '#b91c1c' }}>
+      <strong>Alerts</strong><ul style=${{ margin: '4px 0 0 18px' }}>${run.alerts.map((a, i) => html`<li key=${i}>${a}</li>`)}</ul></div>` : null}
+    ${run ? html`<${ScenarioGrid} grid=${run.grid} />` : null}
+    ${run ? html`<div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px', marginTop: '10px' }}>
+      <div><h3>Question stream (${run.questions.length})</h3>
+        ${run.questions.length ? html`<div style=${{ maxHeight: '260px', overflowY: 'auto', fontSize: '0.9em' }}>${run.questions.slice().reverse().map((q, i) => html`<details key=${i}><summary>${q.question}</summary>
+          <div class="sub">teacher: ${q.answer}</div><div class="sub">agent: ${q.reply}</div></details>`)}</div>` : html`<p class="empty">No questions yet.</p>`}
+      </div>
+      <div><h3>Teach log (${run.teach.length})</h3>
+        ${run.teach.length ? html`<div style=${{ maxHeight: '260px', overflowY: 'auto', fontSize: '0.9em' }}>${run.teach.map((b, i) => html`<details key=${i}><summary>${b.title}</summary>
+          <ul style=${{ margin: '4px 0 0 16px' }}>${b.lines.map((l, j) => html`<li key=${j}>${l.text}<div class="sub mono">${l.stored || '(nothing stored)'}</div></li>`)}</ul></details>`)}</div>` : html`<p class="empty">No teach blocks yet.</p>`}
+      </div>
+      <div><h3>Learning feed</h3>
+        ${c.feed && c.feed.length ? html`<div style=${{ maxHeight: '260px', overflowY: 'auto', fontSize: '0.85em' }} class="mono">${c.feed.slice().reverse().map((l, i) => html`<div key=${i}>${l}</div>`)}</div>` : html`<p class="empty">Nothing learned yet.</p>`}
+      </div>
+      <div><h3>Teacher quality</h3>
+        <p class="sub">${fmtInt(run.teacher_quality.teach_lines)} teach lines · ${run.teacher_quality.facts_per_line.toFixed(1)} facts stored per line · ${fmtInt(run.teacher_quality.lines_storing_nothing)} stored nothing · ${fmtInt(run.teacher_quality.meta_requests)} meta requests</p>
+      </div>
     </div>` : null}
     ${h ? html`<p class="sub" style=${{ marginTop: '8px' }}>Knowledge health (vault <span class="mono">${h.vault}</span>): ${fmtInt(h.procedures)} procedures, ${fmtInt(h.procedures_on_trial)} on trial · ${fmtInt(h.words_pending)} words waiting for review · ${fmtInt(h.merges_queued)} merges queued · ${fmtInt(h.failed_turns)} failed turns for teachers' questions</p>` : null}
   </div>`;
