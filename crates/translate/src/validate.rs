@@ -399,7 +399,7 @@ mod tests {
         // A question is not a statement.
         assert!(!check("Anna likes tea?", &["tell: likes(anna, tea)"]).is_empty());
         // Invented predicates and glued constants.
-        assert!(!check("Moss grows on rocks.", &["tell: grow_on(moss, rock)"]).is_empty());
+        assert!(!check("Frozen means turned into ice.", &["tell: mean(frozen, ice)"]).is_empty());
         assert!(!check("A pan is good for eggs and frying.", &["tell: property(pan, use, good_for_eggs_and_frying)"]).is_empty());
         // A verb that is not in the sentence.
         assert!(!check("Anna has a cat.", &["tell: feed(anna, cat)"]).is_empty());
