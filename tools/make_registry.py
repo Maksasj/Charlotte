@@ -94,6 +94,11 @@ PREDS = [
     ("side_by_side", "step", "step S runs during another step", "", "", ""),
     ("total_minutes", "task number number", "task T takes Lo to Hi minutes in all", "{1} takes {2} to {3} minutes in all", "askable", ""),
     ("step_count", "task number", "task T has N steps", "{1} has {2} steps", "askable", ""),
+    # Task schemas (vault/tasks/)
+    ("task_slot", "task symbol symbol", "task T has slot S, required or optional", "", "", ""),
+    ("slot_question", "task symbol text", "the agent asks Text to fill slot S of task T", "", "", ""),
+    ("slot_type", "task symbol symbol", "slot S of task T holds things of kind K", "", "", ""),
+    ("closing", "task text", "the line that closes task T", "", "", ""),
     # Registry and bookkeeping predicates used by the agent itself
     ("fact_id", "fact any any", "fact F is about these values", "", "", ""),
 ]

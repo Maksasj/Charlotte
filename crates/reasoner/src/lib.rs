@@ -1074,7 +1074,7 @@ pub fn facts_for(facts: &[Fact], at: Option<Timestamp>) -> Vec<FactInput> {
 
 /// Evaluate the knowledge base at a time (or over all history).
 pub fn evaluate_kb(kb: &KnowledgeBase, at: Option<Timestamp>, include_hypotheses: bool) -> Result<Model, EvalError> {
-    let facts = facts_for(&kb.all_facts(), at);
+    let facts = facts_for(&kb.reasoning_facts(), at);
     let rules: Vec<RuleInput> = kb.rules(include_hypotheses).iter().map(RuleInput::from).collect();
     evaluate(&facts, &rules)
 }

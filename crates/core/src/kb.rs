@@ -278,8 +278,17 @@ impl KnowledgeBase {
         out
     }
 
+    /// Facts stored in fact files (what asserting, closing and history work on).
     pub fn all_facts(&self) -> Vec<Fact> {
         self.vault.all_facts().into_iter().map(|(_, f)| f).collect()
+    }
+
+    /// Everything the reasoner reads: stored facts plus the facts of
+    /// procedures and task schemas.
+    pub fn reasoning_facts(&self) -> Vec<Fact> {
+        let mut v = self.all_facts();
+        v.extend(self.vault.procedure_facts());
+        v
     }
 
     pub fn facts_at(&self, t: Timestamp) -> Vec<Fact> {

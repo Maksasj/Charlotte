@@ -11,7 +11,7 @@ pub use kb::{AssertOutcome, KnowledgeBase};
 pub use syntax::{parse_atom, parse_fact_line, parse_ground, parse_query, parse_rule, ParseError};
 pub use term::{Atom, CmpOp, Fact, GroundAtom, Literal, Rule, Term, Value};
 pub use time::Timestamp;
-pub use vault::{RuleFile, RuleMeta, RuleStatus, Vault};
+pub use vault::{ProcedureFile, ProcedureKind, ProcedureMeta, RuleFile, RuleMeta, RuleStatus, Vault};
 
 /// The built-in core files: (file stem, contents).
 pub const CORE_FILES: &[(&str, &str)] = &[

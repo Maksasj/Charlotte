@@ -207,6 +207,81 @@ impl RuleFile {
     }
 }
 
+/// Metadata of a procedure or task schema file.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ProcedureMeta {
+    pub id: String,
+    /// `hypothesis` until a second teacher agrees or a user accepts the result.
+    pub status: RuleStatus,
+    pub source: String,
+    /// Times offered to a user, and times it worked (the user accepted or finished it).
+    pub uses: u64,
+    pub successes: u64,
+}
+
+/// A procedure (`vault/procedures/<task>.md`) or a task schema
+/// (`vault/tasks/<task>.md`): front matter with status, source and use
+/// counts, a title and note, and one block of facts, one per line. Steps are
+/// small events ordered by `before`, so steps can run side by side.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ProcedureFile {
+    pub front: FrontMatter,
+    pub doc: Document,
+}
+
+impl ProcedureFile {
+    pub fn new(meta: &ProcedureMeta, title: &str, note: &str, facts: &[Fact]) -> Self {
+        let mut front = FrontMatter::default();
+        Self::write_meta(&mut front, meta);
+        let mut doc = Document::parse(&format!("# {title}\n\n{}\n", note.trim()), BlockKind::Facts);
+        for f in facts {
+            doc.push(Item::Fact(f.clone()));
+        }
+        ProcedureFile { front, doc }
+    }
+
+    fn write_meta(front: &mut FrontMatter, m: &ProcedureMeta) {
+        front.set("id", m.id.clone());
+        front.set("status", m.status.as_str());
+        front.set("source", m.source.clone());
+        front.set("uses", m.uses.to_string());
+        front.set("successes", m.successes.to_string());
+    }
+
+    pub fn parse(src: &str, fallback_id: &str) -> Self {
+        let (front, body) = FrontMatter::split(src);
+        let front = front.unwrap_or_else(|| {
+            let mut f = FrontMatter::default();
+            f.set("id", fallback_id);
+            f
+        });
+        ProcedureFile { front, doc: Document::parse(body, BlockKind::Facts) }
+    }
+
+    pub fn render(&self) -> String {
+        format!("{}{}", self.front.render(&self.doc.newline), self.doc.render())
+    }
+
+    pub fn meta(&self) -> ProcedureMeta {
+        let f = &self.front;
+        ProcedureMeta {
+            id: f.get("id").unwrap_or("").to_string(),
+            status: f.get("status").and_then(RuleStatus::parse).unwrap_or(RuleStatus::Hypothesis),
+            source: f.get("source").unwrap_or("").to_string(),
+            uses: f.get("uses").and_then(|c| c.parse().ok()).unwrap_or(0),
+            successes: f.get("successes").and_then(|c| c.parse().ok()).unwrap_or(0),
+        }
+    }
+
+    pub fn set_meta(&mut self, m: &ProcedureMeta) {
+        Self::write_meta(&mut self.front, m);
+    }
+
+    pub fn facts(&self) -> Vec<Fact> {
+        self.doc.facts().cloned().collect()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct FactFile {
     pub doc: Document,
@@ -253,7 +328,25 @@ pub struct VaultSnapshot {
     rules: BTreeMap<String, RuleFile>,
     core: BTreeMap<String, RuleFile>,
     lexicon: BTreeMap<String, RuleFile>,
+    procedures: BTreeMap<String, ProcedureFile>,
+    tasks: BTreeMap<String, ProcedureFile>,
     dirty: std::collections::BTreeSet<(String, String)>,
+}
+
+/// Which folder a [`ProcedureFile`] lives in.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProcedureKind {
+    Procedure,
+    Task,
+}
+
+impl ProcedureKind {
+    pub fn dir(self) -> &'static str {
+        match self {
+            ProcedureKind::Procedure => "procedures",
+            ProcedureKind::Task => "tasks",
+        }
+    }
 }
 
 #[derive(Debug, Default)]
@@ -267,6 +360,10 @@ pub struct Vault {
     pub core: BTreeMap<String, RuleFile>,
     /// Lexicon files (the predicate registry, words), rule format: `vault/lexicon/`.
     pub lexicon: BTreeMap<String, RuleFile>,
+    /// Procedures, one file per task: `vault/procedures/`.
+    pub procedures: BTreeMap<String, ProcedureFile>,
+    /// Task schemas (slots, slot questions, closing line): `vault/tasks/`.
+    pub tasks: BTreeMap<String, ProcedureFile>,
     /// Files changed since load, as (dir, stem).
     dirty: std::collections::BTreeSet<(String, String)>,
     /// Bumped on every change in memory (facts, rules, reloads), so cached
@@ -326,6 +423,14 @@ impl Vault {
             let rf = RuleFile::parse(&src, &stem);
             v.lexicon.insert(stem, rf);
         }
+        for (stem, src) in read_md_dir(&v.root.join("procedures"))? {
+            let pf = ProcedureFile::parse(&src, &stem);
+            v.procedures.insert(stem, pf);
+        }
+        for (stem, src) in read_md_dir(&v.root.join("tasks"))? {
+            let pf = ProcedureFile::parse(&src, &stem);
+            v.tasks.insert(stem, pf);
+        }
         if let Ok(src) = fs::read_to_string(v.root.join("stats").join("uses.tsv")) {
             for l in src.lines() {
                 let p: Vec<&str> = l.split('\t').collect();
@@ -355,6 +460,47 @@ impl Vault {
     pub fn mark_rule_dirty(&mut self, stem: &str) {
         self.generation += 1;
         self.dirty.insert(("rules".into(), stem.into()));
+    }
+
+    /// Store or replace a procedure file (`procedures`) or task schema (`tasks`).
+    pub fn put_procedure(&mut self, kind: ProcedureKind, pf: ProcedureFile) {
+        let stem = file_stem(&pf.meta().id);
+        match kind {
+            ProcedureKind::Procedure => self.procedures.insert(stem.clone(), pf),
+            ProcedureKind::Task => self.tasks.insert(stem.clone(), pf),
+        };
+        self.mark_procedure_dirty(kind, &stem);
+    }
+
+    /// Note an in-memory change to a procedure or task schema file.
+    pub fn mark_procedure_dirty(&mut self, kind: ProcedureKind, stem: &str) {
+        self.generation += 1;
+        self.dirty.insert((kind.dir().into(), stem.into()));
+    }
+
+    /// The facts of procedures and task schemas, for reasoning. A procedure
+    /// still on trial is believed less (it was taught once); a rejected one
+    /// takes no part.
+    pub fn procedure_facts(&self) -> Vec<Fact> {
+        let mut out = Vec::new();
+        for (kind, map) in [("procedure", &self.procedures), ("task", &self.tasks)] {
+            for pf in map.values() {
+                let m = pf.meta();
+                let conf = match m.status {
+                    RuleStatus::Rejected => continue,
+                    RuleStatus::Hypothesis => 0.6,
+                    RuleStatus::Confirmed => 1.0,
+                };
+                for mut f in pf.facts() {
+                    if f.source.is_empty() {
+                        f.source = format!("{kind}:{}", m.id);
+                    }
+                    f.conf = f.conf.min(conf);
+                    out.push(f);
+                }
+            }
+        }
+        out
     }
 
     /// Note a change to core files made in memory.
@@ -392,6 +538,8 @@ impl Vault {
             let content = match dir.as_str() {
                 "facts" => self.facts.get(&stem).map(|f| f.render()),
                 "rules" => self.rules.get(&stem).map(|r| r.render()),
+                "procedures" => self.procedures.get(&stem).map(|p| p.render()),
+                "tasks" => self.tasks.get(&stem).map(|p| p.render()),
                 _ => None,
             };
             match content {
@@ -415,6 +563,12 @@ impl Vault {
         let rule_keys: Vec<String> = self.rules.keys().cloned().collect();
         for k in rule_keys {
             self.mark_rule_dirty(&k);
+        }
+        for dir in ["procedures", "tasks"] {
+            let keys: Vec<String> = if dir == "procedures" { self.procedures.keys().cloned().collect() } else { self.tasks.keys().cloned().collect() };
+            for k in keys {
+                self.dirty.insert((dir.into(), k));
+            }
         }
         let core_dir = self.root.join("core");
         fs::create_dir_all(&core_dir)?;
@@ -506,6 +660,13 @@ impl Vault {
                 out.push((format!("lexicon/{s}.md"), l, e));
             }
         }
+        for (dir, map) in [("procedures", &self.procedures), ("tasks", &self.tasks)] {
+            for (s, f) in map {
+                for (l, e) in f.doc.errors() {
+                    out.push((format!("{dir}/{s}.md"), l, e));
+                }
+            }
+        }
         out
     }
 
@@ -529,7 +690,15 @@ impl Vault {
 
     /// A copy of everything in memory, for all-or-nothing changes.
     pub fn snapshot(&self) -> VaultSnapshot {
-        VaultSnapshot { facts: self.facts.clone(), rules: self.rules.clone(), core: self.core.clone(), lexicon: self.lexicon.clone(), dirty: self.dirty.clone() }
+        VaultSnapshot {
+            facts: self.facts.clone(),
+            rules: self.rules.clone(),
+            core: self.core.clone(),
+            lexicon: self.lexicon.clone(),
+            procedures: self.procedures.clone(),
+            tasks: self.tasks.clone(),
+            dirty: self.dirty.clone(),
+        }
     }
 
     /// Go back to a snapshot (the generation still moves forward).
@@ -538,6 +707,8 @@ impl Vault {
         self.rules = s.rules;
         self.core = s.core;
         self.lexicon = s.lexicon;
+        self.procedures = s.procedures;
+        self.tasks = s.tasks;
         self.dirty = s.dirty;
         self.generation += 1;
     }

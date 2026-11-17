@@ -171,7 +171,7 @@ impl Brain {
                 return Arc::clone(&c.model);
             }
         }
-        let facts = self.kb.all_facts();
+        let facts = self.kb.reasoning_facts();
         let (mut lo, mut hi) = (i64::MIN, i64::MAX);
         for f in &facts {
             for b in [f.from, f.until].into_iter().flatten() {
@@ -209,7 +209,7 @@ impl Brain {
             }
         }
         let rules: Vec<RuleInput> = rules.into_iter().filter(|r| deps.contains(r.rule.head.pred.as_str())).collect();
-        let facts: Vec<Fact> = self.kb.all_facts().into_iter().filter(|f| deps.contains(f.atom.pred.as_str())).collect();
+        let facts: Vec<Fact> = self.kb.reasoning_facts().into_iter().filter(|f| deps.contains(f.atom.pred.as_str())).collect();
         let moments = sla_reasoner::past_moments(&facts, &rules, now, PAST_MOMENTS);
         let mut models = Vec::new();
         for t in moments {
@@ -239,7 +239,7 @@ impl Brain {
     /// Every past moment, all predicates (for inspection; costs a full
     /// evaluation per moment).
     pub fn all_past_models(&mut self, now: Timestamp) -> Vec<Arc<Model>> {
-        let facts: Vec<Fact> = self.kb.all_facts();
+        let facts: Vec<Fact> = self.kb.reasoning_facts();
         let rules = self.runnable_rules(false, now);
         let moments = sla_reasoner::past_moments(&facts, &rules, now, PAST_MOMENTS);
         let mut out = Vec::new();
@@ -261,7 +261,7 @@ impl Brain {
             return self.learner.features_from(&m);
         }
         let rules = Learner::evidence_rules(&self.kb);
-        let inputs = facts_for(&self.kb.all_facts(), Some(now));
+        let inputs = facts_for(&self.kb.reasoning_facts(), Some(now));
         match self.eval(&inputs, &rules) {
             Ok(m) => self.learner.features_from(&m),
             Err(_) => Default::default(),

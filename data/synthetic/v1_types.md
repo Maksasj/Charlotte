@@ -1,0 +1,50 @@
+# Facts from the v1 vault, for the type checks (Design 2.0, milestone 13)
+
+All lines below are copied from the v1 vault archived on 2026-11-16
+(`research/vault_before_reset_2026-11-16.zip`, `facts/`).
+
+## Ill-typed: the registry must reject every one
+
+- is_a(here, first_fact)
+- learn(maksim, that)
+- proper_name(here)
+- has(day, twenty_four_hour)
+- make(three_week, twenty_one_day)
+- property(pan, quality, good_for_eggs_and_frying)
+- property(ant, quality, easy_to_spot)
+- is_a(vegetable, foods_from_plant)
+- is_a(coast, place_where_land_meets_sea)
+- is_a(brake, part_that_stops_car)
+- cook(fact_to_check, works_in_restaurant)
+- bring(waiter, food_to_table)
+- -use(people, tools_to_work)
+- property(thanks_that, quality, clear)
+- property(plural_of_knife, quality, knives)
+- proper_name(africa_where)
+- property(maksim, quality, like_that)
+- located_in(madrid, middle_of_spain)
+- make_hard_to_hold(water, ice)
+- mean(frozen, turned_to_ice)
+
+## Well-typed: the registry must accept every one
+
+- is_a(berlin, big_city)
+- is_a(bread, breakfast_food)
+- is_a(cog, gear)
+- is_a(doctor, worker)
+- is_a(human, mammal)
+- is_a(lion, wild_cat)
+- is_a(fruit, plant_part)
+- is_a(feeler, antenna)
+- has(animal, blood)
+- has(ant, antenna)
+- has(apple, seed)
+- has(apple_tree, flower)
+- has(bagel, hole)
+- has(baker, oven)
+- has(bathroom, sink)
+- has(bed, mattress)
+- has(bedroom, bed)
+- has(bicycle, wheel)
+- has(bicycle, pedal)
+- property(yeast, size, tiny)

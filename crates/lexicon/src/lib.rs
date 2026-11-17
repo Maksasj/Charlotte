@@ -105,7 +105,11 @@ impl fmt::Display for TypeError {
         match self {
             TypeError::UnknownPredicate(p) => write!(f, "unknown predicate {p} (it needs review before facts can use it)"),
             TypeError::Arity { pred, want, got } => write!(f, "{pred} takes {want} argument(s), not {got}"),
-            TypeError::BadArgument { pred, pos, want, value, why } => write!(f, "argument {pos} of {pred} must be a {}: `{value}` {why}", want.name()),
+            TypeError::BadArgument { pred, pos, want, value, why } => {
+                let n = want.name();
+                let a = if n.starts_with(['a', 'e', 'i', 'o', 'u']) { "an" } else { "a" };
+                write!(f, "argument {pos} of {pred} must be {a} {n}: `{value}` {why}")
+            }
             TypeError::Forbidden { pred, pos, value, why } => write!(f, "`{value}` is not allowed as argument {pos} of {pred}: {why}"),
         }
     }

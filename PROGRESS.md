@@ -7,10 +7,9 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
 
 ## Current milestone
 
-**Milestone 12 (honest measurement and safe ground): done.** Every
-acceptance check passes (table below), including the v1 baseline labelled by
-the Haiku judge (218 calls) and the judge's calibration on the hand labels.
-Next: milestone 13 (knowledge model).
+**Milestones 12 and 13 done.** Every acceptance check passes (tables below).
+Next: milestone 14 (understanding: segmenter, dialogue acts, three-tier
+translator, validator).
 
 ## How to run
 
@@ -40,7 +39,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 |---|-----------|--------|-----------------|
 | 1-10 | v1 | passing | see the v1 table below |
 | 12 | Honest measurement and safe ground | built; model-run parts pending | `crates/agent/tests/safe_ground.rs`, `crates/eval/tests/measurement.rs`, `sla_eval bench`, `sla_eval stress` |
-| 13 | Knowledge model | in progress: decimals, arithmetic, aggregates, fact ids, procedural/choice/session/lexical/self layers, registry done | `crates/reasoner/tests/knowledge_model.rs` (44 cases), `crates/lexicon` |
+| 13 | Knowledge model | done | `crates/reasoner/tests/knowledge_model.rs` (44 cases), `crates/core/tests/procedures.rs`, `crates/lexicon/tests/v1_facts.rs`, `crates/agent/tests/knowledge_model.rs` |
 | 14 | Understanding | not started | |
 | 15 | Dialogue manager | not started | |
 | 16 | Generation | not started | |
@@ -56,6 +55,17 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 16 parallel teachers for 10 minutes, zero corrupted log lines | `sla_eval stress --teachers 16 --minutes 10`: 600 s, 30 runs, 29,697 conversations, 185,427 turns on mock models; 0 corrupted among 230,494 log lines, 244,881 events, 185,427 trace lines and 1,950 cache lines (the first attempt idled after the trainer's 1000-conversation cap; `stress` now starts runs until the time is used) |
 | Agent's own work under 100 ms at the 95th percentile on a copy of the v1 vault | 2,171 facts, 296 regression turns: median 21 ms, 95th percentile 63-71 ms (was 639 ms at the start of the milestone) |
 | All v1 tests pass, the v1 baseline recorded with the new labels | all v1 tests pass (one changed on purpose, see decisions); v1 baseline recorded for all 296 turns: hand labels for the 68 trainer turns, templates and the Haiku judge for the rest (`eval/outcomes.csv`, `eval/outcomes/2026-11-17T08-53-10.md`) |
+
+### Milestone 13 acceptance
+
+| Acceptance | Result |
+|---|---|
+| 100 generated procedure files round-trip with no unintended changes | `procedures.rs`: render, parse, save, reload byte for byte; one changed step time or one status change touches exactly one line, other files untouched |
+| At least 40 new reasoner cases pass and print their proofs | 44 cases (`knowledge_model.rs`), each answer's proof printed and checked down to given facts: total duration by `sum` (steps that run side by side add nothing; seconds and hours converted), all needs through steps and sub-tasks, the next step in a partial order, the missing items given what the user has (staples and substitutes), feasible options for a goal, counts, min/max, arithmetic, refusals of arithmetic and aggregates inside recursion |
+| The validator rejects 20 ill-typed facts taken from the v1 vault | `v1_facts.rs`: all 20 rejected with a reason (function word as entity, spelled number, glued phrase, the `quality` catch-all, unknown predicate), and 20 well-typed v1 facts accepted |
+| A "used to" test shows facts from different times are never joined | `safe_ground.rs::history_never_joins_different_times` (built in milestone 12) |
+
+The speed budget still holds with the new core layers: 95th percentile 69 ms on the v1 vault.
 
 ### Baselines with the new labels (2026-11-17)
 
@@ -157,6 +167,45 @@ the report's own regex found 57).
   reviewer moved into the trainer.
 - **The runtime vault and `sessions/` are not in git** (`.gitignore`); the vault starts
   fresh and core files are seeded from `crates/core/assets/core/`.
+
+- **Numbers** (`Value::Dec`): fixed-point with six decimals, normalized so a whole
+  number is always `Int` (equal numbers are equal values); numbers order by size
+  before all symbols. A duration or amount is a range with a unit:
+  `takes_time(tea, 3, 5, minute)`. Units, with their dimension and size, are in the
+  registry.
+- **Arithmetic** `T = X + Y * 2` (with brackets) binds or checks `T`; it may not take
+  part in recursion (`EvalError::ArithmeticInRecursion`), so evaluation cannot invent
+  values forever. Division keeps six decimals; division by zero or a symbol gives no
+  answer.
+- **Aggregates** `N = count { ... }`, `S = sum X { ... }`, `min`, `max`: over the
+  distinct bindings of the aggregate's own variables, grouped by the variables bound
+  before it. Their predicates must be in a lower stratum, as for negation. A count of
+  nothing is 0; min/max of nothing gives no answer. Proofs list the facts behind a sum.
+- **Placement of literals**: positive atoms run as written; every other literal runs as
+  soon as the variables it needs are bound (by atoms or by earlier arithmetic and
+  aggregate results). A literal whose variables can never be bound makes the rule unsafe.
+- **Fact ids** `@id f12` and `@conv <session>` on fact lines. The knowledge base numbers
+  new facts after the highest id in the vault; the agent tags each fact with its
+  conversation; `close_by_id` closes exactly one fact, and the trainer's reviewer and
+  its personal-remark filter now close by id (the turn trace carries the ids).
+  `new_event_id` gives `e<n>` for statements with more than two participants.
+- **Core layers** (`crates/core/assets/core/procedural.md`): procedural, choice,
+  session, lexical and self predicates, and the rules over them (`needs_all`,
+  `missing`, `feasible`, `option_for`, `next_step`, `minutes`, `total_minutes`,
+  `step_count`, `knows_task`). Built-in core files missing from a vault are now seeded
+  one by one, so a vault from an older build gets new layers.
+- **Procedures and task schemas** are vault files (`vault/procedures/`, `vault/tasks/`,
+  `ProcedureFile`): front matter with status, source, uses and successes; one fact per
+  line. Their facts take part in reasoning (`KnowledgeBase::reasoning_facts`) but are not
+  stored facts; a procedure on trial is believed at 0.6, a rejected one not at all.
+- **The predicate registry** (`crates/lexicon`, `vault/lexicon/registry.md`, generated
+  by `tools/make_registry.py`): 74 predicates with argument types, definitions,
+  frames, synonyms and flags (askable, rule_head, single_valued, open_world); the
+  pattern parser's 267 verbs as `verb(V)`; units; function, number and glue words;
+  forbidden values (`property(_, quality, _)`). `Registry::check` types a fact. It is
+  not yet wired into the agent: that is the validator's job in milestone 14.
+- Program text may hold several statements per line (`reasoner::parse_program`); vault
+  files keep one per line.
 
 ## 2.0 problems
 

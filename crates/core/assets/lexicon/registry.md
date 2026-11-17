@@ -194,6 +194,10 @@ flag(total_minutes, askable).
 pred(step_count, "task number", "task T has N steps").
 frame(step_count, "{1} has {2} steps").
 flag(step_count, askable).
+pred(task_slot, "task symbol symbol", "task T has slot S, required or optional").
+pred(slot_question, "task symbol text", "the agent asks Text to fill slot S of task T").
+pred(slot_type, "task symbol symbol", "slot S of task T holds things of kind K").
+pred(closing, "task text", "the line that closes task T").
 pred(fact_id, "fact any any", "fact F is about these values").
 % Verbs from the pattern parser: verb(V) means V(X) or V(X, Y) with an entity first.
 verb(like).
