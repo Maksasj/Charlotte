@@ -206,6 +206,7 @@ impl Agent {
             (Some(a), Some(o)) => {
                 claims.push(g("action", &[s, a]));
                 claims.push(g("object_of", &[s, o]));
+                let a = words(a);
                 let mut c = a.chars();
                 let a = c.next().map(|f| f.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default();
                 let thing = if count(o) { sla_nlg::plural(&words(o)) } else { words(o) };
@@ -213,6 +214,7 @@ impl Agent {
             }
             (Some(a), None) => {
                 claims.push(g("action", &[s, a]));
+                let a = words(a);
                 let mut c = a.chars();
                 c.next().map(|f| f.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default()
             }
@@ -276,7 +278,7 @@ impl Agent {
         let mut claims = vec![g("task", &[&task])];
         let mut lines = Vec::new();
         let missing = values(&m, "missing", &task, 1);
-        let lead = if task == t || self.is_verb_phrase(&task) { format!("Here is how to {}:", self.task_phrase(&task)) } else { format!("You could make {}:", words(&task)) };
+        let lead = if task == t || self.is_verb_phrase(b, &task) { format!("Here is how to {}:", self.task_phrase(b, &task)) } else { format!("You could make {}:", words(&task)) };
         for (i, s) in steps.iter().enumerate() {
             let (text, c) = self.step_text(&m, s);
             claims.extend(c);
@@ -284,7 +286,7 @@ impl Agent {
         }
         // What the task needs comes first.
         let needs = values(&m, "needs", &task, 1);
-        let lead = if needs.is_empty() || !missing.is_empty() && !self.session_facts.is_empty() {
+        let lead = if needs.is_empty() {
             lead
         } else {
             for x in &needs {
@@ -316,14 +318,20 @@ impl Agent {
     }
 
     /// Does a task name start with a verb (`boil_egg`), or name a thing (`garlic_tomato_pasta`)?
-    pub(crate) fn is_verb_phrase(&self, task: &str) -> bool {
+    pub(crate) fn is_verb_phrase(&self, b: &Brain, task: &str) -> bool {
+        // A dish (`garlic_tomato_pasta`, `scrambled_eggs`) is made; any other
+        // task name of two or more words is a verb phrase (`change_bike_tire`).
         let first = task.split('_').next().unwrap_or("");
-        self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "plan" | "fix" | "clean" | "wash" | "do" | "write" | "pack" | "bake" | "boil")
+        if self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "bake" | "boil") {
+            return true;
+        }
+        let dish = b.kb.vault.procedures.get(task).map_or(false, |p| p.facts().iter().any(|f| f.atom.pred == "solves" && f.atom.args.get(1).and_then(|v| v.as_sym()) == Some("plan_meal")));
+        !dish && task.contains('_')
     }
 
     /// "boil egg" for a verb phrase, "make garlic tomato pasta" for a thing.
-    pub(crate) fn task_phrase(&self, task: &str) -> String {
-        if self.is_verb_phrase(task) {
+    pub(crate) fn task_phrase(&self, b: &Brain, task: &str) -> String {
+        if self.is_verb_phrase(b, task) {
             words(task)
         } else {
             format!("make {}", words(task))

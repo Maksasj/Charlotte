@@ -272,6 +272,14 @@ the report's own regex found 57).
   missed `fix_tire`. Fixed: the help reply starts with what is needed; an unknown
   request is matched against what each known task involves (name, needs, step
   objects and actions).
+- 2026-11-17, third full curriculum run, all fixes (`eval/curriculum/2026-11-17T15-48-45.md`,
+  482 calls, live transcript in `data/training/curriculum/live/`): second encounter
+  10 of 20 (50%), transfer 0 of 15, retention 6 of 20, not understood 1.3%, helpful
+  + clarify 63.4%, contradicting facts 0.6%. Remaining failures are mostly near
+  misses: the needs list was left out when the user had said what they have;
+  "make change bike tire", "Switch_off the light"; a duration question that also
+  asked for the steps got only the duration; some teach steps not stored. Fixed:
+  needs always listed; only dishes are "made"; actions read as words.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the
