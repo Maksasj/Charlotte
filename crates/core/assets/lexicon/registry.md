@@ -506,6 +506,11 @@ verb(tighten).
 verb(reset).
 verb(wrap).
 verb(vacuum).
+verb(exchange).
+verb(organise).
+verb(organize).
+verb(plan).
+verb(prepare).
 % Prepositions: a verb and a preposition make a predicate (talk_to, sleep_on, study_at).
 preposition(in).
 preposition(at).

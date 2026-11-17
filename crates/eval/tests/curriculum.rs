@@ -212,3 +212,30 @@ fn teacher_resends_only_what_was_lost() {
     assert_eq!(fixes, vec!["Step 2 of making tea: pour the water over the tea bag.".to_string()]);
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The training scenarios parse and type-check, and never repeat a held-out
+/// scenario or a seed procedure.
+#[test]
+fn training_scenarios_are_complete_and_apart() {
+    let reg = sla_lexicon::Registry::builtin();
+    let train = curriculum::load_scenarios(&root().join("data/curriculum/training"));
+    assert!(train.len() >= 50, "{}", train.len());
+    let held: Vec<String> = curriculum::load_scenarios(&root().join("data/curriculum/scenarios")).into_iter().map(|s| s.task).collect();
+    let seeds: Vec<String> = std::fs::read_dir(root().join("data/curriculum/seed")).unwrap().flatten().map(|e| e.path().file_stem().unwrap().to_string_lossy().to_string()).collect();
+    let mut problems = Vec::new();
+    for s in &train {
+        if held.contains(&s.task) || seeds.contains(&s.task) {
+            problems.push(format!("{}: also a held-out scenario or seed", s.id));
+        }
+        if s.requests.len() != 3 || s.teach.is_empty() || s.checklist.is_empty() || s.truth.len() < 5 {
+            problems.push(format!("{}: incomplete", s.id));
+        }
+        for g in &s.truth {
+            if let Err(e) = reg.check(g) {
+                problems.push(format!("{}: {g} ({e:?})", s.id));
+            }
+        }
+    }
+    assert!(problems.is_empty(), "{}", problems.join("
+"));
+}

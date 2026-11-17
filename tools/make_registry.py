@@ -189,7 +189,7 @@ def verbs():
     words = re.findall(r'"([a-z]+)"', m.group(1))
     named = {p[0] for p in PREDS}
     # Verbs that start everyday task names but that the v1 parser never needed.
-    words += ["check", "invite", "pack", "hang", "replace", "defrost", "unclog", "tighten", "reset", "wrap", "sew", "iron", "vacuum"]
+    words += ["check", "invite", "pack", "hang", "replace", "defrost", "unclog", "tighten", "reset", "wrap", "sew", "iron", "vacuum", "exchange", "organise", "organize", "plan", "prepare"]
     out = []
     for w in words:
         if w not in out and w not in named:

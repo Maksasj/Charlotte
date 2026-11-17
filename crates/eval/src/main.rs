@@ -95,7 +95,8 @@ fn gold_command(args: &[String]) {
     }
 }
 
-/// `sla_eval curriculum [--model haiku] [--judge haiku] [--limit N] [--no-seeds] [--vault DIR]`
+/// `sla_eval curriculum [--model haiku] [--judge haiku] [--limit N] [--no-seeds] [--vault DIR] [--train]`
+/// (`--train`: first the curriculum over data/curriculum/training, then the held-out run.)
 /// The four encounters over the held-out scenarios on a fresh vault (seeded
 /// with the 30 seed procedures), scripted teacher, model translator and judge.
 fn curriculum_command(args: &[String]) {
@@ -120,6 +121,23 @@ fn curriculum_command(args: &[String]) {
     let live = root.join("data").join("training").join("curriculum").join("live").join(format!("{ts}.jsonl"));
     sla_eval::curriculum::set_live(live.clone());
     eprintln!("live transcript: {} (watch: python tools/curriculum_live.py)", live.display());
+    // Training mode: the curriculum over the training scenarios first (never the
+    // held-out ones), on the same vault; then the held-out measurement below.
+    if args.iter().any(|a| a == "--train") {
+        let train = sla_eval::curriculum::load_scenarios(&root.join("data/curriculum/training"));
+        eprintln!("training on {} scenarios first", train.len());
+        let t = sla_eval::curriculum::run(&mut cfg, &brain, &train, seeds);
+        let tmd = sla_eval::curriculum::markdown(&t);
+        let dir = root.join("eval").join("curriculum");
+        let _ = std::fs::create_dir_all(&dir);
+        let _ = std::fs::write(dir.join(format!("{ts}-training.md")), &tmd);
+        let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "curriculum_training", &t);
+        println!("training stage:");
+        for l in tmd.lines().skip(4).take(14) {
+            println!("{l}");
+        }
+        println!("held-out stage:");
+    }
     let r = sla_eval::curriculum::run(&mut cfg, &brain, &scenarios, seeds);
     let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
     let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
