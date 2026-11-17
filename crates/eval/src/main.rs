@@ -164,6 +164,55 @@ fn copy_dir(from: &std::path::Path, to: &std::path::Path) -> std::io::Result<()>
     Ok(())
 }
 
+/// `sla_eval calibrate`: re-grade every recorded full curriculum run with the
+/// symbolic checklist judge and compare with the model judge.
+fn calibrate_command() {
+    let root = root();
+    let scenarios = sla_eval::curriculum::load_scenarios(&root.join("data/curriculum/scenarios"));
+    let mut files: Vec<_> = std::fs::read_dir(root.join("data/training/curriculum"))
+        .map(|d| d.flatten().map(|e| e.path()).filter(|p| p.extension().map_or(false, |x| x == "jsonl")).collect())
+        .unwrap_or_default();
+    files.sort();
+    let mut md = String::from(
+        "# Checklist judge calibration\n\nThe model (Haiku) checklist verdicts against a symbolic check from the ground truth \
+         (needs named, step actions in order, total time), on encounters without a variant.\n\n\
+         | Run | Encounters | Agree | Model pass, symbolic fail | Model fail, symbolic pass | Second encounter (model) | Second encounter (symbolic) |\n\
+         |---|---|---|---|---|---|---|\n",
+    );
+    let mut notes = String::new();
+    for f in files {
+        for (i, line) in std::fs::read_to_string(&f).unwrap_or_default().lines().enumerate() {
+            let Ok(v) = serde_json::from_str::<serde_json::Value>(line) else { continue };
+            if v["scenarios"].as_u64() != Some(20) {
+                continue;
+            }
+            let c = sla_eval::curriculum::calibrate(&v, &scenarios);
+            let name = format!("{} #{}", f.file_stem().and_then(|s| s.to_str()).unwrap_or(""), i + 1);
+            let row = format!(
+                "| {name} | {} | {} | {} | {} | {} of {} | {} of {} |\n",
+                c.encounters,
+                c.both_pass + c.both_fail,
+                c.model_only,
+                c.symbolic_only,
+                c.repeat_model,
+                c.repeat_total,
+                c.repeat_symbolic,
+                c.repeat_total
+            );
+            print!("{row}");
+            md.push_str(&row);
+            notes.push_str(&format!("\n## {name}\n\n"));
+            for d in &c.disagreements {
+                notes.push_str(&format!("- {d}\n"));
+            }
+        }
+    }
+    md.push_str(&notes);
+    let file = root.join("eval").join("curriculum").join("calibration.md");
+    let _ = std::fs::write(&file, md);
+    println!("wrote {}", file.display());
+}
+
 /// `sla_eval hygiene --vault DIR`: the hygiene pass on a vault (run it on a copy).
 fn hygiene_command(args: &[String]) {
     let Some(dir) = args.iter().position(|a| a == "--vault").and_then(|i| args.get(i + 1)) else {
@@ -243,6 +292,7 @@ fn main() {
         Some("patterns") => return patterns_command(&all[1..]),
         Some("hygiene") => return hygiene_command(&all[1..]),
         Some("curriculum") => return curriculum_command(&all[1..]),
+        Some("calibrate") => return calibrate_command(),
         _ => {}
     }
     let root = root();

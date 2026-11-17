@@ -163,6 +163,11 @@ pub struct EncounterResult {
     pub turns: Vec<Turn>,
     pub teach_blocks: usize,
     pub judge_note: String,
+    /// The symbolic checklist check from the ground truth (see `SymbolicJudge`).
+    #[serde(default)]
+    pub symbolic_pass: bool,
+    #[serde(default)]
+    pub symbolic_note: String,
 }
 
 /// Judges an encounter against the scenario's goal checklist.
@@ -258,6 +263,9 @@ pub struct CurriculumReport {
     pub taught_learned: usize,
     pub taught_not_learned: usize,
     pub repeat_passed: usize,
+    /// Encounter 2 passed by the symbolic check.
+    #[serde(default)]
+    pub repeat_symbolic: usize,
     pub repeat_total: usize,
     pub transfer_passed: usize,
     pub transfer_total: usize,
@@ -336,7 +344,8 @@ impl CurriculumConfig {
         let (passed, note) = self.judge.passes(s, variant, &turns);
         live(n, kind, &s.id, "judge", &format!("{}: {note}", if passed { "PASS" } else { "FAIL" }));
         eprintln!("[curriculum] encounter {n}: {kind:<13} {:<22} {}", s.id, if passed { "pass" } else { "fail" });
-        EncounterResult { scenario: s.id.clone(), kind: kind.into(), passed, turns, teach_blocks: 0, judge_note: note }
+        let (symbolic_pass, symbolic_note) = SymbolicJudge.passes(s, variant, &turns);
+        EncounterResult { scenario: s.id.clone(), kind: kind.into(), passed, turns, teach_blocks: 0, judge_note: note, symbolic_pass, symbolic_note }
     }
 
     fn teach(&self, brain: &SharedBrain, s: &Scenario) -> usize {
@@ -389,6 +398,9 @@ pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenari
             rep.repeat_passed += 1;
         } else {
             queue.push(s);
+        }
+        if e.symbolic_pass {
+            rep.repeat_symbolic += 1;
         }
         rep.encounters.push(e);
     }
@@ -532,6 +544,13 @@ pub fn markdown(r: &CurriculumReport) -> String {
         pct(r.contradicting.len(), r.stored_facts),
         r.teacher_meta_requests
     );
+    s.push_str(&format!(
+        "| Encounter 2 by the symbolic check (needs, step order, time from the ground truth) | {} of {} ({:.1}%) | 70% |
+",
+        r.repeat_symbolic,
+        r.repeat_total,
+        pct(r.repeat_symbolic, r.repeat_total)
+    ));
     if let Some(h) = &r.hygiene {
         s.push_str(&format!("| Duplicate entity pairs after the hygiene pass | {} | 0 |\n", h.duplicates_after));
     }
@@ -579,4 +598,116 @@ pub fn llm_teacher(model: String, cache: Option<PathBuf>) -> Box<dyn Fn(&SharedB
         }
         a
     })
+}
+
+/// A checklist judge from the ground truth alone, with no model: the reply
+/// names most of what is needed, gives most step actions in the right order,
+/// and gives the total time. Used to calibrate the model judge, and for the
+/// non-variant encounters (a variant needs judgement).
+pub struct SymbolicJudge;
+
+fn stem5(w: &str) -> String {
+    let w = w.to_lowercase();
+    let w = w.strip_suffix("ies").map(|r| format!("{r}y")).unwrap_or(w);
+    let w = if w.len() > 4 { w.strip_suffix("es").or_else(|| w.strip_suffix('s')).map(String::from).unwrap_or(w) } else { w };
+    w.chars().take(5).collect()
+}
+
+/// The word stems of a text, in order.
+fn word_stems(text: &str) -> Vec<String> {
+    text.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).map(stem5).collect()
+}
+
+/// Score each checklist part: (needs found / needs, steps in order / steps, time given).
+pub fn symbolic_scores(s: &Scenario, turns: &[Turn]) -> (f64, f64, bool) {
+    let text: String = turns.iter().map(|t| t.agent.as_str()).collect::<Vec<_>>().join(" ");
+    let words = word_stems(&text);
+    let sym = |g: &GroundAtom, i: usize| g.args.get(i).and_then(|v| v.as_sym()).unwrap_or("").to_string();
+    let has = |symbol: &str| symbol.split('_').filter(|p| p.len() > 2).all(|p| words.contains(&stem5(p)));
+    // Needs.
+    let needs: Vec<String> = s.truth.iter().filter(|g| g.pred == "needs" && sym(g, 0) == s.task).map(|g| sym(g, 1)).collect();
+    let need_score = if needs.is_empty() { 1.0 } else { needs.iter().filter(|n| has(n)).count() as f64 / needs.len() as f64 };
+    // Steps: actions in step-number order, each found after the previous one.
+    let mut steps: Vec<String> = s.truth.iter().filter(|g| g.pred == "step" && sym(g, 0) == s.task).map(|g| sym(g, 1)).collect();
+    steps.sort_by_key(|st| st.rsplit_once("_s").and_then(|(_, n)| n.parse::<u32>().ok()).unwrap_or(0));
+    let actions: Vec<String> = steps.iter().filter_map(|st| s.truth.iter().find(|g| g.pred == "action" && sym(g, 0) == *st).map(|g| sym(g, 1))).collect();
+    let mut pos = 0;
+    let mut in_order = 0;
+    for a in &actions {
+        let st = stem5(a.split('_').next().unwrap_or(a));
+        if let Some(i) = words[pos..].iter().position(|w| *w == st) {
+            pos += i + 1;
+            in_order += 1;
+        }
+    }
+    let step_score = if actions.is_empty() { 1.0 } else { in_order as f64 / actions.len() as f64 };
+    // Total time: both ends of the range appear as numbers.
+    let time = match s.truth.iter().find(|g| g.pred == "takes_time" && sym(g, 0) == s.task) {
+        Some(g) => {
+            let num = |i: usize| g.args.get(i).map(|v| v.to_string()).unwrap_or_default();
+            words.contains(&num(1)) && words.contains(&num(2))
+        }
+        None => true,
+    };
+    (need_score, step_score, time)
+}
+
+impl CheckJudge for SymbolicJudge {
+    fn passes(&self, s: &Scenario, _variant: bool, turns: &[Turn]) -> (bool, String) {
+        let (n, st, t) = symbolic_scores(s, turns);
+        let pass = n >= 0.75 && st >= 0.75 && t;
+        (pass, format!("needs {:.0}%, steps in order {:.0}%, total time {}", n * 100.0, st * 100.0, if t { "yes" } else { "no" }))
+    }
+}
+
+/// The model judge's verdicts on a recorded run against the symbolic judge
+/// (encounters without a variant).
+#[derive(Debug, Clone, Serialize, Default)]
+pub struct Calibration {
+    pub encounters: usize,
+    pub both_pass: usize,
+    pub both_fail: usize,
+    pub model_only: usize,
+    pub symbolic_only: usize,
+    pub repeat_model: usize,
+    pub repeat_symbolic: usize,
+    pub repeat_total: usize,
+    pub disagreements: Vec<String>,
+}
+
+pub fn calibrate(report: &serde_json::Value, scenarios: &[Scenario]) -> Calibration {
+    let mut c = Calibration::default();
+    for e in report["encounters"].as_array().into_iter().flatten() {
+        let kind = e["kind"].as_str().unwrap_or("");
+        if !matches!(kind, "teach_retry" | "repeat" | "retention" | "spaced_repeat") {
+            continue;
+        }
+        let Some(s) = scenarios.iter().find(|s| Some(s.id.as_str()) == e["scenario"].as_str()) else { continue };
+        let turns: Vec<Turn> = e["turns"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .map(|t| Turn { user: t["user"].as_str().unwrap_or("").into(), agent: t["agent"].as_str().unwrap_or("").into(), label: None })
+            .collect();
+        let model = e["passed"].as_bool().unwrap_or(false);
+        let (sym, note) = SymbolicJudge.passes(s, false, &turns);
+        c.encounters += 1;
+        match (model, sym) {
+            (true, true) => c.both_pass += 1,
+            (false, false) => c.both_fail += 1,
+            (true, false) => c.model_only += 1,
+            (false, true) => c.symbolic_only += 1,
+        }
+        if model != sym {
+            let m = if model { "pass" } else { "fail" };
+            let y = if sym { "pass" } else { "fail" };
+            c.disagreements.push(format!("{} ({kind}): model {m}, symbolic {y} ({note}); model said: {}", s.id, e["judge_note"].as_str().unwrap_or("")));
+        }
+        if kind == "repeat" {
+            c.repeat_total += 1;
+            c.repeat_model += model as usize;
+            c.repeat_symbolic += sym as usize;
+        }
+    }
+    c
 }

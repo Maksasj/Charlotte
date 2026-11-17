@@ -227,7 +227,7 @@ impl Agent {
             }
             text.push_str(&format!(" with {}", list(&uses.iter().map(|u| words(u)).collect::<Vec<_>>())));
         }
-        if let Some(u) = values(m, "until", s, 1).into_iter().next() {
+        if let Some(u) = values(m, "until", s, 1).into_iter().next().filter(|u| Some(u) != action.as_ref()) {
             claims.push(g("until", &[s, &u]));
             let they = object.as_deref().map_or(false, count);
             text.push_str(&format!(" until {} {}", if they { "they are" } else { "it is" }, words(&u)));
@@ -308,7 +308,7 @@ impl Agent {
             text.push_str(&format!(" It takes about {} in all.", range(&a.args[1], &a.args[2], "minute")));
             claims.push(a);
         }
-        if !missing.is_empty() && !self.session_facts.is_empty() {
+        if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
             text.push_str(&format!(" You still need {}.", list(&missing.iter().map(|x| words(x)).collect::<Vec<_>>())));
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
         }

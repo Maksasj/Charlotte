@@ -291,6 +291,16 @@ the report's own regex found 57).
   question that also asks for steps answered with the duration only. Stopped here
   as planned (two runs after run 2). Next for this measure: calibrate the checklist
   judge against hand labels (the design's calibration set), and the training run.
+- 2026-11-17, checklist judge calibration (`sla_eval calibrate`,
+  `eval/curriculum/calibration.md`): a symbolic check from the ground truth (needs
+  named, step actions in order, total time) re-grades the recorded runs. The Haiku
+  judge never passes what the symbolic check fails, but fails 17 to 30 encounters
+  per run that it passes; by the symbolic check the second encounter of runs 3 and
+  4 is 18 of 20 (90%), against 10 of 20 by Haiku. Neither is right alone: the
+  symbolic check only looks for the right words in order, while Haiku reacts to
+  real flaws ("You still need ..." listing everything when the user said nothing;
+  "until it is rest"), which are now fixed, and also to correct replies. Every
+  report now shows both. The design's answer is a calibration set of hand labels.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the
