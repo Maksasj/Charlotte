@@ -39,7 +39,8 @@ fn teach_then_recall_after_restart() {
             "I am tired.",
         ] {
             let r = talk(&mut a, msg);
-            assert!(r.starts_with("Okay") || r.starts_with("Got it") || r.starts_with("Noted"), "{msg} -> {r}");
+            // An acknowledgement that does not echo the user (Design 2.0).
+            assert!(["Okay", "Got it", "Noted", "Thanks, noted", "Good to know", "I'll keep", "All right"].iter().any(|l| r.starts_with(l)) && !r.contains('?'), "{msg} -> {r}");
         }
         // 2 rules.
         let r = talk(&mut a, "If someone likes tea then they want tea.");

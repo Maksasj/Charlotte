@@ -81,6 +81,13 @@ adds_time(T, S) :- step(T, S), minutes(S, L, H), not side_by_side(S).
 side_by_side(S) :- overlaps(S, R).
 total_minutes(T, Lo, Hi) :- task(T), adds_time(T, _), Lo = sum L { adds_time(T, S), minutes(S, L, H) }, Hi = sum H { adds_time(T, S), minutes(S, L, H) }.
 step_count(T, N) :- task(T), N = count { step(T, S) }.
+% What the agent can and cannot do (self-descriptions come from these).
+can(learn_from_you).
+can(reason_with_what_i_know).
+can(explain_why_i_believe_something).
+can(help_with_tasks_i_know).
+cannot(taste_or_see_things).
+cannot(look_things_up_online).
 % The agent knows how to do a task it has steps for.
 knows_task(T) :- task(T), step(T, S).
 ```

@@ -60,7 +60,8 @@ fn oracle_mode() {
     let mut agent = sla_agent::Agent::open(dir.join("vault"), "maksim").unwrap();
     agent.set_parser(Box::new(sla_parser::oracle::OracleParser::load(&gold).unwrap()));
     assert_eq!(agent.parser_name(), "oracle");
-    assert!(agent.respond("Anna likes tea.").text.contains("Anna likes tea"));
+    agent.respond("Anna likes tea.");
+    assert!(agent.believes("likes(anna, tea)"));
     let r = agent.respond("Something with no gold parse.").text;
     assert!(r.contains("understand") || r.contains("not sure") || r.contains("simply"), "{r}");
     drop(agent);

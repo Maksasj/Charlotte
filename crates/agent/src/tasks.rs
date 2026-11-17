@@ -101,13 +101,16 @@ impl Agent {
         let mut claims = Vec::new();
         let action = values(m, "action", s, 1).into_iter().next();
         let object = values(m, "object_of", s, 1).into_iter().next();
+        // Count nouns are plural in instructions ("Add the cherry tomatoes").
+        let count = |o: &str| !sla_nlg::MASS.contains(&o);
         let mut text = match (&action, &object) {
             (Some(a), Some(o)) => {
                 claims.push(g("action", &[s, a]));
                 claims.push(g("object_of", &[s, o]));
                 let mut c = a.chars();
                 let a = c.next().map(|f| f.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default();
-                format!("{a} the {}", words(o))
+                let thing = if count(o) { sla_nlg::plural(&words(o)) } else { words(o) };
+                format!("{a} the {thing}")
             }
             (Some(a), None) => {
                 claims.push(g("action", &[s, a]));
@@ -125,7 +128,20 @@ impl Agent {
         }
         if let Some(u) = values(m, "until", s, 1).into_iter().next() {
             claims.push(g("until", &[s, &u]));
-            text.push_str(&format!(" until it is {}", words(&u)));
+            let they = object.as_deref().map_or(false, count);
+            text.push_str(&format!(" until {} {}", if they { "they are" } else { "it is" }, words(&u)));
+        }
+        // A step that runs during another: "While you boil the pasta, fry the garlic."
+        if let Some(r) = values(m, "overlaps", s, 1).into_iter().next() {
+            claims.push(g("overlaps", &[s, &r]));
+            let ra = values(m, "action", &r, 1).into_iter().next();
+            let ro = values(m, "object_of", &r, 1).into_iter().next();
+            if let Some(ra) = ra {
+                let obj = ro.map(|o| format!(" the {}", if count(&o) { sla_nlg::plural(&words(&o)) } else { words(&o) })).unwrap_or_default();
+                let mut c = text.chars();
+                let lower = c.next().map(|f| f.to_lowercase().collect::<String>() + c.as_str()).unwrap_or_default();
+                text = format!("While you {ra}{obj}, {lower}");
+            }
         }
         if let Some(a) = m.facts_of("takes_time").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(s)) {
             if let Some(unit) = a.args[3].as_sym() {

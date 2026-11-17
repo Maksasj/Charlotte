@@ -118,7 +118,7 @@ fn used_to_ends_the_current_fact() {
     let r = talk(&mut a, "Does Anna like tea?");
     // Content is right ("used to ... but not anymore"); the leading "Yes" of
     // this template is a wording problem left to milestone 16.
-    assert!(r.contains("not anymore"), "{r}");
+    assert!(r.to_lowercase().contains("not anymore") && !r.starts_with("Yes"), "{r}");
     let r = talk(&mut a, "Did Anna like tea?");
     assert!(r.contains("used to"), "{r}");
     let b = a.brain();

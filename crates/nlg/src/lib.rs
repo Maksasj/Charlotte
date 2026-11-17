@@ -16,8 +16,10 @@ use std::collections::HashSet;
 pub enum Truth {
     /// True now.
     Yes,
-    /// Was true once, not now.
+    /// Was true once, not now; asked about now ("Does Anna like tea?").
     WasTrue,
+    /// Was true once, not now; asked about the past ("Did Anna like tea?").
+    UsedTo,
     /// Known false (the strong negation holds).
     No,
     Unknown,
@@ -95,8 +97,17 @@ pub struct Realizer {
     pub speaker: String,
     /// Entities written as capitalized names.
     pub names: HashSet<String>,
+    /// Sentence frames from the registry: predicate -> "{1} needs {2}" (Design 2.0).
+    /// Used for predicates without a hand-made verb mapping.
+    pub frames: std::collections::HashMap<String, String>,
+    /// How things are written: entity -> text ("cherry_tomato" -> "cherry tomato",
+    /// a step id -> "the step \"lift the car\"").
+    pub surface: std::collections::HashMap<String, String>,
     turn: Cell<usize>,
 }
+
+/// Predicates with a hand-made verb mapping (frames do not replace them).
+const MAPPED: &[&str] = &["likes", "has", "wants", "knows", "causes", "says", "does", "feels", "is_a", "located_in", "part_of", "same", "before", "during", "agent_of", "property", "thing", "person", "place", "event"];
 
 fn third(v: &str) -> String {
     match v {
@@ -165,8 +176,18 @@ fn looks_like_noun(w: &str) -> bool {
 
 
 impl Realizer {
+    /// A statement said back as a check: "So the pasta takes 15 minutes, right?"
+    pub fn confirm(&self, atoms: &[GroundAtom]) -> String {
+        let body = self.aggregate(atoms, Tense::Present);
+        let body = body.trim_end_matches('.');
+        let mut c = body.chars();
+        let first = c.next().map(|f| f.to_lowercase().collect::<String>() + c.as_str()).unwrap_or_default();
+        let first = if atoms.first().and_then(|a| a.args.first()).map_or(false, |v| v.as_sym().map_or(false, |s| self.names.contains(s))) { body.to_string() } else { first };
+        format!("So {first}, right?")
+    }
+
     pub fn new(speaker: &str) -> Self {
-        Realizer { speaker: speaker.into(), names: HashSet::new(), turn: Cell::new(0) }
+        Realizer { speaker: speaker.into(), names: HashSet::new(), frames: Default::default(), surface: Default::default(), turn: Cell::new(0) }
     }
 
     /// Pick one of `n` variants, rotating deterministically.
@@ -189,6 +210,7 @@ impl Realizer {
         match v {
             Value::Int(_) | Value::Dec(_) => v.to_string(),
             Value::Sym(s) if s == &self.speaker => "you".into(),
+            Value::Sym(s) if self.surface.contains_key(s) => self.surface[s].clone(),
             Value::Sym(s) => {
                 // "my_family" was said by the user: it is "your family" to them.
                 let s = &match s.strip_prefix("my_") {
@@ -353,8 +375,43 @@ impl Realizer {
         self.clause_t(a, Tense::Present)
     }
 
+    /// A clause from the predicate's registry frame ("{1} needs {2}").
+    fn frame_clause(&self, pred: &str, args: &[Term]) -> Option<String> {
+        let base = pred.trim_start_matches('-');
+        if MAPPED.contains(&base) {
+            return None;
+        }
+        let f = self.frames.get(base)?;
+        let mut out = f.clone();
+        for (i, t) in args.iter().enumerate() {
+            let np = match t {
+                Term::Val(Value::Sym(s)) if !self.names.contains(s) && !self.surface.contains_key(s) && s != &self.speaker && !s.starts_with("my_") => {
+                    // Things in a frame take an article unless they are mass nouns or names.
+                    let w = self.np_term(t);
+                    if MASS.contains(&s.as_str()) || f.contains(&format!("the {{{}}}", i + 1)) {
+                        w
+                    } else {
+                        article(&w)
+                    }
+                }
+                _ => self.np_term(t),
+            };
+            out = out.replace(&format!("{{{}}}", i + 1), &np);
+        }
+        if out.contains('{') {
+            return None;
+        }
+        Some(if pred.starts_with('-') { format!("it is not true that {out}") } else { out })
+    }
+
     fn clause_t(&self, a: &GroundAtom, tense: Tense) -> String {
         let neg = a.is_strong_negation();
+        if tense == Tense::Present {
+            let args: Vec<Term> = a.args.iter().cloned().map(Term::Val).collect();
+            if let Some(c) = self.frame_clause(&a.pred, &args) {
+                return c;
+            }
+        }
         if a.base_pred() == "property" && a.args.len() == 3 {
             if self.vp(a).is_none() {
                 let owner = &a.args[0];
@@ -734,6 +791,11 @@ impl Realizer {
                     Truth::WasTrue => {
                         claims.push(atom.clone());
                         let c = self.clause_t(atom, Tense::UsedTo);
+                        format!("Not anymore: {c}.")
+                    }
+                    Truth::UsedTo => {
+                        claims.push(atom.clone());
+                        let c = self.clause_t(atom, Tense::UsedTo);
                         format!("Yes, {c}, but not anymore.")
                     }
                     Truth::No => {
@@ -804,17 +866,14 @@ impl Realizer {
                 let mut parts = Vec::new();
                 if !added.is_empty() {
                     claims.extend(added.iter().cloned());
-                    let tense = if *past { Tense::UsedTo } else { Tense::Present };
-                    let body = self.aggregate(added, tense);
-                    let lead = ["Okay, I'll remember that.", "Got it.", "Noted."][self.pick(3)];
-                    parts.push(format!("{lead} {body}"));
+                    // The reply leaves out what the user just said (no echo, Design 2.0).
+                    let lead = if *past { "Okay, noted." } else { ["Got it.", "Noted.", "Okay, I'll remember that."][self.pick(3)] };
+                    parts.push(lead.to_string());
                 }
-                if !known.is_empty() {
+                if !known.is_empty() && added.is_empty() {
                     claims.extend(known.iter().cloned());
-                    // Known already: say so briefly, and only when nothing else was new.
-                    if added.is_empty() {
-                        parts.push(["I already knew that.", "Yes, I know that.", "Right, I knew that already."][self.pick(3)].to_string());
-                    }
+                    // Never "I already knew that": just agree.
+                    parts.push(["Right.", "Yes.", "Mm-hm."][self.pick(3)].to_string());
                 }
                 if !closed.is_empty() {
                     let ended: Vec<String> = closed.iter().map(|c| self.clause_t(c, Tense::UsedTo)).collect();
@@ -853,15 +912,44 @@ impl Realizer {
             Act::Greet => ("social", ["Hello!", "Hi there!", "Hello, nice to talk to you."][self.pick(3)].into()),
             Act::Bye => ("social", ["Goodbye!", "Bye, talk to you later.", "See you!"][self.pick(3)].into()),
             Act::Thanks => ("social", "Thanks!".into()),
-            Act::NotUnderstood => (
-                "social",
-                ["Sorry, I didn't understand that.", "I'm not sure what you mean.", "Could you say that more simply?"][self.pick(3)].into(),
-            ),
+            // The same failure always gets the same wording (Design 2.0).
+            Act::NotUnderstood => ("social", "Sorry, I didn't understand that.".into()),
             Act::Note(t) => ("social", t.clone()),
         };
         Reply { text, intent, claims }
     }
 
+}
+
+/// Nouns that take no article and no plural ("the pasta", "olive oil").
+pub const MASS: &[&str] = &[
+    "pasta", "water", "oil", "olive_oil", "rice", "milk", "flour", "sugar", "salt", "pepper", "butter", "cheese", "garlic", "bread", "tea", "coffee", "soup",
+    "meat", "chicken", "beef", "fish", "yogurt", "honey", "juice", "wine", "beer", "sand", "air", "time", "music", "information", "advice", "help", "money",
+    "furniture", "luggage", "equipment", "wood", "paper", "glue", "soap", "toothpaste", "ice", "snow", "rain", "sunscreen", "cream", "stock", "broth", "dough",
+    "spinach", "lettuce", "broccoli", "corn", "oats", "jam", "sauce", "vinegar",
+];
+
+/// The plural of a count noun ("cherry tomato" -> "cherry tomatoes").
+pub fn plural(np: &str) -> String {
+    let (head, last) = match np.rsplit_once(' ') {
+        Some((h, l)) => (format!("{h} "), l.to_string()),
+        None => (String::new(), np.to_string()),
+    };
+    let p = match last.as_str() {
+        "knife" => "knives".into(),
+        "leaf" => "leaves".into(),
+        "potato" => "potatoes".into(),
+        "tomato" => "tomatoes".into(),
+        "person" => "people".into(),
+        "child" => "children".into(),
+        "foot" => "feet".into(),
+        "tooth" => "teeth".into(),
+        "mouse" => "mice".into(),
+        w if w.ends_with('s') || w.ends_with('x') || w.ends_with("ch") || w.ends_with("sh") => format!("{w}es"),
+        w if w.ends_with('y') && !w.ends_with("ay") && !w.ends_with("ey") && !w.ends_with("oy") && !w.ends_with("uy") => format!("{}ies", &w[..w.len() - 1]),
+        w => format!("{w}s"),
+    };
+    format!("{head}{p}")
 }
 
 fn cmp_words(op: sla_core::CmpOp) -> &'static str {

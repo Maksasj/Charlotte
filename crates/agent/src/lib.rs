@@ -102,6 +102,10 @@ pub struct Agent {
     pub chosen: Vec<String>,
     /// The dialogue manager made a move this turn.
     dialogue_ran: bool,
+    /// The tier of the part being handled (`pattern`, `model`, ...).
+    cur_tier: String,
+    /// Replies already given in this conversation (none is repeated word for word).
+    said: std::collections::HashSet<String>,
 }
 
 fn session_name() -> String {
@@ -120,6 +124,12 @@ impl Agent {
     /// A new conversation over a brain that may be shared with others.
     pub fn with_brain(brain: SharedBrain, speaker: &str) -> Self {
         let registry = sla_lexicon::Registry::from_vault(&brain::lock(&brain).kb.vault);
+        let mut realizer = Realizer::new(speaker);
+        for (name, info) in &registry.preds {
+            if let Some(f) = info.frames.first() {
+                realizer.frames.insert(name.clone(), f.clone());
+            }
+        }
         Agent {
             brain,
             parser: Box::new(PatternParser),
@@ -127,7 +137,7 @@ impl Agent {
             recent: Vec::new(),
             last_reply: None,
             ctx: Context { speaker: speaker.to_string(), last_entity: None },
-            realizer: Realizer::new(speaker),
+            realizer,
             last_answer: None,
             pending: None,
             clock: None,
@@ -151,6 +161,8 @@ impl Agent {
             frame: None,
             chosen: Vec::new(),
             dialogue_ran: false,
+            cur_tier: String::new(),
+            said: Default::default(),
         }
     }
 
@@ -283,6 +295,12 @@ impl Agent {
             (None, Some(tr)) => self.respond_parts(&mut b, text, tr),
             (None, None) => self.respond_sentences(&mut b, text),
         };
+        // No reply is repeated word for word in one conversation (the same
+        // failure keeps its one wording, which the design also asks).
+        if self.said.contains(&reply.text) && reply.text != "Sorry, I didn't understand that." {
+            reply.text = self.unrepeat(&reply);
+        }
+        self.said.insert(reply.text.clone());
         // Resume: a turn that left the open task aside returns to its question.
         if !self.dialogue_ran && !reply.text.trim_end().ends_with('?') {
             if let Some(q) = self.resume_question(&mut b) {
@@ -487,6 +505,7 @@ impl Agent {
     }
 
     fn respond_intents(&mut self, b: &mut Brain, text: &str, intents: Vec<Intent>, tier: &str) -> Reply {
+        self.cur_tier = tier.to_string();
         let n_dialogue = intents.iter().filter(|i| dialogue::is_dialogue_act(i)).count();
         if n_dialogue > 0 && n_dialogue < intents.len() {
             // Mixed: the other acts first, then one dialogue move.
@@ -587,8 +606,58 @@ impl Agent {
         }
     }
 
+    /// Another wording for a reply already given in this conversation.
+    fn unrepeat(&self, r: &Reply) -> String {
+        if r.intent == "acknowledge" {
+            for lead in ["Got it.", "Noted.", "Okay, I'll remember that.", "Thanks, noted.", "Good to know.", "I'll keep that in mind.", "All right."] {
+                if !self.said.contains(lead) {
+                    return lead.to_string();
+                }
+            }
+            // A long lesson: name what was learned, so no two replies are the same.
+            if !r.claims.is_empty() {
+                let body: Vec<String> = r.claims.iter().take(3).map(|c| self.realizer.clause(c)).collect();
+                let mut text = format!("Got it: {}.", body.join(", and "));
+                if let Some(c) = text.get(8..9) {
+                    text = format!("Got it: {}{}", c.to_uppercase(), &text[9..]);
+                }
+                return text;
+            }
+        }
+        // Keep the reply's own words (its tense and hedges are right); a
+        // yes/no answer still leads with its answer.
+        for lead in ["Yes", "No"] {
+            if let Some(rest) = r.text.strip_prefix(lead) {
+                return format!("{lead}, as I said{rest}");
+            }
+        }
+        format!("As I said: {}", r.text)
+    }
+
+    /// Names for the realizer: the brain's, plus the speaker; steps are
+    /// written as what they do ("the step to lift the car").
+    fn refresh_steps(&mut self, b: &mut Brain) {
+        let m = b.model_at(self.now());
+        for st in m.facts_of("step") {
+            let Some(s) = st.args.get(1).and_then(|v| v.as_sym()) else { continue };
+            if self.realizer.surface.contains_key(s) {
+                continue;
+            }
+            let action = m.facts_of("action").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(s)).and_then(|a| a.args.get(1).and_then(|v| v.as_sym()).map(String::from));
+            let object = m.facts_of("object_of").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(s)).and_then(|a| a.args.get(1).and_then(|v| v.as_sym()).map(|o| o.replace('_', " ")));
+            if let Some(a) = action {
+                let text = match object {
+                    Some(o) => format!("the step to {a} the {o}"),
+                    None => format!("the step to {a}"),
+                };
+                self.realizer.surface.insert(s.to_string(), text);
+            }
+        }
+    }
+
     /// Names for the realizer: the brain's, plus the speaker.
     fn refresh_names(&mut self, b: &mut Brain) {
+        self.refresh_steps(b);
         let names = b.names();
         if self.realizer.names.len() != names.len() + 1 || !self.realizer.names.contains(&self.ctx.speaker) {
             let mut n: std::collections::HashSet<String> = (*names).clone();
@@ -921,10 +990,18 @@ impl Agent {
                 "Right. What else can you tell me?",
             ][k % 3]
                 .to_string(),
-            Social::WhoAreYou => format!(
-                "I'm a small learning agent. I remember what you tell me, reason with it, and can explain why I believe things. \
-                 So far I know {facts} facts and {rules} rules."
-            ),
+            Social::WhoAreYou => {
+                // From the self layer, not a fixed string.
+                let m = b.model_at(self.now());
+                let mut can: Vec<String> = m.facts_of("can").iter().filter_map(|a| a.args.first().and_then(|v| v.as_sym()).map(|s| s.replace('_', " ").replace(" i ", " I "))).collect();
+                can.sort();
+                let list = match can.len() {
+                    0 => String::new(),
+                    1 => can[0].clone(),
+                    n => format!("{} and {}", can[..n - 1].join(", "), can[n - 1]),
+                };
+                format!("I'm a small learning agent. I can {list}. So far I know {facts} facts and {rules} rules.")
+            }
             Social::WhatCanYouDo => "You can teach me facts (\"Dogs are animals.\"), ask me questions (\"What is a dog?\", \"What do you know about birds?\"), \
                  ask \"Why?\" after an answer, and correct me (\"No, a whale is a mammal.\")."
                 .to_string(),
@@ -990,6 +1067,12 @@ impl Agent {
                 self.told_about.insert(e.clone());
             }
         }
+        // A lasting fact from a weak (model) parse is said back as a check (Design 2.0).
+        if self.cur_tier == "model" && added.len() == 1 && closed.is_empty() && new_rules.is_empty() && !past {
+            let g = added[0].clone();
+            self.pending = Some(Pending::Fact(g.clone()));
+            return Reply { text: self.realizer.confirm(&[g.clone()]), intent: "confirm", claims: vec![g] };
+        }
         self.say(Act::Acknowledge { added, closed, known, rules: new_rules, past })
     }
 
@@ -1015,7 +1098,11 @@ impl Agent {
                 } else if now_model.contains(&g.complement()) && !history {
                     Truth::No
                 } else if b.was_true(&g, now) {
-                    Truth::WasTrue
+                    if history {
+                        Truth::UsedTo
+                    } else {
+                        Truth::WasTrue
+                    }
                 } else if now_model.contains(&g.complement()) {
                     Truth::No
                 } else {
