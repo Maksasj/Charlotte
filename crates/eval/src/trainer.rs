@@ -839,6 +839,11 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
                 Err(e) => respond(&mut stream, 409, "application/json", serde_json::json!({ "ok": false, "error": e }).to_string().as_bytes()),
             }
         }
+        ("GET", "/api/curriculum") => {
+            let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
+            let s = serde_json::to_vec(&crate::curriculum::dashboard_status(&root)).unwrap_or_default();
+            respond(&mut stream, 200, "application/json", &s);
+        }
         ("POST", "/api/stop") => {
             trainer.request_stop();
             respond(&mut stream, 200, "application/json", b"{\"ok\":true}");

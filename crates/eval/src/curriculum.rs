@@ -769,3 +769,53 @@ pub fn calibrate(report: &serde_json::Value, scenarios: &[Scenario]) -> Calibrat
     }
     c
 }
+
+/// For the training dashboard: the newest curriculum run's live transcript
+/// (progress and passes per encounter kind, the latest messages) and the
+/// knowledge health of the newest kept vault (review queue, failures,
+/// procedures on trial).
+pub fn dashboard_status(root: &Path) -> serde_json::Value {
+    let newest = |dir: PathBuf, want_dir: bool| -> Option<PathBuf> {
+        let mut v: Vec<PathBuf> = std::fs::read_dir(dir).ok()?.flatten().map(|e| e.path()).filter(|p| p.is_dir() == want_dir).collect();
+        v.sort();
+        v.pop()
+    };
+    let cur = root.join("data").join("training").join("curriculum");
+    let mut out = serde_json::json!({});
+    if let Some(live) = newest(cur.join("live"), false) {
+        let events: Vec<serde_json::Value> = std::fs::read_to_string(&live).unwrap_or_default().lines().filter_map(|l| serde_json::from_str(l).ok()).collect();
+        let mut kinds: std::collections::BTreeMap<String, (usize, usize)> = Default::default();
+        for e in events.iter().filter(|e| e["who"] == "judge") {
+            let k = kinds.entry(e["kind"].as_str().unwrap_or("").to_string()).or_default();
+            k.0 += 1;
+            k.1 += e["text"].as_str().map_or(false, |t| t.starts_with("PASS")) as usize;
+        }
+        let last_t = events.last().and_then(|e| e["t"].as_f64()).unwrap_or(0.0);
+        out["run"] = serde_json::json!({
+            "name": live.file_stem().and_then(|s| s.to_str()).unwrap_or(""),
+            "messages": events.len(),
+            "last_t": last_t,
+            "kinds": kinds.iter().map(|(k, (n, p))| serde_json::json!({"kind": k, "done": n, "passed": p})).collect::<Vec<_>>(),
+            "recent": events.iter().rev().take(80).rev().cloned().collect::<Vec<_>>(),
+        });
+    }
+    if let Some(v) = newest(cur.join("vaults"), true) {
+        let lines = |p: PathBuf| std::fs::read_to_string(p).unwrap_or_default().lines().count();
+        let words_pending = std::fs::read_to_string(v.join("queue").join("words.jsonl")).unwrap_or_default().lines().filter(|l| l.contains("\"pending\"")).count();
+        let mut on_trial = 0;
+        let mut procedures = 0;
+        for e in std::fs::read_dir(v.join("procedures")).into_iter().flatten().flatten() {
+            procedures += 1;
+            on_trial += std::fs::read_to_string(e.path()).unwrap_or_default().contains("status: hypothesis") as usize;
+        }
+        out["health"] = serde_json::json!({
+            "vault": v.file_name().and_then(|s| s.to_str()).unwrap_or(""),
+            "procedures": procedures,
+            "procedures_on_trial": on_trial,
+            "words_pending": words_pending,
+            "merges_queued": lines(v.join("queue").join("merges.jsonl")),
+            "failed_turns": lines(v.join("queue").join("failures.jsonl")),
+        });
+    }
+    out
+}

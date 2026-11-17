@@ -481,6 +481,50 @@ function Finished({ list }) {
     </details>`)}</div>`;
 }
 
+function useCurriculum() {
+  const [c, setC] = useState(null);
+  useEffect(() => {
+    let alive = true, timer;
+    const tick = async () => {
+      try { const r = await api('/api/curriculum'); if (r.ok && alive) setC(await r.json()); } catch (e) {}
+      if (alive) timer = setTimeout(tick, 2000);
+    };
+    tick();
+    return () => { alive = false; clearTimeout(timer); };
+  }, []);
+  return c;
+}
+
+const KIND_TOTALS = { teach: 20, repeat: 20, transfer: 15, retention: 20 };
+const WHO_COLOR = { user: 'var(--accent, #2563eb)', agent: 'inherit', teacher: '#b45309', phase: '#7c3aed' };
+
+function Curriculum() {
+  const c = useCurriculum();
+  if (!c || (!c.run && !c.health)) return html`<p class="empty">No curriculum run yet. Start one with <span class="mono">sla_eval curriculum</span>; it shows up here live.</p>`;
+  const run = c.run, h = c.health;
+  const ago = run ? Math.max(0, Math.round(Date.now() / 1000 - run.last_t)) : 0;
+  return html`<div>
+    ${run ? html`<div>
+      <p class="sub">Run <span class="mono">${run.name}</span> · ${fmtInt(run.messages)} messages · last message ${ago} s ago</p>
+      <table style=${{ width: '100%', maxWidth: '640px', borderCollapse: 'collapse' }}>
+        <thead><tr><th style=${{ textAlign: 'left' }}>Encounter</th><th style=${{ textAlign: 'right' }}>Done</th><th style=${{ textAlign: 'right' }}>Passed</th><th style=${{ textAlign: 'left', paddingLeft: '12px' }}>Progress</th></tr></thead>
+        <tbody>${run.kinds.map((k) => html`<tr key=${k.kind}>
+          <td>${k.kind}</td><td style=${{ textAlign: 'right' }}>${k.done}${KIND_TOTALS[k.kind] ? ' / ' + KIND_TOTALS[k.kind] : ''}</td>
+          <td style=${{ textAlign: 'right' }}>${k.passed} (${pct(k.passed, k.done)}%)</td>
+          <td style=${{ paddingLeft: '12px' }}><progress max=${KIND_TOTALS[k.kind] || k.done || 1} value=${k.done} style=${{ width: '100%' }}></progress></td>
+        </tr>`)}</tbody>
+      </table>
+      <details open style=${{ marginTop: '8px' }}>
+        <summary>Latest messages</summary>
+        <div style=${{ maxHeight: '420px', overflowY: 'auto', fontSize: '0.9em' }}>${run.recent.map((e, i) => html`<div key=${i} style=${{ margin: '2px 0', color: e.who === 'judge' ? (String(e.text).startsWith('PASS') ? '#15803d' : '#b91c1c') : WHO_COLOR[e.who] }}>
+          ${e.who === 'phase' ? html`<strong>${e.text}</strong>` : html`<span class="mono" style=${{ display: 'inline-block', minWidth: '64px' }}>${e.who}</span> ${e.text}`}
+        </div>`)}</div>
+      </details>
+    </div>` : null}
+    ${h ? html`<p class="sub" style=${{ marginTop: '8px' }}>Knowledge health (vault <span class="mono">${h.vault}</span>): ${fmtInt(h.procedures)} procedures, ${fmtInt(h.procedures_on_trial)} on trial · ${fmtInt(h.words_pending)} words waiting for review · ${fmtInt(h.merges_queued)} merges queued · ${fmtInt(h.failed_turns)} failed turns for teachers' questions</p>` : null}
+  </div>`;
+}
+
 function App() {
   const [state, offline] = useTrainerState();
   const traces = useEvents();
@@ -492,6 +536,10 @@ function App() {
     ${state ? html`
       <${Summary} s=${state} />
       <${Usage} s=${state} />
+      <section aria-label="Curriculum">
+        <h2 style=${{ marginBottom: '8px' }}>Curriculum (live)</h2>
+        <${Curriculum} />
+      </section>
       <section aria-label="Teachers">
         <h2 style=${{ marginBottom: '8px' }}>Teachers</h2>
         ${state.teachers.length ? html`<${Teachers} teachers=${state.teachers} />`
