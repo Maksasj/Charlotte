@@ -1,0 +1,17 @@
+{"pred":"away_for","arity":3,"definition":"user1 is away from home for a week","source":"user","facts":["away_for(user1, 1, week)"],"status":"pending","frame":null}
+{"pred":"turn_by","arity":2,"definition":"the bleed valve is turned by a quarter turn","source":"teacher:curriculum","facts":["turn_by(bleed_valve, quarter_turn)"],"status":"pending","frame":null}
+{"pred":"microwave_safe","arity":1,"definition":"the bowl can be put in a microwave oven","source":"user","facts":["microwave_safe(bowl)"],"status":"pending","frame":null}
+{"pred":"fits","arity":2,"definition":"X is the right size and shape for Y","source":"user","facts":["fits(washer, tap)"],"status":"pending","frame":null}
+{"pred":"temperature","arity":2,"definition":"the set temperature of the oven, in degrees","source":"teacher:curriculum","facts":["temperature(oven, 220)"],"status":"pending","frame":null}
+{"pred":"orientation","arity":2,"definition":"the salmon fillet is placed in the pan with its skin facing down","source":"teacher:curriculum","facts":["orientation(salmon_fillet, skin_side_down)"],"status":"pending","frame":null}
+{"pred":"lead_time","arity":3,"definition":"the step is done at least this many weeks before the event","source":"teacher:curriculum","facts":["lead_time(plan_shower_s3, 3, week)","lead_time(plan_birthday_party_s3, 2, week)"],"status":"pending","frame":null}
+{"pred":"keep_off","arity":2,"definition":"people are kept off the carpet while the baking soda sits","source":"teacher:curriculum","facts":["keep_off(person, carpet)","keep_off(pet, carpet)"],"status":"pending","frame":null}
+{"pred":"done_before","arity":2,"definition":"the step is finished before the reply date","source":"teacher:curriculum","facts":["done_before(reply_invitation_s4, reply_date)"],"status":"pending","frame":null}
+{"pred":"live_away","arity":2,"definition":"the friend lives five hours away from the speaker","source":"user","facts":["live_away(friend, user238)"],"status":"pending","frame":null}
+{"pred":"away","arity":1,"definition":"the speaker will be away and not present at the event","source":"user","facts":["away(user241)"],"status":"pending","frame":null}
+{"pred":"is_surprise","arity":1,"definition":"the shower is kept secret from its guest of honour","source":"user","facts":["is_surprise(plan_shower)"],"status":"pending","frame":null}
+{"pred":"surprise_for","arity":2,"definition":"the shower is a surprise for the person it is held for","source":"user","facts":["surprise_for(plan_shower, my_friend)"],"status":"pending","frame":null}
+{"pred":"even_coat","arity":2,"definition":"the paint is applied in an even layer","source":"teacher:curriculum","facts":["even_coat(paint, coat)"],"status":"pending","frame":null}
+{"pred":"move_out","arity":1,"definition":"user6 recently left their previous home to live on their own","source":"user","facts":["move_out(user6)","move_out(user43)"],"status":"pending","frame":null}
+{"pred":"has_done","arity":2,"definition":"user6 has never done their own laundry","source":"user","facts":["has_done(user6, my_laundry)"],"status":"pending","frame":null}
+{"pred":"never_did","arity":2,"definition":"the speaker has never performed the task do_laundry","source":"user","facts":["never_did(user43, do_laundry)"],"status":"pending","frame":null}
