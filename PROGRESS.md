@@ -45,7 +45,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view built; second encounter 50% (target 70%), transfer 0% (target 40%) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 65% by Haiku, 90% by the ground-truth check (target 70%); transfer 0% (target 40%) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -301,6 +301,13 @@ the report's own regex found 57).
   real flaws ("You still need ..." listing everything when the user said nothing;
   "until it is rest"), which are now fixed, and also to correct replies. Every
   report now shows both. The design's answer is a calibration set of hand labels.
+- 2026-11-17, fifth curriculum run, with the teacher fixing what was stored wrong
+  (protocol rule 3) and the calibration fixes (`eval/curriculum/2026-11-17T16-23-29.md`,
+  124 new calls): second encounter 13 of 20 (65%) by Haiku, 18 of 20 (90%) by the
+  ground-truth check; taught-then-learned 13 of 20; retention 10 of 20 (50%);
+  transfer 0 of 15; not understood 0.9%; helpful + clarify 67.0%; contradicting
+  facts 0.6%. Fixed after it: a duration question that also asks for the steps
+  now gets the steps.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

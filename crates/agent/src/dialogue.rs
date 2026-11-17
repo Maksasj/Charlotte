@@ -129,6 +129,9 @@ impl Agent {
                     },
                 },
                 Intent::AskNeed(t) => direct = Some(self.task_needs(b, t)),
+                // "How long ... and what are the steps?": the duration alone
+                // is half an answer; give the whole help (it ends with the time).
+                Intent::AskDuration(t) if self.last_message_asks_steps() => direct = Some(self.task_help(b, t)),
                 Intent::AskDuration(t) => direct = Some(self.task_duration(b, t)),
                 Intent::Reject => {}
                 _ => {}

@@ -1,0 +1,3 @@
+{"pred":"lead_time","arity":3,"definition":"the step must be done at least this many weeks before the party","source":"teacher:curriculum","facts":["lead_time(plan_birthday_party_s3, 2, week)"],"status":"pending","frame":null}
+{"pred":"fits_time","arity":3,"definition":"the task bake_potato can be finished within the given time","source":"user","facts":["fits_time(bake_potato, 25, minute)"],"status":"pending","frame":null}
+{"pred":"terrible_at","arity":2,"definition":"user96 is terrible at packing","source":"user","facts":["terrible_at(user96, pack_bag)"],"status":"pending","frame":null}

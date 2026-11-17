@@ -338,6 +338,12 @@ impl Agent {
         }
     }
 
+    /// Did the user's last message also ask for the steps ("what are the steps", "how do I")?
+    pub(crate) fn last_message_asks_steps(&self) -> bool {
+        let last = self.heard_text.rsplit('\n').next().unwrap_or("");
+        ["step", "how do i", "how do you", "how to", "walk me through", "what do i do"].iter().any(|k| last.contains(k))
+    }
+
     /// What the user's situation changes: too little time, or a needed item
     /// they do not have (with no known substitute).
     pub(crate) fn constraint_notes(&self, m: &Model, task: &str) -> String {

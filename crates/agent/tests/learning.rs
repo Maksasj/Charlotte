@@ -332,3 +332,28 @@ fn request_finds_task_by_what_it_involves() {
     assert!(r.contains("Here is how to fix tire") && r.contains("You need patch kit, pump and tube"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// "How long ... and what are the steps?" gets the steps and the time.
+#[test]
+fn duration_question_that_asks_for_steps_gets_them() {
+    let dir = temp("duration_steps");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(TEACH)));
+    for (m, _) in TEACH {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("How long does garlic tomato pasta take, and what are the steps?", &["ask_duration: garlic_tomato_pasta"]),
+        ("How long does garlic tomato pasta take?", &["ask_duration: garlic_tomato_pasta"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("Boil the pasta") && r.contains("15 to 20 minutes"), "{r}");
+    let r = talk(&mut a, gold[1].0);
+    assert!(!r.contains("Boil the pasta") && r.contains("15 to 20 minutes"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

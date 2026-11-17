@@ -297,7 +297,7 @@ impl Agent {
     pub fn respond(&mut self, text: &str) -> Reply {
         let started = Instant::now();
         // What the user said in this conversation (for wording: plurals they used).
-        self.heard_text.push(' ');
+        self.heard_text.push('\n');
         self.heard_text.push_str(&text.to_lowercase());
         let calls_before = sla_parser::claude::thread_calls();
         // Translation happens before the vault lock: it may call a model.
