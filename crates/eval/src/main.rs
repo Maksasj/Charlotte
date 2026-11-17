@@ -117,6 +117,9 @@ fn curriculum_command(args: &[String]) {
         labeller: Some(sla_eval::outcome::Labeller::new(Some(judge.clone()), Some(root.join("eval").join("label_cache.jsonl")))),
         max_turns: 4,
     };
+    let live = root.join("data").join("training").join("curriculum").join("live").join(format!("{ts}.jsonl"));
+    sla_eval::curriculum::set_live(live.clone());
+    eprintln!("live transcript: {} (watch: python tools/curriculum_live.py)", live.display());
     let r = sla_eval::curriculum::run(&mut cfg, &brain, &scenarios, seeds);
     let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
     let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();

@@ -276,15 +276,40 @@ pub struct CurriculumReport {
 }
 
 const NOT_UNDERSTOOD: &str = "Sorry, I didn't understand that.";
+
+static LIVE: std::sync::Mutex<Option<PathBuf>> = std::sync::Mutex::new(None);
+
+/// Write every message of the run, as it happens, to this JSON-lines file
+/// (for `tools/curriculum_live.py`, and kept as training data).
+pub fn set_live(path: PathBuf) {
+    if let Some(d) = path.parent() {
+        let _ = std::fs::create_dir_all(d);
+    }
+    *LIVE.lock().unwrap_or_else(|e| e.into_inner()) = Some(path);
+}
+
+/// One live event: `who` is user, agent, teacher, judge or phase.
+fn live(enc: usize, kind: &str, scenario: &str, who: &str, text: &str) {
+    let g = LIVE.lock().unwrap_or_else(|e| e.into_inner());
+    let Some(p) = g.as_ref() else { return };
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
+        let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0);
+        let _ = writeln!(f, "{}", serde_json::json!({"t": t, "enc": enc, "kind": kind, "scenario": scenario, "who": who, "text": text}));
+    }
+}
 const META: &[&str] = &["say it back", "repeat after", "format", "as a list", "bullet", "numbered", "sorry", "apolog", "as an ai", "assistant"];
 
 /// The user's side of one encounter: the request, then what they have when asked.
-fn converse(a: &mut Agent, first: &str, situation: &[String], max_turns: usize) -> Vec<Turn> {
+fn converse(a: &mut Agent, first: &str, situation: &[String], max_turns: usize, tag: (usize, &str, &str)) -> Vec<Turn> {
+    let (n, kind, sid) = tag;
     let mut turns = Vec::new();
     let mut user = first.to_string();
     let mut sit = situation.iter();
     for _ in 0..max_turns {
+        live(n, kind, sid, "user", &user);
         let reply = a.respond(&user).text;
+        live(n, kind, sid, "agent", &reply);
         let asked = reply.trim_end().ends_with('?');
         turns.push(Turn { user: user.clone(), agent: reply, label: None });
         if !asked {
@@ -296,7 +321,9 @@ fn converse(a: &mut Agent, first: &str, situation: &[String], max_turns: usize) 
         }
     }
     // A real user closes the conversation.
+    live(n, kind, sid, "user", "Thanks!");
     let reply = a.respond("Thanks!").text;
+    live(n, kind, sid, "agent", &reply);
     turns.push(Turn { user: "Thanks!".into(), agent: reply, label: None });
     turns
 }
@@ -304,16 +331,21 @@ fn converse(a: &mut Agent, first: &str, situation: &[String], max_turns: usize) 
 impl CurriculumConfig {
     fn encounter(&self, brain: &SharedBrain, s: &Scenario, kind: &str, request: &str, situation: &[String], variant: bool, n: usize) -> EncounterResult {
         let mut a = (self.user_agent)(brain, &format!("user{n}"));
-        let turns = converse(&mut a, request, situation, self.max_turns);
+        live(n, kind, &s.id, "phase", &format!("encounter {n}: {kind}, {}", s.id));
+        let turns = converse(&mut a, request, situation, self.max_turns, (n, kind, &s.id));
         let (passed, note) = self.judge.passes(s, variant, &turns);
+        live(n, kind, &s.id, "judge", &format!("{}: {note}", if passed { "PASS" } else { "FAIL" }));
         eprintln!("[curriculum] encounter {n}: {kind:<13} {:<22} {}", s.id, if passed { "pass" } else { "fail" });
         EncounterResult { scenario: s.id.clone(), kind: kind.into(), passed, turns, teach_blocks: 0, judge_note: note }
     }
 
     fn teach(&self, brain: &SharedBrain, s: &Scenario) -> usize {
         let mut t = (self.teacher_agent)(brain);
+        live(0, "teach_block", &s.id, "phase", &format!("teach blocks for {}", s.id));
         for line in &s.teach {
-            t.respond(line);
+            live(0, "teach_block", &s.id, "teacher", line);
+            let r = t.respond(line).text;
+            live(0, "teach_block", &s.id, "agent", &r);
         }
         s.teach.len()
     }
