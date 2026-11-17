@@ -94,8 +94,8 @@ The training dashboard has two parts: the API server, and the page.
   without model calls). It prints an address with `?token=...`.
 - Page (Vite, React, TypeScript; needs Node.js): `cd dashboard && npm install && npm run dev`,
   then open `http://127.0.0.1:5173/?token=<the token sla_trainer printed>`. Edits to
-  `dashboard/src/` show up at once (hot reload). The older single-file page is still
-  served by sla_trainer at its own address.
+  `dashboard/src/` show up at once (hot reload). `npm run build` makes a static copy in
+  `dashboard/dist/`, which sla_trainer then also serves at its own address.
 
 ## Status
 
