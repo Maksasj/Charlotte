@@ -250,6 +250,10 @@ the report's own regex found 57).
 
 ## 2.0 problems
 
+- 2026-11-17 (user decision): the Haiku checklist judge is the judge of record for
+  the curriculum; the ground-truth check is reported beside it but does not count,
+  and the hand-label calibration is not needed.
+
 - 2026-11-17, milestone 18, first full curriculum run (scripted teacher, Haiku
   translator and judge, 583 calls, `eval/curriculum/2026-11-17T14-51-38.md`):
   second encounter 6 of 20 (30%, target 70%), transfer 0 of 15 (target 40%),
