@@ -95,6 +95,31 @@ fn gold_command(args: &[String]) {
     }
 }
 
+/// `sla_eval wording [--model haiku] [--ceiling] [--parallel 8]`
+fn wording_command(args: &[String]) {
+    let model = args.iter().position(|a| a == "--model").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
+    let ceiling = args.iter().any(|a| a == "--ceiling");
+    let r = sla_eval::wording::run(&model, ceiling, 8);
+    let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
+    let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
+    if calls > 0 && failed * 10 > calls {
+        eprintln!("WARNING: {failed} of {calls} model calls failed (plan limit or rate limit?); nothing recorded.");
+        std::process::exit(1);
+    }
+    let md = sla_eval::wording::markdown(&r);
+    for l in md.lines().skip(2).take(6).filter(|l| !l.is_empty()) {
+        println!("{l}");
+    }
+    let root = root();
+    let ts = sla_core::Timestamp::now().to_string().replace(':', "-");
+    let dir = root.join("eval").join("wording");
+    let _ = std::fs::create_dir_all(&dir);
+    let file = dir.join(format!("{ts}.md"));
+    let _ = std::fs::write(&file, md);
+    let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "wording", &r);
+    println!("wrote {}", file.display());
+}
+
 fn main() {
     let all: Vec<String> = std::env::args().skip(1).collect();
     match all.first().map(String::as_str) {
@@ -102,6 +127,7 @@ fn main() {
         Some("bench") => return sla_eval::ops::bench_command(&root(), &all[1..]),
         Some("stress") => return sla_eval::ops::stress_command(&root(), &all[1..]),
         Some("gold") => return gold_command(&all[1..]),
+        Some("wording") => return wording_command(&all[1..]),
         _ => {}
     }
     let root = root();

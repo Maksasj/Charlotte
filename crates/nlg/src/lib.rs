@@ -103,6 +103,9 @@ pub struct Realizer {
     /// Argument types per predicate (registry): only things in object
     /// position (`entity`, `category`) take an article.
     pub arg_types: std::collections::HashMap<String, Vec<String>>,
+    /// v1's wording (no frames, echoing acknowledgements, rotating failure
+    /// lines), kept only to compare wordings on the same content.
+    pub legacy: bool,
     /// How things are written: entity -> text ("cherry_tomato" -> "cherry tomato",
     /// a step id -> "the step \"lift the car\"").
     pub surface: std::collections::HashMap<String, String>,
@@ -279,7 +282,7 @@ impl Realizer {
     }
 
     pub fn new(speaker: &str) -> Self {
-        Realizer { speaker: speaker.into(), names: HashSet::new(), frames: Default::default(), arg_types: Default::default(), surface: Default::default(), turn: Cell::new(0) }
+        Realizer { speaker: speaker.into(), names: HashSet::new(), frames: Default::default(), arg_types: Default::default(), legacy: false, surface: Default::default(), turn: Cell::new(0) }
     }
 
     /// Pick one of `n` variants, rotating deterministically.
@@ -469,6 +472,9 @@ impl Realizer {
 
     /// A clause from the predicate's registry frame ("{1} needs {2}").
     fn frame_clause(&self, pred: &str, args: &[Term]) -> Option<String> {
+        if self.legacy {
+            return None;
+        }
         let base = pred.trim_start_matches('-');
         if MAPPED.contains(&base) {
             return None;
@@ -895,6 +901,11 @@ impl Realizer {
                             _ => format!("That's right: {c}."),
                         }
                     }
+                    Truth::WasTrue if self.legacy => {
+                        claims.push(atom.clone());
+                        let c = self.clause_t(atom, Tense::UsedTo);
+                        format!("Yes, {c}, but not anymore.")
+                    }
                     Truth::WasTrue => {
                         claims.push(atom.clone());
                         let c = self.clause_t(atom, Tense::UsedTo);
@@ -971,13 +982,21 @@ impl Realizer {
             }
             Act::Acknowledge { added, closed, known, rules, past } => {
                 let mut parts = Vec::new();
-                if !added.is_empty() {
+                if !added.is_empty() && self.legacy {
+                    claims.extend(added.iter().cloned());
+                    let tense = if *past { Tense::UsedTo } else { Tense::Present };
+                    let body = self.aggregate(added, tense);
+                    parts.push(format!("{} {body}", ["Okay, I'll remember that.", "Got it.", "Noted."][self.pick(3)]));
+                } else if !added.is_empty() {
                     claims.extend(added.iter().cloned());
                     // The reply leaves out what the user just said (no echo, Design 2.0).
                     let lead = if *past { "Okay, noted." } else { ["Got it.", "Noted.", "Okay, I'll remember that."][self.pick(3)] };
                     parts.push(lead.to_string());
                 }
-                if !known.is_empty() && added.is_empty() {
+                if !known.is_empty() && added.is_empty() && self.legacy {
+                    claims.extend(known.iter().cloned());
+                    parts.push(["I already knew that.", "Yes, I know that.", "Right, I knew that already."][self.pick(3)].to_string());
+                } else if !known.is_empty() && added.is_empty() {
                     claims.extend(known.iter().cloned());
                     // Never "I already knew that": just agree.
                     parts.push(["Right.", "Yes.", "Mm-hm."][self.pick(3)].to_string());
@@ -1020,6 +1039,7 @@ impl Realizer {
             Act::Bye => ("social", ["Goodbye!", "Bye, talk to you later.", "See you!"][self.pick(3)].into()),
             Act::Thanks => ("social", "Thanks!".into()),
             // The same failure always gets the same wording (Design 2.0).
+            Act::NotUnderstood if self.legacy => ("social", ["Sorry, I didn't understand that.", "I'm not sure what you mean.", "Could you say that more simply?"][self.pick(3)].into()),
             Act::NotUnderstood => ("social", "Sorry, I didn't understand that.".into()),
             Act::Note(t) => ("social", t.clone()),
         };

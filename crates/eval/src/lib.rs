@@ -10,6 +10,7 @@ pub mod ops;
 pub mod outcome;
 pub mod regression;
 pub mod trainer;
+pub mod wording;
 
 use sla_agent::curiosity::Teacher;
 use sla_agent::Agent;

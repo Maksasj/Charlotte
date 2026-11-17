@@ -398,6 +398,13 @@ pub fn outcome_command(cfg: &OutcomeConfig) -> std::io::Result<OutcomeRun> {
     if run.judge_calls > 0 {
         println!("judge calls: {}", run.judge_calls);
     }
+    // Failed model calls make a run meaningless: say so, and do not record it.
+    let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
+    let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
+    if calls > 0 && failed * 10 > calls {
+        eprintln!("WARNING: {failed} of {calls} model calls failed (plan limit or rate limit?); this run is not recorded.");
+        return Ok(run);
+    }
     if cfg.write {
         let history = cfg.root.join("eval").join("outcomes.csv");
         if let Some(prev) = previous_row(&history, &run.key) {

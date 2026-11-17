@@ -103,7 +103,9 @@ dependencies = [
  "sla_agent",
  "sla_core",
  "sla_lexicon",
+ "sla_nlg",
  "sla_parser",
+ "sla_reasoner",
  "sla_translate",
 ]
 

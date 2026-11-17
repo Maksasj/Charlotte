@@ -206,3 +206,24 @@ fn returns_to_the_open_question() {
     assert!(r.contains("garlic tomato pasta"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// No identical reply twice in a 12-turn conversation, even when the user
+/// repeats themselves (the same failure keeps its one wording).
+#[test]
+fn no_reply_twice_in_twelve_turns() {
+    let dir = temp("norepeat");
+    let mut a = Agent::open(&dir, "maksim").unwrap();
+    a.ask_in_chat = false;
+    let msgs = [
+        "Anna likes tea.", "Bob likes tea.", "Does Anna like tea?", "Does Anna like tea?", "Rex is a dog.", "Rex is a dog.",
+        "What do you know about Anna?", "What do you know about Anna?", "Hi!", "Hi!", "Thanks!", "Thanks!",
+    ];
+    let mut seen = std::collections::HashSet::new();
+    for m in msgs {
+        let r = talk(&mut a, m);
+        if r != "Sorry, I didn't understand that." {
+            assert!(seen.insert(r.clone()), "repeated reply: {r}");
+        }
+    }
+    let _ = std::fs::remove_dir_all(&dir);
+}
