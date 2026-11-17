@@ -45,7 +45,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 70% by Haiku, 95% by the ground-truth check (target 70%, met); transfer 0% (target 40%); training run waits for the user | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 65-70% by Haiku, 95% by the ground-truth check (target 70%); pairwise over milestone 12 100% (met); judge score 4.05 (target 6.0); transfer 0% (target 40%); training run waits for the user | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -334,6 +334,12 @@ the report's own regex found 57).
   judge names what the taught ground truth does not contain: the reply does not
   address the user's concern (mushy rice), and gives no water ratio. The judge
   mean therefore depends mostly on what training teaches, like transfer.
+- 2026-11-17, pairwise against the milestone 12 build (`sla_eval pairwise`,
+  `eval/curriculum/pairwise_m12.md`; replies of the milestone 12 commit 245609f
+  after the same teaching, from `tools/m12_baseline.py`): this build is preferred
+  in **20 of 20** pairs (100%, 83.9 to 100), target 70%: met. After the same teach
+  lines the milestone 12 build answers "Sorry, I didn't understand that." or
+  "I'm not sure whether you boil egg."
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

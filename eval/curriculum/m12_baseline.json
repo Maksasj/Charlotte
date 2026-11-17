@@ -1,0 +1,82 @@
+{
+ "bake_potato": {
+  "request": "How do you do a jacket potato properly?",
+  "reply": "Sorry, I didn't understand that."
+ },
+ "boil_egg": {
+  "request": "How long do I boil an egg so the yolk is firm, and what are the steps?",
+  "reply": "I'm not sure whether you boil egg."
+ },
+ "clean_window": {
+  "request": "What's the best way to wash a window without leaving smears?",
+  "reply": "I have no idea whether window is best way to wash."
+ },
+ "cook_rice": {
+  "request": "My rice always ends up mushy. What's the right way to make it in a pot?",
+  "reply": "Okay, I'll remember that. Your rice is mushy. I don't know what rice makes yet."
+ },
+ "do_laundry": {
+  "request": "My laundry basket is overflowing. Can you walk me through washing a load?",
+  "reply": "Noted. Your laundry basket is overflowing. I don't know whether you wash load."
+ },
+ "fix_flat_tire": {
+  "request": "I got a puncture on my bicycle. Can you walk me through patching the tube?",
+  "reply": "Got it. Your bicycle has puncture."
+ },
+ "hang_picture": {
+  "request": "Can you tell me how to hang a picture on the wall so it's straight?",
+  "reply": "Could you say that more simply?"
+ },
+ "iron_shirt": {
+  "request": "Could you explain how to iron a button-up shirt properly?",
+  "reply": "Sorry, I didn't understand that."
+ },
+ "make_omelette": {
+  "request": "How do you cook a simple plain omelette in a frying pan?",
+  "reply": "I'm not sure what you mean."
+ },
+ "make_pancake": {
+  "request": "Can you give me a simple way to make pancakes in a frying pan?",
+  "reply": "Could you say that more simply?"
+ },
+ "make_salad": {
+  "request": "Can you tell me how to make a simple salad with a homemade dressing?",
+  "reply": "Sorry, I didn't understand that."
+ },
+ "make_smoothie": {
+  "request": "Could you tell me how to blend a banana and strawberry smoothie?",
+  "reply": "I'm not sure what you mean."
+ },
+ "make_tea": {
+  "request": "Can you walk me through brewing a mug of tea with a tea bag?",
+  "reply": "Could you say that more simply?"
+ },
+ "pack_for_trip": {
+  "request": "Can you help me pack my suitcase for a holiday?",
+  "reply": "Sorry, I didn't understand that."
+ },
+ "plan_birthday_party": {
+  "request": "Can you help me organise a small birthday party for my best friend?",
+  "reply": "I'm not sure whether you help organise party."
+ },
+ "plan_picnic": {
+  "request": "Can you help me organise a simple picnic in the park?",
+  "reply": "Could you say that more simply?"
+ },
+ "replace_lightbulb": {
+  "request": "Can you tell me the right way to swap a dead lightbulb for a new one?",
+  "reply": "I don't know whether your bicycle is unknown."
+ },
+ "wash_dishes": {
+  "request": "What's the right way to do the washing up in the sink?",
+  "reply": "I'm not sure what you mean."
+ },
+ "water_plant": {
+  "request": "How should I water a potted plant so I don't drown it?",
+  "reply": "Could you say that more simply?"
+ },
+ "write_thank_you_note": {
+  "request": "Could you help me write a thank-you note for a wedding gift?",
+  "reply": "Okay, I'll remember that. You help write note."
+ }
+}

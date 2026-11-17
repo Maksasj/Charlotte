@@ -1,0 +1,66 @@
+# Pairwise: this build against the milestone 12 build
+
+Same teaching, same second-encounter request; the judge sees both replies in alternating order.
+
+This build preferred in 20 of 20 pairs (100.0%, 95% interval 83.9 to 100.0); target 70% or more.
+
+- bake_potato: this build
+  - this build: Here is how to bake a potato: You need a baking tray, a fork, olive oil, an oven, a potato and salt. / 1. While you wash the potato, heat the oven (10 minutes). / 2. While you heat the oven, wash the potato. / 3. While you heat the oven, prick the potato with the fork. / 4. While you heat the oven, rub the potato with olive oil and salt. / 5. Bake the potato in the baking tray until it is soft (50 to 60 minutes). It takes 60 to 70 minutes in all.
+  - milestone 12: Sorry, I didn't understand that.
+- boil_egg: this build
+  - this build: Here is how to boil an egg: You need a bowl, an egg, a pot and water. / 1. Boil the water in the pot (3 to 5 minutes). / 2. Lower the egg with the spoon and water. / 3. Boil the egg (7 to 9 minutes). / 4. Cool the egg in the bowl with water (2 minutes). It takes 12 to 16 minutes in all.
+  - milestone 12: I'm not sure whether you boil egg.
+- clean_window: this build
+  - this build: Here is how to clean a window: You need a bucket, a cloth, dish soap, a sponge, a squeegee and water. / 1. Mix the dish soap in the bucket with water (1 to 2 minutes). / 2. Wash the window with the sponge (3 to 5 minutes). / 3. Dry the window with the squeegee (2 to 3 minutes). / 4. Wipe the edge with the cloth (2 to 3 minutes). It takes 10 to 15 minutes in all.
+  - milestone 12: I have no idea whether window is best way to wash.
+- cook_rice: this build
+  - this build: Here is how to cook rice: You need a pot, rice, a sieve and water. / 1. Boil the water in the pot (5 to 6 minutes). / 2. While you boil the water, rinse the rice in the sieve until it is clear (1 to 2 minutes). / 3. Add the rice with water. / 4. Simmer the rice with the lid (15 to 18 minutes). / 5. Rest the rice (5 to 6 minutes). It takes 25 to 30 minutes in all.
+  - milestone 12: Okay, I'll remember that. Your rice is mushy. I don't know what rice makes yet.
+- do_laundry: this build
+  - this build: Here is how to do laundry: You need a detergent, a drying rack, a laundry and a washing machine. / 1. Sort the laundry (3 to 5 minutes). / 2. Load the laundry into the washing machine (2 to 3 minutes). / 3. Add the detergent (1 minute). / 4. Run the washing machine (60 to 90 minutes). / 5. Hang the laundry with the drying rack (10 to 15 minutes). It takes 75 to 115 minutes in all.
+  - milestone 12: Noted. Your laundry basket is overflowing. I don't know whether you wash load.
+- fix_flat_tire: this build
+  - this build: Here is how to change a bike tire: You need an inner tube, a patch kit, a pump, a tire lever and a wrench. / 1. Remove the wheel with the wrench (3 to 5 minutes). / 2. Remove the tire with the tire lever (3 to 5 minutes). / 3. Find the hole with the pump (3 to 5 minutes). / 4. Fit the hole with the patch kit and the tire lever (3 to 5 minutes). / 5. Fit the tire with the pump and the tire lever until it is firm (3 to 5 minutes). / 6. Mount the tire with the pump and the wrench until it is firm (3 to 5 minutes). It takes 20 to 40 minutes in all.
+  - milestone 12: Got it. Your bicycle has puncture.
+- hang_picture: this build
+  - this build: Here is how to hang a picture: You need a hammer, a nail, a pencil, a picture and a tape measure. / 1. Measure the wall with the tape measure (3 to 5 minutes). / 2. Mark the spot with the pencil. / 3. Hammer the nail (1 to 2 minutes). / 4. Hang the picture with the nail. / 5. Straighten the picture until it is level. It takes 10 to 15 minutes in all.
+  - milestone 12: Could you say that more simply?
+- iron_shirt: this build
+  - this build: Here is how to iron a shirt: You need a hanger, an iron, an ironing board, a shirt and water. / 1. Fill the iron with water. / 2. Heat the iron with the cotton setting (2 to 3 minutes). / 3. Iron the collar with the ironing board (1 to 2 minutes). / 4. Iron the sleeve with the ironing board (3 to 4 minutes). / 5. Iron the shirt with the ironing board (3 to 5 minutes). / 6. Hang the shirt with the hanger. It takes 10 to 15 minutes in all.
+  - milestone 12: Sorry, I didn't understand that.
+- make_omelette: this build
+  - this build: Here is how to make an omelette: You need a bowl, butter, an egg, a fork, a frying pan and salt. / 1. Crack the egg in the bowl. / 2. Beat the egg with the fork and salt (1 minute). / 3. Melt the butter in the pan (1 to 2 minutes). / 4. Cook the egg in the pan until it is set (3 to 4 minutes). / 5. Fold the omelette. It takes 6 to 10 minutes in all.
+  - milestone 12: I'm not sure what you mean.
+- make_pancake: this build
+  - this build: Here is how to make a pancake: You need a bowl, butter, an egg, flour, a frying pan, milk, a spatula and a whisk. / 1. Mix the batter in the bowl with the egg, flour, milk and the whisk (2 to 3 minutes). / 2. Melt the butter in the pan (1 to 2 minutes). / 3. Pour the batter into the pan. / 4. Cook the batter until it is bubble appear (2 to 3 minutes). / 5. Flip the pancakes with the spatula (1 to 2 minutes). It takes 10 to 15 minutes in all.
+  - milestone 12: Could you say that more simply?
+- make_salad: this build
+  - this build: Here is how to make a salad: You need a bowl, a cucumber, a knife, a lemon, lettuce, olive oil and a tomato. / 1. Wash the lettuce (2 to 3 minutes). / 2. Chop the tomato with the knife. / 3. Slice the cucumber with the knife. / 4. Mix the olive oil with the lemon juice. / 5. Toss the salad in the bowl with the dressing. It takes 10 to 15 minutes in all.
+  - milestone 12: Sorry, I didn't understand that.
+- make_smoothie: this build
+  - this build: Here is how to make a smoothie: You need a banana, a blender, a glass, milk, a strawberry and yogurt. / 1. Peel the banana. / 2. Break the banana in the blender. / 3. Add the strawberry with milk and yogurt. / 4. Blend the smoothie in the blender until it is smooth (1 minute). / 5. Pour the smoothie into the glass. It takes 5 to 8 minutes in all.
+  - milestone 12: I'm not sure what you mean.
+- make_tea: this build
+  - this build: Here is how to make tea: You need a kettle, a mug, a tea bag and water. / 1. Boil the water in the kettle (3 to 4 minutes). / 2. Pour the water into the mug. / 3. Steep the tea bag (2 to 3 minutes). / 4. Remove the tea bag. It takes 5 to 7 minutes in all.
+  - milestone 12: Could you say that more simply?
+- pack_for_trip: this build
+  - this build: Here is how to pack a bag: You need a clothing, a passport, a suitcase and a toiletry bag. / 1. Check the weather (2 to 3 minutes). / 2. Write the packing list (5 to 10 minutes). / 3. Lay out the clothing (5 to 10 minutes). / 4. Roll the clothing in the suitcase (10 to 12 minutes). / 5. Pack the toiletry bag (5 to 7 minutes). / 6. Put the passport with the hand luggage (1 to 2 minutes). It takes 30 to 45 minutes in all.
+  - milestone 12: Sorry, I didn't understand that.
+- plan_birthday_party: this build
+  - this build: Here is how to plan a birthday party: You need a balloon, a cake and an invitation. / 1. Choose the date (10 minutes). / 2. Write the guest list (15 to 20 minutes). / 3. Send the invitation (20 to 30 minutes). / 4. Order the cake (15 to 20 minutes). / 5. Buy the balloon (30 to 45 minutes). / 6. Decorate the room with the balloon (30 to 55 minutes). It takes 120 to 180 minutes in all.
+  - milestone 12: I'm not sure whether you help organise party.
+- plan_picnic: this build
+  - this build: Here is how to plan a picnic: You need a basket, a blanket, bread, a drink and a fruit. / 1. Check the weather forecast (5 minutes). / 2. Choose the park (5 to 10 minutes). / 3. Invite the friend (10 minutes). / 4. Make the sandwich with bread (15 to 20 minutes). / 5. Pack the basket with the blanket, the drink, the fruit and the sandwich (10 to 15 minutes). It takes 45 to 60 minutes in all.
+  - milestone 12: Could you say that more simply?
+- replace_lightbulb: this build
+  - this build: Here is how to replace a lightbulb: You need a lightbulb and a step ladder. / 1. Switch off the light. / 2. Wait the old bulb until it is cool (3 to 5 minutes). / 3. Climb the step ladder. / 4. Unscrew the old bulb. / 5. Test the light. It takes 5 to 10 minutes in all.
+  - milestone 12: I don't know whether your bicycle is unknown.
+- wash_dishes: this build
+  - this build: Here is how to wash a dish: You need dish soap, a drying rack, a sink, a sponge and water. / 1. Scrape the leftover food (2 to 3 minutes). / 2. Fill the sink with the dish soap and the hot water (2 to 3 minutes). / 3. Wash the dish with the sponge (8 to 14 minutes). / 4. Rinse the dish with water (2 to 3 minutes). / 5. Put the dish with the drying rack until it is dry. It takes 15 to 25 minutes in all.
+  - milestone 12: I'm not sure what you mean.
+- water_plant: this build
+  - this build: Here is how to water a plant: You need water and a watering can. / 1. Check the soil with the finger. / 2. Fill the watering can with water (1 minute). / 3. Pour the water into the watering can (1 to 2 minutes). / 4. Empty the saucer. It takes 3 to 5 minutes in all.
+  - milestone 12: Could you say that more simply?
+- write_thank_you_note: this build
+  - this build: Here is how to write a note: You need a card, an envelope, a pen and a stamp. / 1. Write the greeting with the card and the pen. / 2. Thank the gift. / 3. Describe the gift. / 4. Sign the card with the pen. / 5. Seal the envelope with the stamp. It takes 10 to 15 minutes in all.
+  - milestone 12: Okay, I'll remember that. You help write note.
