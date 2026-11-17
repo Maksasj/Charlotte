@@ -86,9 +86,16 @@ sla_eval bench --vault DIR                           # speed of the agent's own 
 sla_eval stress --teachers 16 --minutes 10           # parallel writers on mock models
 ```
 
-(`sla_eval` is `cargo run --release -p sla_eval --`.) The training dashboard:
-`cargo run --release -p sla_eval --bin sla_trainer`, then open the printed URL
-(add `--mock` to try it without model calls).
+(`sla_eval` is `cargo run --release -p sla_eval --`.)
+
+The training dashboard has two parts: the API server, and the page.
+
+- API: `cargo run --release -p sla_eval --bin sla_trainer` (add `--mock` to try it
+  without model calls). It prints an address with `?token=...`.
+- Page (Vite, React, TypeScript; needs Node.js): `cd dashboard && npm install && npm run dev`,
+  then open `http://127.0.0.1:5173/?token=<the token sla_trainer printed>`. Edits to
+  `dashboard/src/` show up at once (hot reload). The older single-file page is still
+  served by sla_trainer at its own address.
 
 ## Status
 
