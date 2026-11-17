@@ -255,15 +255,17 @@ the report's own regex found 57).
   rest (task requests, corrections, step lists) is too varied to repeat within 300
   turns. Templates must be seen twice before use: after one sighting coverage
   doubles (6.6%), but agreement falls to 68%, partly because the model itself is
-  inconsistent ("I have a saw" comes back as `has` or as `available`). More
-  teaching turns, or treating the fixed tier as part of the measure, are the
-  options; the threshold is your call.
+  inconsistent ("I have a saw" comes back as `has` or as `available`). Decided
+  2026-11-17 (user): teaching is the main source of incoming data, so coverage
+  is measured again after the curriculum training run instead of tuned now.
 - 2026-11-17, milestone 15: the help-turn replay gives 24.6% fitting moves (target
   80%). The replayed v1 conversations ask for things the vault was never taught.
 - 2026-11-17, milestone 14: act accuracy 92% (target 95%) and translation 4.1 s
   median (target 2 s). The Claude CLI costs about 1.3 s per call. Decided
   2026-11-17 (user): model calls stay on the Claude CLI; speeding up model queries
-  is out of scope, so the 2 s translation target is not pursued.
+  is out of scope, so the 2 s translation target is not pursued. Act accuracy
+  (92%) mostly reflects the model's own translation errors and is out of scope
+  for the same reason (decided 2026-11-17, user).
 
 - 2026-11-17: the first benchmark on the v1 vault gave a 95th percentile of 639 ms with
   5 evaluations per turn. Causes: answering recorded usage in fact files (invalidating
