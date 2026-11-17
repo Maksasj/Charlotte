@@ -879,9 +879,19 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
         }
     }
     match (req.method.as_str(), req.path.as_str()) {
+        // The page is the dashboard app (dashboard/, Vite + React); an optional
+        // --ui FILE is still served here for a built copy of it.
         ("GET", "/") => match std::fs::read(ui) {
             Ok(page) => respond(&mut stream, 200, "text/html; charset=utf-8", &page),
-            Err(e) => respond(&mut stream, 404, "text/plain", format!("UI file {} not found: {e}", ui.display()).as_bytes()),
+            Err(_) => respond(
+                &mut stream,
+                200,
+                "text/html; charset=utf-8",
+                format!(
+                    "<!doctype html><meta charset=utf-8><title>Training API</title><p>This is the training API on port {port}.                      The dashboard is the app in <code>dashboard/</code>: run <code>npm run dev</code> there and open                      <code>http://127.0.0.1:5173/?token=...</code> with the token this server printed.</p>"
+                )
+                .as_bytes(),
+            ),
         },
         ("GET", "/api/state") => {
             let s = serde_json::to_vec(&trainer.snapshot()).unwrap_or_default();

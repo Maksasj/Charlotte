@@ -13,7 +13,8 @@ fn main() {
     sla_parser::claude::set_call_log(root.join("data").join("training").join("calls"));
     let mut vault = root.join("vault");
     let mut port: u16 = 8770;
-    let mut ui = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("ui").join("trainer.html");
+    // A built copy of the dashboard app (dashboard/dist/index.html) if there is one.
+    let mut ui = root.join("dashboard").join("dist").join("index.html");
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         match a.as_str() {
