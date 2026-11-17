@@ -95,6 +95,63 @@ fn gold_command(args: &[String]) {
     }
 }
 
+/// `sla_eval curriculum [--model haiku] [--judge haiku] [--limit N] [--no-seeds] [--vault DIR]`
+/// The four encounters over the held-out scenarios on a fresh vault (seeded
+/// with the 30 seed procedures), scripted teacher, model translator and judge.
+fn curriculum_command(args: &[String]) {
+    let arg = |k: &str| args.iter().position(|a| a == k).and_then(|i| args.get(i + 1)).cloned();
+    let model = arg("--model").unwrap_or_else(|| "haiku".into());
+    let judge = arg("--judge").unwrap_or_else(|| "haiku".into());
+    let limit: usize = arg("--limit").and_then(|v| v.parse().ok()).unwrap_or(usize::MAX);
+    let root = root();
+    let ts = sla_core::Timestamp::now().to_string().replace(':', "-");
+    let vault = arg("--vault").map(std::path::PathBuf::from).unwrap_or_else(|| std::env::temp_dir().join(format!("sla_curriculum_{ts}")));
+    let brain = sla_agent::Brain::shared(&vault).expect("vault");
+    let seeds = if args.iter().any(|a| a == "--no-seeds") { 0 } else { sla_eval::curriculum::install_seeds(&brain, &root.join("data/curriculum/seed")) };
+    sla_agent::brain::lock(&brain).install(&root.join("data/scenarios/dinner")).ok();
+    let scenarios: Vec<_> = sla_eval::curriculum::load_scenarios(&root.join("data/curriculum/scenarios")).into_iter().take(limit).collect();
+    let mut cfg = sla_eval::curriculum::CurriculumConfig {
+        user_agent: sla_eval::curriculum::llm_user(model.clone()),
+        teacher_agent: sla_eval::curriculum::llm_teacher(model.clone()),
+        judge: Box::new(sla_eval::curriculum::ModelJudge { model: judge.clone() }),
+        labeller: Some(sla_eval::outcome::Labeller::new(Some(judge.clone()), Some(root.join("eval").join("label_cache.jsonl")))),
+        max_turns: 4,
+    };
+    let r = sla_eval::curriculum::run(&mut cfg, &brain, &scenarios, seeds);
+    let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
+    let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
+    let md = sla_eval::curriculum::markdown(&r);
+    for l in md.lines().skip(4).take(14) {
+        println!("{l}");
+    }
+    let dir = root.join("eval").join("curriculum");
+    let _ = std::fs::create_dir_all(&dir);
+    let file = dir.join(format!("{ts}.md"));
+    let _ = std::fs::write(&file, &md);
+    // Every conversation is training data: keep it.
+    let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "curriculum", &r);
+    println!("model calls: {calls} ({failed} failed); vault {}; wrote {}", vault.display(), file.display());
+    if calls > 0 && failed * 10 > calls {
+        eprintln!("WARNING: many model calls failed; treat this run as invalid.");
+    }
+}
+
+/// `sla_eval hygiene --vault DIR`: the hygiene pass on a vault (run it on a copy).
+fn hygiene_command(args: &[String]) {
+    let Some(dir) = args.iter().position(|a| a == "--vault").and_then(|i| args.get(i + 1)) else {
+        eprintln!("usage: sla_eval hygiene --vault DIR");
+        std::process::exit(2);
+    };
+    let brain = sla_agent::Brain::shared(dir).expect("open vault");
+    let mut b = sla_agent::brain::lock(&brain);
+    let r = sla_agent::hygiene::run(&mut b, sla_core::Timestamp::now());
+    println!("entities {}, predicates {} ({} used once), entities with no category or task {}", r.entities, r.predicates, r.predicates_used_once, r.unlinked_entities);
+    println!("duplicate pairs before {}, linked {}, after {}", r.duplicates_before.len(), r.linked, r.duplicates_after);
+    for (a, o) in &r.duplicates_before {
+        println!("  same({a}, {o})");
+    }
+}
+
 /// `sla_eval patterns [--model haiku] [--teach 300]`
 fn patterns_command(args: &[String]) {
     let model = args.iter().position(|a| a == "--model").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
@@ -154,6 +211,8 @@ fn main() {
         Some("gold") => return gold_command(&all[1..]),
         Some("wording") => return wording_command(&all[1..]),
         Some("patterns") => return patterns_command(&all[1..]),
+        Some("hygiene") => return hygiene_command(&all[1..]),
+        Some("curriculum") => return curriculum_command(&all[1..]),
         _ => {}
     }
     let root = root();

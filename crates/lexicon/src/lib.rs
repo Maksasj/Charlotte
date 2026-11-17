@@ -284,7 +284,17 @@ impl Registry {
             Some(rest) if !rest.is_empty() => rest,
             _ => s,
         };
+        // A step id is made by the dialogue manager from its task: `<task>_s<N>`.
+        let s = match s.rsplit_once("_s") {
+            Some((task, n)) if !task.is_empty() && !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()) => task,
+            _ => s,
+        };
         let parts: Vec<&str> = s.split('_').filter(|p| !p.is_empty()).collect();
+        // A task name is a verb phrase (`check_in_flight`, `write_thank_you_note`):
+        // glue words are part of it.
+        if parts.len() >= 2 && parts.len() <= 6 && self.preds.get(parts[0]).map_or(false, |p| p.verb) {
+            return None;
+        }
         if parts.iter().any(|p| self.number_words.contains(*p)) {
             return Some("contains a number written as a word; numbers are values".into());
         }

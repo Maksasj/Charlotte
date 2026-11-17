@@ -496,6 +496,16 @@ verb(golf).
 verb(bowl).
 verb(dive).
 verb(camp).
+verb(check).
+verb(invite).
+verb(hang).
+verb(replace).
+verb(defrost).
+verb(unclog).
+verb(tighten).
+verb(reset).
+verb(wrap).
+verb(vacuum).
 % Prepositions: a verb and a preposition make a predicate (talk_to, sleep_on, study_at).
 preposition(in).
 preposition(at).
