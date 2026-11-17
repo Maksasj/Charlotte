@@ -45,7 +45,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | not started | |
+| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view built; second encounter 50% (target 70%), transfer 0% (target 40%) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -280,6 +280,17 @@ the report's own regex found 57).
   "make change bike tire", "Switch_off the light"; a duration question that also
   asked for the steps got only the duration; some teach steps not stored. Fixed:
   needs always listed; only dishes are "made"; actions read as words.
+- 2026-11-17, fourth full curriculum run (`eval/curriculum/2026-11-17T16-13-56.md`,
+  only 96 new model calls thanks to the shared caches): second encounter 10 of 20
+  (50%, plateau), taught-then-learned 12 of 20, retention 7 of 20 (35%), transfer
+  0 of 15, not understood 1.3%, helpful + clarify 63.9%, contradicting facts 0.6%.
+  Several remaining failures are the Haiku checklist judge marking correct content
+  wrong (cook_rice lists exactly the needed items and gets "no" on "names what is
+  needed"); the others are a teach step not stored (bake_potato "wash"), "patch the
+  tube" matching the seed `change_bike_tire` over the taught task, and a duration
+  question that also asks for steps answered with the duration only. Stopped here
+  as planned (two runs after run 2). Next for this measure: calibrate the checklist
+  judge against hand labels (the design's calibration set), and the training run.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

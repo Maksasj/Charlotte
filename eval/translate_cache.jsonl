@@ -1543,3 +1543,8 @@
 {"key":"a258e15189aeef03:1","lines":[[1,["ask_how: wash_dish"]]]}
 {"key":"9bdcb6580be64403:1,2","lines":[[1,["inform: property(my_plant, state, droopy)"]],[2,["ask_how: water_plant"]]]}
 {"key":"3271b683d6cb0a98:1,2","lines":[[1,["inform: wants(user105, write_note)"]],[2,["ask_how: write_note"]]]}
+{"key":"2b51ff9b34192260:1","lines":[[1,["inform: available(lightbulb); available(step_ladder)"]]]}
+{"key":"f3ae455a0326baeb:1,2","lines":[[1,["tell: is_a(maksim, renter)","inform: -make(maksim, hole)"]],[2,["inform: available(picture); available(pencil); available(tape_measure); available(adhesive_strip)"]]]}
+{"key":"471e518bb8a9e6cf:1:retry","lines":[[1,["inform: -available(picture_hanging_strip)"]]]}
+{"key":"70f23117091ccce7:1","lines":[[1,["inform: available(tire_lever); available(patch_kit); available(pump)"]]]}
+{"key":"af29ffe84dc192d4:1","lines":[[1,["inform: available(new_bulb); available(step_ladder)"]]]}
