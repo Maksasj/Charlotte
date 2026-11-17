@@ -470,6 +470,27 @@ verb(golf).
 verb(bowl).
 verb(dive).
 verb(camp).
+% Prepositions: a verb and a preposition make a predicate (talk_to, sleep_on, study_at).
+preposition(in).
+preposition(at).
+preposition(on).
+preposition(with).
+preposition(for).
+preposition(to).
+preposition(from).
+preposition(about).
+preposition(into).
+preposition(near).
+preposition(by).
+preposition(under).
+preposition(over).
+preposition(after).
+preposition(before).
+preposition(through).
+preposition(around).
+preposition(across).
+preposition(along).
+preposition(behind).
 % Units: unit(Name, Dimension, size in the dimension's base unit).
 unit(second, time, 1).
 unit(minute, time, 60).
@@ -663,6 +684,8 @@ property_name(smell).
 property_name(sound).
 property_name(speed).
 property_name(difficulty).
+property_name(texture).
+property_name(state).
 property_name(length).
 property_name(width).
 property_name(capacity).
@@ -674,5 +697,127 @@ property_name(hobby).
 property_name(favourite_food).
 property_name(nationality).
 property_name(language).
+property_name(appeal).
+property_name(beauty).
+property_name(brightness).
+property_name(character).
+property_name(clarity).
+property_name(depth).
+property_name(diet).
+property_name(health).
+property_name(loudness).
+property_name(power).
+property_name(safety).
+property_name(strength).
+property_name(wealth).
+% Adjectives: adjective(Word, Property) - "Anna is lazy" is property(anna, character, lazy).
+adjective(hot, temperature).
+adjective(cold, temperature).
+adjective(warm, temperature).
+adjective(cool, temperature).
+adjective(freezing, temperature).
+adjective(boiling, temperature).
+adjective(icy, temperature).
+adjective(chilly, temperature).
+adjective(heavy, weight).
+adjective(light, weight).
+adjective(fast, speed).
+adjective(slow, speed).
+adjective(quick, speed).
+adjective(old, age).
+adjective(young, age).
+adjective(new, age).
+adjective(ancient, age).
+adjective(modern, age).
+adjective(soft, texture).
+adjective(hard, texture).
+adjective(smooth, texture).
+adjective(rough, texture).
+adjective(sticky, texture).
+adjective(crunchy, texture).
+adjective(creamy, texture).
+adjective(fluffy, texture).
+adjective(sweet, taste).
+adjective(sour, taste).
+adjective(bitter, taste).
+adjective(salty, taste).
+adjective(spicy, taste).
+adjective(tasty, taste).
+adjective(delicious, taste).
+adjective(bland, taste).
+adjective(broken, state).
+adjective(ripe, state).
+adjective(fresh, state).
+adjective(rotten, state).
+adjective(clean, state).
+adjective(dirty, state).
+adjective(empty, state).
+adjective(full, state).
+adjective(open, state).
+adjective(closed, state).
+adjective(wet, state).
+adjective(dry, state).
+adjective(ready, state).
+adjective(cooked, state).
+adjective(raw, state).
+adjective(burnt, state).
+adjective(flat, state).
+adjective(busy, state).
+adjective(easy, difficulty).
+adjective(difficult, difficulty).
+adjective(simple, difficulty).
+adjective(tricky, difficulty).
+adjective(deep, depth).
+adjective(shallow, depth).
+adjective(long, length).
+adjective(electric, power).
+adjective(solar, power).
+adjective(manual, power).
+adjective(vegan, diet).
+adjective(vegetarian, diet).
+adjective(lazy, character).
+adjective(kind, character).
+adjective(friendly, character).
+adjective(shy, character).
+adjective(brave, character).
+adjective(funny, character).
+adjective(smart, character).
+adjective(clever, character).
+adjective(polite, character).
+adjective(rude, character).
+adjective(calm, character).
+adjective(patient, character).
+adjective(honest, character).
+adjective(fun, appeal).
+adjective(boring, appeal).
+adjective(exciting, appeal).
+adjective(interesting, appeal).
+adjective(popular, appeal).
+adjective(clear, clarity).
+adjective(cloudy, clarity).
+adjective(loud, loudness).
+adjective(quiet, loudness).
+adjective(noisy, loudness).
+adjective(bright, brightness).
+adjective(dark, brightness).
+adjective(cheap, price).
+adjective(expensive, price).
+adjective(free, price).
+adjective(healthy, health).
+adjective(sick, health).
+adjective(ill, health).
+adjective(round, shape).
+adjective(square, shape).
+adjective(beautiful, beauty).
+adjective(pretty, beauty).
+adjective(ugly, beauty).
+adjective(safe, safety).
+adjective(dangerous, safety).
+adjective(strong, strength).
+adjective(weak, strength).
+adjective(rich, wealth).
+adjective(poor, wealth).
+adjective(high, height).
+adjective(low, height).
 forbid(property, 2, quality, "a quality needs a named property (colour, size, taste, difficulty) or its own predicate").
 ```

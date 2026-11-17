@@ -22,7 +22,7 @@ domain: tools
 - has(maksim, hammer)
 - -has(maksim, saw)
 - has(bob, drill)
-- property(hammer, quality, heavy)
+- property(hammer, weight, heavy)
 
 ## expect rules
 - cut(A, wood) :- has(A, saw).
@@ -32,4 +32,4 @@ domain: tools
 - has(maksim, hammer)
 - -has(maksim, saw)
 - has(bob, drill)
-- property(hammer, quality, heavy)
+- property(hammer, weight, heavy)

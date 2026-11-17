@@ -129,6 +129,10 @@ pub struct Registry {
     pub glue_words: BTreeSet<String>,
     /// Property names usable without the word in the message (colour, size, age, ...).
     pub property_names: BTreeSet<String>,
+    /// Prepositions that combine with a verb into a predicate (`talk_to`).
+    pub prepositions: BTreeSet<String>,
+    /// adjective -> the named property it describes (lazy -> character).
+    pub adjectives: BTreeMap<String, String>,
     /// (pred, 1-based position, value) -> reason
     pub forbid: BTreeMap<(String, usize, String), String>,
     /// Lines of the registry it could not read: (statement, problem).
@@ -204,6 +208,12 @@ impl Registry {
                     ("number_word", 1) => r.number_words.extend(arg(0).map(String::from)),
                     ("glue_word", 1) => r.glue_words.extend(arg(0).map(String::from)),
                     ("property_name", 1) => r.property_names.extend(arg(0).map(String::from)),
+                    ("preposition", 1) => r.prepositions.extend(arg(0).map(String::from)),
+                    ("adjective", 2) => {
+                        if let (Some(w), Some(p)) = (arg(0), arg(1)) {
+                            r.adjectives.insert(w.to_string(), p.to_string());
+                        }
+                    }
                     ("forbid", 4) => {
                         if let (Some(p), Some(Term::Val(Value::Int(pos))), Some(v), Some(why)) = (arg(0), a.get(1), arg(2), arg(3)) {
                             r.forbid.insert((p.to_string(), *pos as usize, v.to_string()), why.to_string());
@@ -243,7 +253,18 @@ impl Registry {
     }
 
     pub fn get(&self, name: &str) -> Option<&PredInfo> {
-        self.resolve(name).and_then(|n| self.preds.get(n))
+        self.resolve(name).and_then(|n| self.preds.get(n)).or_else(|| self.verb_prep(name))
+    }
+
+    /// `talk_to`, `sleep_on`: a registered verb and a preposition (v1's
+    /// `verb_prep` form) is that verb's predicate family.
+    fn verb_prep(&self, name: &str) -> Option<&PredInfo> {
+        let base = name.trim_start_matches('-');
+        let (verb, prep) = base.rsplit_once('_')?;
+        if !self.prepositions.contains(prep) {
+            return None;
+        }
+        self.preds.get(verb).filter(|p| p.verb)
     }
 
     pub fn is_unit(&self, s: &str) -> bool {
@@ -343,8 +364,13 @@ impl Registry {
     /// Type-check a fact (strong negations are checked as their base predicate).
     pub fn check(&self, g: &GroundAtom) -> Result<(), TypeError> {
         let base = g.base_pred();
-        let Some(name) = self.resolve(base) else { return Err(TypeError::UnknownPredicate(base.to_string())) };
-        let info = &self.preds[name];
+        let (name, info) = match self.resolve(base) {
+            Some(n) => (n, &self.preds[n]),
+            None => match self.verb_prep(base) {
+                Some(info) => (base, info),
+                None => return Err(TypeError::UnknownPredicate(base.to_string())),
+            },
+        };
         let types: Vec<ArgType> = if info.verb {
             match g.args.len() {
                 1 => vec![ArgType::Entity],
@@ -412,6 +438,8 @@ mod tests {
             "portion(pasta, 100, gram)",
             "play(anna, chess)",
             "bark(rex)",
+            "talk_to(anna, bob)",
+            "sleep_on(cat, sofa)",
             "surface(cherry_tomato, \"cherry tomato\")",
         ] {
             let g = parse_ground(f).unwrap();
@@ -423,7 +451,8 @@ mod tests {
     fn bad_facts_fail_with_a_reason() {
         let r = Registry::builtin();
         let err = |f: &str| r.check(&parse_ground(f).unwrap()).unwrap_err();
-        assert!(matches!(err("grow_on(moss, rock)"), TypeError::UnknownPredicate(_)));
+        assert!(matches!(err("mean(frozen, ice)"), TypeError::UnknownPredicate(_)));
+        assert_eq!(r.check(&parse_ground("grow_on(moss, rock)").unwrap()), Ok(()), "a verb and a preposition");
         assert!(matches!(err("likes(anna)"), TypeError::Arity { .. }));
         assert!(matches!(err("takes_time(tea, three, five, minute)"), TypeError::BadArgument { pos: 2, .. }));
         assert!(matches!(err("takes_time(tea, 3, 5, banana)"), TypeError::BadArgument { pos: 4, .. }));

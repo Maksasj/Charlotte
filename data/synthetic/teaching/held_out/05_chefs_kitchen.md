@@ -23,7 +23,7 @@ domain: food
 ## expect facts
 - is_a(carlos, chef)
 - is_a(sam, chef)
-- property(sam, quality, vegan)
+- property(sam, diet, vegan)
 - eat(carlos, meat)
 - eat(yuki, meat)
 - likes(yuki, soup)
@@ -35,7 +35,7 @@ domain: food
 - is_a(carlos, chef)
 - is_a(yuki, chef)
 - is_a(sam, chef)
-- property(sam, quality, vegan)
+- property(sam, diet, vegan)
 - eat(carlos, meat)
 - eat(yuki, meat)
 - -eat(sam, meat)

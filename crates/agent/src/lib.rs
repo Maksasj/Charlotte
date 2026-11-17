@@ -47,7 +47,15 @@ pub enum Pending {
 
 pub struct Agent {
     brain: SharedBrain,
+    /// Used only for the oracle parser (gold acts by message); everything
+    /// else goes through the translator.
     parser: Box<dyn Parser>,
+    /// Understanding (Design 2.0): segmenter, pattern and model tiers, validator.
+    pub translator: sla_translate::Translator,
+    /// Things recently talked about, most recent first (translator context).
+    pub recent: Vec<String>,
+    /// The agent's last reply (translator context).
+    pub last_reply: Option<String>,
     pub ctx: Context,
     pub realizer: Realizer,
     /// The atom the last answer was about (for "why?" and "that's wrong").
@@ -105,9 +113,13 @@ impl Agent {
 
     /// A new conversation over a brain that may be shared with others.
     pub fn with_brain(brain: SharedBrain, speaker: &str) -> Self {
+        let registry = sla_lexicon::Registry::from_vault(&brain::lock(&brain).kb.vault);
         Agent {
             brain,
             parser: Box::new(PatternParser),
+            translator: sla_translate::Translator::new(registry),
+            recent: Vec::new(),
+            last_reply: None,
             ctx: Context { speaker: speaker.to_string(), last_entity: None },
             realizer: Realizer::new(speaker),
             last_answer: None,
@@ -151,21 +163,46 @@ impl Agent {
     /// Use the LLM translator (Claude CLI, headless) for messages the pattern
     /// parser does not understand. Translations are cached in the vault.
     pub fn enable_llm(&mut self, model: &str) {
-        let cache = self.brain().kb.vault.root.join("llm_cache.tsv");
-        self.parser = Box::new(sla_parser::llm::LlmTranslator::new(model, Some(cache)));
+        let cache = self.brain().kb.vault.root.join("translate_cache.jsonl");
+        let registry = std::sync::Arc::clone(&self.translator.registry);
+        let mut t = sla_translate::Translator::new((*registry).clone()).with_cache(cache);
+        t.model = Some(sla_translate::ModelTier::new(model));
+        self.translator = t;
+    }
+
+    /// What the translator should know about this conversation.
+    fn tcontext(&self) -> sla_translate::TContext {
+        let b = self.brain();
+        let mut known: Vec<String> = b.kb.vault.procedures.keys().chain(b.kb.vault.tasks.keys()).cloned().collect();
+        known.sort();
+        let next_step = self.active_task.as_ref().map_or(1, |t| {
+            b.kb.vault.procedures.get(t).map_or(1, |p| p.facts().iter().filter(|f| f.atom.pred == "step").count() + 1)
+        });
+        let mut recent = self.recent.clone();
+        if let Some(e) = &self.ctx.last_entity {
+            if !recent.contains(e) {
+                recent.insert(0, e.clone());
+            }
+        }
+        sla_translate::TContext { speaker: self.ctx.speaker.clone(), active_task: self.active_task.clone(), next_step, last_reply: self.last_reply.clone(), recent, known_tasks: known }
     }
 
     pub fn parser_name(&self) -> &str {
-        self.parser.name()
+        if self.parser.name() == "oracle" {
+            "oracle"
+        } else if self.translator.model.is_some() {
+            "pattern+model"
+        } else {
+            "pattern"
+        }
     }
 
     /// Translate a message ahead of `respond` (fills the translator's cache).
     /// `respond` translates before taking the lock anyway; this only lets a
     /// caller time translation separately.
     pub fn prepare(&mut self, text: &str) {
-        if self.parser.name() != "pattern" {
-            let _ = self.parser.parse_many(text, &self.ctx);
-        }
+        let ctx = self.tcontext();
+        let _ = self.translator.translate(text, &ctx);
     }
 
     pub fn now(&self) -> Timestamp {
@@ -202,7 +239,15 @@ impl Agent {
         let started = Instant::now();
         let calls_before = sla_parser::claude::thread_calls();
         // Translation happens before the vault lock: it may call a model.
-        let translated = if self.parser.name() != "pattern" { Some(self.parser.parse_many(text, &self.ctx)) } else { None };
+        // Oracle: gold acts for the whole message. Otherwise the translator
+        // (segmenter, tiers, validator), always before the vault lock.
+        let oracle = if self.parser.name() == "oracle" { Some(self.parser.parse_many(text, &self.ctx)) } else { None };
+        let translation = if oracle.is_none() {
+            let ctx = self.tcontext();
+            Some(self.translator.translate(text, &ctx))
+        } else {
+            None
+        };
         let translate_ms = started.elapsed().as_secs_f64() * 1000.0;
         let brain = Arc::clone(&self.brain);
         let mut b = brain::lock(&brain);
@@ -223,9 +268,10 @@ impl Agent {
         });
         let _ = b.reload_if_edited();
         self.told_about.clear();
-        let mut reply = match translated {
-            Some(intents) => self.respond_intents(&mut b, text, intents, "model"),
-            None => self.respond_sentences(&mut b, text),
+        let mut reply = match (oracle, translation) {
+            (Some(intents), _) => self.respond_intents(&mut b, text, intents, "oracle"),
+            (None, Some(tr)) => self.respond_parts(&mut b, text, tr),
+            (None, None) => self.respond_sentences(&mut b, text),
         };
         // Learning: one cheap pass per message, around what it told about.
         if !self.told_about.is_empty() {
@@ -279,6 +325,7 @@ impl Agent {
             }
         }
         self.last_trace = Some(t);
+        self.last_reply = Some(reply.text.clone());
         reply
     }
 
@@ -293,6 +340,64 @@ impl Agent {
         if let Some(t) = self.cur.as_mut() {
             t.moves.push(m.to_string());
         }
+    }
+
+    /// Handle a translated message part by part: every understood part gets
+    /// its reply; a part that was not understood gets one question, or the
+    /// "not understood" reply when nothing was understood (Design 2.0:
+    /// "No message is lost as a whole").
+    fn respond_parts(&mut self, b: &mut Brain, text: &str, tr: sla_translate::Translation) -> Reply {
+        let mut texts: Vec<String> = Vec::new();
+        let mut claims = Vec::new();
+        let mut intent = "social";
+        let mut lost: Vec<String> = Vec::new();
+        let n = tr.parts.len();
+        for p in tr.parts {
+            if !p.understood() {
+                // An honest `unknown` (a filler sentence) needs no question.
+                if !p.ok {
+                    lost.push(p.text.clone());
+                }
+                self.trace_part(&p.text, &p.acts, p.tier.name());
+                if let Some(t) = self.cur.as_mut() {
+                    if let Some(last) = t.parts.last_mut() {
+                        last.understood = false;
+                    }
+                }
+                continue;
+            }
+            // Greetings and thanks next to content add nothing.
+            let r = self.respond_intents(b, &p.text, p.acts, p.tier.name());
+            if n > 1 && r.intent == "social" && !texts.is_empty() {
+                continue;
+            }
+            if r.intent != "social" || texts.is_empty() {
+                intent = r.intent;
+            }
+            claims.extend(r.claims);
+            if !texts.contains(&r.text) {
+                texts.push(r.text);
+            }
+        }
+        // A social reply to the opening greeting is dropped when content follows.
+        if texts.len() > 1 && matches!(texts[0].as_str(), "Hello!" | "Hi there!" | "Hello, nice to talk to you.") {
+            texts.remove(0);
+        }
+        self.last_understood = !texts.is_empty();
+        if !lost.is_empty() {
+            let shown: String = lost[0].chars().take(80).collect();
+            if texts.is_empty() {
+                let r = self.say(Act::NotUnderstood);
+                return r;
+            }
+            texts.push(format!("I didn't understand \"{}\": what do you mean?", shown.trim_end_matches(['.', '!', '?'])));
+            intent = "clarify";
+        }
+        if texts.is_empty() {
+            return self.say(Act::NotUnderstood);
+        }
+        let _ = text;
+        Reply { text: texts.join(" "), intent, claims }
     }
 
     /// The pattern parser: each sentence is parsed and handled in turn, so
@@ -450,6 +555,9 @@ impl Agent {
         };
         if let Some(Term::Val(Value::Sym(e))) = subject {
             if e != self.ctx.speaker {
+                self.recent.retain(|r| r != &e);
+                self.recent.insert(0, e.clone());
+                self.recent.truncate(8);
                 self.ctx.last_entity = Some(e);
             }
         }
@@ -549,7 +657,7 @@ impl Agent {
     fn handle(&mut self, b: &mut Brain, intent: Intent) -> Reply {
         let pending = self.pending.take();
         match intent {
-            Intent::Tell { facts, rules, past, .. } => {
+            Intent::Tell { facts, rules, past, hedge } => {
                 // The answer to "which one is true?" settles the contradiction:
                 // the side the user states is kept, the other is made false.
                 if let Some(Pending::Contradiction(a, bb)) = &pending {
@@ -558,7 +666,7 @@ impl Agent {
                     }
                 }
                 // An answer to "What does Bob like?" arrives as a statement.
-                self.tell(b, facts, rules, past)
+                self.tell(b, facts, rules, past, hedge.as_deref())
             }
             Intent::Ask { query, history } => self.ask(b, query, history),
             Intent::Recall(e) => self.recall(b, e, 0),
@@ -625,7 +733,7 @@ impl Agent {
             Intent::Accept => Reply { text: "Great!".into(), intent: "social", claims: Vec::new() },
             Intent::Reject => Reply { text: "Okay. What would you like instead?".into(), intent: "clarify", claims: Vec::new() },
             Intent::Feedback(positive) => self.feedback(positive),
-            Intent::Teach { facts, rules } => self.tell(b, facts, rules, false),
+            Intent::Teach { facts, rules } => self.tell(b, facts, rules, false, None),
             Intent::NewPred { atom, definition } => self.new_pred(b, atom, definition),
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
@@ -751,14 +859,21 @@ impl Agent {
         self.say(Act::Note(text))
     }
 
-    fn tell(&mut self, b: &mut Brain, facts: Vec<Atom>, rules: Vec<Rule>, past: bool) -> Reply {
+    fn tell(&mut self, b: &mut Brain, facts: Vec<Atom>, rules: Vec<Rule>, past: bool, hedge: Option<&str>) -> Reply {
+        // A hedge is kept as a strength: "usually" is believed less than "always".
+        let strength = match hedge {
+            Some("usually") => 0.8,
+            Some("often") => 0.7,
+            Some("sometimes") => 0.4,
+            _ => 1.0,
+        };
         let now = self.now();
         let mut added = Vec::new();
         let mut known = Vec::new();
         let mut closed = Vec::new();
         for a in facts {
             let Some(g) = a.to_ground() else { continue };
-            let fact = Fact::new(g.clone(), &self.source).with_conv(&self.session_id);
+            let fact = Fact::new(g.clone(), &self.source).with_conv(&self.session_id).with_conf(strength);
             if past {
                 // "I used to like tea": true before, not now. A current copy is closed.
                 let reason = format!("{} said it used to be true", self.source);

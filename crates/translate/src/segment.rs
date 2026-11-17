@@ -154,6 +154,31 @@ fn keeps_going(cur: &str, chars: &[char], i: usize) -> bool {
     false
 }
 
+/// After `cur` (the words so far), does the "and" at word `w` start a new
+/// clause? Yes when at least three words follow it, the first of which is a
+/// capitalized name or a pronoun.
+fn and_starts_clause(s: &str, _w: &str, cur: &[&str]) -> bool {
+    let words: Vec<&str> = s.split_whitespace().collect();
+    let i = cur.len();
+    let after = &words[(i + 1).min(words.len())..];
+    if after.len() < 3 {
+        return false;
+    }
+    let first = after[0].trim_matches(|c: char| !c.is_alphanumeric());
+    let pron = matches!(first.to_lowercase().as_str(), "he" | "she" | "it" | "they" | "i" | "we" | "you");
+    pron || first.chars().next().map_or(false, |c| c.is_uppercase())
+}
+
+/// The clause without a leading link word ("and she studies" -> "she studies").
+pub fn without_link(clause: &str) -> &str {
+    for w in ["and ", "but ", "so ", "because ", "then ", "and then ", "after that "] {
+        if let Some(rest) = clause.strip_prefix(w) {
+            return rest;
+        }
+    }
+    clause
+}
+
 /// Clauses of a sentence that failed as a whole, cut at clause words
 /// ("and", "but", "then", "while", "because", "so", ";"). Each clause keeps
 /// the word that links it, so the links can still be read.
@@ -165,7 +190,11 @@ pub fn clauses(sentence: &str) -> Vec<String> {
     for w in s.split_whitespace() {
         let bare = w.trim_matches(|c: char| !c.is_alphanumeric()).to_lowercase();
         let after_comma = cur.last().map_or(false, |p| p.ends_with([',', ';']));
-        if CUT.contains(&bare.as_str()) && cur.len() >= 2 && (after_comma || bare != "and") {
+        // A bare "and" cuts only when a whole clause follows (two or more
+        // words after it): "Tom works here and Mia works there", not "pasta and garlic".
+        let rest_len = s.split_whitespace().count();
+        let _ = rest_len;
+        if CUT.contains(&bare.as_str()) && cur.len() >= 2 && (after_comma || bare != "and" || and_starts_clause(s, w, &cur)) {
             out.push(cur.join(" ").trim_end_matches([',', ';']).to_string());
             cur.clear();
         } else if w.ends_with(';') && !cur.is_empty() {
@@ -208,6 +237,8 @@ mod tests {
     fn clause_cuts() {
         assert_eq!(clauses("Boil the pasta, and while it cooks warm the garlic."), vec!["Boil the pasta", "and while it cooks warm the garlic"]);
         assert_eq!(clauses("I have pasta and garlic."), vec!["I have pasta and garlic"], "a plain 'and' list is not cut");
+        assert_eq!(clauses("Tom works at the library and Mia works at the bank."), vec!["Tom works at the library", "and Mia works at the bank"]);
+        assert_eq!(without_link("and she studies biology"), "she studies biology");
         assert_eq!(clauses("Fry the garlic, then add the tomatoes because they need time."), vec!["Fry the garlic", "then add the tomatoes", "because they need time"]);
     }
 }

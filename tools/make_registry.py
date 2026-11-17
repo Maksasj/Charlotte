@@ -125,9 +125,38 @@ eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred 
 GLUE_WORDS = """and or but to of for from with that which who where when than as by about into onto like
 is are was were be been being it this these those here there""".split()
 
+# Adjectives and the named property each describes (v1's `quality` catch-all is gone).
+ADJECTIVES = {
+    "temperature": "hot cold warm cool freezing boiling icy chilly",
+    "weight": "heavy light",
+    "speed": "fast slow quick",
+    "age": "old young new ancient modern",
+    "texture": "soft hard smooth rough sticky crunchy creamy fluffy",
+    "taste": "sweet sour bitter salty spicy tasty delicious bland",
+    "state": "broken ripe fresh rotten clean dirty empty full open closed wet dry ready cooked raw burnt flat busy",
+    "difficulty": "easy difficult simple tricky",
+    "depth": "deep shallow",
+    "length": "long",
+    "power": "electric solar manual",
+    "diet": "vegan vegetarian",
+    "character": "lazy kind friendly shy brave funny smart clever polite rude calm patient honest",
+    "appeal": "fun boring exciting interesting popular",
+    "clarity": "clear cloudy",
+    "loudness": "loud quiet noisy",
+    "brightness": "bright dark",
+    "price": "cheap expensive free",
+    "health": "healthy sick ill",
+    "shape": "round square",
+    "beauty": "beautiful pretty ugly",
+    "safety": "safe dangerous",
+    "strength": "strong weak",
+    "wealth": "rich poor",
+    "height": "high low",
+}
+
 # Property names a translation may use without the word in the message ("The car is red" -> colour).
 PROPERTY_NAMES = """colour size age job name taste weight height price temperature shape material smell sound speed
-difficulty length width capacity flavour role value order hobby favourite_food nationality language""".split()
+difficulty texture state length width capacity flavour role value order hobby favourite_food nationality language""".split() + sorted(ADJECTIVES)
 
 FORBID = [("property", 2, "quality", "a quality needs a named property (colour, size, taste, difficulty) or its own predicate")]
 
@@ -161,6 +190,8 @@ def main():
     lines.append("% Verbs from the pattern parser: verb(V) means V(X) or V(X, Y) with an entity first.")
     for v in verbs():
         lines.append(f"verb({v}).")
+    lines.append("% Prepositions: a verb and a preposition make a predicate (talk_to, sleep_on, study_at).")
+    lines.extend(f"preposition({w})." for w in "in at on with for to from about into near by under over after before through around across along behind".split())
     lines.append("% Units: unit(Name, Dimension, size in the dimension's base unit).")
     for u, d, n in UNITS:
         lines.append(f"unit({u}, {d}, {n}).")
@@ -168,7 +199,10 @@ def main():
     lines.extend(f"function_word({w})." for w in FUNCTION_WORDS)
     lines.extend(f"number_word({w})." for w in NUMBER_WORDS)
     lines.extend(f"glue_word({w})." for w in GLUE_WORDS)
-    lines.extend(f"property_name({w})." for w in PROPERTY_NAMES)
+    lines.extend(f"property_name({w})." for w in dict.fromkeys(PROPERTY_NAMES))
+    lines.append("% Adjectives: adjective(Word, Property) - \"Anna is lazy\" is property(anna, character, lazy).")
+    for prop, words in ADJECTIVES.items():
+        lines.extend(f"adjective({w}, {prop})." for w in words.split())
     for p, pos, v, why in FORBID:
         lines.append(f"forbid({p}, {pos}, {v}, {q(why)}).")
     text = (

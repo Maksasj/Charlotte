@@ -732,8 +732,14 @@ fn statement(toks: &[Tok], ctx: &Context) -> Option<Statement> {
                     push("is_a", &[Some(Term::var("W"))], &mut atoms, neg);
                 } else if (generic.is_some() || subjects.len() > 1) && looks_plural(last) && !ADJ_LIKE_S.contains(&last) {
                     push("is_a", &objs(p)?, &mut atoms, neg);
+                } else if p.len() == 1 && p[0].cap {
+                    // A capitalized adjective is a nationality ("Anna is British").
+                    for s in &subjects {
+                        atoms.push(atom("property", vec![s.clone(), Term::sym("nationality"), Term::sym(last)], neg));
+                    }
                 } else if p.len() == 1 {
-                    // One adjective, also capitalized ones like nationalities ("Anna is British").
+                    // Any other adjective: v1's catch-all, which the 2.0 validator
+                    // refuses, so the model tier (or a question) names its property.
                     for s in &subjects {
                         atoms.push(atom("property", vec![s.clone(), Term::sym("quality"), Term::sym(last)], neg));
                     }

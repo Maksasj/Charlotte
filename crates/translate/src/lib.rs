@@ -307,16 +307,64 @@ impl Translator {
     /// The fixed-pattern tier for one sentence.
     fn pattern(&self, text: &str, ctx: &TContext, last_entity: &Option<String>) -> Option<Vec<Intent>> {
         let pctx = Context { speaker: ctx.speaker.clone(), last_entity: last_entity.clone() };
-        let i = sla_parser::parse(text, &pctx);
+        let mut i = sla_parser::parse(text, &pctx);
         if i == Intent::Unknown || suspicious(&i) {
             return None;
         }
+        self.name_properties(&mut i);
         let v = Validator::new(&self.registry);
         let acts = vec![i];
-        if v.check(text, &acts, ctx).is_empty() {
+        // What a pronoun resolved to is part of the conversation, so it is grounded.
+        let mut ctx2 = ctx.clone();
+        if let Some(e) = last_entity {
+            if !ctx2.recent.contains(e) {
+                ctx2.recent.insert(0, e.clone());
+            }
+        }
+        if v.check(text, &acts, &ctx2).is_empty() {
             Some(acts)
         } else {
             None
+        }
+    }
+
+    /// v1 patterns write an adjective as `property(x, quality, adj)`; 2.0
+    /// names the property from the registry's adjective list (lazy ->
+    /// character). An unknown adjective stays as it is and fails validation.
+    fn name_properties(&self, i: &mut Intent) {
+        let fix = |a: &mut sla_core::Atom| {
+            if a.pred.trim_start_matches('-') == "property" && a.args.len() == 3 {
+                if let (sla_core::Term::Val(sla_core::Value::Sym(q)), sla_core::Term::Val(sla_core::Value::Sym(v))) = (&a.args[1], &a.args[2]) {
+                    if q == "quality" {
+                        if let Some(p) = self.registry.adjectives.get(v) {
+                            a.args[1] = sla_core::Term::sym(p);
+                        }
+                    }
+                }
+            }
+        };
+        match i {
+            Intent::Tell { facts, rules, .. } => {
+                facts.iter_mut().for_each(fix);
+                for r in rules {
+                    fix(&mut r.head);
+                    for l in &mut r.body {
+                        if let sla_core::Literal::Pos(a) | sla_core::Literal::Neg(a) = l {
+                            fix(a);
+                        }
+                    }
+                }
+            }
+            Intent::Correct(facts) | Intent::Inform(facts) => facts.iter_mut().for_each(fix),
+            Intent::Ask { query, .. } => {
+                for l in query {
+                    if let sla_core::Literal::Pos(a) | sla_core::Literal::Neg(a) = l {
+                        fix(a);
+                    }
+                }
+            }
+            Intent::Why(Some(a)) => fix(a),
+            _ => {}
         }
     }
 
@@ -383,12 +431,17 @@ impl Translator {
                 }
             }
         }
-        // Step 6: split what still fails at clause words and try the clauses.
+        // Step 6: split what still fails at clause words and try the clauses,
+        // carrying "who we are talking about" from part to part.
         let mut out: Vec<Part> = Vec::new();
+        let mut running = ctx.recent.first().cloned();
         for (i, p) in parts.into_iter().enumerate() {
             let s = &sentences[i];
             let p = p.unwrap_or_else(|| Part { text: s.clone(), acts: vec![Intent::Unknown], tier: Tier::Pattern, ok: false, problems: vec!["not understood".into()], retried: false });
             if p.ok {
+                if let Some(e) = subject_of(&p.acts, &ctx.speaker) {
+                    running = Some(e);
+                }
                 out.push(p);
                 continue;
             }
@@ -397,7 +450,7 @@ impl Translator {
                 out.push(p);
                 continue;
             }
-            let mut sub = self.clause_parts(&cl, ctx, 1);
+            let mut sub = self.clause_parts(&cl, ctx, 1, &mut running);
             if sub.iter().any(|c| c.understood()) {
                 out.append(&mut sub);
             } else {
@@ -408,11 +461,13 @@ impl Translator {
     }
 
     /// Clauses of a failed sentence: patterns first, then one model call; depth at most 2.
-    fn clause_parts(&mut self, clauses: &[String], ctx: &TContext, depth: u8) -> Vec<Part> {
+    fn clause_parts(&mut self, clauses: &[String], ctx: &TContext, depth: u8, running: &mut Option<String>) -> Vec<Part> {
         let mut parts: Vec<Option<Part>> = vec![None; clauses.len()];
-        let last = ctx.recent.first().cloned();
         for (i, c) in clauses.iter().enumerate() {
-            if let Some(acts) = self.pattern(c, ctx, &last) {
+            if let Some(acts) = self.pattern(segment::without_link(c), ctx, running) {
+                if let Some(e) = subject_of(&acts, &ctx.speaker) {
+                    *running = Some(e);
+                }
                 parts[i] = Some(Part { text: c.clone(), acts, tier: Tier::Clause, ok: true, problems: Vec::new(), retried: false });
             }
         }
@@ -437,7 +492,7 @@ impl Translator {
                 other => {
                     let sub = segment::clauses(&clauses[i]);
                     if depth < 2 && sub.len() >= 2 {
-                        out.extend(self.clause_parts(&sub, ctx, depth + 1));
+                        out.extend(self.clause_parts(&sub, ctx, depth + 1, running));
                     } else {
                         out.push(other.unwrap_or_else(|| Part { text: clauses[i].clone(), acts: vec![Intent::Unknown], tier: Tier::Clause, ok: false, problems: vec!["not understood".into()], retried: false }));
                     }

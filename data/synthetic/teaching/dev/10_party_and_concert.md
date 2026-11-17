@@ -21,7 +21,7 @@ domain: events
 ## expect facts
 - located_in(party, club)
 - located_in(concert, stadium)
-- property(party, quality, fun)
+- property(party, appeal, fun)
 - likes(anna, party)
 - likes(bob, music)
 - feels(bob, excited)
@@ -33,7 +33,7 @@ domain: events
 ## ground truth
 - located_in(party, club)
 - located_in(concert, stadium)
-- property(party, quality, fun)
+- property(party, appeal, fun)
 - likes(anna, party)
 - likes(bob, music)
 - feels(bob, excited)

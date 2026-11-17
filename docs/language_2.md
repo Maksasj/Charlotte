@@ -137,6 +137,27 @@ in the order they are told, continuing after the steps the context already has.
 [1] tell: step(make_pasta, make_pasta_s1); action(make_pasta_s1, boil); object_of(make_pasta_s1, pasta); takes_time(make_pasta_s1, 10, 10, minute); step(make_pasta, make_pasta_s2); action(make_pasta_s2, fry); object_of(make_pasta_s2, garlic); uses(make_pasta_s2, olive_oil); before(make_pasta_s1, make_pasta_s2)
 ```
 
+Steps told one after another are in that order even without "then": each
+step is `before` the next one told, unless "while" makes them overlap. A
+dashed list orders its steps like a numbered list.
+
+## Rules for unclear cases
+
+- A plural subject with a verb states a fact about the kind: `Cats like
+  fish.` -> `tell: likes(cat, fish)` (this replaces v1's rule form for verbs;
+  "If ..." and "every"/"all ... then" sentences stay rules).
+- An adjective uses the named property it describes: colour, size, age,
+  taste ("sour"), texture ("soft"), temperature ("hot"), state ("broken",
+  "dry", "ripe"), difficulty ("easy"). If none fits, it is a `new_pred` line.
+- "I don't have X": `lack: x` while a task is under way, otherwise
+  `inform: -available(x)`. Several items: `lack: garlic; salt`.
+- A task whose verb is only implied gets `make` for food and things made
+  ("for pancakes" -> `make_pancake`), otherwise the verb the request implies
+  ("help me pack" -> `pack_bag`).
+- "half an hour" is `0.5, 0.5, hour`; amounts are written as said.
+- "Sure", "OK" answering a yes/no question are `yes`; agreeing to a
+  suggestion is `accept`.
+
 ## Context
 
 The translator also gets the conversation so far: the speaker, the agent's last
