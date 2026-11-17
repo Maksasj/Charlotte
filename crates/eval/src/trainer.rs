@@ -242,6 +242,8 @@ pub struct Trainer {
     pub sessions: PathBuf,
     /// Required on every API request.
     pub token: String,
+    /// Finished conversations are appended here (`data/training/`); runs on mock models are not.
+    pub archive: Option<PathBuf>,
     brain: Mutex<Option<SharedBrain>>,
     state: Mutex<TrainState>,
     stop: AtomicBool,
@@ -411,6 +413,7 @@ impl Trainer {
             vault,
             sessions,
             token: new_token(),
+            archive: None,
             brain: Mutex::new(None),
             state: Mutex::new(state),
             stop: AtomicBool::new(false),
@@ -718,6 +721,13 @@ impl Trainer {
             rejected: rejected.clone(),
             transcript,
         };
+        // Every real training conversation is kept (mock runs are synthetic).
+        if let (Some(dir), false) = (&self.archive, cfg.model == "mock") {
+            let rec = serde_json::json!({ "model": cfg.model, "session": agent.session_id, "conversation": &fin });
+            if let Err(e) = crate::archive::append(dir, "trainer", &rec) {
+                eprintln!("warning: cannot archive the conversation: {e}");
+            }
+        }
         let mut s = self.state.lock().unwrap_or_else(|e| e.into_inner());
         s.completed += 1;
         s.rejected += rejected.len();

@@ -25,6 +25,7 @@ pub mod brain;
 pub mod curiosity;
 pub mod events;
 pub mod router;
+pub mod tasks;
 pub mod trace;
 
 pub use brain::{Brain, SharedBrain};
@@ -81,6 +82,12 @@ pub struct Agent {
     cur: Option<TurnTrace>,
     /// Entities this turn added facts about (the learner's focus).
     told_about: std::collections::BTreeSet<Value>,
+    /// The speaker's situation in this conversation (`inform`, `done`, `lack`):
+    /// reasoned over with the vault, never written to it.
+    pub session_facts: Vec<GroundAtom>,
+    /// The task this conversation is about, and the step last given.
+    pub active_task: Option<String>,
+    pub last_step: Option<String>,
 }
 
 fn session_name() -> String {
@@ -120,6 +127,9 @@ impl Agent {
             publish_events: true,
             cur: None,
             told_about: Default::default(),
+            session_facts: Vec::new(),
+            active_task: None,
+            last_step: None,
         }
     }
 
@@ -347,7 +357,7 @@ impl Agent {
             let mut merged: Vec<Intent> = Vec::new();
             for i in intents {
                 match (merged.last_mut(), i) {
-                    (Some(Intent::Tell { facts, rules, past: false }), Intent::Tell { facts: f2, rules: r2, past: false }) => {
+                    (Some(Intent::Tell { facts, rules, past: false, hedge: None }), Intent::Tell { facts: f2, rules: r2, past: false, hedge: None }) => {
                         facts.extend(f2);
                         rules.extend(r2);
                     }
@@ -539,7 +549,7 @@ impl Agent {
     fn handle(&mut self, b: &mut Brain, intent: Intent) -> Reply {
         let pending = self.pending.take();
         match intent {
-            Intent::Tell { facts, rules, past } => {
+            Intent::Tell { facts, rules, past, .. } => {
                 // The answer to "which one is true?" settles the contradiction:
                 // the side the user states is kept, the other is made false.
                 if let Some(Pending::Contradiction(a, bb)) = &pending {
@@ -605,6 +615,18 @@ impl Agent {
                 self.say(Act::Note(text))
             }
             Intent::AboutYou(thing) => self.about_me(b, thing),
+            Intent::Inform(atoms) => self.inform(b, atoms),
+            Intent::Request(t) | Intent::AskHow(t) => self.task_help(b, &t),
+            Intent::AskNeed(t) => self.task_needs(b, &t),
+            Intent::AskDuration(t) => self.task_duration(b, &t),
+            Intent::AskNext => self.task_next(b),
+            Intent::Done(s) => self.task_done(b, s),
+            Intent::Lack(items) => self.lack(items),
+            Intent::Accept => Reply { text: "Great!".into(), intent: "social", claims: Vec::new() },
+            Intent::Reject => Reply { text: "Okay. What would you like instead?".into(), intent: "clarify", claims: Vec::new() },
+            Intent::Feedback(positive) => self.feedback(positive),
+            Intent::Teach { facts, rules } => self.tell(b, facts, rules, false),
+            Intent::NewPred { atom, definition } => self.new_pred(b, atom, definition),
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
             Intent::Unknown => self.say(Act::NotUnderstood),

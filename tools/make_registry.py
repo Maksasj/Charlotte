@@ -60,6 +60,7 @@ PREDS = [
     ("solves", "task symbol", "task T is a way to reach goal G", "{1} is a way to {2}", "askable", ""),
     ("recommended_for", "task any", "option T is good for situation X", "{1} is good for {2}", "askable", ""),
     ("available", "entity", "the user has item I", "you have {1}", "", ""),
+    ("time_available", "number unit", "the user has N units of time", "you have {1} {2}", "single_valued", ""),
     ("staple", "entity", "item I is in almost every home", "{1} is in almost every home", "", ""),
     ("substitute", "entity entity", "item J can replace item I", "{2} can replace {1}", "askable", ""),
     ("portion", "entity number unit", "one person needs N of item I", "one person needs {2} {3} of {1}", "single_valued", ""),
@@ -124,6 +125,10 @@ eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred 
 GLUE_WORDS = """and or but to of for from with that which who where when than as by about into onto like
 is are was were be been being it this these those here there""".split()
 
+# Property names a translation may use without the word in the message ("The car is red" -> colour).
+PROPERTY_NAMES = """colour size age job name taste weight height price temperature shape material smell sound speed
+difficulty length width capacity flavour role value order hobby favourite_food nationality language""".split()
+
 FORBID = [("property", 2, "quality", "a quality needs a named property (colour, size, taste, difficulty) or its own predicate")]
 
 
@@ -163,6 +168,7 @@ def main():
     lines.extend(f"function_word({w})." for w in FUNCTION_WORDS)
     lines.extend(f"number_word({w})." for w in NUMBER_WORDS)
     lines.extend(f"glue_word({w})." for w in GLUE_WORDS)
+    lines.extend(f"property_name({w})." for w in PROPERTY_NAMES)
     for p, pos, v, why in FORBID:
         lines.append(f"forbid({p}, {pos}, {v}, {q(why)}).")
     text = (

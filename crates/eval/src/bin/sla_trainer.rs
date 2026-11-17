@@ -33,7 +33,11 @@ fn main() {
             }
         }
     }
-    let trainer = Trainer::new(vault);
+    let mut trainer = Trainer::new(vault);
+    // Keep every real training conversation in the repository's archive.
+    if let Some(t) = std::sync::Arc::get_mut(&mut trainer) {
+        t.archive = Some(sla_eval::archive::dir(&root));
+    }
     println!(
         "Training app for {}\nOpen http://localhost:{port}/?token={}  (the token is required; training starts only when you press Start)",
         trainer.vault.display(),

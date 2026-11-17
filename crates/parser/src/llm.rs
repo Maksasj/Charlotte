@@ -16,6 +16,31 @@ const SPEC: &str = include_str!("../../../docs/parser_spec.md");
 /// Serializes appends to translation cache files across agents in one process.
 static CACHE_FILE: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
+/// Atoms and rules separated by `; ` (facts must be ground).
+fn facts_and_rules(body: &str) -> Option<(Vec<Atom>, Vec<Rule>)> {
+    let mut facts = Vec::new();
+    let mut rules: Vec<Rule> = Vec::new();
+    for item in body.split("; ").map(str::trim).filter(|x| !x.is_empty()) {
+        if item.contains(":-") {
+            let text = if item.ends_with('.') { item.to_string() } else { format!("{item}.") };
+            rules.push(parse_rule(&text).ok()?);
+        } else {
+            facts.push(parse_atom(item.trim_end_matches('.').trim()).ok().filter(|a| a.is_ground())?);
+        }
+    }
+    if facts.is_empty() && rules.is_empty() {
+        return None;
+    }
+    Some((facts, rules))
+}
+
+/// Split a numbered line `[3] request: plan_dinner` into (3, "request: plan_dinner").
+pub fn numbered(line: &str) -> Option<(usize, &str)> {
+    let rest = line.trim().strip_prefix('[')?;
+    let (n, rest) = rest.split_once(']')?;
+    Some((n.trim().parse().ok()?, rest.trim()))
+}
+
 /// Parse one canonical line (`tell: likes(anna, tea)`) back into an intent.
 pub fn from_canonical(line: &str) -> Option<Intent> {
     let (kind, payload) = line.split_once(':')?;
@@ -30,26 +55,62 @@ pub fn from_canonical(line: &str) -> Option<Intent> {
         }
     };
     let ground = |s: &str| -> Option<Atom> { parse_atom(s.trim()).ok().filter(|a| a.is_ground()) };
+    let _ = &ground;
     match kind.trim() {
-        "tell" => {
-            let (body, past) = match payload.strip_suffix("@past") {
-                Some(b) => (b.trim(), true),
-                None => (payload, false),
-            };
-            let mut facts = Vec::new();
-            let mut rules: Vec<Rule> = Vec::new();
-            for item in body.split("; ").map(str::trim).filter(|x| !x.is_empty()) {
-                if item.contains(":-") {
-                    let text = if item.ends_with('.') { item.to_string() } else { format!("{item}.") };
-                    rules.push(parse_rule(&text).ok()?);
-                } else {
-                    facts.push(ground(item.trim_end_matches('.'))?);
+        "tell" | "teach" => {
+            // Trailing annotations: @past and a hedge (@usually, @often, @sometimes).
+            let mut body = payload;
+            let mut past = false;
+            let mut hedge = None;
+            loop {
+                let Some((rest, tag)) = body.rsplit_once(" @").or_else(|| body.strip_prefix('@').map(|t| ("", t))) else { break };
+                let tag = tag.trim();
+                match tag {
+                    "past" => past = true,
+                    "usually" | "often" | "sometimes" => hedge = Some(tag.to_string()),
+                    _ => return None,
                 }
+                body = rest.trim();
             }
-            if facts.is_empty() && rules.is_empty() {
+            let (facts, rules) = facts_and_rules(body)?;
+            if kind.trim() == "teach" {
+                if past || hedge.is_some() {
+                    return None;
+                }
+                return Some(Intent::Teach { facts, rules });
+            }
+            Some(Intent::Tell { facts, rules, past, hedge })
+        }
+        "inform" => {
+            let (facts, rules) = facts_and_rules(payload)?;
+            if !rules.is_empty() {
                 return None;
             }
-            Some(Intent::Tell { facts, rules, past })
+            Some(Intent::Inform(facts))
+        }
+        "request" => Some(Intent::Request(sym(payload)?)),
+        "ask_how" => Some(Intent::AskHow(sym(payload)?)),
+        "ask_need" => Some(Intent::AskNeed(sym(payload)?)),
+        "ask_duration" => Some(Intent::AskDuration(sym(payload)?)),
+        "ask_next" if payload.is_empty() => Some(Intent::AskNext),
+        "done" if payload == "last" || payload.is_empty() => Some(Intent::Done(None)),
+        "done" => Some(Intent::Done(Some(sym(payload)?))),
+        "lack" => payload.split("; ").map(sym).collect::<Option<Vec<_>>>().filter(|v| !v.is_empty()).map(Intent::Lack),
+        "accept" if payload.is_empty() => Some(Intent::Accept),
+        "reject" if payload.is_empty() => Some(Intent::Reject),
+        "feedback" => match payload {
+            "positive" => Some(Intent::Feedback(true)),
+            "negative" => Some(Intent::Feedback(false)),
+            _ => None,
+        },
+        "new_pred" => {
+            let (atom, def) = payload.split_once('|')?;
+            let atom = parse_atom(atom.trim()).ok().filter(|a| a.is_ground() && !a.args.is_empty())?;
+            let definition = def.trim().to_string();
+            if definition.is_empty() {
+                return None;
+            }
+            Some(Intent::NewPred { atom, definition })
         }
         "ask" => {
             let (body, history) = match payload.strip_suffix("@history") {
@@ -94,7 +155,7 @@ fn acceptable(i: &Intent) -> bool {
         !p.is_empty() && p.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_') && p.len() <= 40
     };
     match i {
-        Intent::Tell { facts, rules, .. } => {
+        Intent::Tell { facts, rules, .. } | Intent::Teach { facts, rules } => {
             facts.iter().all(|a| ok_pred(&a.pred) && !a.args.is_empty())
                 && rules.iter().all(|r| ok_pred(&r.head.pred) && r.head.args.iter().any(|t| matches!(t, Term::Var(_))))
         }
@@ -298,6 +359,24 @@ mod tests {
             "unknown:",
             "about_you: soup",
             "about_you: none",
+            "tell: likes(cat, fish) @usually",
+            "tell: likes(maksim, tea) @past",
+            "tell: takes_time(boil_egg, 8, 10.5, minute)",
+            "inform: available(pasta); time_available(20, minute)",
+            "request: plan_dinner",
+            "ask_how: fix_tire",
+            "ask_need: make_pancake",
+            "ask_duration: cook_rice",
+            "ask_next:",
+            "done: last",
+            "done: make_tea_s2",
+            "lack: garlic; salt",
+            "accept:",
+            "reject:",
+            "feedback: negative",
+            "feedback: positive",
+            "teach: needs(make_tea, kettle); step(make_tea, make_tea_s1)",
+            "new_pred: grow_on(moss, rock) | X grows on the surface of Y",
         ] {
             let i = from_canonical(c).unwrap_or_else(|| panic!("{c}"));
             assert_eq!(i.canonical(), c);

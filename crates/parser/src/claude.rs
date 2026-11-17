@@ -105,6 +105,13 @@ const SYSTEM: &str = "You are a careful assistant inside a training program. Fol
 
 /// One model call. Returns the text of the answer.
 pub fn call(role: &str, model: &str, prompt: &str) -> Result<String, String> {
+    call_system(role, model, SYSTEM, prompt)
+}
+
+/// One model call with a system prompt of the caller's. A long, unchanging
+/// system prompt (the translator's language specification) is cached by the
+/// API across calls, so only the short user part is new each time.
+pub fn call_system(role: &str, model: &str, system: &str, prompt: &str) -> Result<String, String> {
     let start = std::time::Instant::now();
     if let Some(f) = mock() {
         let out = f(role, prompt);
@@ -113,7 +120,7 @@ pub fn call(role: &str, model: &str, prompt: &str) -> Result<String, String> {
         return out;
     }
     let child = Command::new("claude")
-        .args(["-p", "--model", model, "--output-format", "json", "--system-prompt", SYSTEM, "--tools", "", "--no-session-persistence", "--strict-mcp-config"])
+        .args(["-p", "--model", model, "--output-format", "json", "--system-prompt", system, "--tools", "", "--no-session-persistence", "--strict-mcp-config"])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())

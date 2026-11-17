@@ -10,17 +10,43 @@ pub mod llm;
 pub mod oracle;
 mod words;
 
-pub use words::lemma;
+pub use words::{lemma, singularize};
 
 use lexicon::*;
 use sla_core::{Atom, Literal, Rule, Term, Value};
-use words::{singularize, tokenize, Tok};
+use words::{tokenize, Tok};
 
 /// What the user wants, with slots as atoms.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Intent {
     /// New facts (ground atoms) or rules. `past`: "used to" (true before, not now).
-    Tell { facts: Vec<Atom>, rules: Vec<Rule>, past: bool },
+    /// `hedge`: "usually", "often", "sometimes" (kept as a strength, Design 2.0).
+    Tell { facts: Vec<Atom>, rules: Vec<Rule>, past: bool, hedge: Option<String> },
+    /// The speaker's situation now; kept in the conversation, never in the vault.
+    Inform(Vec<Atom>),
+    /// "Can you help me plan dinner?": help with a task.
+    Request(String),
+    /// "How do I fix a flat tire?"
+    AskHow(String),
+    /// "What do I need for pancakes?"
+    AskNeed(String),
+    /// "How long does rice take?"
+    AskDuration(String),
+    /// "What's next?" in the task under way.
+    AskNext,
+    /// The speaker did a step (`None`: the last step the agent gave).
+    Done(Option<String>),
+    /// The speaker lacks items the task needs.
+    Lack(Vec<String>),
+    /// Agreeing to or turning down a suggestion.
+    Accept,
+    Reject,
+    /// A comment on the agent's last reply (true: positive), not on a fact.
+    Feedback(bool),
+    /// Content from the teaching channel.
+    Teach { facts: Vec<Atom>, rules: Vec<Rule> },
+    /// A relation no registered predicate fits, with its definition: goes to the review queue.
+    NewPred { atom: Atom, definition: String },
     /// A query; `history`: about the past rather than now.
     Ask { query: Vec<Literal>, history: bool },
     /// "What do you know about X?"
@@ -50,15 +76,36 @@ impl Intent {
     pub fn canonical(&self) -> String {
         let atoms = |v: &[Atom]| v.iter().map(|a| a.to_string()).collect::<Vec<_>>().join("; ");
         match self {
-            Intent::Tell { facts, rules, past } => {
+            Intent::Tell { facts, rules, past, hedge } => {
                 let mut parts: Vec<String> = facts.iter().map(|a| a.to_string()).collect();
                 parts.extend(rules.iter().map(|r| r.to_string()));
                 let mut s = format!("tell: {}", parts.join("; "));
                 if *past {
                     s.push_str(" @past");
                 }
+                if let Some(h) = hedge {
+                    s.push_str(&format!(" @{h}"));
+                }
                 s
             }
+            Intent::Inform(v) => format!("inform: {}", atoms(v)),
+            Intent::Request(t) => format!("request: {}", Value::sym(t.as_str())),
+            Intent::AskHow(t) => format!("ask_how: {}", Value::sym(t.as_str())),
+            Intent::AskNeed(t) => format!("ask_need: {}", Value::sym(t.as_str())),
+            Intent::AskDuration(t) => format!("ask_duration: {}", Value::sym(t.as_str())),
+            Intent::AskNext => "ask_next:".into(),
+            Intent::Done(None) => "done: last".into(),
+            Intent::Done(Some(s)) => format!("done: {}", Value::sym(s.as_str())),
+            Intent::Lack(v) => format!("lack: {}", v.iter().map(|x| Value::sym(x.as_str()).to_string()).collect::<Vec<_>>().join("; ")),
+            Intent::Accept => "accept:".into(),
+            Intent::Reject => "reject:".into(),
+            Intent::Feedback(p) => format!("feedback: {}", if *p { "positive" } else { "negative" }),
+            Intent::Teach { facts, rules } => {
+                let mut parts: Vec<String> = facts.iter().map(|a| a.to_string()).collect();
+                parts.extend(rules.iter().map(|r| r.to_string()));
+                format!("teach: {}", parts.join("; "))
+            }
+            Intent::NewPred { atom, definition } => format!("new_pred: {atom} | {definition}"),
             Intent::Ask { query, history } => {
                 let q = query.iter().map(|l| l.to_string()).collect::<Vec<_>>().join(", ");
                 if *history {
@@ -89,6 +136,19 @@ impl Intent {
     pub fn name(&self) -> &'static str {
         match self {
             Intent::Tell { .. } => "tell",
+            Intent::Inform(_) => "inform",
+            Intent::Request(_) => "request",
+            Intent::AskHow(_) => "ask_how",
+            Intent::AskNeed(_) => "ask_need",
+            Intent::AskDuration(_) => "ask_duration",
+            Intent::AskNext => "ask_next",
+            Intent::Done(_) => "done",
+            Intent::Lack(_) => "lack",
+            Intent::Accept => "accept",
+            Intent::Reject => "reject",
+            Intent::Feedback(_) => "feedback",
+            Intent::Teach { .. } => "teach",
+            Intent::NewPred { .. } => "new_pred",
             Intent::Ask { .. } => "ask",
             Intent::Recall(_) => "recall",
             Intent::RecallMore(_) => "recall_more",
@@ -321,7 +381,7 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
     // Rules: "if A then B".
     if w[0] == "if" {
         if let Some(rules) = if_then(&toks[1..], ctx) {
-            return Intent::Tell { facts: Vec::new(), rules, past: false };
+            return Intent::Tell { facts: Vec::new(), rules, past: false, hedge: None };
         }
         return Intent::Unknown;
     }
@@ -350,7 +410,7 @@ pub fn parse(text: &str, ctx: &Context) -> Intent {
                 .into_iter()
                 .filter_map(|h| st.generic.as_ref().map(|c| Rule { head: h, body: vec![Literal::Pos(Atom::new("is_a", vec![Term::var("A"), Term::sym(c)]))] }))
                 .collect();
-            Intent::Tell { facts, rules, past: st.past }
+            Intent::Tell { facts, rules, past: st.past, hedge: None }
         }
         None => Intent::Unknown,
     }

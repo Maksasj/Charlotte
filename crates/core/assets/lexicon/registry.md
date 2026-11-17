@@ -141,6 +141,9 @@ frame(recommended_for, "{1} is good for {2}").
 flag(recommended_for, askable).
 pred(available, "entity", "the user has item I").
 frame(available, "you have {1}").
+pred(time_available, "number unit", "the user has N units of time").
+frame(time_available, "you have {1} {2}").
+flag(time_available, single_valued).
 pred(staple, "entity", "item I is in almost every home").
 frame(staple, "{1} is in almost every home").
 pred(substitute, "entity entity", "item J can replace item I").
@@ -644,5 +647,32 @@ glue_word(these).
 glue_word(those).
 glue_word(here).
 glue_word(there).
+property_name(colour).
+property_name(size).
+property_name(age).
+property_name(job).
+property_name(name).
+property_name(taste).
+property_name(weight).
+property_name(height).
+property_name(price).
+property_name(temperature).
+property_name(shape).
+property_name(material).
+property_name(smell).
+property_name(sound).
+property_name(speed).
+property_name(difficulty).
+property_name(length).
+property_name(width).
+property_name(capacity).
+property_name(flavour).
+property_name(role).
+property_name(value).
+property_name(order).
+property_name(hobby).
+property_name(favourite_food).
+property_name(nationality).
+property_name(language).
 forbid(property, 2, quality, "a quality needs a named property (colour, size, taste, difficulty) or its own predicate").
 ```

@@ -190,6 +190,15 @@ impl Brain {
         model
     }
 
+    /// The model at `at` with extra facts (a conversation's situation) on top.
+    /// Not cached: the extra facts belong to one conversation.
+    pub fn model_with(&mut self, at: Timestamp, extra: &[GroundAtom]) -> Arc<Model> {
+        let rules = self.runnable_rules(false, at);
+        let mut inputs = facts_for(&self.kb.reasoning_facts(), Some(at));
+        inputs.extend(extra.iter().cloned().map(FactInput::new));
+        Arc::new(self.eval(&inputs, &rules).unwrap_or_default())
+    }
+
     /// Models of the past for questions about `pred`, one per moment that
     /// matters (see [`sla_reasoner::past_moments`]), newest first. Only the
     /// facts and rules `pred` depends on take part, so the past of one

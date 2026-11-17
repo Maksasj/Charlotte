@@ -127,6 +127,8 @@ pub struct Registry {
     pub function_words: BTreeSet<String>,
     pub number_words: BTreeSet<String>,
     pub glue_words: BTreeSet<String>,
+    /// Property names usable without the word in the message (colour, size, age, ...).
+    pub property_names: BTreeSet<String>,
     /// (pred, 1-based position, value) -> reason
     pub forbid: BTreeMap<(String, usize, String), String>,
     /// Lines of the registry it could not read: (statement, problem).
@@ -201,6 +203,7 @@ impl Registry {
                     ("function_word", 1) => r.function_words.extend(arg(0).map(String::from)),
                     ("number_word", 1) => r.number_words.extend(arg(0).map(String::from)),
                     ("glue_word", 1) => r.glue_words.extend(arg(0).map(String::from)),
+                    ("property_name", 1) => r.property_names.extend(arg(0).map(String::from)),
                     ("forbid", 4) => {
                         if let (Some(p), Some(Term::Val(Value::Int(pos))), Some(v), Some(why)) = (arg(0), a.get(1), arg(2), arg(3)) {
                             r.forbid.insert((p.to_string(), *pos as usize, v.to_string()), why.to_string());
@@ -255,6 +258,11 @@ impl Registry {
         if self.function_words.contains(s) {
             return Some("is a function word, not a thing".into());
         }
+        // `my_mother`, `my_car`: the speaker's own thing (the parser's convention).
+        let s = match s.strip_prefix("my_") {
+            Some(rest) if !rest.is_empty() => rest,
+            _ => s,
+        };
         let parts: Vec<&str> = s.split('_').filter(|p| !p.is_empty()).collect();
         if parts.iter().any(|p| self.number_words.contains(*p)) {
             return Some("contains a number written as a word; numbers are values".into());

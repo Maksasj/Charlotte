@@ -7,6 +7,7 @@ members = [
     "crates/lexicon",
     "crates/nlg",
     "crates/parser",
+    "crates/translate",
     "crates/agent",
     "crates/eval",
 ]

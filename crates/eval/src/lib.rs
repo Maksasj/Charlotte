@@ -4,6 +4,7 @@
 //! to `eval/history.csv` so trends are visible over time.
 
 
+pub mod archive;
 pub mod ops;
 pub mod outcome;
 pub mod regression;
@@ -298,7 +299,7 @@ impl Teacher for ClaudeTeacher {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct JudgeResult {
     pub topic: String,
     pub score: Option<f64>,
@@ -587,7 +588,10 @@ pub fn run(cfg: &EvalConfig) -> std::io::Result<EvalReport> {
     }
     if cfg.use_claude {
         for i in 0..cfg.judges {
-            rep.judges.push(run_judge_with(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model, cfg.llm, cfg.seed_vault.as_deref()));
+            let j = run_judge_with(JUDGE_TOPICS[i % JUDGE_TOPICS.len()], cfg.turns, &cfg.model, cfg.llm, cfg.seed_vault.as_deref());
+            // Every judge chat is training data: keep it.
+            let _ = archive::append(&archive::dir(&cfg.root), "judges", &serde_json::json!({ "model": cfg.model, "llm_translator": cfg.llm, "judge": j }));
+            rep.judges.push(j);
         }
     }
 
