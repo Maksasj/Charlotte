@@ -170,6 +170,48 @@ export function Lanes({ recent, max = 16 }: { recent: LiveEvent[]; max?: number 
   );
 }
 
+/* ---------- Teachers: what each one is teaching now ---------- */
+
+export function Teachers({ recent }: { recent: LiveEvent[] }) {
+  const lanes = lanesOf(recent);
+  const ids = [...new Set(lanes.map((l) => l.teacher))].filter((t) => t > 0).sort((a, b) => a - b);
+  if (!ids.length) return null;
+  const now = Date.now() / 1000;
+  return (
+    <div className="lanes">
+      {ids.map((t) => {
+        const mine = lanes.filter((l) => l.teacher === t);
+        const cur = mine[0];
+        const done = mine.filter((l) => l.verdict);
+        const passed = done.filter((l) => l.verdict?.startsWith('PASS')).length;
+        const idle = now - cur.t;
+        const what = cur.kind === 'teach_block' ? 'teaching' : cur.kind === 'curiosity' ? 'answering questions' : cur.kind.replace('_', ' ');
+        return (
+          <div className="lane" key={t}>
+            <div className="lane-head">
+              <strong>Teacher {t}</strong>
+              <span className={idle < 20 ? 'live-dot' : 'muted'}>{idle < 20 ? '● live' : `${Math.round(idle)} s ago`}</span>
+            </div>
+            <div className="muted small ellipsis">
+              {what} · <span className="mono">{cur.scenario}</span> · {passed}/{done.length} recent passed
+            </div>
+            <div className="bubbles">
+              {cur.msgs.slice(-8).map((m, j) => (
+                <div key={j} className={`bubble ${m.who}`}>
+                  <div className="bubble-who">{m.who}</div>
+                  {m.text}
+                  {m.stored !== undefined && <div className="stored mono">stored: {m.stored || '(nothing)'}</div>}
+                </div>
+              ))}
+            </div>
+            {cur.verdict && <div className={cur.verdict.startsWith('PASS') ? 'pass small' : 'fail small'}>{cur.verdict.startsWith('PASS') ? 'PASS' : 'FAIL'}</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ---------- Scenario grid ---------- */
 
 const GRID_COLS: [string, string][] = [

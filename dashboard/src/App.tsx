@@ -1,5 +1,5 @@
 import { TOKEN, usePoll, type Curriculum, type TrainState } from './api';
-import { Alerts, Controls, Feed, HealthPanel, Lanes, Limits, Progress, Questions, ScenarioGrid, TeachLog } from './panels';
+import { Alerts, Controls, Feed, HealthPanel, Lanes, Limits, Progress, Questions, ScenarioGrid, TeachLog, Teachers } from './panels';
 
 function Panel({ title, children, wide }: { title: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -33,6 +33,11 @@ export default function App() {
       <Alerts run={run} />
       {run && <Progress kinds={run.kinds} training={training} />}
       <div className="panels">
+        {run && run.recent.some((e) => (e.teacher ?? 0) > 0) && (
+          <Panel title="Teachers (each one's current conversation)" wide>
+            <Teachers recent={run.recent} />
+          </Panel>
+        )}
         <Panel title="Conversations (newest first)" wide>
           {run ? <Lanes recent={run.recent} /> : <p className="muted">No run yet.</p>}
         </Panel>

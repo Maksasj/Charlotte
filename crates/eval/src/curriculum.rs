@@ -1082,7 +1082,7 @@ pub fn dashboard_status(root: &Path) -> serde_json::Value {
             "teacher_quality": {"teach_lines": teacher_lines.len(), "meta_requests": meta, "lines_storing_nothing": nothing,
                                  "facts_per_line": if stored.is_empty() { 0.0 } else { stored.iter().sum::<usize>() as f64 / stored.len() as f64 }},
             "alerts": alerts,
-            "recent": events.iter().rev().take(80).rev().cloned().collect::<Vec<_>>(),
+            "recent": events.iter().rev().take(800).rev().cloned().collect::<Vec<_>>(),
         });
     }
     // Learning feed and knowledge health: the running vault if known, else the newest kept one.
