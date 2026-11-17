@@ -531,6 +531,65 @@ function ScenarioGrid({ grid }) {
     </table></div></details>`;
 }
 
+// One lane per conversation: an encounter (its own user session), a teach
+// block, or a curiosity round. Newest first; messages as chat bubbles.
+function lanesOf(recent) {
+  const lanes = [];
+  let cur = null;
+  for (const e of recent) {
+    const key = e.enc ? `enc-${e.enc}` : `${e.kind}-${e.scenario}`;
+    if (!cur || cur.key !== key || (e.who === 'phase' && cur.msgs.length)) {
+      cur = { key, kind: e.kind, scenario: e.scenario, enc: e.enc, title: '', msgs: [], verdict: null, t: e.t };
+      lanes.push(cur);
+    }
+    if (e.who === 'phase') cur.title = e.text;
+    else if (e.who === 'judge') cur.verdict = String(e.text);
+    else if (e.who === 'vault' || e.who === 'stored') { if (e.who === 'stored' && cur.msgs.length) cur.msgs[cur.msgs.length - 1].stored = e.text; }
+    else cur.msgs.push({ who: e.who, text: e.text });
+    cur.t = e.t;
+  }
+  return lanes.filter((l) => l.msgs.length).reverse();
+}
+
+const BUBBLE = {
+  user: { align: 'flex-start', bg: 'rgba(37,99,235,0.10)', label: 'user' },
+  teacher: { align: 'flex-start', bg: 'rgba(180,83,9,0.12)', label: 'teacher' },
+  agent: { align: 'flex-end', bg: 'rgba(21,128,61,0.10)', label: 'agent' },
+};
+
+function Lanes({ recent }) {
+  const lanes = lanesOf(recent || []).slice(0, 6);
+  if (!lanes.length) return html`<p class="empty">Conversations appear here as they happen.</p>`;
+  const now = Date.now() / 1000;
+  return html`<div style=${{ marginTop: '10px' }}>
+    <h3 style=${{ marginBottom: '6px' }}>Conversations (newest first)</h3>
+    <div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '10px' }}>
+      ${lanes.map((l, i) => {
+        const live = i === 0 && now - l.t < 30;
+        const label = l.enc ? `#${l.enc} · ${l.kind} · ${l.scenario}` : (l.kind === 'teach_block' ? `teach block · ${l.scenario}` : l.kind);
+        const v = l.verdict;
+        return html`<div key=${l.key + '-' + i} style=${{ border: '1px solid rgba(127,127,127,0.35)', borderRadius: '8px', padding: '8px', minWidth: 0 }}>
+          <div style=${{ display: 'flex', justifyContent: 'space-between', gap: '6px', marginBottom: '6px', fontSize: '0.85em' }}>
+            <strong class="mono" style=${{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>${label}</strong>
+            <span>${live ? html`<span style=${{ color: '#2563eb' }}>● live</span>` : null}
+              ${v ? html` <span style=${{ color: v.startsWith('PASS') ? '#15803d' : '#b91c1c', fontWeight: 600 }}>${v.startsWith('PASS') ? 'PASS' : 'FAIL'}</span>` : null}</span>
+          </div>
+          <div style=${{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '260px', overflowY: 'auto' }}>
+            ${l.msgs.map((m, j) => {
+              const b = BUBBLE[m.who] || BUBBLE.user;
+              return html`<div key=${j} style=${{ alignSelf: b.align, maxWidth: '88%', background: b.bg, borderRadius: '8px', padding: '4px 8px', fontSize: '0.88em', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                <div class="sub" style=${{ fontSize: '0.75em' }}>${b.label}</div>${m.text}
+                ${m.stored ? html`<div class="sub mono" style=${{ fontSize: '0.75em', marginTop: '2px' }}>stored: ${m.stored}</div>` : null}
+              </div>`;
+            })}
+          </div>
+          ${v ? html`<details style=${{ marginTop: '4px', fontSize: '0.8em' }}><summary>judge</summary>${v}</details>` : null}
+        </div>`;
+      })}
+    </div>
+  </div>`;
+}
+
 function Curriculum() {
   const c = useCurriculum();
   if (!c || (!c.run && !c.health)) return html`<div><${CurriculumControls} c=${c} /><p class="empty">No curriculum run yet; it shows up here live.</p></div>`;
@@ -548,12 +607,7 @@ function Curriculum() {
           <td style=${{ paddingLeft: '12px' }}><progress max=${KIND_TOTALS[k.kind] || k.done || 1} value=${k.done} style=${{ width: '100%' }}></progress></td>
         </tr>`)}</tbody>
       </table>
-      <details open style=${{ marginTop: '8px' }}>
-        <summary>Latest messages</summary>
-        <div style=${{ maxHeight: '420px', overflowY: 'auto', fontSize: '0.9em' }}>${run.recent.map((e, i) => html`<div key=${i} style=${{ margin: '2px 0', color: e.who === 'judge' ? (String(e.text).startsWith('PASS') ? '#15803d' : '#b91c1c') : WHO_COLOR[e.who] }}>
-          ${e.who === 'phase' ? html`<strong>${e.text}</strong>` : html`<span class="mono" style=${{ display: 'inline-block', minWidth: '64px' }}>${e.who}</span> ${e.text}`}
-        </div>`)}</div>
-      </details>
+      <${Lanes} recent=${run.recent} />
     </div>` : null}
     ${run && run.alerts && run.alerts.length ? html`<div role="alert" style=${{ margin: '8px 0', padding: '8px 10px', border: '1px solid #b91c1c', borderRadius: '6px', color: '#b91c1c' }}>
       <strong>Alerts</strong><ul style=${{ margin: '4px 0 0 18px' }}>${run.alerts.map((a, i) => html`<li key=${i}>${a}</li>`)}</ul></div>` : null}
