@@ -197,7 +197,7 @@ impl ModelJudge {
         ModelJudge { model, cache_path, cache: std::sync::Mutex::new(cache) }
     }
 
-    fn ask(&self, prompt: &str) -> Result<String, String> {
+    pub fn ask(&self, prompt: &str) -> Result<String, String> {
         let key = {
             let mut h: u64 = 0xcbf29ce484222325;
             for b in self.model.bytes().chain([0u8]).chain(prompt.bytes()) {
@@ -883,4 +883,40 @@ pub fn dashboard_status(root: &Path) -> serde_json::Value {
         });
     }
     out
+}
+
+/// The design's judge score: a model rates each conversation 1 to 10 for how
+/// well the assistant helped (v1's best was 4.3). Returns (scenario, kind,
+/// score) for the second-encounter and retention conversations of a run.
+pub fn rate_conversations(report: &serde_json::Value, judge: &ModelJudge) -> Vec<(String, String, f64)> {
+    let mut out = Vec::new();
+    for e in report["encounters"].as_array().into_iter().flatten() {
+        let kind = e["kind"].as_str().unwrap_or("");
+        if !matches!(kind, "repeat" | "retention") {
+            continue;
+        }
+        let transcript: String = e["turns"].as_array().into_iter().flatten().map(|t| format!("User: {}\nAssistant: {}\n", t["user"].as_str().unwrap_or(""), t["agent"].as_str().unwrap_or(""))).collect();
+        let prompt = format!(
+            "Rate how well the assistant helped the user in this conversation, from 1 (no help at all) to 10 (as helpful, correct and \
+             natural as a knowledgeable friend). Judge the content and how it reads.\n\n{transcript}\nReply with one line: SCORE: <1-10>"
+        );
+        let Ok(out_text) = judge.ask(&prompt) else { continue };
+        let score = out_text.lines().find_map(|l| l.trim().strip_prefix("SCORE:").and_then(|v| v.trim().split(|c: char| !c.is_ascii_digit() && c != '.').next()?.parse::<f64>().ok()));
+        if let Some(sc) = score.filter(|x| (1.0..=10.0).contains(x)) {
+            out.push((e["scenario"].as_str().unwrap_or("").to_string(), kind.to_string(), sc));
+        }
+    }
+    out
+}
+
+/// Mean and 95% interval (normal approximation).
+pub fn mean_interval(xs: &[f64]) -> (f64, f64, f64) {
+    let n = xs.len() as f64;
+    if n == 0.0 {
+        return (0.0, 0.0, 0.0);
+    }
+    let m = xs.iter().sum::<f64>() / n;
+    let sd = (xs.iter().map(|x| (x - m).powi(2)).sum::<f64>() / (n - 1.0).max(1.0)).sqrt();
+    let h = 1.96 * sd / n.sqrt();
+    (m, m - h, m + h)
 }

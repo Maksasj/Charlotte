@@ -106,6 +106,39 @@ pub(crate) fn involved_task(m: &Model, t: &str, known: &[String]) -> Option<Stri
     }
 }
 
+/// "a kettle", "an egg", "water" (mass nouns and plurals take no article).
+pub(crate) fn with_article(x: &str) -> String {
+    let w = words(x);
+    let last = x.rsplit('_').next().unwrap_or(x);
+    if sla_nlg::MASS.contains(&x) || sla_nlg::MASS.contains(&last) || (last.ends_with('s') && !last.ends_with("ss")) {
+        return w;
+    }
+    let an = w.starts_with(|c: char| "aeiou".contains(c));
+    format!("{} {w}", if an { "an" } else { "a" })
+}
+
+/// Things a step works in or into, rather than with.
+const CONTAINERS: &[&str] = &[
+    "pot", "pan", "frying_pan", "saucepan", "kettle", "mug", "cup", "glass", "bowl", "sink", "bucket", "oven", "baking_tray", "tray", "jar", "blender",
+    "washing_machine", "basket", "envelope", "box", "bag", "suitcase", "watering_can", "vase", "dish", "plate", "toaster", "microwave", "fridge", "sieve",
+];
+
+/// " in the pot", " into the mug", " with the fork and salt": the items a step
+/// uses, each with its own preposition.
+pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
+    let into = matches!(action, "pour" | "add" | "put" | "place" | "load" | "transfer" | "drop" | "lower" | "tip");
+    let (cont, tools): (Vec<&String>, Vec<&String>) = uses.iter().partition(|u| CONTAINERS.contains(&u.as_str()));
+    let the = |u: &String| if sla_nlg::MASS.contains(&u.as_str()) { words(u) } else { format!("the {}", words(u)) };
+    let mut out = String::new();
+    if !cont.is_empty() {
+        out.push_str(&format!(" {} {}", if into { "into" } else { "in" }, list(&cont.iter().map(|u| the(u)).collect::<Vec<_>>())));
+    }
+    if !tools.is_empty() {
+        out.push_str(&format!(" with {}", list(&tools.iter().map(|u| the(u)).collect::<Vec<_>>())));
+    }
+    out
+}
+
 /// Verbs that say only "do the task": `cook_egg` may be `boil_egg`.
 const GENERIC: &[&str] = &["make", "cook", "prepare", "do", "get", "have", "fix", "help"];
 
@@ -225,7 +258,7 @@ impl Agent {
             for u in &uses {
                 claims.push(g("uses", &[s, u]));
             }
-            text.push_str(&format!(" with {}", list(&uses.iter().map(|u| words(u)).collect::<Vec<_>>())));
+            text.push_str(&uses_phrase(action.as_deref().unwrap_or(""), &uses));
         }
         if let Some(u) = values(m, "until", s, 1).into_iter().next().filter(|u| Some(u) != action.as_ref()) {
             claims.push(g("until", &[s, &u]));
@@ -292,7 +325,7 @@ impl Agent {
             for x in &needs {
                 claims.push(g("needs", &[&task, x]));
             }
-            format!("{lead} You need {}.", list(&needs.iter().map(|x| words(x)).collect::<Vec<_>>()))
+            format!("{lead} You need {}.", list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>()))
         };
         let mut text = format!("{lead} {}", lines.join(if steps.len() > 3 { "\n" } else { " " }));
         if steps.len() > 3 {
@@ -332,7 +365,13 @@ impl Agent {
     /// "boil egg" for a verb phrase, "make garlic tomato pasta" for a thing.
     pub(crate) fn task_phrase(&self, b: &Brain, task: &str) -> String {
         if self.is_verb_phrase(b, task) {
-            words(task)
+            // "fix a tire", "boil an egg"; mass nouns and plurals as they are.
+            match task.split_once('_') {
+                Some((verb, rest)) if !rest.contains("_for_") && !rest.contains("_to_") && !matches!(rest, "laundry" | "homework" | "shopping" | "lunch" | "dinner" | "breakfast") => {
+                    format!("{} {}", verb, with_article(rest))
+                }
+                _ => words(task),
+            }
         } else {
             format!("make {}", words(task))
         }

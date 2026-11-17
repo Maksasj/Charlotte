@@ -329,7 +329,7 @@ fn request_finds_task_by_what_it_involves() {
     a.ask_in_chat = false;
     a.set_parser(Box::new(oracle(gold)));
     let r = talk(&mut a, gold[3].0);
-    assert!(r.contains("Here is how to fix tire") && r.contains("You need patch kit, pump and tube"), "{r}");
+    assert!(r.contains("Here is how to fix a tire") && r.contains("You need a patch kit, a pump and a tube"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
 

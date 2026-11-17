@@ -277,6 +277,46 @@ fn calibrate_command() {
     println!("wrote {}", file.display());
 }
 
+/// `sla_eval rate [--judge haiku]`: the judge's 1-10 score for the
+/// second-encounter and retention conversations of the latest full curriculum run.
+fn rate_command(args: &[String]) {
+    let judge = args.iter().position(|a| a == "--judge").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
+    let root = root();
+    let mut last: Option<serde_json::Value> = None;
+    let mut files: Vec<_> = std::fs::read_dir(root.join("data/training/curriculum")).map(|d| d.flatten().map(|e| e.path()).filter(|p| p.extension().map_or(false, |x| x == "jsonl")).collect()).unwrap_or_default();
+    files.sort();
+    for f in files {
+        for line in std::fs::read_to_string(&f).unwrap_or_default().lines() {
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(line) {
+                if v["scenarios"].as_u64() == Some(20) {
+                    last = Some(v);
+                }
+            }
+        }
+    }
+    let Some(run) = last else {
+        eprintln!("no full curriculum run recorded");
+        return;
+    };
+    let j = sla_eval::curriculum::ModelJudge::new(judge, Some(root.join("eval").join("curriculum_judge_cache.jsonl")));
+    let scores = sla_eval::curriculum::rate_conversations(&run, &j);
+    let all: Vec<f64> = scores.iter().map(|x| x.2).collect();
+    let (m, lo, hi) = sla_eval::curriculum::mean_interval(&all);
+    let rep: Vec<f64> = scores.iter().filter(|x| x.1 == "repeat").map(|x| x.2).collect();
+    let (rm, rlo, rhi) = sla_eval::curriculum::mean_interval(&rep);
+    let mut md = format!(
+        "# Judge score\n\n{} conversations (second encounter and retention) of the latest full curriculum run, rated 1 to 10.\n\n\
+         - all: mean **{m:.2}** (95% interval {lo:.2} to {hi:.2}); target 6.0 or more, interval above v1's best 4.3\n\
+         - second encounter only: mean {rm:.2} ({rlo:.2} to {rhi:.2})\n\n| Scenario | Encounter | Score |\n|---|---|---|\n",
+        all.len()
+    );
+    for (s, k, x) in &scores {
+        md.push_str(&format!("| {s} | {k} | {x} |\n"));
+    }
+    println!("{} conversations: mean {m:.2} (95% interval {lo:.2} to {hi:.2}); second encounter {rm:.2}", all.len());
+    let _ = std::fs::write(root.join("eval").join("curriculum").join("judge_score.md"), md);
+}
+
 /// `sla_eval consolidate --vault DIR`: the offline consolidation pass (rule
 /// search over the whole vault, hygiene, steps shared by procedures).
 fn consolidate_command(args: &[String]) {
@@ -373,6 +413,7 @@ fn main() {
         Some("hygiene") => return hygiene_command(&all[1..]),
         Some("curriculum") => return curriculum_command(&all[1..]),
         Some("calibrate") => return calibrate_command(),
+        Some("rate") => return rate_command(&all[1..]),
         Some("consolidate") => return consolidate_command(&all[1..]),
         _ => {}
     }
