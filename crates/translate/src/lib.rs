@@ -245,6 +245,41 @@ fn cache_key(sentences: &[String], ask: &[usize], ctx: &TContext) -> String {
     format!("{h:016x}:{}", ask.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(","))
 }
 
+/// Rules that need the sentence's words (docs/language_2.md): "used to" is
+/// `tell ... @past`; a question about "you" with no "I"/"me"/"my" is about
+/// the agent, not the speaker.
+fn sentence_rules(sentence: &str, acts: &mut [Intent], ctx: &TContext) {
+    let low = sentence.to_lowercase();
+    let words: Vec<&str> = low.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).collect();
+    let speaker_word = words.iter().any(|w| matches!(*w, "i" | "me" | "my" | "i'm" | "i've" | "i'd" | "mine" | "myself"));
+    for a in acts.iter_mut() {
+        if low.contains("used to") {
+            let facts = match a {
+                Intent::Inform(f) => Some(f.clone()),
+                Intent::Tell { facts, past: false, .. } => Some(facts.clone()),
+                _ => None,
+            };
+            if let Some(mut facts) = facts {
+                for f in facts.iter_mut() {
+                    f.pred = f.pred.trim_start_matches('-').to_string();
+                }
+                *a = Intent::Tell { facts, rules: Vec::new(), past: true, hedge: None };
+            }
+        }
+        if words.contains(&"you") && !speaker_word {
+            if let Intent::Ask { query, .. } = a {
+                if let [sla_core::Literal::Pos(at)] = query.as_slice() {
+                    let first_is_speaker = matches!(at.args.first(), Some(sla_core::Term::Val(sla_core::Value::Sym(s))) if s == &ctx.speaker);
+                    if first_is_speaker {
+                        let thing = at.args.get(1).and_then(|t| if let sla_core::Term::Val(sla_core::Value::Sym(s)) = t { Some(s.clone()) } else { None });
+                        *a = Intent::AboutYou(thing);
+                    }
+                }
+            }
+        }
+    }
+}
+
 /// The subject a sentence talked about, for "he", "she", "it" in the next one.
 fn subject_of(intents: &[Intent], speaker: &str) -> Option<String> {
     for i in intents {
@@ -541,6 +576,8 @@ impl Translator {
                 let s = &sentences[n - 1];
                 match self.read(&got, ctx) {
                     Some(acts) => {
+                        let mut acts = acts;
+                        sentence_rules(s, &mut acts, ctx);
                         let problems = v.check_in(s, message, &acts, ctx);
                         let ok = problems.is_empty();
                         if !ok {
@@ -563,7 +600,8 @@ impl Translator {
                 for &n in &ask {
                     let got = lines.get(&n).cloned().unwrap_or_default();
                     let s = &sentences[n - 1];
-                    if let Some(acts) = self.read(&got, ctx) {
+                    if let Some(mut acts) = self.read(&got, ctx) {
+                        sentence_rules(s, &mut acts, ctx);
                         let problems = v.check_in(s, message, &acts, ctx);
                         let ok = problems.is_empty();
                         parts[n - 1] = Some(Part { text: s.clone(), acts, tier: Tier::Model, ok, problems, retried: true });
@@ -599,6 +637,21 @@ impl Translator {
                 out.push(p);
             }
         }
+        // One goodbye or thanks per message, even when said twice ("Bye, see you tomorrow!").
+        let mut seen_social: Vec<Intent> = Vec::new();
+        for p in out.iter_mut().filter(|p| p.ok) {
+            p.acts.retain(|a| {
+                let social = matches!(a, Intent::Greet | Intent::Bye | Intent::Social(_));
+                if social && seen_social.contains(a) {
+                    return false;
+                }
+                if social {
+                    seen_social.push(a.clone());
+                }
+                true
+            });
+        }
+        out.retain(|p| !(p.ok && p.acts.is_empty()));
         Translation { parts: out, model_calls: self.calls - calls_before }
     }
 
