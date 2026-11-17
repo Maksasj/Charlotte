@@ -225,6 +225,52 @@ fn calibrate_command() {
             }
         }
     }
+    // Hand labels (eval/curriculum/hand_labels.md, from tools/make_hand_labels.py)
+    // against the last recorded run that has both verdicts.
+    let hand = std::fs::read_to_string(root.join("eval").join("curriculum").join("hand_labels.md")).unwrap_or_default();
+    let mut labels: Vec<(String, String, bool)> = Vec::new();
+    let mut cur: Option<(String, String)> = None;
+    for l in hand.lines() {
+        if let Some(h) = l.strip_prefix("## ") {
+            // "N. scenario (kind)"
+            let rest = h.split_once(". ").map(|x| x.1).unwrap_or(h);
+            if let Some((sc, k)) = rest.split_once(" (") {
+                cur = Some((sc.trim().to_string(), k.trim_end_matches(')').to_string()));
+            }
+        } else if let Some(v) = l.strip_prefix("label:") {
+            let v = v.trim().to_lowercase();
+            if let (Some((sc, k)), true) = (cur.take(), v.starts_with("pass") || v.starts_with("fail")) {
+                labels.push((sc, k, v.starts_with("pass")));
+            }
+        }
+    }
+    if !labels.is_empty() {
+        let mut last: Option<serde_json::Value> = None;
+        for f in std::fs::read_dir(root.join("data/training/curriculum")).map(|d| d.flatten().map(|e| e.path()).collect::<Vec<_>>()).unwrap_or_default() {
+            if f.extension().map_or(true, |x| x != "jsonl") {
+                continue;
+            }
+            for line in std::fs::read_to_string(&f).unwrap_or_default().lines() {
+                if let Ok(v) = serde_json::from_str::<serde_json::Value>(line) {
+                    if v["scenarios"].as_u64() == Some(20) && v["encounters"].as_array().map_or(false, |a| a.iter().any(|e| e.get("symbolic_pass").is_some())) {
+                        last = Some(v);
+                    }
+                }
+            }
+        }
+        if let Some(run) = last {
+            let (mut n, mut model_ok, mut sym_ok) = (0, 0, 0);
+            for (sc, k, hand_pass) in &labels {
+                let Some(e) = run["encounters"].as_array().into_iter().flatten().find(|e| e["scenario"].as_str() == Some(sc) && e["kind"].as_str() == Some(k)) else { continue };
+                n += 1;
+                model_ok += (e["passed"].as_bool() == Some(*hand_pass)) as usize;
+                sym_ok += (e["symbolic_pass"].as_bool() == Some(*hand_pass)) as usize;
+            }
+            let row = format!("\nAgainst {n} hand labels: the model judge agrees on {model_ok}, the symbolic check on {sym_ok}.\n");
+            print!("{row}");
+            md.push_str(&row);
+        }
+    }
     md.push_str(&notes);
     let file = root.join("eval").join("curriculum").join("calibration.md");
     let _ = std::fs::write(&file, md);
