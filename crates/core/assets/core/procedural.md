@@ -60,13 +60,13 @@ core_predicate(cannot, 1, self, "the agent cannot do X").
 core_predicate(knows_task, 1, self, "the agent knows how to do task T").
 
 % Everything a task needs: its own needs, what its steps use, and the needs of its sub-tasks.
-needs_all(T, I) :- needs(T, I).
-needs_all(T, I) :- step(T, S), uses(S, I).
-needs_all(T, I) :- subtask(T, U), needs_all(U, I).
+needs_all(T, X) :- needs(T, X).
+needs_all(T, X) :- step(T, S), uses(S, X).
+needs_all(T, X) :- subtask(T, U), needs_all(U, X).
 % What is missing, given what the user has.
-covered(I) :- substitute(I, J), available(J).
-missing(T, I) :- needs_all(T, I), not available(I), not staple(I), not covered(I).
-lacking(T) :- missing(T, I).
+covered(X) :- substitute(X, J), available(J).
+missing(T, X) :- needs_all(T, X), not available(X), not staple(X), not covered(X).
+lacking(T) :- missing(T, X).
 feasible(T) :- task(T), not lacking(T).
 option_for(G, T) :- solves(T, G), feasible(T).
 % Steps in order: a step waits while an earlier step of its task is not done.

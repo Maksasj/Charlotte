@@ -120,7 +120,7 @@ synonym(require, needs).
 pred(uses, "step entity", "step S uses item I").
 frame(uses, "{1} uses {2}").
 pred(takes_time, "any number number unit", "X takes Lo to Hi of unit U").
-frame(takes_time, "{1} takes {2} to {3} {4}").
+frame(takes_time, "{1} takes {2} to {3} {4}s").
 flag(takes_time, askable).
 flag(takes_time, single_valued).
 synonym(last, takes_time).
@@ -177,20 +177,26 @@ pred(missing, "task entity", "item I is needed for T and the user lacks it").
 frame(missing, "you are missing {2} for {1}").
 flag(missing, askable).
 pred(covered, "entity", "a substitute for I is at hand").
+frame(covered, "something can replace {1}").
 pred(lacking, "task", "something needed for T is missing").
+frame(lacking, "something for {1} is missing").
 pred(feasible, "task", "the user can do T with what they have").
 frame(feasible, "you can make {1}").
 flag(feasible, askable).
 pred(option_for, "symbol task", "a feasible way to reach goal G").
+frame(option_for, "{2} is a way to {1}").
 flag(option_for, askable).
 pred(waiting, "step", "a step that must wait for an earlier one").
+frame(waiting, "{1} must wait").
 pred(next_step, "task step", "the next step of T to do").
 flag(next_step, askable).
 pred(minutes, "any number number", "X takes Lo to Hi minutes").
 frame(minutes, "{1} takes {2} to {3} minutes").
 flag(minutes, askable).
 pred(adds_time, "task step", "step S adds to the time of T").
+frame(adds_time, "{2} adds to the time of {1}").
 pred(side_by_side, "step", "step S runs during another step").
+frame(side_by_side, "{1} runs while another step runs").
 pred(total_minutes, "task number number", "task T takes Lo to Hi minutes in all").
 frame(total_minutes, "{1} takes {2} to {3} minutes in all").
 flag(total_minutes, askable).

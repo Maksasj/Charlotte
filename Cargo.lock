@@ -127,6 +127,7 @@ name = "sla_nlg"
 version = "0.1.0"
 dependencies = [
  "sla_core",
+ "sla_lexicon",
  "sla_parser",
  "sla_reasoner",
 ]

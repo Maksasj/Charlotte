@@ -129,6 +129,7 @@ impl Agent {
             if let Some(f) = info.frames.first() {
                 realizer.frames.insert(name.clone(), f.clone());
             }
+            realizer.arg_types.insert(name.clone(), info.types.iter().map(|t| t.name().to_string()).collect());
         }
         Agent {
             brain,

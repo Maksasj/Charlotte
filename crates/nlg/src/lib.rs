@@ -100,6 +100,9 @@ pub struct Realizer {
     /// Sentence frames from the registry: predicate -> "{1} needs {2}" (Design 2.0).
     /// Used for predicates without a hand-made verb mapping.
     pub frames: std::collections::HashMap<String, String>,
+    /// Argument types per predicate (registry): only things in object
+    /// position (`entity`, `category`) take an article.
+    pub arg_types: std::collections::HashMap<String, Vec<String>>,
     /// How things are written: entity -> text ("cherry_tomato" -> "cherry tomato",
     /// a step id -> "the step \"lift the car\"").
     pub surface: std::collections::HashMap<String, String>,
@@ -176,6 +179,95 @@ fn looks_like_noun(w: &str) -> bool {
 
 
 impl Realizer {
+    /// Read a frame-worded clause back into atoms (the realizer's own grammar,
+    /// run backwards): "garlic tomato pasta needs garlic" ->
+    /// `needs(garlic_tomato_pasta, garlic)`. Every frame that matches gives one atom.
+    pub fn frame_parse(&self, sentence: &str) -> Vec<GroundAtom> {
+        let text = sentence.trim().trim_end_matches(['.', '?', '!']).to_string();
+        // "it is not true that X" is the negation of X.
+        for lead in ["it is not true that ", "It is not true that "] {
+            if let Some(rest) = text.strip_prefix(lead) {
+                return self.frame_parse(rest).into_iter().map(|g| g.complement()).collect();
+            }
+        }
+        let back: std::collections::HashMap<String, String> = self.surface.iter().map(|(k, v)| (v.to_lowercase(), k.clone())).collect();
+        let value = |s: &str| -> Value {
+            let s = s.trim();
+            if let Some(n) = Value::parse_number(s) {
+                return n;
+            }
+            let low = s.to_lowercase();
+            if let Some(k) = back.get(&low) {
+                return Value::sym(k.as_str());
+            }
+            if low == "you" {
+                return Value::sym(self.speaker.as_str());
+            }
+            let low = ["a ", "an ", "the "].iter().fold(low, |acc, art| acc.strip_prefix(art).map(String::from).unwrap_or(acc));
+            let low = match low.strip_prefix("your ") {
+                Some(r) => format!("my {r}"),
+                None => low,
+            };
+            Value::sym(low.replace(' ', "_"))
+        };
+        let mut out = Vec::new();
+        for (pred, frame) in &self.frames {
+            if MAPPED.contains(&pred.as_str()) {
+                continue;
+            }
+            // Split the frame into literal pieces and placeholder numbers.
+            let mut lits: Vec<String> = Vec::new();
+            let mut slots: Vec<usize> = Vec::new();
+            let mut cur = String::new();
+            let mut chars = frame.chars().peekable();
+            while let Some(c) = chars.next() {
+                if c == '{' {
+                    let mut n = String::new();
+                    while let Some(&d) = chars.peek() {
+                        chars.next();
+                        if d == '}' {
+                            break;
+                        }
+                        n.push(d);
+                    }
+                    lits.push(std::mem::take(&mut cur));
+                    slots.push(n.parse().unwrap_or(0));
+                } else {
+                    cur.push(c);
+                }
+            }
+            lits.push(cur);
+            // lits[0] slot0 lits[1] slot1 ... lits[n]
+            let lower = text.to_lowercase();
+            let Some(mut rest) = lower.strip_prefix(&lits[0].to_lowercase()).map(|r| (r, text.len() - r.len())) else { continue };
+            let mut caps: Vec<String> = Vec::new();
+            let mut ok = true;
+            for (i, _) in slots.iter().enumerate() {
+                let next = lits[i + 1].to_lowercase();
+                let end = if next.is_empty() { if i + 1 == slots.len() { Some(rest.0.len()) } else { None } } else if i + 1 == slots.len() && lits[i + 1].is_empty() { Some(rest.0.len()) } else { rest.0.find(&next) };
+                let Some(e) = end else {
+                    ok = false;
+                    break;
+                };
+                let start = rest.1;
+                caps.push(text[start..start + e].to_string());
+                let consumed = e + next.len();
+                rest = (&rest.0[consumed.min(rest.0.len())..], start + consumed);
+            }
+            if !ok || !rest.0.is_empty() || caps.iter().any(|c| c.trim().is_empty()) {
+                continue;
+            }
+            let mut args = vec![Value::Int(0); slots.len()];
+            for (k, n) in slots.iter().enumerate() {
+                if *n >= 1 && *n <= args.len() {
+                    args[*n - 1] = value(&caps[k]);
+                }
+            }
+            out.push(GroundAtom::new(pred, args));
+        }
+        out
+    }
+
     /// A statement said back as a check: "So the pasta takes 15 minutes, right?"
     pub fn confirm(&self, atoms: &[GroundAtom]) -> String {
         let body = self.aggregate(atoms, Tense::Present);
@@ -187,7 +279,7 @@ impl Realizer {
     }
 
     pub fn new(speaker: &str) -> Self {
-        Realizer { speaker: speaker.into(), names: HashSet::new(), frames: Default::default(), surface: Default::default(), turn: Cell::new(0) }
+        Realizer { speaker: speaker.into(), names: HashSet::new(), frames: Default::default(), arg_types: Default::default(), surface: Default::default(), turn: Cell::new(0) }
     }
 
     /// Pick one of `n` variants, rotating deterministically.
@@ -385,7 +477,14 @@ impl Realizer {
         let mut out = f.clone();
         for (i, t) in args.iter().enumerate() {
             let np = match t {
-                Term::Val(Value::Sym(s)) if !self.names.contains(s) && !self.surface.contains_key(s) && s != &self.speaker && !s.starts_with("my_") => {
+                Term::Val(Value::Sym(s))
+                    if i > 0
+                        && !self.names.contains(s)
+                        && !self.surface.contains_key(s)
+                        && s != &self.speaker
+                        && !s.starts_with("my_")
+                        && self.arg_types.get(base).and_then(|t| t.get(i)).map_or(false, |t| t == "entity" || t == "category") =>
+                {
                     // Things in a frame take an article unless they are mass nouns or names.
                     let w = self.np_term(t);
                     if MASS.contains(&s.as_str()) || f.contains(&format!("the {{{}}}", i + 1)) {
@@ -441,6 +540,11 @@ impl Realizer {
 
     /// Clause with a pronoun subject: "it is a dog", "they like tea", "you like tea".
     fn clause_pronoun(&self, a: &GroundAtom) -> String {
+        // A frame-worded clause keeps its own subject.
+        let args: Vec<Term> = a.args.iter().cloned().map(Term::Val).collect();
+        if let Some(c) = self.frame_clause(&a.pred, &args) {
+            return c;
+        }
         let s = &a.args[0];
         if self.is_speaker(s) {
             return self.clause(a);
@@ -669,6 +773,9 @@ impl Realizer {
     fn clause_terms(&self, a: &Atom) -> String {
         if let Some(g) = a.to_ground() {
             return self.clause(&g);
+        }
+        if let Some(c) = self.frame_clause(&a.pred, &a.args) {
+            return c;
         }
         let neg = a.pred.starts_with('-');
         if a.pred.trim_start_matches('-') == "property" && a.args.len() == 3 {

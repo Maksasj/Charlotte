@@ -8,3 +8,6 @@ edition.workspace = true
 sla_core = { path = "../core" }
 sla_reasoner = { path = "../reasoner" }
 sla_parser = { path = "../parser" }
+
+[dev-dependencies]
+sla_lexicon = { path = "../lexicon" }

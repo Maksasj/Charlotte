@@ -13,3 +13,4 @@ timestamp,commit,parser_dev,parser_held_out,dialogue_checks_dev,dialogue_checks_
 2026-11-17T13:50:52,ded83d3,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M15: dialogue manager
 2026-11-17T13:59:09,404e84a,1.000,0.980,95/96,45/47,0.994,0.978,0,0,,0,M16: no-echo acknowledgements; frames; plurals
 2026-11-17T13:59:28,404e84a,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M16: repeated yes/no keeps its lead
+2026-11-17T14:04:11,9b67613,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M16: frames everywhere
