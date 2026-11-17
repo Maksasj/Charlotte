@@ -224,21 +224,24 @@ fn refused_refinement_leaves_no_partial_change() {
     let mut kb = KnowledgeBase::new(v);
     kb.logging = false;
     let t = Timestamp::from_ymd(2026, 1, 1);
-    for f in ["is_a(tweety, bird)", "is_a(robin, bird)", "is_a(pingu, bird)", "cold(pingu)"] {
+    for f in ["is_a(tweety, bird)", "is_a(robin, bird)", "is_a(pingu, bird)", "cold(pingu)", "is_a(pingo, bird)", "cold(pingo)"] {
         kb.assert_fact(Fact::new(parse_ground(f).unwrap(), "test"), t, "setup");
     }
     let meta = |id: &str| RuleMeta { id: id.into(), status: RuleStatus::Confirmed, conf: 0.9, evidence: 0, counter: 0, module: "general".into(), source: "user".into() };
     kb.vault.put_rule_file(RuleFile::new(&meta("flies_rule"), "Birds fly.", &[parse_rule("flies(X) :- is_a(X, bird).").unwrap()]));
-    // `brag` depends on `flies`: adding `not brag(X)` to the flies rule would
-    // put negation inside recursion.
-    kb.vault.put_rule_file(RuleFile::new(&meta("brag_rule"), "Cold fliers brag.", &[parse_rule("brag(X) :- flies(X), cold(X).").unwrap()]));
+    // `brag` depends on `flies`: adding `not brag(X)` (shared by both cold
+    // counterexamples) to the flies rule would put negation inside recursion.
+    kb.vault.put_rule_file(RuleFile::new(&meta("brag_rule"), "Cold fliers brag.", &[parse_rule("brag(X) :- cold(X).").unwrap(), parse_rule("brag(X) :- flies(X), loud(X).").unwrap()]));
+    // The first counterexample is only an exception (gradual corrections).
+    let first = correct_derived(&mut kb, &parse_ground("flies(pingo)").unwrap(), t.plus_days(1), "user");
+    assert_eq!(first.change, Change::Exception, "{first:?}");
     let before_rules = kb.vault.rules.get("flies_rule").unwrap().render();
-    let now = t.plus_days(1);
+    let now = t.plus_days(2);
     let out = correct_derived(&mut kb, &parse_ground("flies(pingu)").unwrap(), now, "user");
     assert_eq!(out.change, Change::RefinementRefused, "{out:?}");
     assert!(out.new_rule.is_none());
     assert_eq!(kb.vault.rules.get("flies_rule").unwrap().render(), before_rules, "rule text and counter unchanged");
     let negs: Vec<String> = kb.all_facts().iter().filter(|f| f.atom.pred == "-flies").map(|f| f.atom.to_string()).collect();
-    assert_eq!(negs, vec!["-flies(pingu)"], "exactly one exception fact");
+    assert_eq!(negs, vec!["-flies(pingo)", "-flies(pingu)"], "one exception fact per counterexample");
     assert!(evaluate_kb(&kb, Some(now), true).is_ok(), "the program stays valid");
 }

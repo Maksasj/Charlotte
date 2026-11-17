@@ -189,8 +189,10 @@ impl Agent {
                 match opts.first().cloned() {
                     Some(t) => {
                         self.chosen.push(t.clone());
+                        let on_trial = b.kb.vault.procedures.get(&t).map_or(false, |p| p.meta().status == sla_core::RuleStatus::Hypothesis);
                         let mut r = self.task_help(b, &t);
-                        r.text = r.text.replacen(&format!("Here is how to {}:", words(&t)), &format!("You could make {}.", words(&t)), 1);
+                        let lead = if on_trial { format!("You could make {} (I was taught this once).", words(&t)) } else { format!("You could make {}.", words(&t)) };
+                        r.text = r.text.replacen(&format!("Here is how to {}:", words(&t)), &lead, 1);
                         r.intent = "recommend";
                         r
                     }
@@ -223,8 +225,16 @@ impl Agent {
                         let mut meta = pf.meta();
                         meta.uses += 1;
                         meta.successes += 1;
+                        // A procedure on trial is confirmed by a successful use.
+                        let confirmed = meta.status == sla_core::RuleStatus::Hypothesis;
+                        if confirmed {
+                            meta.status = sla_core::RuleStatus::Confirmed;
+                        }
                         pf.set_meta(&meta);
                         b.kb.vault.mark_procedure_dirty(sla_core::ProcedureKind::Procedure, &t);
+                        if confirmed {
+                            b.kb.log_change(now, "confirm_procedure", &t, "the user accepted it");
+                        }
                     }
                 }
                 self.frame = None;

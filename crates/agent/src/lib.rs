@@ -25,6 +25,7 @@ pub mod brain;
 pub mod curiosity;
 pub mod dialogue;
 pub mod events;
+pub mod learning;
 pub mod router;
 pub mod tasks;
 pub mod trace;
@@ -106,6 +107,8 @@ pub struct Agent {
     cur_tier: String,
     /// Replies already given in this conversation (none is repeated word for word).
     said: std::collections::HashSet<String>,
+    /// A correction this turn was stored as an exception only.
+    exception_noted: bool,
 }
 
 fn session_name() -> String {
@@ -162,6 +165,7 @@ impl Agent {
             frame: None,
             chosen: Vec::new(),
             dialogue_ran: false,
+            exception_noted: false,
             cur_tier: String::new(),
             said: Default::default(),
         }
@@ -1031,6 +1035,14 @@ impl Agent {
         let mut added = Vec::new();
         let mut known = Vec::new();
         let mut closed = Vec::new();
+        // Procedure knowledge goes to the task's procedure file.
+        let facts = if past {
+            facts
+        } else {
+            let (learned, rest) = self.learn_procedures(b, facts, strength);
+            added.extend(learned);
+            rest
+        };
         for a in facts {
             let Some(g) = a.to_ground() else { continue };
             let fact = Fact::new(g.clone(), &self.source).with_conv(&self.session_id).with_conf(strength);
@@ -1169,6 +1181,17 @@ impl Agent {
 
     /// "No, X" / "That's wrong".
     fn correct(&mut self, b: &mut Brain, atoms: Vec<Atom>) -> Reply {
+        self.exception_noted = false;
+        let r = self.correct_inner(b, atoms);
+        if std::mem::take(&mut self.exception_noted) {
+            let mut r = r;
+            r.text.push_str(" I'll keep that as an exception to my rule for now.");
+            return r;
+        }
+        r
+    }
+
+    fn correct_inner(&mut self, b: &mut Brain, atoms: Vec<Atom>) -> Reply {
         let now = self.now();
         let mut retracted = Vec::new();
         let mut added = Vec::new();
@@ -1231,6 +1254,11 @@ impl Agent {
         let out = corrections::correct_derived(&mut b.kb, a, now, &self.source);
         if !matches!(out.change, Change::NotDerived) {
             retracted.push(a.clone());
+        }
+        // One counterexample is only an exception: the rule's meaning stays.
+        if out.change == Change::Exception {
+            self.exception_noted = true;
+            return None;
         }
         out.new_rule
     }

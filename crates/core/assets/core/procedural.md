@@ -60,6 +60,8 @@ core_predicate(cannot, 1, self, "the agent cannot do X").
 core_predicate(knows_task, 1, self, "the agent knows how to do task T").
 
 % Everything a task needs: its own needs, what its steps use, and the needs of its sub-tasks.
+% A task that solves a goal solves every goal said to be the same.
+solves(T, G) :- solves(T, A), same(A, G).
 needs_all(T, X) :- needs(T, X).
 needs_all(T, X) :- step(T, S), uses(S, X).
 needs_all(T, X) :- subtask(T, U), needs_all(U, X).

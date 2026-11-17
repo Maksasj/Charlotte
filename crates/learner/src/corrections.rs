@@ -91,10 +91,29 @@ pub fn correct_derived(kb: &mut KnowledgeBase, wrong: &GroundAtom, now: Timestam
         .filter_map(|g| g.args.first().cloned())
         .collect();
 
+    // Gradual (Design 2.0): the first counterexample is stored as an
+    // exception only. A rule changes once a second counterexample shares a
+    // feature with an earlier one that the rule's correct cases lack.
+    let neg_pred = sla_core::term::complement_pred(&wrong.pred);
+    let earlier: Vec<Value> = kb
+        .all_facts()
+        .into_iter()
+        .filter(|f| f.atom.pred == neg_pred && f.valid_at(now) && f.atom.args.len() == wrong.args.len() && f.atom.args[1..] == wrong.args[1..])
+        .filter_map(|f| f.atom.args.first().cloned())
+        .filter(|v| Some(v) != entity.as_ref())
+        .collect();
     let mut condition: Option<Literal> = None;
-    if let (Some(e), false, false) = (&entity, case_var.is_empty(), positives.is_empty()) {
-        let mine = features_of(&m, e);
-        let theirs: BTreeSet<(String, Vec<Value>)> = positives.iter().flat_map(|p| features_of(&m, p)).collect();
+    if let (Some(e), false, false, false) = (&entity, case_var.is_empty(), positives.is_empty(), earlier.is_empty()) {
+        let mut mine = features_of(&m, e);
+        // Keep only what at least one earlier counterexample shares.
+        let shared: BTreeSet<(String, Vec<Value>)> = earlier.iter().flat_map(|x| features_of(&m, x)).collect();
+        mine.retain(|f| shared.contains(f));
+        // A feature held by half or more of the rule's other cases does not
+        // set the counterexamples apart. (Uncorrected cases may still be
+        // wrong, so a few other cases with the feature do not rule it out.)
+        let per_case: Vec<BTreeSet<(String, Vec<Value>)>> = positives.iter().map(|p| features_of(&m, p)).collect();
+        let theirs: BTreeSet<(String, Vec<Value>)> =
+            per_case.iter().flatten().filter(|f| per_case.iter().filter(|c| c.contains(*f)).count() * 2 >= per_case.len()).cloned().collect();
         // Count how common each distinguishing feature is: prefer categories, then rare ones.
         let mut candidates: Vec<&(String, Vec<Value>)> = mine
             .iter()

@@ -31,9 +31,10 @@ fn asks_about_contradiction_then_hypothesis() {
     let r = talk(&mut a, "Pingu doesn't fly.");
     assert!(r.contains("conflicting information") && r.contains("Pingu flies") && r.contains("Pingu does not fly"), "{r}");
     assert!(matches!(a.pending, Some(Pending::Contradiction(..))));
-    // The answer resolves it: the rule gets an exception, the contradiction is gone.
+    // The answer resolves it: one counterexample is an exception only (gradual
+    // corrections), and the contradiction is gone.
     let r = talk(&mut a, "Pingu does not fly.");
-    assert!(r.contains("changed my rule"), "{r}");
+    assert!(r.contains("exception to my rule"), "{r}");
     assert!(a.model(false).contradictions().is_empty());
     assert!(talk(&mut a, "Does Tweety fly?").contains("Tweety flies"));
 
