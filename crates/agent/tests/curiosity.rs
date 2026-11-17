@@ -117,3 +117,27 @@ fn gaps_and_caps() {
     assert!(asked_before.iter().all(|k| b.brain().curiosity.asked.contains(k)));
     let _ = fs::remove_dir_all(&root);
 }
+
+/// Milestone 18: failed turns become questions for a teacher, ranked by how
+/// many failures an answer fixes; they are never asked in a chat.
+#[test]
+fn failures_become_teacher_questions() {
+    let root = temp_vault("failures");
+    let mut a = Agent::open(&root, "maksim").unwrap();
+    a.clock = Some(Timestamp::from_ymd_hms(2026, 11, 17, 9, 0, 0));
+    a.ask_in_chat = true;
+    let gold: &[(&str, &[&str])] = &[("How do I fix a tire?", &["ask_how: fix_tire"]), ("Can you help me fix my tire?", &["request: fix_tire"])];
+    let mut o = sla_parser::oracle::OracleParser::default();
+    for (t, acts) in gold {
+        o.insert(t, &acts.iter().map(|x| x.to_string()).collect::<Vec<_>>()).unwrap();
+    }
+    a.set_parser(Box::new(o));
+    for (m, _) in gold {
+        let r = talk(&mut a, m);
+        assert!(!r.contains("What do I need, and what is the first step"), "not asked in chat: {r}");
+    }
+    let mut teacher = ScriptedTeacher { answers: vec![], default: "I don't know.".into() };
+    let (q, _, _) = a.ask_teacher(&mut teacher).expect("a question for the teacher");
+    assert!(q.contains("How do I fix tire") && q.contains("first step"), "{q}");
+    let _ = fs::remove_dir_all(&root);
+}

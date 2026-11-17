@@ -20,6 +20,12 @@ use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Goal {
+    /// A task someone asked for that the agent could not do.
+    UnknownTask { task: String, failures: usize },
+    /// A known task with something missing: "steps", "needs" or "duration".
+    TaskGap { task: String, missing: String, failures: usize },
+    /// A message the agent did not understand.
+    Unclear { text: String, failures: usize },
     ResolveContradiction(GroundAtom, GroundAtom),
     ConfirmHypothesis { id: String, rule: sla_core::Rule },
     FillGap(Atom),
@@ -29,6 +35,9 @@ impl Goal {
     /// Stable key so the same question is not asked twice.
     pub fn key(&self) -> String {
         match self {
+            Goal::UnknownTask { task, .. } => format!("task:{task}"),
+            Goal::TaskGap { task, missing, .. } => format!("gap:{task}:{missing}"),
+            Goal::Unclear { text, .. } => format!("unclear:{text}"),
             Goal::ResolveContradiction(a, _) => format!("contradiction:{a}"),
             Goal::ConfirmHypothesis { rule, .. } => format!("hypothesis:{rule}"),
             Goal::FillGap(a) => format!("gap:{a}"),
@@ -73,7 +82,7 @@ fn is_w(t: &Term) -> bool {
 impl Curiosity {
     /// All goals, best first, excluding ones already asked.
     pub fn goals(&self, kb: &KnowledgeBase, m: &Model) -> Vec<ScoredGoal> {
-        let mut out = Vec::new();
+        let mut out = task_goals(kb, m);
         for (a, b) in m.contradictions() {
             out.push(ScoredGoal { goal: Goal::ResolveContradiction(a, b), score: 1.0 });
         }
@@ -170,9 +179,94 @@ impl Curiosity {
     }
 }
 
+const NOT_UNDERSTOOD: &str = "Sorry, I didn't understand that.";
+
+fn ledger(kb: &KnowledgeBase) -> std::path::PathBuf {
+    kb.vault.root.join("queue").join("failures.jsonl")
+}
+
+/// Keep a failed turn: a task the agent could not do, a duration it did not
+/// know, or a message it did not understand.
+pub fn record_failure(kb: &KnowledgeBase, message: &str, reply: &str, source: &str) {
+    let task_after = |prefix: &str, suffix: &str| -> Option<String> {
+        let rest = reply.split_once(prefix)?.1;
+        let t = rest.split_once(suffix)?.0;
+        Some(t.trim().replace(' ', "_"))
+    };
+    let (kind, key) = if let Some(t) = task_after("I don't know how to ", " yet") {
+        ("unknown_task", t)
+    } else if let Some(t) = task_after("I don't know how long ", " takes") {
+        ("unknown_duration", t)
+    } else if reply.trim() == NOT_UNDERSTOOD {
+        ("not_understood", message.trim().to_string())
+    } else {
+        return;
+    };
+    let p = ledger(kb);
+    let _ = std::fs::create_dir_all(p.parent().unwrap());
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&p) {
+        let _ = writeln!(f, "{}", serde_json::json!({"kind": kind, "key": key, "message": message, "source": source}));
+    }
+}
+
+/// Goals from failed turns and from gaps in known procedures, scored by how
+/// many failed turns an answer would fix.
+pub fn task_goals(kb: &KnowledgeBase, m: &Model) -> Vec<ScoredGoal> {
+    let mut counts: std::collections::BTreeMap<(String, String), usize> = Default::default();
+    for l in std::fs::read_to_string(ledger(kb)).unwrap_or_default().lines() {
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(l) {
+            if let (Some(k), Some(key)) = (v["kind"].as_str(), v["key"].as_str()) {
+                *counts.entry((k.to_string(), key.to_string())).or_default() += 1;
+            }
+        }
+    }
+    let known = |t: &str| kb.vault.procedures.contains_key(t) || kb.vault.tasks.contains_key(t);
+    let score = |failures: usize, base: f64| (base + 0.1 * failures as f64).min(0.95);
+    let mut out = Vec::new();
+    for ((kind, key), n) in &counts {
+        match kind.as_str() {
+            "unknown_task" if !known(key) => out.push(ScoredGoal { goal: Goal::UnknownTask { task: key.clone(), failures: *n }, score: score(*n, 0.5) }),
+            "unknown_duration" if known(key) => out.push(ScoredGoal { goal: Goal::TaskGap { task: key.clone(), missing: "duration".into(), failures: *n }, score: score(*n, 0.45) }),
+            "not_understood" => out.push(ScoredGoal { goal: Goal::Unclear { text: key.clone(), failures: *n }, score: score(*n, 0.35) }),
+            _ => {}
+        }
+    }
+    // Gaps in what a procedure says.
+    for (t, pf) in &kb.vault.procedures {
+        let facts = pf.facts();
+        let has = |p: &str| facts.iter().any(|f| f.atom.pred == p);
+        let total_time = has("takes_time") || m.facts_of("total_minutes").iter().any(|a| a.args.first().and_then(|v| v.as_sym()) == Some(t.as_str()));
+        let failures = counts.iter().filter(|((_, k), _)| k == t).map(|(_, n)| *n).sum::<usize>();
+        for (missing, gap) in [("steps", !has("step")), ("needs", !has("needs")), ("duration", !total_time)] {
+            if gap {
+                out.push(ScoredGoal { goal: Goal::TaskGap { task: t.clone(), missing: missing.into(), failures }, score: score(failures, 0.4) });
+            }
+        }
+    }
+    out
+}
+
 /// HTN-style decomposition: goal -> method -> primitive task (one question).
 pub fn plan(goal: &Goal) -> (Act, Pending) {
     match goal {
+        Goal::UnknownTask { task, .. } => {
+            let q = format!("How do I {}? What do I need, and what is the first step?", task.replace('_', " "));
+            (Act::Note(q.clone()), Pending::Open(q))
+        }
+        Goal::TaskGap { task, missing, .. } => {
+            let t = task.replace('_', " ");
+            let q = match missing.as_str() {
+                "needs" => format!("What do I need to {t}?"),
+                "duration" => format!("How long does it take to {t}?"),
+                _ => format!("What are the steps to {t}?"),
+            };
+            (Act::Note(q.clone()), Pending::Open(q))
+        }
+        Goal::Unclear { text, .. } => {
+            let q = format!("Earlier I did not understand \"{text}\". Could you say it in simpler words?");
+            (Act::Note(q.clone()), Pending::Open(q))
+        }
         Goal::ResolveContradiction(a, b) => (Act::AskContradiction(a.clone(), b.clone()), Pending::Contradiction(a.clone(), b.clone())),
         Goal::ConfirmHypothesis { id, rule } => (Act::AskRule(rule.clone()), Pending::Rule(id.clone())),
         Goal::FillGap(p) => {

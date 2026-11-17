@@ -47,6 +47,9 @@ pub enum Pending {
     Rule(String),
     /// "Which one is true?" about two contradicting facts.
     Contradiction(GroundAtom, GroundAtom),
+    /// An open question for a teacher ("How do I fix a tire? What is the first
+    /// step?"): the answer is read as ordinary teaching.
+    Open(String),
 }
 
 pub struct Agent {
@@ -342,6 +345,8 @@ impl Agent {
             reply.text = self.unrepeat(&reply);
         }
         self.said.insert(reply.text.clone());
+        // Failures feed the curiosity goals (questions for teachers).
+        crate::curiosity::record_failure(&b.kb, text, &reply.text, &self.source);
         // Resume: a turn that left the open task aside returns to its question.
         if !self.dialogue_ran && !reply.text.trim_end().ends_with('?') {
             if let Some(q) = self.resume_question(&mut b) {
@@ -773,6 +778,9 @@ impl Agent {
         let m = b.model_at(self.now());
         let mut goals = b.curiosity.goals(&b.kb, &m);
         if let Some(topic) = topic {
+            // In a chat the agent asks only about the thing under discussion;
+            // task gaps, unknown tasks and old misunderstandings go to teachers.
+            goals.retain(|g| !matches!(g.goal, curiosity::Goal::UnknownTask { .. } | curiosity::Goal::TaskGap { .. } | curiosity::Goal::Unclear { .. }));
             goals.retain(|g| {
                 let key = g.goal.key();
                 let words: Vec<&str> = key.split(|c: char| !(c.is_alphanumeric() || c == '_')).collect();
@@ -1376,7 +1384,7 @@ impl Agent {
                 let keep = if yes { a } else { bb };
                 self.correct(b, vec![keep.to_atom()])
             }
-            Some(Pending::Wh(_)) | None => self.say(Act::Note(if yes { "Good.".into() } else { "Okay.".into() })),
+            Some(Pending::Wh(_)) | Some(Pending::Open(_)) | None => self.say(Act::Note(if yes { "Good.".into() } else { "Okay.".into() })),
         }
     }
 
