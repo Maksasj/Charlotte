@@ -18,6 +18,7 @@ pub const CORE_FILES: &[(&str, &str)] = &[
     ("ontology", include_str!("../assets/core/ontology.md")),
     ("rules", include_str!("../assets/core/rules.md")),
     ("procedural", include_str!("../assets/core/procedural.md")),
+    ("policy", include_str!("../assets/core/policy.md")),
 ];
 
 /// The built-in lexicon files (the predicate registry): (file stem, contents).

@@ -41,6 +41,9 @@ pub struct TurnTrace {
     pub parts: Vec<PartTrace>,
     /// Stage 3-4: the move chosen for each handled act (`acknowledge`, `answer`, ...).
     pub moves: Vec<String>,
+    /// Why the dialogue manager made its move: the proof from the policy rules.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_proof: Option<String>,
     /// A curiosity question appended to the reply, if any (its goal key).
     pub question: Option<String>,
     /// Stage 6: the reply and the atoms it claims.

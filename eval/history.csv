@@ -9,3 +9,5 @@ timestamp,commit,parser_dev,parser_held_out,dialogue_checks_dev,dialogue_checks_
 2026-11-17T12:56,efde245,1.000,0.980,96/96,45/47,1.000,0.966,0,0,,0,M14: adjectives named by the registry
 2026-11-17T12:57:27,efde245,1.000,0.980,96/96,45/47,1.000,0.966,0,0,,0,M14: clause links and pronouns
 2026-11-17T12:58:29,efde245,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M14: verb+preposition family registered
+2026-11-17T13:50:38,ded83d3,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M15: dialogue manager
+2026-11-17T13:50:52,ded83d3,1.000,0.980,96/96,45/47,1.000,0.978,0,0,,0,M15: dialogue manager

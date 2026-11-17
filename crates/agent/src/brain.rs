@@ -317,6 +317,27 @@ impl Brain {
         Arc::clone(&self.names.1)
     }
 
+    /// Install a scenario's procedures and task schemas (`<dir>/procedures/*.md`,
+    /// `<dir>/tasks/*.md`) into the vault. Returns how many files.
+    pub fn install(&mut self, dir: &Path) -> io::Result<usize> {
+        let mut n = 0;
+        for (sub, kind) in [("procedures", sla_core::ProcedureKind::Procedure), ("tasks", sla_core::ProcedureKind::Task)] {
+            let Ok(rd) = std::fs::read_dir(dir.join(sub)) else { continue };
+            for e in rd.flatten() {
+                let p = e.path();
+                if p.extension().and_then(|x| x.to_str()) != Some("md") {
+                    continue;
+                }
+                let stem = p.file_stem().and_then(|s| s.to_str()).unwrap_or("").to_string();
+                let pf = sla_core::ProcedureFile::parse(&std::fs::read_to_string(&p)?, &stem);
+                self.kb.vault.put_procedure(kind, pf);
+                n += 1;
+            }
+        }
+        self.save()?;
+        Ok(n)
+    }
+
     /// Is there a stored fact with exactly this atom (current or not)?
     pub fn has_stored(&self, atom: &GroundAtom) -> bool {
         let stem = match atom.args.first() {

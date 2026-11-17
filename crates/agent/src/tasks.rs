@@ -171,7 +171,13 @@ impl Agent {
         if steps.len() > 3 {
             text = format!("{lead}\n{}", lines.join("\n"));
         }
-        if let Some(a) = m.facts_of("total_minutes").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task.as_str())) {
+        // A stated duration wins over the sum of the steps.
+        let stated = m.facts_of("takes_time").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task.as_str()));
+        if let Some(a) = stated {
+            let unit = a.args[3].as_sym().unwrap_or("minute").to_string();
+            text.push_str(&format!(" It takes {} in all.", range(&a.args[1], &a.args[2], &unit)));
+            claims.push(a);
+        } else if let Some(a) = m.facts_of("total_minutes").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task.as_str())) {
             text.push_str(&format!(" It takes about {} in all.", range(&a.args[1], &a.args[2], "minute")));
             claims.push(a);
         }
@@ -225,49 +231,8 @@ impl Agent {
         }
     }
 
-    pub(crate) fn task_done(&mut self, b: &mut Brain, step: Option<String>) -> Reply {
-        match step.or_else(|| self.last_step.clone()) {
-            Some(s) => {
-                let a = g("done", &[&s]);
-                if !self.session_facts.contains(&a) {
-                    self.session_facts.push(a);
-                }
-                self.task_next(b)
-            }
-            None => Reply { text: "Good! What would you like to do next?".into(), intent: "clarify", claims: Vec::new() },
-        }
-    }
 
-    /// Situation facts belong to this conversation only.
-    pub(crate) fn inform(&mut self, b: &mut Brain, atoms: Vec<Atom>) -> Reply {
-        for a in atoms {
-            if let Some(g) = a.to_ground() {
-                if !self.session_facts.contains(&g) {
-                    self.session_facts.push(g);
-                }
-            }
-        }
-        // With a task under way, say what this changes.
-        if let Some(t) = self.active_task.clone() {
-            let m = self.session_model(b);
-            let missing = values(&m, "missing", &t, 1);
-            if missing.is_empty() && m.contains(&g("task", &[&t])) {
-                return Reply { text: format!("Good, you have everything for {}.", words(&t)), intent: "answer", claims: vec![g("feasible", &[&t])] };
-            }
-        }
-        Reply { text: "Okay.".into(), intent: "acknowledge", claims: Vec::new() }
-    }
 
-    pub(crate) fn lack(&mut self, items: Vec<String>) -> Reply {
-        for i in items {
-            self.session_facts.retain(|a| !(a.pred == "available" && a.args.first().and_then(|v| v.as_sym()) == Some(i.as_str())));
-            let neg = g("-available", &[&i]);
-            if !self.session_facts.contains(&neg) {
-                self.session_facts.push(neg);
-            }
-        }
-        Reply { text: "Okay, noted.".into(), intent: "acknowledge", claims: Vec::new() }
-    }
 
     pub(crate) fn feedback(&mut self, positive: bool) -> Reply {
         if positive {

@@ -201,6 +201,26 @@ pred(task_slot, "task symbol symbol", "task T has slot S, required or optional")
 pred(slot_question, "task symbol text", "the agent asks Text to fill slot S of task T").
 pred(slot_type, "task symbol symbol", "slot S of task T holds things of kind K").
 pred(closing, "task text", "the line that closes task T").
+pred(slot_fills, "task symbol symbol", "slot S of task T is filled by facts of predicate P").
+pred(heard, "symbol", "the message held act A").
+pred(requested, "task", "the person asked for help with G").
+pred(open_frame, "task", "the conversation has an open task frame for G").
+pred(filled, "task symbol", "slot S of frame G is filled").
+pred(active, "task", "procedure T is under way").
+pred(chosen, "task", "option T was already offered").
+pred(known_goal, "task", "the agent knows goal or task G").
+pred(missing_slot, "task symbol", "slot S of frame G is still open").
+pred(asking, "task", "frame G still has open slots").
+pred(budget, "number", "the person has N minutes").
+pred(too_long, "task", "T takes longer than the time the person has").
+pred(candidate, "task task", "T is an option for frame G").
+pred(good_option, "task task", "T is a feasible option for G that fits the time").
+pred(has_good, "task", "frame G has a good option").
+pred(offered, "task", "an option for G was already offered").
+pred(has_next, "task", "procedure T has a next step").
+pred(any_active, "", "some procedure is under way").
+pred(any_frame, "", "some frame is open").
+pred(dm_move, "symbol number", "the dialogue move M with priority P").
 pred(fact_id, "fact any any", "fact F is about these values").
 % Verbs from the pattern parser: verb(V) means V(X) or V(X, Y) with an entity first.
 verb(like).

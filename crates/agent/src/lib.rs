@@ -23,6 +23,7 @@ use std::time::Instant;
 
 pub mod brain;
 pub mod curiosity;
+pub mod dialogue;
 pub mod events;
 pub mod router;
 pub mod tasks;
@@ -96,6 +97,9 @@ pub struct Agent {
     /// The task this conversation is about, and the step last given.
     pub active_task: Option<String>,
     pub last_step: Option<String>,
+    /// The open task frame (a task schema from `vault/tasks/`) and the options already offered.
+    pub frame: Option<String>,
+    pub chosen: Vec<String>,
 }
 
 fn session_name() -> String {
@@ -142,6 +146,8 @@ impl Agent {
             session_facts: Vec::new(),
             active_task: None,
             last_step: None,
+            frame: None,
+            chosen: Vec::new(),
         }
     }
 
@@ -352,6 +358,8 @@ impl Agent {
         let mut intent = "social";
         let mut lost: Vec<String> = Vec::new();
         let n = tr.parts.len();
+        let mut dlg: Vec<Intent> = Vec::new();
+        let mut dlg_at: Option<usize> = None;
         for p in tr.parts {
             if !p.understood() {
                 // An honest `unknown` (a filler sentence) needs no question.
@@ -366,8 +374,25 @@ impl Agent {
                 }
                 continue;
             }
+            // Dialogue acts of the whole message are handled together, once.
+            let (d, rest): (Vec<Intent>, Vec<Intent>) = p.acts.into_iter().partition(dialogue::is_dialogue_act);
+            if rest.is_empty() {
+                self.learn_names(b, &p.text);
+                self.trace_part(&p.text, &d, p.tier.name());
+                if dlg_at.is_none() {
+                    dlg_at = Some(texts.len());
+                }
+                dlg.extend(d);
+                continue;
+            }
             // Greetings and thanks next to content add nothing.
-            let r = self.respond_intents(b, &p.text, p.acts, p.tier.name());
+            let r = self.respond_intents(b, &p.text, rest, p.tier.name());
+            if !d.is_empty() {
+                if dlg_at.is_none() {
+                    dlg_at = Some(texts.len() + 1);
+                }
+                dlg.extend(d);
+            }
             if n > 1 && r.intent == "social" && !texts.is_empty() {
                 continue;
             }
@@ -377,6 +402,19 @@ impl Agent {
             claims.extend(r.claims);
             if !texts.contains(&r.text) {
                 texts.push(r.text);
+            }
+        }
+        if !dlg.is_empty() {
+            let r = self.dialogue(b, dlg);
+            let at = dlg_at.unwrap_or(texts.len()).min(texts.len());
+            if r.intent != "social" || texts.is_empty() {
+                intent = r.intent;
+            } else if intent == "social" {
+                intent = r.intent;
+            }
+            claims.extend(r.claims);
+            if !texts.contains(&r.text) {
+                texts.insert(at, r.text);
             }
         }
         // A social reply to the opening greeting is dropped when content follows.
@@ -438,6 +476,26 @@ impl Agent {
     }
 
     fn respond_intents(&mut self, b: &mut Brain, text: &str, intents: Vec<Intent>, tier: &str) -> Reply {
+        let n_dialogue = intents.iter().filter(|i| dialogue::is_dialogue_act(i)).count();
+        if n_dialogue > 0 && n_dialogue < intents.len() {
+            // Mixed: the other acts first, then one dialogue move.
+            let (d, rest): (Vec<Intent>, Vec<Intent>) = intents.into_iter().partition(dialogue::is_dialogue_act);
+            let r1 = self.respond_intents(b, text, rest, tier);
+            let r2 = self.dialogue(b, d);
+            let social_first = r1.intent == "social" && matches!(r1.text.as_str(), "Hello!" | "Hi there!" | "Hello, nice to talk to you.");
+            let text_out = if social_first { r2.text.clone() } else { format!("{} {}", r1.text, r2.text) };
+            let mut claims = r1.claims;
+            claims.extend(r2.claims);
+            return Reply { text: text_out, intent: r2.intent, claims };
+        }
+        if n_dialogue > 1 {
+            self.learn_names(b, text);
+            self.trace_part(text, &intents, tier);
+            self.last_understood = true;
+            let r = self.dialogue(b, intents);
+            b.kb.log_change(self.now(), "turn", text, &r.text);
+            return r;
+        }
         self.learn_names(b, text);
         self.trace_part(text, &intents, tier);
         self.last_understood = !matches!(intents.as_slice(), [Intent::Unknown] | []);
@@ -692,7 +750,19 @@ impl Agent {
                 match atom {
                     None => self.say(Act::Note("Why what? Ask me something first.".into())),
                     Some(a) => {
-                        let m = b.model_at(self.now());
+                        let m = if self.session_facts.is_empty() { b.model_at(self.now()) } else { b.model_with(self.now(), &self.session_facts.clone()) };
+                        // "Why do I need a jack?": the need may come from a step of the task under way.
+                        let a = if m.proof(&a).is_none() && a.base_pred() == "needs" && a.args.len() == 2 {
+                            let item = a.args[1].clone();
+                            let task = a.args[0].as_sym().map(String::from);
+                            m.facts_of("needs_all")
+                                .into_iter()
+                                .filter(|x| x.args[1] == item)
+                                .find(|x| task.as_deref().map_or(true, |t| x.args[0].as_sym() == Some(t)) || self.active_task.as_deref() == x.args[0].as_sym())
+                                .unwrap_or(a)
+                        } else {
+                            a
+                        };
                         match m.proof(&a) {
                             Some(p) => {
                                 self.record_uses(b, &m, &p.leaves());
@@ -723,15 +793,16 @@ impl Agent {
                 self.say(Act::Note(text))
             }
             Intent::AboutYou(thing) => self.about_me(b, thing),
-            Intent::Inform(atoms) => self.inform(b, atoms),
-            Intent::Request(t) | Intent::AskHow(t) => self.task_help(b, &t),
-            Intent::AskNeed(t) => self.task_needs(b, &t),
-            Intent::AskDuration(t) => self.task_duration(b, &t),
-            Intent::AskNext => self.task_next(b),
-            Intent::Done(s) => self.task_done(b, s),
-            Intent::Lack(items) => self.lack(items),
-            Intent::Accept => Reply { text: "Great!".into(), intent: "social", claims: Vec::new() },
-            Intent::Reject => Reply { text: "Okay. What would you like instead?".into(), intent: "clarify", claims: Vec::new() },
+            i @ (Intent::Inform(_)
+            | Intent::Request(_)
+            | Intent::AskHow(_)
+            | Intent::AskNeed(_)
+            | Intent::AskDuration(_)
+            | Intent::AskNext
+            | Intent::Done(_)
+            | Intent::Lack(_)
+            | Intent::Accept
+            | Intent::Reject) => self.dialogue(b, vec![i]),
             Intent::Feedback(positive) => self.feedback(positive),
             Intent::Teach { facts, rules } => self.tell(b, facts, rules, false, None),
             Intent::NewPred { atom, definition } => self.new_pred(b, atom, definition),
