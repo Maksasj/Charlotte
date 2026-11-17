@@ -356,8 +356,66 @@ impl CurriculumConfig {
             let r = t.respond(line).text;
             live(0, "teach_block", &s.id, "agent", &r);
         }
-        s.teach.len()
+        // Protocol rule 3: the teacher sees what was stored and fixes only what
+        // is wrong: a step lost or stored with another action, or needs missing,
+        // gets its teach line once more.
+        let fixes = fix_lines(brain, s, &t.session_id);
+        for line in &fixes {
+            live(0, "teach_block", &s.id, "teacher", &format!("(fix) {line}"));
+            let r = t.respond(line).text;
+            live(0, "teach_block", &s.id, "agent", &r);
+        }
+        s.teach.len() + fixes.len()
     }
+}
+
+/// The teach lines to send again: for each step of the ground truth whose
+/// action is missing or different in what this teaching session stored, its
+/// "Step K of ..." line; and the needs line if a need is missing.
+pub fn fix_lines(brain: &SharedBrain, s: &Scenario, session: &str) -> Vec<String> {
+    let b = sla_agent::brain::lock(brain);
+    // The procedure this session taught into (the agent may name it its own way).
+    let Some((_, pf)) = b
+        .kb
+        .vault
+        .procedures
+        .iter()
+        .map(|(k, pf)| (k, pf, pf.facts().iter().filter(|f| f.conv.as_deref() == Some(session)).count()))
+        .filter(|(_, _, n)| *n > 0)
+        .max_by_key(|(_, _, n)| *n)
+        .map(|(k, pf, _)| (k.clone(), pf.clone()))
+    else {
+        return Vec::new();
+    };
+    let stored: Vec<GroundAtom> = pf.facts().iter().map(|f| f.atom.clone()).collect();
+    drop(b);
+    let sym = |g: &GroundAtom, i: usize| g.args.get(i).and_then(|v| v.as_sym()).unwrap_or("").to_string();
+    let num = |st: &str| st.rsplit_once("_s").and_then(|(_, n)| n.parse::<u32>().ok());
+    let action_by_num = |set: &[GroundAtom]| -> std::collections::BTreeMap<u32, String> {
+        set.iter()
+            .filter(|g| g.pred == "action")
+            .filter_map(|g| Some((num(&sym(g, 0))?, sym(g, 1))))
+            .collect()
+    };
+    let have = action_by_num(&stored);
+    let want = action_by_num(&s.truth.iter().filter(|g| g.pred != "action" || sym(g, 0).starts_with(&s.task)).cloned().collect::<Vec<_>>());
+    let mut out = Vec::new();
+    for (k, a) in &want {
+        if have.get(k) != Some(a) {
+            let key = format!("step {k} of");
+            if let Some(line) = s.teach.iter().find(|l| l.to_lowercase().contains(&key)) {
+                out.push(line.clone());
+            }
+        }
+    }
+    let stored_needs: Vec<String> = stored.iter().filter(|g| g.pred == "needs").map(|g| sym(g, 1)).collect();
+    let missing_need = s.truth.iter().filter(|g| g.pred == "needs").any(|g| !stored_needs.contains(&sym(g, 1)));
+    if missing_need {
+        if let Some(line) = s.teach.iter().find(|l| l.starts_with("To ")) {
+            out.push(line.clone());
+        }
+    }
+    out
 }
 
 /// Run the curriculum over `scenarios` on `brain`.

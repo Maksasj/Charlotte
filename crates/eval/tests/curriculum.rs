@@ -184,3 +184,31 @@ fn held_out_scenarios_are_complete() {
     }
     assert!(problems.is_empty(), "{}", problems.join("\n"));
 }
+
+/// Protocol rule 3: after teaching, a step that was not stored is sent again,
+/// and nothing that was stored right.
+#[test]
+fn teacher_resends_only_what_was_lost() {
+    let s = curriculum::parse_scenario(SCENARIO);
+    let dir = std::env::temp_dir().join(format!("sla_m18_fix_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let brain: SharedBrain = Brain::shared(&dir).unwrap();
+    let mut o = OracleParser::default();
+    for (t, acts) in gold() {
+        // Step 2 is lost: the translator gives nothing for it.
+        if t.starts_with("Step 2") {
+            o.insert(t, &["unknown:".to_string()]).unwrap();
+        } else {
+            o.insert(t, &acts.iter().map(|a| a.to_string()).collect::<Vec<_>>()).unwrap();
+        }
+    }
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(o));
+    for line in &s.teach {
+        t.respond(line);
+    }
+    let fixes = curriculum::fix_lines(&brain, &s, &t.session_id);
+    assert_eq!(fixes, vec!["Step 2 of making tea: pour the water over the tea bag.".to_string()]);
+    let _ = std::fs::remove_dir_all(&dir);
+}
