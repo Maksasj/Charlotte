@@ -280,6 +280,14 @@ pub struct CurriculumReport {
     pub stored_facts: usize,
     pub contradicting: Vec<String>,
     pub teacher_meta_requests: usize,
+    /// Questions the agent asked its teacher between encounters, and how many
+    /// the teacher could answer from a ground truth.
+    #[serde(default)]
+    pub curiosity_asked: usize,
+    #[serde(default)]
+    pub curiosity_answered: usize,
+    #[serde(default)]
+    pub curiosity_questions: Vec<String>,
     pub hygiene: Option<sla_agent::hygiene::HygieneReport>,
 }
 
@@ -366,6 +374,45 @@ impl CurriculumConfig {
             live(0, "teach_block", &s.id, "agent", &r);
         }
         s.teach.len() + fixes.len()
+    }
+}
+
+/// Answers the agent's questions from the scenarios' teach lines only
+/// (protocol rule 6): the scenario whose task the question is about, and the
+/// lines that answer it. "I don't know." when no scenario fits.
+pub struct GroundTruthTeacher {
+    pub scenarios: Vec<Scenario>,
+    pub answered: usize,
+}
+
+impl sla_agent::curiosity::Teacher for GroundTruthTeacher {
+    fn answer(&mut self, question: &str) -> String {
+        let q = question.to_lowercase();
+        let words: Vec<String> = q.split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2).map(stem5).collect();
+        let best = self
+            .scenarios
+            .iter()
+            .map(|s| (s.task.split('_').filter(|w| w.len() > 2 && words.contains(&stem5(w))).count(), s))
+            .filter(|(n, _)| *n > 0)
+            .max_by_key(|(n, _)| *n);
+        let Some((_, s)) = best else { return "I don't know.".into() };
+        let needs = s.teach.iter().filter(|l| l.starts_with("To ")).cloned();
+        let time = s.teach.iter().filter(|l| l.contains(" takes ")).cloned();
+        let steps = s.teach.iter().filter(|l| l.to_lowercase().contains("step ")).cloned();
+        let lines: Vec<String> = if q.contains("what do i need") && !q.contains("first step") {
+            needs.collect()
+        } else if q.contains("how long") {
+            time.collect()
+        } else if q.contains("steps") && !q.contains("need") {
+            steps.collect()
+        } else {
+            needs.chain(time).chain(steps).collect()
+        };
+        if lines.is_empty() {
+            return "I don't know.".into();
+        }
+        self.answered += 1;
+        lines.join(" ")
     }
 }
 
@@ -470,6 +517,21 @@ pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenari
         rep.transfer_passed += e.passed as usize;
         rep.encounters.push(e);
     }
+    // Curiosity: the agent asks its teacher about what failed (unknown tasks,
+    // gaps in procedures); the teacher answers from the ground truth only.
+    {
+        let mut teacher_session = (cfg.teacher_agent)(brain);
+        let mut gt = GroundTruthTeacher { scenarios: scenarios.to_vec(), answered: 0 };
+        for _ in 0..scenarios.len() {
+            let Some((q, a, r)) = teacher_session.ask_teacher(&mut gt) else { break };
+            live(0, "curiosity", "", "agent", &q);
+            live(0, "curiosity", "", "teacher", &a);
+            live(0, "curiosity", "", "agent", &r.text);
+            rep.curiosity_asked += 1;
+            rep.curiosity_questions.push(q);
+        }
+        rep.curiosity_answered = gt.answered;
+    }
     // The spaced queue: taught again, repeated once more.
     for s in &queue {
         cfg.teach(brain, s);
@@ -573,7 +635,8 @@ pub fn markdown(r: &CurriculumReport) -> String {
          | Not understood | {} of {} turns ({:.1}%) | 10% or less |\n\
          | Helpful + clarify | {} of {} labelled turns ({:.1}%) | 60% |\n\
          | Stored facts contradicting ground truth | {} of {} ({:.1}%) | 1% or less |\n\
-         | Teacher meta requests | {} | 0 |\n",
+         | Teacher meta requests | {} | 0 |\n\
+         | Questions the agent asked its teacher (answered from the ground truth) | {} ({}) | |\n",
         r.scenarios,
         r.seeds,
         r.teach_first_try,
@@ -600,7 +663,9 @@ pub fn markdown(r: &CurriculumReport) -> String {
         r.contradicting.len(),
         r.stored_facts,
         pct(r.contradicting.len(), r.stored_facts),
-        r.teacher_meta_requests
+        r.teacher_meta_requests,
+        r.curiosity_asked,
+        r.curiosity_answered
     );
     s.push_str(&format!(
         "| Encounter 2 by the symbolic check (needs, step order, time from the ground truth) | {} of {} ({:.1}%) | 70% |

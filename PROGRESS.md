@@ -308,6 +308,16 @@ the report's own regex found 57).
   transfer 0 of 15; not understood 0.9%; helpful + clarify 67.0%; contradicting
   facts 0.6%. Fixed after it: a duration question that also asks for the steps
   now gets the steps.
+- 2026-11-17, milestone 18 build, after run 5: the agent's curiosity now has goals
+  from failed turns (unknown tasks, gaps in procedures: steps, needs, duration;
+  messages not understood), kept in `vault/queue/failures.jsonl`, scored by how
+  many failures an answer fixes and asked only of teachers. Curriculum runs ask
+  them between the repeat encounters and the spaced queue, answered by a
+  ground-truth teacher from the scenarios' teach lines. 55 training scenarios
+  (`data/curriculum/training`) and `sla_eval curriculum --train` are ready; the
+  training run waits for the user's go-ahead. The dashboard has a live curriculum
+  panel and knowledge health. A hand-label sheet for the checklist judges is in
+  `eval/curriculum/hand_labels.md` (to be filled in by the user).
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

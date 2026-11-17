@@ -239,3 +239,17 @@ fn training_scenarios_are_complete_and_apart() {
     assert!(problems.is_empty(), "{}", problems.join("
 "));
 }
+
+/// The ground-truth teacher answers the agent's questions with the right
+/// teach lines, and says it does not know about anything else.
+#[test]
+fn ground_truth_teacher_answers_from_the_scenario() {
+    use sla_agent::curiosity::Teacher;
+    let s = curriculum::parse_scenario(SCENARIO);
+    let mut t = curriculum::GroundTruthTeacher { scenarios: vec![s], answered: 0 };
+    assert_eq!(t.answer("What do I need to make tea?"), "To make tea you need a tea bag and water.");
+    assert_eq!(t.answer("How long does it take to make tea?"), "Making tea takes 5 to 7 minutes.");
+    assert!(t.answer("How do I make tea? What do I need, and what is the first step?").contains("Step 1 of making tea"));
+    assert_eq!(t.answer("How do I fix a bike?"), "I don't know.");
+    assert_eq!(t.answered, 3);
+}
