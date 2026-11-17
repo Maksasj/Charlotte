@@ -5,6 +5,7 @@
 
 
 pub mod archive;
+pub mod gold;
 pub mod ops;
 pub mod outcome;
 pub mod regression;

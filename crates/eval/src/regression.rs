@@ -110,6 +110,8 @@ pub struct LabelledTurn {
     pub label: Label,
     pub source: LabelSource,
     pub think_ms: f64,
+    /// Translation time of the turn (ms), outside the vault lock.
+    pub translate_ms: f64,
     pub acts: Vec<String>,
 }
 
@@ -179,6 +181,7 @@ pub fn run_outcomes(cfg: &OutcomeConfig) -> std::io::Result<OutcomeRun> {
         turn: RegTurn,
         label_input: TurnToLabel,
         think: f64,
+        translate: f64,
         acts: Vec<String>,
     }
     let mut done: Vec<Done> = Vec::new();
@@ -200,19 +203,19 @@ pub fn run_outcomes(cfg: &OutcomeConfig) -> std::io::Result<OutcomeRun> {
         }
         let mut clock = Timestamp::from_ymd_hms(2026, 1, 5, 9, 0, 0);
         for t in &conv {
-            let (reply, think, acts) = match agent.as_mut() {
-                None => (t.v1_reply.clone(), 0.0, Vec::new()),
+            let (reply, think, translate, acts) = match agent.as_mut() {
+                None => (t.v1_reply.clone(), 0.0, 0.0, Vec::new()),
                 Some(a) => {
                     clock = clock.plus_secs(60);
                     a.clock = Some(clock);
                     let r = a.respond(&t.user).text;
                     let tr = a.last_trace.clone().unwrap_or_default();
-                    (r, tr.think_ms, tr.parts.iter().flat_map(|p| p.acts.clone()).collect())
+                    (r, tr.think_ms, tr.translate_ms, tr.parts.iter().flat_map(|p| p.acts.clone()).collect())
                 }
             };
             let label_input = TurnToLabel { id: t.id.clone(), scenario: t.scenario.clone(), history: history.clone(), user: t.user.clone(), reply: reply.clone() };
             history.push((t.user.clone(), reply));
-            done.push(Done { turn: t.clone(), label_input, think, acts });
+            done.push(Done { turn: t.clone(), label_input, think, translate, acts });
         }
         drop(agent);
         let _ = std::fs::remove_dir_all(&root);
@@ -246,6 +249,7 @@ pub fn run_outcomes(cfg: &OutcomeConfig) -> std::io::Result<OutcomeRun> {
             label,
             source,
             think_ms: d.think,
+            translate_ms: d.translate,
             acts: d.acts.clone(),
         });
     }
@@ -382,6 +386,8 @@ pub fn outcome_command(cfg: &OutcomeConfig) -> std::io::Result<OutcomeRun> {
     }
     if !run.think_ms.is_empty() {
         println!("agent's own work per turn: median {:.1} ms, 95th percentile {:.1} ms", percentile(&run.think_ms, 50.0), percentile(&run.think_ms, 95.0));
+        let tr: Vec<f64> = run.turns.iter().map(|t| t.translate_ms).collect();
+        println!("translation per turn: median {:.0} ms, 95th percentile {:.0} ms", percentile(&tr, 50.0), percentile(&tr, 95.0));
     }
     if let Some((a, t)) = run.calibration {
         println!("labeller agrees with the hand labels on {a} of {t} turns ({:.0}%)", a as f64 * 100.0 / t.max(1) as f64);

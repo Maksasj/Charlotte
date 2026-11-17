@@ -116,7 +116,8 @@ UNITS = [
 FUNCTION_WORDS = """here there this that these those it its they them he she him her we us you i me my your our their
 a an the and or but so because if then than as of to for from with without in on at by into onto about over under
 between through during before after while until when where which who whom whose what how why not no yes all some any
-each every many much more most few less least very too also just only even still""".split()
+each every many much more most few less least very too also just only even still
+first second next finally afterwards meanwhile""".split()
 
 NUMBER_WORDS = """zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen
 eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand million half quarter dozen""".split()

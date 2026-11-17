@@ -27,7 +27,41 @@ pub fn segment(text: &str) -> Vec<String> {
             out.extend(sentences(&item));
         }
     }
-    out.into_iter().filter(|s| s.chars().any(|c| c.is_alphanumeric())).collect()
+    out.into_iter().flat_map(|s| split_opener(&s)).filter(|s| s.chars().any(|c| c.is_alphanumeric())).collect()
+}
+
+/// Greetings, thanks and goodbyes that open a sentence before a comma or
+/// "and" ("Hey, can you help me", "Thanks, bye!"): the structure pass makes
+/// them a part of their own, so a request next to them is never lost.
+const OPENERS: &[&str] = &[
+    "hi there", "hello there", "hey there", "good morning", "good evening", "good afternoon", "thanks a lot", "thanks so much", "thank you so much",
+    "thank you", "many thanks", "hi", "hello", "hey", "thanks", "cheers", "bye", "goodbye", "see you",
+];
+
+fn split_opener(s: &str) -> Vec<String> {
+    let low = s.to_lowercase();
+    for o in OPENERS {
+        if let Some(rest) = low.strip_prefix(o) {
+            let rest_t = rest.trim_start();
+            let cut = if let Some(r) = rest_t.strip_prefix(',').or_else(|| rest_t.strip_prefix('!')).or_else(|| rest_t.strip_prefix(" -")) {
+                Some(r)
+            } else {
+                rest_t.strip_prefix("and ")
+            };
+            if let Some(r) = cut {
+                let r = r.trim();
+                if r.split_whitespace().count() >= 1 {
+                    let head_len = s.len() - rest.len();
+                    let tail = &s[s.len() - r.len()..];
+                    let head = s[..head_len].trim();
+                    let mut out = vec![head.to_string()];
+                    out.extend(split_opener(tail));
+                    return out;
+                }
+            }
+        }
+    }
+    vec![s.to_string()]
 }
 
 /// A line that is (or contains) a list becomes one part per item; the text
@@ -218,6 +252,10 @@ mod tests {
     #[test]
     fn sentences_and_lists() {
         assert_eq!(segment("Hi! Can you help me plan dinner tonight?"), vec!["Hi!", "Can you help me plan dinner tonight?"]);
+        assert_eq!(segment("Hey, I need help with my closet."), vec!["Hey", "I need help with my closet."]);
+        assert_eq!(segment("Thanks, bye!"), vec!["Thanks", "bye!"]);
+        assert_eq!(segment("Hi there, can you help me?"), vec!["Hi there", "can you help me?"]);
+        assert_eq!(segment("Hello world is a program."), vec!["Hello world is a program."], "no comma: not an opener");
         assert_eq!(segment("It costs 2.5 euros. Fine."), vec!["It costs 2.5 euros.", "Fine."]);
         assert_eq!(segment("Use herbs, e.g. basil or mint. Then water them."), vec!["Use herbs, e.g. basil or mint.", "Then water them."]);
         assert_eq!(segment("Wait approx. 10 minutes. Done."), vec!["Wait approx. 10 minutes.", "Done."]);

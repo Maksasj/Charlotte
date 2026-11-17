@@ -102,7 +102,9 @@ dependencies = [
  "serde_json",
  "sla_agent",
  "sla_core",
+ "sla_lexicon",
  "sla_parser",
+ "sla_translate",
 ]
 
 [[package]]

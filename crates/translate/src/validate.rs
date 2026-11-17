@@ -98,6 +98,26 @@ impl Words {
         self.forms.insert(t.to_string());
         self.forms.insert(sla_parser::singularize(t));
         self.forms.insert(sla_parser::lemma(t));
+        // cookies -> cookie (the parser's rule gives "cooky").
+        if let Some(stem) = t.strip_suffix("ies") {
+            self.forms.insert(format!("{stem}ie"));
+        }
+        // planning -> plan, changing -> change, preparing -> prepare, baked -> bake.
+        for suf in ["ing", "ed"] {
+            if let Some(stem) = t.strip_suffix(suf) {
+                if stem.len() >= 2 {
+                    self.forms.insert(stem.to_string());
+                    self.forms.insert(format!("{stem}e"));
+                    let b = stem.as_bytes();
+                    if b.len() >= 2 && b[b.len() - 1] == b[b.len() - 2] {
+                        self.forms.insert(stem[..stem.len() - 1].to_string());
+                    }
+                    if let Some(y) = stem.strip_suffix('i') {
+                        self.forms.insert(format!("{y}y"));
+                    }
+                }
+            }
+        }
         // Common irregular verbs and nouns.
         for (a, b) in [("knives", "knife"), ("leaves", "leaf"), ("children", "child"), ("people", "person"), ("men", "man"), ("women", "woman"), ("feet", "foot"), ("teeth", "tooth"), ("mice", "mouse"), ("geese", "goose")] {
             if t == a {
@@ -239,8 +259,14 @@ impl<'a> Validator<'a> {
         }
     }
 
-    /// Problems with one sentence's acts (empty: it passes).
+    /// Problems with one sentence's acts (empty: it passes), grounding in the sentence only.
     pub fn check(&self, sentence: &str, acts: &[Intent], ctx: &TContext) -> Vec<String> {
+        self.check_in(sentence, sentence, acts, ctx)
+    }
+
+    /// Problems with one sentence's acts; constants may come from anywhere in
+    /// the whole `message` ("My bike has a flat tire. Can you help me fix it?").
+    pub fn check_in(&self, sentence: &str, message: &str, acts: &[Intent], ctx: &TContext) -> Vec<String> {
         let mut problems = Vec::new();
         if acts.is_empty() {
             problems.push("no translation".into());
@@ -249,7 +275,7 @@ impl<'a> Validator<'a> {
         if acts.iter().all(|i| *i == Intent::Unknown) {
             return problems;
         }
-        let words = Words::of(sentence);
+        let words = Words::of(message);
         // 4. A question never ends up as only a statement.
         if sentence.trim_end().ends_with('?') && acts.iter().all(|i| matches!(i, Intent::Tell { .. } | Intent::Inform(_) | Intent::Teach { .. })) {
             problems.push("a question was translated as a statement only".into());
@@ -333,9 +359,17 @@ impl<'a> Validator<'a> {
     /// The fact in the agent's own words must share content words with the
     /// sentence (a symbolic stand-in for "means the same").
     fn round_trip(&self, g: &GroundAtom, words: &Words) -> Option<String> {
+        // Structure (steps, their order, tasks) is made up of ids, not words.
+        if matches!(g.base_pred(), "step" | "before" | "overlaps" | "subtask" | "task" | "method") {
+            return None;
+        }
         let mut said = Words::default();
         for v in &g.args {
             if let Some(s) = v.as_sym() {
+                // A step id (`make_tea_s2`) carries no words of the sentence.
+                if s.rsplit_once("_s").map_or(false, |(_, n)| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit())) {
+                    continue;
+                }
                 for p in s.split('_') {
                     said.add_word(p);
                 }

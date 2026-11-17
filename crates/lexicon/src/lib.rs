@@ -294,6 +294,10 @@ impl Registry {
         if parts.len() >= 4 {
             return Some("is too long for one name; split it into facts".into());
         }
+        // `tomatoes_cucumber`: a plural before the last word glues a list into one name.
+        if parts.len() >= 2 && parts[..parts.len() - 1].iter().any(|p| p.len() > 3 && p.ends_with('s') && !p.ends_with("ss") && !p.ends_with("us") && !matches!(*p, "news" | "glasses" | "sports" | "series" | "clothes" | "jeans")) {
+            return Some("glues a list of things into one name; one fact per thing".into());
+        }
         None
     }
 

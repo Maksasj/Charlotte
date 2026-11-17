@@ -116,12 +116,20 @@ pub struct ModelTier {
 
 pub const SPEC: &str = include_str!("../../../docs/language_2.md");
 pub const SPEC_V1: &str = include_str!("../../../docs/parser_spec.md");
+const EXAMPLES: &str = include_str!("../../../data/translator_examples.jsonl");
+
+/// Distinctions the model gets wrong most often, stated once in the system prompt.
+const GUIDANCE: &str = "Keep these apart: \"How do I X?\" is ask_how; \"What do I need for X?\" is ask_need; \"How long ...?\" is ask_duration; \
+\"Can you help me X?\" and \"I need help with X\" are request. What the speaker has or feels right now, and the state of their things, \
+is inform (available(x), feels(maksim, x), time_available(n, unit)); facts about other people and general knowledge are tell. \
+Task names are the verb and the main noun only: fix_faucet, not fix_leaky_faucet; brew_coffee, not make_coffee. \
+substitute(item, replacement): \"use honey instead of sugar\" is substitute(sugar, honey). Keep hedges as @usually, @often, @sometimes.";
 
 fn system_prompt() -> String {
     format!(
         "You translate chat messages into a formal language for a symbolic agent, sentence by sentence. \
          You never answer, chat, explain or add knowledge: every constant you write must come from the message or the context. \
-         Output only numbered lines `[n] act: payload`, one or more per sentence, nothing else.\n\n\
+         Output only numbered lines `[n] act: payload`, one or more per sentence, nothing else.\n\n{GUIDANCE}\n\n\
          The language, version 2:\n\n{SPEC}\n\nThe statements and questions it extends (version 1):\n\n{SPEC_V1}"
     )
 }
@@ -133,8 +141,18 @@ fn overlap(a: &str, b: &str) -> usize {
 }
 
 impl ModelTier {
+    /// A model tier with the seed examples (`data/translator_examples.jsonl`,
+    /// hand-reviewed; reviewed translations from use join them later).
     pub fn new(model: &str) -> Self {
-        ModelTier { model: model.into(), examples: Vec::new() }
+        let mut examples = Vec::new();
+        for l in EXAMPLES.lines().filter(|l| !l.trim().is_empty()) {
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(l) {
+                let text = v["text"].as_str().unwrap_or("").to_string();
+                let lines: Vec<String> = v["lines"].as_array().map(|a| a.iter().filter_map(|x| x.as_str().map(String::from)).collect()).unwrap_or_default();
+                examples.push((text, lines));
+            }
+        }
+        ModelTier { model: model.into(), examples }
     }
 
     fn prompt(&self, sentences: &[String], ask: &[usize], ctx: &TContext, retry: &[(usize, Vec<String>, Vec<String>)]) -> String {
@@ -154,11 +172,11 @@ impl ModelTier {
         }
         // Examples by word overlap with the message.
         let all = sentences.join(" ");
-        let mut ex: Vec<&(String, Vec<String>)> = self.examples.iter().filter(|(s, _)| overlap(s, &all) > 0).collect();
+        let mut ex: Vec<&(String, Vec<String>)> = self.examples.iter().collect();
         ex.sort_by_key(|(s, _)| std::cmp::Reverse(overlap(s, &all)));
         if !ex.is_empty() {
             p.push_str("\n\nTranslations of similar messages:\n");
-            for (s, lines) in ex.into_iter().take(6) {
+            for (s, lines) in ex.into_iter().take(8) {
                 p.push_str(&format!("Message: {s}\n{}\n", lines.join("\n")));
             }
         }
@@ -181,9 +199,12 @@ impl ModelTier {
     fn call(&self, sentences: &[String], ask: &[usize], ctx: &TContext, retry: &[(usize, Vec<String>, Vec<String>)]) -> Result<HashMap<usize, Vec<String>>, String> {
         let out = sla_parser::claude::call_system("translator", &self.model, &system_prompt(), &self.prompt(sentences, ask, ctx, retry))?;
         let mut by: HashMap<usize, Vec<String>> = HashMap::new();
+        let last = sentences.len();
         for line in out.lines() {
             let l = line.trim().trim_matches('`').trim();
             if let Some((n, rest)) = numbered(l) {
+                // A second act numbered as if it were a new sentence belongs to the last one.
+                let n = if n > last { last } else { n };
                 by.entry(n).or_default().push(rest.to_string());
             }
         }
@@ -210,9 +231,12 @@ pub struct Translator {
     pub calls: u64,
 }
 
+/// The cache key includes the prompt (system prompt and examples), so a
+/// changed prompt never reuses old answers.
 fn cache_key(sentences: &[String], ask: &[usize], ctx: &TContext) -> String {
     let mut h: u64 = 0xcbf29ce484222325;
-    for part in sentences.iter().map(String::as_str).chain(std::iter::once(ctx.key().as_str())).chain(ask.iter().map(|_| "|")) {
+    let prompt = format!("{}{EXAMPLES}", system_prompt());
+    for part in sentences.iter().map(String::as_str).chain(std::iter::once(ctx.key().as_str())).chain(ask.iter().map(|_| "|")).chain(std::iter::once(prompt.as_str())) {
         for b in part.as_bytes().iter().chain(std::iter::once(&0u8)) {
             h ^= *b as u64;
             h = h.wrapping_mul(0x100000001b3);
@@ -299,16 +323,75 @@ impl Translator {
         }
     }
 
-    fn read(lines: &[String]) -> Option<Vec<Intent>> {
+    fn read(&self, lines: &[String], ctx: &TContext) -> Option<Vec<Intent>> {
+        // `done: step(make_tea, make_tea_s2)` means `done: make_tea_s2`.
+        let lines: Vec<String> = lines
+            .iter()
+            .map(|l| {
+                for act in ["done:", "ask_duration:"] {
+                    if let Some(rest) = l.strip_prefix(act) {
+                        let r = rest.trim();
+                        if let Some(inner) = r.strip_prefix("step(").and_then(|x| x.strip_suffix(')')) {
+                            if let Some((_, s)) = inner.split_once(',') {
+                                return format!("{act} {}", s.trim());
+                            }
+                        }
+                    }
+                }
+                l.clone()
+            })
+            .collect();
         let acts: Option<Vec<Intent>> = lines.iter().map(|l| from_canonical(l)).collect();
-        acts.filter(|a| !a.is_empty())
+        let mut acts = acts.filter(|a| !a.is_empty())?;
+        self.normalize(&mut acts, ctx);
+        // A correction already says the reply was wrong.
+        if acts.iter().any(|a| matches!(a, Intent::Correct(_))) {
+            acts.retain(|a| *a != Intent::Feedback(false));
+        }
+        Some(acts)
+    }
+
+    /// With a model to fall back on, the fixed patterns take only what they
+    /// read safely: no hedge (they would drop "usually"), no comma lists
+    /// (they glue them), nothing about the speaker (that may be their
+    /// situation, an `inform`), and greetings only when that is all there is.
+    fn pattern_may_take(&self, text: &str, i: &Intent, ctx: &TContext) -> bool {
+        if self.model.is_none() {
+            return true;
+        }
+        let low = text.to_lowercase();
+        let words: Vec<&str> = low.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).collect();
+        // An instruction ("Boil the water", "First chop the onions") is a step, not a statement.
+        const ORDER_WORDS: &[&str] = &["first", "then", "next", "finally", "afterwards", "meanwhile", "now"];
+        let lead = words.iter().find(|w| !ORDER_WORDS.contains(w)).copied().unwrap_or("");
+        if matches!(i, Intent::Tell { .. }) && (ORDER_WORDS.contains(&words.first().copied().unwrap_or("")) || self.registry.get(lead).map_or(false, |p| p.verb)) {
+            return false;
+        }
+        const HEDGES: &[&str] = &["usually", "often", "sometimes", "mostly", "typically", "generally", "normally", "most", "some", "rarely", "always", "never"];
+        if words.iter().any(|w| HEDGES.contains(w)) {
+            return false;
+        }
+        match i {
+            // "Thanks, bye!" and "Hey, how are you?" hold two acts: the patterns see only one.
+            Intent::Greet | Intent::Bye | Intent::Social(_) | Intent::HowAreYou | Intent::Yes | Intent::No => words.len() <= 4 && !text.contains(','),
+            Intent::Tell { facts, .. } | Intent::Correct(facts) => {
+                if text.contains(',') {
+                    return false;
+                }
+                let about_speaker = |a: &sla_core::Atom| {
+                    a.args.iter().any(|t| matches!(t, sla_core::Term::Val(sla_core::Value::Sym(s)) if s == &ctx.speaker || s.starts_with("my_")))
+                };
+                !facts.iter().any(about_speaker)
+            }
+            _ => true,
+        }
     }
 
     /// The fixed-pattern tier for one sentence.
     fn pattern(&self, text: &str, ctx: &TContext, last_entity: &Option<String>) -> Option<Vec<Intent>> {
         let pctx = Context { speaker: ctx.speaker.clone(), last_entity: last_entity.clone() };
         let mut i = sla_parser::parse(text, &pctx);
-        if i == Intent::Unknown || suspicious(&i) {
+        if i == Intent::Unknown || suspicious(&i) || !self.pattern_may_take(text, &i, ctx) {
             return None;
         }
         self.name_properties(&mut i);
@@ -368,6 +451,65 @@ impl Translator {
         }
     }
 
+    /// Deterministic rules of the language the model may miss (docs/language_2.md):
+    /// in an `inform`, `has(speaker, x)` is `available(x)`; an `inform` about
+    /// neither the speaker nor their things nor the task is a `tell`; an
+    /// inflected predicate (`lived_in`) is put in its registered form (`live_in`).
+    fn normalize(&self, acts: &mut Vec<Intent>, ctx: &TContext) {
+        let fix_pred = |a: &mut sla_core::Atom| {
+            if self.registry.get(&a.pred).is_some() {
+                return;
+            }
+            let neg = a.pred.starts_with('-');
+            let base = a.pred.trim_start_matches('-').to_string();
+            let (verb, rest) = match base.split_once('_') {
+                Some((v, r)) => (v.to_string(), format!("_{r}")),
+                None => (base.clone(), String::new()),
+            };
+            let mut w = validate::Words::default();
+            w.add_word(&verb);
+            for form in w.forms.iter() {
+                let cand = format!("{form}{rest}");
+                if form != &verb && self.registry.get(&cand).is_some() {
+                    a.pred = if neg { format!("-{cand}") } else { cand };
+                    return;
+                }
+            }
+        };
+        let about_speaker = |a: &sla_core::Atom| {
+            matches!(a.pred.trim_start_matches('-'), "available" | "time_available" | "done" | "at_step")
+                || a.args.iter().any(|t| matches!(t, sla_core::Term::Val(sla_core::Value::Sym(s)) if s == &ctx.speaker || s.starts_with("my_") || ctx.active_task.as_deref() == Some(s.as_str())))
+        };
+        for act in acts.iter_mut() {
+            match act {
+                Intent::Inform(facts) => {
+                    for a in facts.iter_mut() {
+                        fix_pred(a);
+                        if a.pred == "has" && a.args.len() == 2 && matches!(&a.args[0], sla_core::Term::Val(sla_core::Value::Sym(s)) if s == &ctx.speaker) {
+                            *a = sla_core::Atom { pred: "available".into(), args: vec![a.args[1].clone()] };
+                        }
+                    }
+                    if ctx.active_task.is_none() && !facts.iter().any(about_speaker) {
+                        *act = Intent::Tell { facts: std::mem::take(facts), rules: Vec::new(), past: false, hedge: None };
+                    } else if ctx.active_task.is_some() && !facts.is_empty() && facts.iter().all(|a| a.pred == "-available" && a.args.len() == 1) {
+                        // "I'm out of butter" while a task is under way is `lack`.
+                        let items = facts.iter().filter_map(|a| if let sla_core::Term::Val(sla_core::Value::Sym(s)) = &a.args[0] { Some(s.clone()) } else { None }).collect();
+                        *act = Intent::Lack(items);
+                    }
+                }
+                Intent::Tell { facts, .. } | Intent::Correct(facts) | Intent::Teach { facts, .. } => facts.iter_mut().for_each(fix_pred),
+                Intent::Ask { query, .. } => {
+                    for l in query.iter_mut() {
+                        if let sla_core::Literal::Pos(a) | sla_core::Literal::Neg(a) = l {
+                            fix_pred(a);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
     /// Translate a message (see the module docs for the stages).
     pub fn translate(&mut self, message: &str, ctx: &TContext) -> Translation {
         let calls_before = self.calls;
@@ -397,9 +539,9 @@ impl Translator {
             for &n in &open {
                 let got = lines.get(&n).cloned().unwrap_or_default();
                 let s = &sentences[n - 1];
-                match Self::read(&got) {
+                match self.read(&got, ctx) {
                     Some(acts) => {
-                        let problems = v.check(s, &acts, ctx);
+                        let problems = v.check_in(s, message, &acts, ctx);
                         let ok = problems.is_empty();
                         if !ok {
                             retry.push((n, got.clone(), problems.clone()));
@@ -421,8 +563,8 @@ impl Translator {
                 for &n in &ask {
                     let got = lines.get(&n).cloned().unwrap_or_default();
                     let s = &sentences[n - 1];
-                    if let Some(acts) = Self::read(&got) {
-                        let problems = v.check(s, &acts, ctx);
+                    if let Some(acts) = self.read(&got, ctx) {
+                        let problems = v.check_in(s, message, &acts, ctx);
                         let ok = problems.is_empty();
                         parts[n - 1] = Some(Part { text: s.clone(), acts, tier: Tier::Model, ok, problems, retried: true });
                     } else if let Some(p) = parts[n - 1].as_mut() {
@@ -478,8 +620,8 @@ impl Translator {
             let v = Validator::new(&reg);
             for &n in &open {
                 let got = lines.get(&n).cloned().unwrap_or_default();
-                if let Some(acts) = Self::read(&got) {
-                    let problems = v.check(&clauses[n - 1], &acts, ctx);
+                if let Some(acts) = self.read(&got, ctx) {
+                    let problems = v.check_in(&clauses[n - 1], &clauses.join(" "), &acts, ctx);
                     let ok = problems.is_empty();
                     parts[n - 1] = Some(Part { text: clauses[n - 1].clone(), acts, tier: Tier::Clause, ok, problems, retried: false });
                 }
@@ -532,12 +674,12 @@ mod tests {
                 assert!(prompt.contains("basil"), "the retry names the problem");
                 return Ok("[2] inform: available(pasta); available(garlic)".into());
             }
-            assert!(prompt.contains("[1] Hey, I need some help with dinner tonight, honestly no idea what to cook."));
+            assert!(prompt.contains("[1] I need some help with dinner tonight, honestly no idea what to cook."));
             Ok("[1] request: plan_dinner\n[2] inform: available(pasta); available(garlic); available(basil)\n[3] unknown:".into())
         }));
         let mut t = Translator::new(Registry::builtin());
         t.model = Some(ModelTier::new("haiku"));
-        let msg = "Hey, I need some help with dinner tonight, honestly no idea what to cook. I have pasta and garlic in the cupboard right now somewhere. Whatever, the weather is weird again today honestly.";
+        let msg = "I need some help with dinner tonight, honestly no idea what to cook. I have pasta and garlic in the cupboard right now somewhere. Whatever, the weather is weird again today honestly.";
         let tr = t.translate(msg, &ctx());
         sla_parser::claude::clear_thread_mock();
         assert_eq!(tr.model_calls, 2, "one call for the message, one retry");

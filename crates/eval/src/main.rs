@@ -66,12 +66,42 @@ fn outcomes(args: &[String]) {
     }
 }
 
+/// `sla_eval gold [--set translator_gold|long_messages] [--model haiku] [--parallel 8]`
+fn gold_command(args: &[String]) {
+    let arg = |n: &str| args.iter().position(|a| a == n).and_then(|i| args.get(i + 1)).cloned();
+    let set = arg("--set").unwrap_or_else(|| "translator_gold".into());
+    let model = arg("--model").unwrap_or_else(|| "haiku".into());
+    let parallel = arg("--parallel").and_then(|p| p.parse().ok()).unwrap_or(8);
+    let root = root();
+    let use_cache = !args.iter().any(|a| a == "--no-cache");
+    match sla_eval::gold::run(&root, &set, &model, parallel, use_cache) {
+        Ok(r) => {
+            let md = sla_eval::gold::markdown(&r);
+            println!("{}", md.lines().take(3).collect::<Vec<_>>().join("
+"));
+            let ts = sla_core::Timestamp::now().to_string().replace(':', "-");
+            let dir = root.join("eval").join("translator");
+            let _ = std::fs::create_dir_all(&dir);
+            let file = dir.join(format!("{ts}_{set}.md"));
+            let _ = std::fs::write(&file, md);
+            // The translations are training data too.
+            let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "translator", &serde_json::json!({ "set": set, "model": model, "items": r.items }));
+            println!("wrote {}", file.display());
+        }
+        Err(e) => {
+            eprintln!("gold failed: {e}");
+            std::process::exit(1);
+        }
+    }
+}
+
 fn main() {
     let all: Vec<String> = std::env::args().skip(1).collect();
     match all.first().map(String::as_str) {
         Some("outcomes") => return outcomes(&all[1..]),
         Some("bench") => return sla_eval::ops::bench_command(&root(), &all[1..]),
         Some("stress") => return sla_eval::ops::stress_command(&root(), &all[1..]),
+        Some("gold") => return gold_command(&all[1..]),
         _ => {}
     }
     let root = root();

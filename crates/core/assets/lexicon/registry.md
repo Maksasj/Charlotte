@@ -601,6 +601,12 @@ function_word(just).
 function_word(only).
 function_word(even).
 function_word(still).
+function_word(first).
+function_word(second).
+function_word(next).
+function_word(finally).
+function_word(afterwards).
+function_word(meanwhile).
 number_word(zero).
 number_word(one).
 number_word(two).
