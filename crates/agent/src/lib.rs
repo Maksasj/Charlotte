@@ -100,6 +100,8 @@ pub struct Agent {
     /// The open task frame (a task schema from `vault/tasks/`) and the options already offered.
     pub frame: Option<String>,
     pub chosen: Vec<String>,
+    /// The dialogue manager made a move this turn.
+    dialogue_ran: bool,
 }
 
 fn session_name() -> String {
@@ -148,6 +150,7 @@ impl Agent {
             last_step: None,
             frame: None,
             chosen: Vec::new(),
+            dialogue_ran: false,
         }
     }
 
@@ -274,11 +277,19 @@ impl Agent {
         });
         let _ = b.reload_if_edited();
         self.told_about.clear();
+        self.dialogue_ran = false;
         let mut reply = match (oracle, translation) {
             (Some(intents), _) => self.respond_intents(&mut b, text, intents, "oracle"),
             (None, Some(tr)) => self.respond_parts(&mut b, text, tr),
             (None, None) => self.respond_sentences(&mut b, text),
         };
+        // Resume: a turn that left the open task aside returns to its question.
+        if !self.dialogue_ran && !reply.text.trim_end().ends_with('?') {
+            if let Some(q) = self.resume_question(&mut b) {
+                reply.text = format!("{} {q}", reply.text);
+                self.trace_move("resume");
+            }
+        }
         // Learning: one cheap pass per message, around what it told about.
         if !self.told_about.is_empty() {
             let now = self.now();

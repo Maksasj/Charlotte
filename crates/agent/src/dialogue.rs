@@ -78,6 +78,7 @@ impl Agent {
 
     /// Handle all dialogue acts of one message together; one main move.
     pub(crate) fn dialogue(&mut self, b: &mut Brain, acts: Vec<Intent>) -> Reply {
+        self.dialogue_ran = true;
         let now = self.now();
         let base = b.model_at(now);
         let mut heard: Vec<&str> = Vec::new();
@@ -175,16 +176,7 @@ impl Agent {
         let frame = self.frame.clone().unwrap_or_default();
         match mv.as_str() {
             "ask_slots" => {
-                let missing: Vec<String> = m.facts_of("missing_slot").into_iter().filter(|a| first_arg(a) == Some(frame.as_str())).filter_map(|a| a.args.get(1).and_then(|v| v.as_sym()).map(String::from)).collect();
-                let mut qs: Vec<String> = Vec::new();
-                for s in &missing {
-                    let q = m.facts_of("slot_question").into_iter().find(|a| first_arg(a) == Some(frame.as_str()) && a.args.get(1).and_then(|v| v.as_sym()) == Some(s.as_str()));
-                    qs.push(q.and_then(|a| a.args.get(2).and_then(|v| v.as_sym()).map(String::from)).unwrap_or_else(|| format!("what is the {}", words(s))));
-                }
-                let mut text = qs.join(", and ");
-                if let Some(c) = text.get(0..1) {
-                    text = c.to_uppercase() + &text[1..];
-                }
+                let text = slot_questions(&m, &frame);
                 let lead = if heard.contains(&"request") || heard.contains(&"ask_how") { "Sure! " } else { "" };
                 Reply { text: format!("{lead}{text}?"), intent: "clarify", claims: Vec::new() }
             }
@@ -250,6 +242,36 @@ impl Agent {
             "ask_task" => Reply { text: "Next in what? Tell me what you are working on.".into(), intent: "clarify", claims: Vec::new() },
             other => Reply { text: format!("({other})"), intent: "social", claims: Vec::new() },
         }
+    }
+}
+
+/// The open frame's missing slots as one question (without the final "?").
+fn slot_questions(m: &Model, frame: &str) -> String {
+    let missing: Vec<String> = m.facts_of("missing_slot").into_iter().filter(|a| first_arg(a) == Some(frame)).filter_map(|a| a.args.get(1).and_then(|v| v.as_sym()).map(String::from)).collect();
+    let mut qs: Vec<String> = Vec::new();
+    for s in &missing {
+        let q = m.facts_of("slot_question").into_iter().find(|a| first_arg(a) == Some(frame) && a.args.get(1).and_then(|v| v.as_sym()) == Some(s.as_str()));
+        qs.push(q.and_then(|a| a.args.get(2).and_then(|v| v.as_sym()).map(String::from)).unwrap_or_else(|| format!("what is the {}", words(s))));
+    }
+    let text = qs.join(", and ");
+    match text.get(0..1) {
+        Some(c) => c.to_uppercase() + &text[1..],
+        None => text,
+    }
+}
+
+impl Agent {
+    /// The resume move: after a side remark, return to the open frame's question.
+    pub(crate) fn resume_question(&mut self, b: &mut Brain) -> Option<String> {
+        let frame = self.frame.clone()?;
+        let mut facts = self.session_facts.clone();
+        facts.extend(self.moment(&b.model_at(self.now()), &[], &None));
+        let m = b.model_with(self.now(), &facts);
+        let q = slot_questions(&m, &frame);
+        if q.is_empty() {
+            return None;
+        }
+        Some(format!("Back to your plan: {}{}?", q.get(0..1).map(|c| c.to_lowercase()).unwrap_or_default(), q.get(1..).unwrap_or("")))
     }
 }
 

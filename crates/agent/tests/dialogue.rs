@@ -182,3 +182,27 @@ fn dinner_dialogue_live() {
     assert!(r3.contains("Enjoy your dinner!"), "{r3}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The open question survives a side remark, and the agent returns to it.
+#[test]
+fn returns_to_the_open_question() {
+    let dir = temp("question_stack");
+    let brain = Brain::shared(&dir).unwrap();
+    sla_agent::brain::lock(&brain).install(&root().join("data/scenarios/dinner")).unwrap();
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(&[
+        ("Can you help me plan dinner?", &["request: plan_dinner"]),
+        ("By the way, Anna likes tea.", &["tell: likes(anna, tea)"]),
+        ("I have pasta, garlic, olive oil and cherry tomatoes.", &["inform: available(pasta); available(garlic); available(olive_oil); available(cherry_tomato)"]),
+        ("About 20 minutes.", &["inform: time_available(20, minute)"]),
+    ])));
+    talk(&mut a, "Can you help me plan dinner?");
+    let r = talk(&mut a, "By the way, Anna likes tea.");
+    assert!(r.contains("Anna likes tea") && r.contains("Back to your plan") && r.contains("what ingredients"), "{r}");
+    let r = talk(&mut a, "I have pasta, garlic, olive oil and cherry tomatoes.");
+    assert!(r.to_lowercase().contains("how much time") && !r.contains("ingredients"), "only the slot still open: {r}");
+    let r = talk(&mut a, "About 20 minutes.");
+    assert!(r.contains("garlic tomato pasta"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}
