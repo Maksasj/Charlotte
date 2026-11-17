@@ -135,6 +135,16 @@ starting point the next milestones are compared with. 80 "requests" are
 counted by surface cues over all 296 user messages (61 in the trainer set;
 the report's own regex found 57).
 
+## Notes for Design 3.0 (after all of 2.0 is done)
+
+- **Training lab with a real-time dashboard.** In 2.0 the dashboard (`dashboard/`,
+  Vite + React) works, but it polls the trainer's API every 2 seconds and the API
+  re-reads the run's files on each request, so updates are slow and not real time.
+  Design 3.0 should build the dashboard into a training lab (the runner, the vault
+  writer and the dashboard as one system), with events pushed live (a stream such
+  as server-sent events or a WebSocket from the vault writer's event stream)
+  instead of polling files. (User request, 2026-11-17.)
+
 ## 2.0 decisions
 
 - **The brain owns the vault** (`crates/agent/src/brain.rs`). In one process there is
