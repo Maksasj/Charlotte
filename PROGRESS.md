@@ -250,6 +250,11 @@ the report's own regex found 57).
 
 ## 2.0 problems
 
+- 2026-11-17 (user decision): the teacher in curriculum training and the seed
+  review is Haiku (or another cheap model), held to the ground truth by the
+  checker and the meta-request filter. Training runs still start only on the
+  user's go-ahead.
+
 - 2026-11-17, milestone 17: learned input patterns cover 3.3% of turns, not 20%.
   The fixed v1 pattern tier already takes 69% of turns without the model, and the
   rest (task requests, corrections, step lists) is too varied to repeat within 300
