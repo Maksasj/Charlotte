@@ -192,7 +192,7 @@ impl Agent {
                         let on_trial = b.kb.vault.procedures.get(&t).map_or(false, |p| p.meta().status == sla_core::RuleStatus::Hypothesis);
                         let mut r = self.task_help(b, &t);
                         let lead = if on_trial { format!("You could make {} (I was taught this once).", words(&t)) } else { format!("You could make {}.", words(&t)) };
-                        r.text = r.text.replacen(&format!("Here is how to {}:", words(&t)), &lead, 1);
+                        r.text = r.text.replacen(&format!("Here is how to {}:", self.task_phrase(&t)), &lead, 1);
                         r.intent = "recommend";
                         r
                     }

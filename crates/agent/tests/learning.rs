@@ -281,3 +281,28 @@ fn numbered_steps_are_ordered_and_names_merge() {
     assert!(x < y && y < z && z != usize::MAX, "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Transfer: the reply takes the user's situation into account (too little
+/// time, a missing item) instead of ignoring it.
+#[test]
+fn reply_notes_time_and_missing_items() {
+    let dir = temp("constraints");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(TEACH)));
+    for (m, _) in TEACH {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[(
+        "How do I make garlic tomato pasta? I have no garlic and only 10 minutes.",
+        &["ask_how: garlic_tomato_pasta", "inform: -available(garlic); time_available(10, minute)"],
+    )];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("more than the 10 minutes you have"), "{r}");
+    assert!(r.contains("You don't have garlic"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

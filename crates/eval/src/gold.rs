@@ -203,6 +203,7 @@ pub fn run(root: &Path, set: &str, model: &str, parallel: usize, use_cache: bool
                         last_reply: c.as_ref().and_then(|c| c.last_reply.clone()),
                         recent: c.as_ref().map(|c| c.recent.clone()).unwrap_or_default(),
                         known_tasks: Vec::new(),
+                        task_hints: Vec::new(),
                     };
                     let started = std::time::Instant::now();
                     let tr = t.translate(&item.text, &ctx);

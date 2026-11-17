@@ -148,8 +148,13 @@ impl Agent {
         let mut claims = Vec::new();
         let action = values(m, "action", s, 1).into_iter().next();
         let object = values(m, "object_of", s, 1).into_iter().next();
-        // Count nouns are plural in instructions ("Add the cherry tomatoes").
-        let count = |o: &str| !sla_nlg::MASS.contains(&o);
+        // A count noun is plural when the user spoke of it in the plural
+        // ("I have cherry tomatoes" -> "Add the cherry tomatoes"); otherwise
+        // singular ("Heat the oven").
+        let count = |o: &str| !sla_nlg::MASS.contains(&o) && {
+            let pl = sla_nlg::plural(&words(o));
+            self.heard_text.split(|c: char| !c.is_alphanumeric() && c != ' ').any(|part| format!(" {part} ").contains(&format!(" {pl} ")))
+        };
         let mut text = match (&action, &object) {
             (Some(a), Some(o)) => {
                 claims.push(g("action", &[s, a]));
@@ -224,7 +229,7 @@ impl Agent {
         let mut claims = vec![g("task", &[&task])];
         let mut lines = Vec::new();
         let missing = values(&m, "missing", &task, 1);
-        let lead = if task == t { format!("Here is how to {}:", words(&task)) } else { format!("You could make {}:", words(&task)) };
+        let lead = if task == t || self.is_verb_phrase(&task) { format!("Here is how to {}:", self.task_phrase(&task)) } else { format!("You could make {}:", words(&task)) };
         for (i, s) in steps.iter().enumerate() {
             let (text, c) = self.step_text(&m, s);
             claims.extend(c);
@@ -248,8 +253,65 @@ impl Agent {
             text.push_str(&format!(" You still need {}.", list(&missing.iter().map(|x| words(x)).collect::<Vec<_>>())));
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
         }
+        text.push_str(&self.constraint_notes(&m, &task));
         self.last_step = steps.first().cloned();
         Reply { text, intent: "answer", claims }
+    }
+
+    /// Does a task name start with a verb (`boil_egg`), or name a thing (`garlic_tomato_pasta`)?
+    pub(crate) fn is_verb_phrase(&self, task: &str) -> bool {
+        let first = task.split('_').next().unwrap_or("");
+        self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "plan" | "fix" | "clean" | "wash" | "do" | "write" | "pack" | "bake" | "boil")
+    }
+
+    /// "boil egg" for a verb phrase, "make garlic tomato pasta" for a thing.
+    pub(crate) fn task_phrase(&self, task: &str) -> String {
+        if self.is_verb_phrase(task) {
+            words(task)
+        } else {
+            format!("make {}", words(task))
+        }
+    }
+
+    /// What the user's situation changes: too little time, or a needed item
+    /// they do not have (with no known substitute).
+    pub(crate) fn constraint_notes(&self, m: &Model, task: &str) -> String {
+        let mut out = String::new();
+        let minutes = |n: f64, unit: &str| match unit {
+            "hour" => n * 60.0,
+            "second" => n / 60.0,
+            "day" => n * 1440.0,
+            _ => n,
+        };
+        let have = self.session_facts.iter().find(|a| a.pred == "time_available").and_then(|a| Some((a.args.first()?.as_f64()?, a.args.get(1)?.as_sym()?.to_string())));
+        let need = m.facts_of("takes_time").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task)).and_then(|a| Some((a.args.get(1)?.as_f64()?, a.args.get(3)?.as_sym()?.to_string())));
+        if let (Some((h, hu)), Some((n, nu))) = (have, need) {
+            if minutes(n, &nu) > minutes(h, &hu) {
+                let hv = if h.fract() == 0.0 { format!("{}", h as i64) } else { format!("{h}") };
+                let unit = if h == 1.0 { hu.clone() } else { format!("{hu}s") };
+                out.push_str(&format!(" That is more than the {hv} {unit} you have, and I don't know a quicker way yet."));
+            }
+        }
+        let used: Vec<String> = m
+            .facts_of("needs")
+            .into_iter()
+            .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task))
+            .filter_map(|a| a.args.get(1)?.as_sym().map(String::from))
+            .chain(self.ordered_steps(m, task).iter().flat_map(|st| values(m, "uses", st, 1)))
+            .collect();
+        let mut lacking: Vec<String> = self
+            .session_facts
+            .iter()
+            .filter(|a| a.pred == "-available")
+            .filter_map(|a| a.args.first()?.as_sym().map(String::from))
+            .filter(|x| used.contains(x) && !m.contains(&g("covered", &[x])))
+            .collect();
+        lacking.dedup();
+        if !lacking.is_empty() {
+            let l = list(&lacking.iter().map(|x| words(x)).collect::<Vec<_>>());
+            out.push_str(&format!(" You don't have {l}, and I don't know what can replace it yet."));
+        }
+        out
     }
 
     pub(crate) fn task_needs(&mut self, b: &mut Brain, t: &str) -> Reply {
@@ -269,7 +331,8 @@ impl Agent {
         let stated = m.facts_of("takes_time").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task.as_str()));
         if let Some(a) = stated {
             let unit = a.args[3].as_sym().unwrap_or("minute").to_string();
-            return Reply { text: format!("{} takes {}.", capitalize(&words(&task)), range(&a.args[1], &a.args[2], &unit)), intent: "answer", claims: vec![a] };
+            let notes = self.constraint_notes(&m, &task);
+            return Reply { text: format!("{} takes {}.{notes}", capitalize(&words(&task)), range(&a.args[1], &a.args[2], &unit)), intent: "answer", claims: vec![a] };
         }
         if let Some(a) = m.facts_of("total_minutes").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task.as_str())) {
             return Reply { text: format!("{} takes about {}.", capitalize(&words(&task)), range(&a.args[1], &a.args[2], "minute")), intent: "answer", claims: vec![a] };

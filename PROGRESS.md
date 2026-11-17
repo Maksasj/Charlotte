@@ -250,6 +250,19 @@ the report's own regex found 57).
 
 ## 2.0 problems
 
+- 2026-11-17, milestone 18, first full curriculum run (scripted teacher, Haiku
+  translator and judge, 583 calls, `eval/curriculum/2026-11-17T14-51-38.md`):
+  second encounter 6 of 20 (30%, target 70%), transfer 0 of 15 (target 40%),
+  retention 5 of 20; met: not understood 1.5%, helpful + clarify 61.7%,
+  contradicting facts 1.0%, teacher meta requests 0, duplicates after hygiene 0.
+  Causes found: the translator saw only the first 20 known tasks alphabetically,
+  so requests in other words named new tasks ("patch the tube" vs `fix_tire`);
+  objects were pluralized wrongly ("Heat the ovens"); replies ignored the user's
+  situation (too little time, a missing item). Fixed: known tasks ranked by fit
+  to the message with what each involves; plurals only as the user said them;
+  the reply notes too little time and missing items. Most transfer variants need
+  knowledge never taught (soft-boil time, a squeegee substitute).
+
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the
   checker and the meta-request filter. Training runs still start only on the

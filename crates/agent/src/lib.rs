@@ -111,6 +111,8 @@ pub struct Agent {
     said: std::collections::HashSet<String>,
     /// A correction this turn was stored as an exception only.
     exception_noted: bool,
+    /// Everything the user said in this conversation, lowercased.
+    heard_text: String,
 }
 
 fn session_name() -> String {
@@ -168,6 +170,7 @@ impl Agent {
             chosen: Vec::new(),
             dialogue_ran: false,
             exception_noted: false,
+            heard_text: String::new(),
             cur_tier: String::new(),
             said: Default::default(),
         }
@@ -206,6 +209,26 @@ impl Agent {
         let b = self.brain();
         let mut known: Vec<String> = b.kb.vault.procedures.keys().chain(b.kb.vault.tasks.keys()).cloned().collect();
         known.sort();
+        // What each procedure involves: its needs and the objects of its steps.
+        let task_hints: Vec<(String, Vec<String>)> = b
+            .kb
+            .vault
+            .procedures
+            .iter()
+            .map(|(k, pf)| {
+                let mut h: Vec<String> = Vec::new();
+                for f in pf.facts() {
+                    if matches!(f.atom.pred.as_str(), "needs" | "object_of") {
+                        if let Some(w) = f.atom.args.get(1).and_then(|v| v.as_sym()) {
+                            if !h.iter().any(|x| x == w) && h.len() < 8 {
+                                h.push(w.to_string());
+                            }
+                        }
+                    }
+                }
+                (k.clone(), h)
+            })
+            .collect();
         let next_step = self.active_task.as_ref().map_or(1, |t| {
             b.kb.vault.procedures.get(t).map_or(1, |p| p.facts().iter().filter(|f| f.atom.pred == "step").count() + 1)
         });
@@ -215,7 +238,7 @@ impl Agent {
                 recent.insert(0, e.clone());
             }
         }
-        sla_translate::TContext { speaker: self.ctx.speaker.clone(), active_task: self.active_task.clone(), next_step, last_reply: self.last_reply.clone(), recent, known_tasks: known }
+        sla_translate::TContext { speaker: self.ctx.speaker.clone(), active_task: self.active_task.clone(), next_step, last_reply: self.last_reply.clone(), recent, known_tasks: known, task_hints }
     }
 
     pub fn parser_name(&self) -> &str {
@@ -268,6 +291,9 @@ impl Agent {
     /// sentences is handled sentence by sentence.
     pub fn respond(&mut self, text: &str) -> Reply {
         let started = Instant::now();
+        // What the user said in this conversation (for wording: plurals they used).
+        self.heard_text.push(' ');
+        self.heard_text.push_str(&text.to_lowercase());
         let calls_before = sla_parser::claude::thread_calls();
         // Translation happens before the vault lock: it may call a model.
         // Oracle: gold acts for the whole message. Otherwise the translator

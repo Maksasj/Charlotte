@@ -44,6 +44,10 @@ pub struct TContext {
     pub recent: Vec<String>,
     /// Tasks the agent knows (procedures and task schemas).
     pub known_tasks: Vec<String>,
+    /// Per known task: words of what it involves (needs, step objects), so a
+    /// request in other words can still find it.
+    #[serde(default)]
+    pub task_hints: Vec<(String, Vec<String>)>,
 }
 
 impl TContext {
@@ -136,6 +140,35 @@ fn system_prompt() -> String {
 }
 
 /// Words shared between two texts (for choosing examples).
+/// A crude stem: words that share their first five letters (or are equal) match
+/// ("baking"/"bake", "dishes"/"dish", "patching"/"patch").
+fn stem(w: &str) -> String {
+    let w = w.to_lowercase();
+    let w = w.strip_suffix("ing").filter(|r| r.len() >= 3).map(String::from).unwrap_or(w);
+    let w = w.strip_suffix("es").or_else(|| w.strip_suffix('s')).filter(|r| r.len() >= 3).map(String::from).unwrap_or(w);
+    w.chars().take(5).collect()
+}
+
+/// Known tasks ranked by how many of their words (name and hints) the message
+/// shares; ties keep the given order. Always `n` tasks if there are that many.
+pub fn fitting_tasks(ctx: &TContext, message: &str, n: usize) -> Vec<(String, Vec<String>)> {
+    let msg: std::collections::BTreeSet<String> = message.split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2).map(stem).collect();
+    let hints = |t: &str| ctx.task_hints.iter().find(|(k, _)| k == t).map(|(_, h)| h.clone()).unwrap_or_default();
+    let mut scored: Vec<(usize, usize, String, Vec<String>)> = ctx
+        .known_tasks
+        .iter()
+        .enumerate()
+        .map(|(i, t)| {
+            let h = hints(t);
+            let name_hits = t.split('_').filter(|w| w.len() > 2 && msg.contains(&stem(w))).count();
+            let hint_hits = h.iter().flat_map(|x| x.split('_')).filter(|w| w.len() > 2 && msg.contains(&stem(w))).count();
+            (name_hits * 3 + hint_hits, i, t.clone(), h)
+        })
+        .collect();
+    scored.sort_by_key(|(s, i, _, _)| (std::cmp::Reverse(*s), *i));
+    scored.into_iter().take(n).map(|(_, _, t, h)| (t, h)).collect()
+}
+
 fn overlap(a: &str, b: &str) -> usize {
     let wa: std::collections::BTreeSet<String> = a.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2).map(String::from).collect();
     b.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| w.len() > 2 && wa.contains(*w)).count()
@@ -168,11 +201,19 @@ impl ModelTier {
         if let Some(r) = &ctx.last_reply {
             p.push_str(&format!(" The agent last said: \"{}\"", r.chars().take(300).collect::<String>()));
         }
-        if !ctx.known_tasks.is_empty() {
-            p.push_str(&format!(" Tasks the agent knows: {}.", ctx.known_tasks.iter().take(20).map(|r| format!("`{r}`")).collect::<Vec<_>>().join(", ")));
-        }
         // Examples by word overlap with the message.
         let all = sentences.join(" ");
+        // The known tasks that fit the message best, with what they involve.
+        if !ctx.known_tasks.is_empty() {
+            let fits = fitting_tasks(ctx, &all, 15);
+            p.push_str(&format!(
+                " Tasks the agent knows (use one of these names when the message is about the same task, even in other words): {}.",
+                fits.iter()
+                    .map(|(t, h)| if h.is_empty() { format!("`{t}`") } else { format!("`{t}` ({})", h.join(", ")) })
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ));
+        }
         let mut ex: Vec<&(String, Vec<String>)> = self.examples.iter().collect();
         ex.sort_by_key(|(s, _)| std::cmp::Reverse(overlap(s, &all)));
         if !ex.is_empty() {
@@ -793,5 +834,25 @@ mod tests {
         sla_parser::claude::clear_thread_mock();
         assert!(!a.parts[0].understood() && !b.parts[0].understood());
         assert_eq!(t.calls, 1, "the failure is remembered for the session");
+    }
+}
+
+#[cfg(test)]
+mod fit_tests {
+    use super::*;
+
+    #[test]
+    fn requests_in_other_words_find_their_task() {
+        let mut known: Vec<String> = (0..40).map(|i| format!("aaa_task_{i}")).collect();
+        known.extend(["fix_tire", "wash_dish", "plan_party"].map(String::from));
+        let ctx = TContext {
+            known_tasks: known,
+            task_hints: vec![("fix_tire".into(), vec!["tire_lever".into(), "patch_kit".into(), "tube".into()]), ("wash_dish".into(), vec!["sponge".into(), "dish_soap".into()])],
+            ..Default::default()
+        };
+        let top = |m: &str| fitting_tasks(&ctx, m, 3)[0].0.clone();
+        assert_eq!(top("I got a puncture on my bicycle. Can you walk me through patching the tube?"), "fix_tire");
+        assert_eq!(top("How do I wash the dishes?"), "wash_dish");
+        assert_eq!(top("Help me plan a birthday party"), "plan_party");
     }
 }
