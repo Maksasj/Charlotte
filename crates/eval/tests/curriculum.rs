@@ -274,3 +274,37 @@ Thanks for asking!".to_string())
     sla_parser::claude::clear_thread_mock();
     assert_eq!(lines, vec!["A pot can replace a kettle.".to_string(), "Step 1 of making tea: heat the water in the pot.".to_string()]);
 }
+
+/// Parallel teachers on one vault: two teachers at once, reports added up.
+#[test]
+fn parallel_teachers_share_one_vault() {
+    let s = curriculum::parse_scenario(SCENARIO);
+    let dir = std::env::temp_dir().join(format!("sla_m18_par_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let brain: SharedBrain = Brain::shared(&dir).unwrap();
+    let mut cfg = CurriculumConfig {
+        user_agent: Box::new(|b, sp| {
+            let mut a = Agent::with_brain(Arc::clone(b), sp);
+            a.ask_in_chat = false;
+            a.set_parser(Box::new(oracle()));
+            a
+        }),
+        teacher_agent: Box::new(|b| {
+            let mut a = Agent::with_brain(Arc::clone(b), "teacher");
+            a.source = "teacher:curriculum".into();
+            a.ask_in_chat = false;
+            a.set_parser(Box::new(oracle()));
+            a
+        }),
+        judge: Box::new(StepsJudge),
+        labeller: None,
+        max_turns: 4,
+        teacher_model: None,
+    };
+    let r = curriculum::run_parallel(&mut cfg, &brain, &[s.clone(), s], 0, 2);
+    assert_eq!(r.repeat_total, 2);
+    assert_eq!(r.retention_total, 2);
+    assert_eq!(r.repeat_passed, 2, "both teachers' scenarios learned on the shared vault");
+    assert!(r.hygiene.is_some());
+    let _ = std::fs::remove_dir_all(&dir);
+}

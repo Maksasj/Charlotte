@@ -850,7 +850,7 @@ fn curriculum_running() -> bool {
 
 /// Start `sla_eval curriculum --train` (the binary beside this one) in the
 /// repo root; its output goes to data/training/curriculum/dashboard_run.txt.
-fn start_curriculum() -> Result<(), String> {
+fn start_curriculum(teachers: usize) -> Result<(), String> {
     if curriculum_running() {
         return Err("a curriculum run is already going".into());
     }
@@ -865,7 +865,7 @@ fn start_curriculum() -> Result<(), String> {
     let _ = std::fs::create_dir_all(out_path.parent().unwrap());
     let out = std::fs::File::create(&out_path).map_err(|e| e.to_string())?;
     let err = out.try_clone().map_err(|e| e.to_string())?;
-    let child = std::process::Command::new(bin).args(["curriculum", "--train"]).current_dir(&root).stdout(out).stderr(err).spawn().map_err(|e| e.to_string())?;
+    let child = std::process::Command::new(bin).args(["curriculum", "--train", "--teachers", &teachers.clamp(1, 24).to_string()]).current_dir(&root).stdout(out).stderr(err).spawn().map_err(|e| e.to_string())?;
     *CURRICULUM.lock().unwrap_or_else(|e| e.into_inner()) = Some(child);
     Ok(())
 }
@@ -924,7 +924,9 @@ fn handle(trainer: &Arc<Trainer>, ui: &PathBuf, port: u16, mut stream: TcpStream
         }
         ("POST", "/api/curriculum/start") => {
             // Starting it spends real model calls: never on a mock trainer.
-            let r = if MOCK_MODELS.load(std::sync::atomic::Ordering::SeqCst) { Err("the dashboard runs on mock models (--mock); a curriculum run would use real ones".to_string()) } else { start_curriculum() };
+            // {"teachers": N} in the body: parallel teachers on one vault (1 to 24).
+            let teachers = serde_json::from_slice::<serde_json::Value>(&req.body).ok().and_then(|v| v["teachers"].as_u64()).unwrap_or(1) as usize;
+            let r = if MOCK_MODELS.load(std::sync::atomic::Ordering::SeqCst) { Err("the dashboard runs on mock models (--mock); a curriculum run would use real ones".to_string()) } else { start_curriculum(teachers) };
             match r {
                 Ok(()) => respond(&mut stream, 200, "application/json", b"{\"ok\":true}"),
                 Err(e) => respond(&mut stream, 409, "application/json", serde_json::json!({ "ok": false, "error": e }).to_string().as_bytes()),

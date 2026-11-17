@@ -95,7 +95,7 @@ fn gold_command(args: &[String]) {
     }
 }
 
-/// `sla_eval curriculum [--model haiku] [--judge haiku] [--limit N] [--no-seeds] [--vault DIR] [--train]`
+/// `sla_eval curriculum [--model haiku] [--judge haiku] [--limit N] [--no-seeds] [--vault DIR] [--train] [--teachers N]`
 /// (`--train`: first the curriculum over data/curriculum/training, then the held-out run.)
 /// The four encounters over the held-out scenarios on a fresh vault (seeded
 /// with the 30 seed procedures), scripted teacher, model translator and judge.
@@ -104,6 +104,8 @@ fn curriculum_command(args: &[String]) {
     let model = arg("--model").unwrap_or_else(|| "haiku".into());
     let judge = arg("--judge").unwrap_or_else(|| "haiku".into());
     let limit: usize = arg("--limit").and_then(|v| v.parse().ok()).unwrap_or(usize::MAX);
+    // Parallel teachers on the same vault (each keeps the encounter order of its share).
+    let teachers: usize = arg("--teachers").and_then(|v| v.parse().ok()).unwrap_or(1);
     let root = root();
     let ts = sla_core::Timestamp::now().to_string().replace(':', "-");
     let vault = arg("--vault").map(std::path::PathBuf::from).unwrap_or_else(|| std::env::temp_dir().join(format!("sla_curriculum_{ts}")));
@@ -130,7 +132,7 @@ fn curriculum_command(args: &[String]) {
         eprintln!("training on {} scenarios first", train.len());
         // In training the in-role teacher (Haiku by default) also teaches variants.
         cfg.teacher_model = Some(arg("--teacher").unwrap_or_else(|| "haiku".into()));
-        let t = sla_eval::curriculum::run(&mut cfg, &brain, &train, seeds);
+        let t = sla_eval::curriculum::run_parallel(&mut cfg, &brain, &train, seeds, teachers);
         cfg.teacher_model = None;
         let tmd = sla_eval::curriculum::markdown(&t);
         let dir = root.join("eval").join("curriculum");
@@ -143,7 +145,7 @@ fn curriculum_command(args: &[String]) {
         }
         println!("held-out stage:");
     }
-    let r = sla_eval::curriculum::run(&mut cfg, &brain, &scenarios, seeds);
+    let r = sla_eval::curriculum::run_parallel(&mut cfg, &brain, &scenarios, seeds, teachers);
     let failed: u64 = sla_parser::claude::global_usage().values().map(|u| u.errors).sum();
     let calls: u64 = sla_parser::claude::global_usage().values().map(|u| u.calls).sum();
     let md = sla_eval::curriculum::markdown(&r);

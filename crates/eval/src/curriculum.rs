@@ -327,7 +327,8 @@ fn live(enc: usize, kind: &str, scenario: &str, who: &str, text: &str) {
     use std::io::Write;
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
         let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs_f64()).unwrap_or(0.0);
-        let _ = writeln!(f, "{}", serde_json::json!({"t": t, "enc": enc, "kind": kind, "scenario": scenario, "who": who, "text": text}));
+        let teacher = TEACHER.with(|c| c.get());
+        let _ = writeln!(f, "{}", serde_json::json!({"t": t, "enc": enc, "kind": kind, "scenario": scenario, "who": who, "text": text, "teacher": teacher}));
     }
 }
 const META: &[&str] = &["say it back", "repeat after", "format", "as a list", "bullet", "numbered", "sorry", "apolog", "as an ai", "assistant"];
@@ -517,13 +518,73 @@ pub fn fix_lines(brain: &SharedBrain, s: &Scenario, session: &str) -> Vec<String
 }
 
 /// Run the curriculum over `scenarios` on `brain`.
-pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenario], seeds: usize) -> CurriculumReport {
+/// Encounter numbers, unique across parallel teachers.
+static ENCOUNTER: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+
+thread_local! {
+    /// Which parallel teacher this thread is (0 when there is one).
+    static TEACHER: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
+/// Run the curriculum with `teachers` teachers in parallel on the same vault:
+/// the scenarios are dealt round-robin into shares, each share keeps the
+/// encounter order, and the reports are added together; turn labels, the
+/// ground-truth check of stored facts and hygiene run once at the end.
+pub fn run_parallel(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenario], seeds: usize, teachers: usize) -> CurriculumReport {
+    let n = teachers.clamp(1, scenarios.len().max(1));
+    if n <= 1 {
+        return run(cfg, brain, scenarios, seeds);
+    }
+    let shares: Vec<Vec<Scenario>> = (0..n).map(|t| scenarios.iter().skip(t).step_by(n).cloned().collect()).collect();
+    let shared: &CurriculumConfig = cfg;
+    let parts: Vec<CurriculumReport> = std::thread::scope(|sc| {
+        let handles: Vec<_> = shares
+            .iter()
+            .enumerate()
+            .map(|(t, share)| {
+                sc.spawn(move || {
+                    TEACHER.with(|c| c.set(t + 1));
+                    run_encounters(shared, brain, share, seeds)
+                })
+            })
+            .collect();
+        handles.into_iter().filter_map(|h| h.join().ok()).collect()
+    });
     let mut rep = CurriculumReport { scenarios: scenarios.len(), seeds, ..Default::default() };
-    let mut n = 0;
-    let mut next = || {
-        n += 1;
-        n
-    };
+    for p in parts {
+        rep.encounters.extend(p.encounters);
+        rep.teach_first_try += p.teach_first_try;
+        rep.taught_learned += p.taught_learned;
+        rep.taught_not_learned += p.taught_not_learned;
+        rep.repeat_passed += p.repeat_passed;
+        rep.repeat_symbolic += p.repeat_symbolic;
+        rep.repeat_total += p.repeat_total;
+        rep.transfer_passed += p.transfer_passed;
+        rep.transfer_total += p.transfer_total;
+        rep.transfer_retry_passed += p.transfer_retry_passed;
+        rep.transfer_retry_total += p.transfer_retry_total;
+        rep.variant_teach_lines += p.variant_teach_lines;
+        rep.retention_passed += p.retention_passed;
+        rep.retention_total += p.retention_total;
+        rep.spaced_passed += p.spaced_passed;
+        rep.spaced_total += p.spaced_total;
+        rep.teacher_meta_requests += p.teacher_meta_requests;
+        rep.curiosity_asked += p.curiosity_asked;
+        rep.curiosity_answered += p.curiosity_answered;
+        rep.curiosity_questions.extend(p.curiosity_questions);
+    }
+    finish(cfg, brain, scenarios, rep)
+}
+
+pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenario], seeds: usize) -> CurriculumReport {
+    let rep = run_encounters(cfg, brain, scenarios, seeds);
+    finish(cfg, brain, scenarios, rep)
+}
+
+/// All encounters for one share of scenarios (no labels, no final checks).
+fn run_encounters(cfg: &CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenario], seeds: usize) -> CurriculumReport {
+    let mut rep = CurriculumReport { scenarios: scenarios.len(), seeds, ..Default::default() };
+    let next = || ENCOUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1;
     // 1. Teach.
     for s in scenarios {
         let e = cfg.encounter(brain, s, "teach", &s.requests[0], &s.situation, false, next());
@@ -621,6 +682,11 @@ pub fn run(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenari
         rep.retention_passed += e.passed as usize;
         rep.encounters.push(e);
     }
+    rep
+}
+
+/// Turn labels, the ground-truth check of stored facts, and hygiene.
+fn finish(cfg: &mut CurriculumConfig, brain: &SharedBrain, scenarios: &[Scenario], mut rep: CurriculumReport) -> CurriculumReport {
     // Turn labels.
     let scen_of = |id: &str| scenarios.iter().find(|s| s.id == id).map(|s| s.requests[0].clone()).unwrap_or_default();
     let mut to_label = Vec::new();

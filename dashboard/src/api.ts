@@ -11,6 +11,8 @@ export interface LiveEvent {
   scenario: string;
   who: Who;
   text: string;
+  /// Which parallel teacher (1..N); 0 or missing with one teacher.
+  teacher?: number;
 }
 
 export interface KindCount {

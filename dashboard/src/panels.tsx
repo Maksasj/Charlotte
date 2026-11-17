@@ -5,10 +5,11 @@ import { api, fmtInt, pct, type Curriculum, type GridRow, type KindCount, type L
 
 export function Controls({ c }: { c: Curriculum | null }) {
   const [msg, setMsg] = useState('');
-  const post = async (path: string, confirmText: string) => {
+  const [teachers, setTeachers] = useState(16);
+  const post = async (path: string, confirmText: string, body?: unknown) => {
     if (!window.confirm(confirmText)) return;
     try {
-      await api(path, { method: 'POST' });
+      await api(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined, headers: { 'Content-Type': 'application/json' } });
       setMsg('');
     } catch (e) {
       setMsg(String((e as Error).message));
@@ -22,15 +23,25 @@ export function Controls({ c }: { c: Curriculum | null }) {
           <span className="live-dot">● running</span>
         </>
       ) : (
-        <button
-          className="start"
-          disabled={!c || c.mock}
-          onClick={() =>
-            post('/api/curriculum/start', 'Start the curriculum training run? It trains on the 55 training scenarios, then measures on the 20 held-out ones: about 2,000-2,500 Haiku calls and 1.5-2 hours.')
-          }
-        >
-          Start curriculum training
-        </button>
+        <>
+          <label className="muted">
+            teachers{' '}
+            <input className="filter" type="number" min={1} max={24} value={teachers} onChange={(e) => setTeachers(Math.max(1, Math.min(24, Number(e.target.value) || 1)))} style={{ width: '4.5em' }} />
+          </label>
+          <button
+            className="start"
+            disabled={!c || c.mock}
+            onClick={() =>
+              post(
+                '/api/curriculum/start',
+                `Start the curriculum training run with ${teachers} parallel teacher(s)? It trains on the 55 training scenarios, then measures on the 20 held-out ones: about 2,000-2,500 Haiku calls.`,
+                { teachers },
+              )
+            }
+          >
+            Start curriculum training
+          </button>
+        </>
       )}
       {c?.mock && <span className="muted">(mock models: starting is off)</span>}
       {msg && <span className="error">{msg}</span>}
@@ -84,6 +95,7 @@ export function Progress({ kinds, training }: { kinds: KindCount[]; training: bo
 
 interface Lane {
   key: string;
+  teacher: number;
   kind: string;
   scenario: string;
   enc: number;
@@ -94,12 +106,15 @@ interface Lane {
 }
 
 function lanesOf(recent: LiveEvent[]): Lane[] {
+  // Parallel teachers interleave their messages: group by conversation, not by order.
+  const byKey = new Map<string, Lane>();
   const lanes: Lane[] = [];
-  let cur: Lane | null = null;
   for (const e of recent) {
-    const key = e.enc ? `enc-${e.enc}` : `${e.kind}-${e.scenario}`;
-    if (!cur || cur.key !== key || (e.who === 'phase' && cur.msgs.length)) {
-      cur = { key, kind: e.kind, scenario: e.scenario, enc: e.enc, title: '', msgs: [], verdict: null, t: e.t };
+    const key = e.enc ? `enc-${e.enc}` : `${e.kind}-${e.scenario}-${e.teacher ?? 0}`;
+    let cur = byKey.get(key);
+    if (!cur || (e.who === 'phase' && cur.msgs.length)) {
+      cur = { key, teacher: e.teacher ?? 0, kind: e.kind, scenario: e.scenario, enc: e.enc, title: '', msgs: [], verdict: null, t: e.t };
+      byKey.set(key, cur);
       lanes.push(cur);
     }
     if (e.who === 'phase') cur.title = e.text;
@@ -110,18 +125,19 @@ function lanesOf(recent: LiveEvent[]): Lane[] {
     } else if (e.who !== 'vault') cur.msgs.push({ who: e.who, text: e.text });
     cur.t = e.t;
   }
-  return lanes.filter((l) => l.msgs.length).reverse();
+  return lanes.filter((l) => l.msgs.length).sort((a, b) => b.t - a.t);
 }
 
-export function Lanes({ recent, max = 6 }: { recent: LiveEvent[]; max?: number }) {
+export function Lanes({ recent, max = 16 }: { recent: LiveEvent[]; max?: number }) {
   const lanes = lanesOf(recent).slice(0, max);
   const now = Date.now() / 1000;
   if (!lanes.length) return <p className="muted">Conversations appear here as they happen.</p>;
   return (
     <div className="lanes">
       {lanes.map((l, i) => {
-        const live = i === 0 && now - l.t < 30;
-        const label = l.enc ? `#${l.enc} · ${l.kind} · ${l.scenario}` : l.kind === 'teach_block' ? `teach block · ${l.scenario}` : l.kind;
+        const live = now - l.t < 20;
+        const who = l.teacher ? `T${l.teacher} · ` : '';
+        const label = who + (l.enc ? `#${l.enc} · ${l.kind} · ${l.scenario}` : l.kind === 'teach_block' ? `teach block · ${l.scenario}` : l.kind);
         const pass = l.verdict?.startsWith('PASS');
         return (
           <div className="lane" key={`${l.key}-${i}`}>
