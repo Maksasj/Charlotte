@@ -324,6 +324,16 @@ the report's own regex found 57).
   taught-then-learned 13 of 20; retention 8 of 20 (40%, was 50%); transfer 0 of
   15; not understood 1.7%; helpful + clarify 67.0%; contradicting facts 0.6%;
   the agent asked its teacher 8 questions, 7 answered from the ground truth.
+- 2026-11-17, judge score (`sla_eval rate`, `eval/curriculum/judge_score.md`): the
+  1-10 score over the second-encounter and retention conversations was 3.65
+  (3.30 to 4.00) on run 6; with articles and fitting prepositions in help replies,
+  run 7 gives **4.05 (3.72 to 4.38)**, target 6.0 with the interval above v1's best
+  4.3: not met. Run 7 otherwise: second encounter 13 of 20 (65%) by Haiku, 19 of 20
+  by the ground-truth check (one scenario either way is within the noise of 20),
+  retention 11 of 20 (55%). Asked why a correct, complete rice reply scores 4, the
+  judge names what the taught ground truth does not contain: the reply does not
+  address the user's concern (mushy rice), and gives no water ratio. The judge
+  mean therefore depends mostly on what training teaches, like transfer.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the

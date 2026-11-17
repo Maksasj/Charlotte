@@ -317,6 +317,64 @@ fn rate_command(args: &[String]) {
     let _ = std::fs::write(root.join("eval").join("curriculum").join("judge_score.md"), md);
 }
 
+/// `sla_eval pairwise [--judge haiku]`: the latest full curriculum run's
+/// second-encounter replies against the milestone 12 build's replies to the same
+/// requests after the same teaching (eval/curriculum/m12_baseline.json, from
+/// tools/m12_baseline.py), judged pairwise in alternating order.
+fn pairwise_command(args: &[String]) {
+    let judge = args.iter().position(|a| a == "--judge").and_then(|i| args.get(i + 1)).cloned().unwrap_or_else(|| "haiku".into());
+    let root = root();
+    let base: serde_json::Value = match std::fs::read_to_string(root.join("eval/curriculum/m12_baseline.json")).ok().and_then(|t| serde_json::from_str(&t).ok()) {
+        Some(v) => v,
+        None => {
+            eprintln!("no eval/curriculum/m12_baseline.json: run tools/m12_baseline.py first");
+            return;
+        }
+    };
+    let mut last: Option<serde_json::Value> = None;
+    let mut files: Vec<_> = std::fs::read_dir(root.join("data/training/curriculum")).map(|d| d.flatten().map(|e| e.path()).filter(|p| p.extension().map_or(false, |x| x == "jsonl")).collect()).unwrap_or_default();
+    files.sort();
+    for f in files {
+        for line in std::fs::read_to_string(&f).unwrap_or_default().lines() {
+            if let Ok(v) = serde_json::from_str::<serde_json::Value>(line) {
+                if v["scenarios"].as_u64() == Some(20) {
+                    last = Some(v);
+                }
+            }
+        }
+    }
+    let Some(run) = last else { return };
+    let j = sla_eval::curriculum::ModelJudge::new(judge, Some(root.join("eval").join("curriculum_judge_cache.jsonl")));
+    let (mut wins, mut n) = (0usize, 0usize);
+    let mut md = String::from("# Pairwise: this build against the milestone 12 build\n\nSame teaching, same second-encounter request; the judge sees both replies in alternating order.\n\n");
+    let mut rows = String::new();
+    for (i, e) in run["encounters"].as_array().into_iter().flatten().filter(|e| e["kind"] == "repeat").enumerate() {
+        let sid = e["scenario"].as_str().unwrap_or("");
+        let Some(old) = base[sid]["reply"].as_str().filter(|r| !r.is_empty()) else { continue };
+        let Some(turn) = e["turns"].as_array().and_then(|t| t.first()) else { continue };
+        let request = turn["user"].as_str().unwrap_or("");
+        let new = turn["agent"].as_str().unwrap_or("");
+        let (a, b, new_is_a) = if i % 2 == 0 { (new, old, true) } else { (old, new, false) };
+        let prompt = format!(
+            "A user asked an assistant: \"{request}\"\n\nReply A: {a}\n\nReply B: {b}\n\nWhich reply helps the user more (correct, complete and clear)? Answer with exactly one letter: A or B."
+        );
+        let Ok(out) = j.ask(&prompt) else { continue };
+        let pick = out.trim().trim_matches(|c: char| !c.is_ascii_alphabetic()).chars().next().map(|c| c.to_ascii_uppercase());
+        let Some(p) = pick.filter(|c| *c == 'A' || *c == 'B') else { continue };
+        n += 1;
+        let new_won = (p == 'A') == new_is_a;
+        wins += new_won as usize;
+        rows.push_str(&format!("- {sid}: {}\n  - this build: {}\n  - milestone 12: {}\n", if new_won { "this build" } else { "milestone 12" }, new.replace('\n', " / "), old.replace('\n', " / ")));
+    }
+    let (pr, lo, hi) = sla_eval::outcome::wilson(wins, n);
+    let line = format!("This build preferred in {wins} of {n} pairs ({:.1}%, 95% interval {:.1} to {:.1}); target 70% or more.", pr * 100.0, lo * 100.0, hi * 100.0);
+    println!("{line}");
+    md.push_str(&line);
+    md.push_str("\n\n");
+    md.push_str(&rows);
+    let _ = std::fs::write(root.join("eval/curriculum/pairwise_m12.md"), md);
+}
+
 /// `sla_eval consolidate --vault DIR`: the offline consolidation pass (rule
 /// search over the whole vault, hygiene, steps shared by procedures).
 fn consolidate_command(args: &[String]) {
@@ -414,6 +472,7 @@ fn main() {
         Some("curriculum") => return curriculum_command(&all[1..]),
         Some("calibrate") => return calibrate_command(),
         Some("rate") => return rate_command(&all[1..]),
+        Some("pairwise") => return pairwise_command(&all[1..]),
         Some("consolidate") => return consolidate_command(&all[1..]),
         _ => {}
     }

@@ -1642,3 +1642,15 @@
 {"key":"8a9a244a49294ba3:1","lines":[[1,["ask_how: wash_dish"]]]}
 {"key":"a90f5c35aa494fb7:1,2","lines":[[1,["inform: has(my_plant, droopy)"]],[2,["ask_how: water_plant"]]]}
 {"key":"307ca858b3d7012c:1,2","lines":[[1,["inform: wants(user101, write_note)","tell: water(my_neighbour, my_plant) @past"]],[2,["ask_how: write_note"]]]}
+{"key":"0f50b76c894fb3b2:1","lines":[[1,["inform: has(maksim, washing_machine); available(detergent); available(drying_rack); available(laundry); available(laundry)"]]]}
+{"key":"0f50b76c894fb3b2:1:retry","lines":[[1,["inform: available(washing_machine); available(detergent); available(drying_rack); available(laundry)"]]]}
+{"key":"d89b4eef8862ba4a:1","lines":[[1,["inform: available(new_bulb); available(step_ladder)"]]]}
+{"key":"ec9a613cd6b8ccbd:1","lines":[[1,["inform: available(sink); available(water); available(dish_soap); available(sponge); available(drying_rack)"]]]}
+{"key":"fe1d31f35cbdc987:1,2","lines":[[1,["inform: rent(user67); -can_make(user67, hole)"]],[2,["inform: available(picture); available(pencil); available(tape_measure); available(adhesive_hanging_strip)"]]]}
+{"key":"019f1d12d9f522d3:1:retry","lines":[[1,["inform: rent(user67)","new_pred: can_make(user67, hole) | the speaker is able to make holes in a wall","inform: -can_make(user67, hole)"]]]}
+{"key":"70a6511d280890b2:1,2","lines":[[1,["inform: rent(user67)"]],[2,["inform: -can(user67, make_hole)"]]]}
+{"key":"334c866c1221bc34:1,2","lines":[[1,["unknown:"]],[2,["inform: available(cabin_bag); available(clothing); available(toiletry); available(passport)"]]]}
+{"key":"e8d45ed5294ec6d0:2:retry","lines":[[2,["inform: available(cabin_bag); available(clothing); available(toiletry); available(passport)"]]]}
+{"key":"2dba534a7e64d101:1,2","lines":[[1,["inform: wants(user97, plan_birthday_party); located_in(plan_birthday_party, home); portion(guest, 10, person)"]],[2,["inform: located_in(cake, bakery); wants(user97, cake); wants(user97, balloon)"]]]}
+{"key":"130d122fea605d44:1","lines":[[1,["inform: has(maksim, picnic_basket); has(maksim, blanket); has(maksim, bread); has(maksim, sandwich_filling); has(maksim, fruit); has(maksim, drink)"]]]}
+{"key":"130d122fea605d44:1:retry","lines":[[1,["inform: available(picnic_basket); available(blanket); available(bread); available(sandwich_filling); available(fruit); available(drink)"]]]}
