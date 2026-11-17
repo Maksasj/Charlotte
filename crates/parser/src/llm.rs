@@ -13,6 +13,9 @@ use std::path::PathBuf;
 
 const SPEC: &str = include_str!("../../../docs/parser_spec.md");
 
+/// Serializes appends to translation cache files across agents in one process.
+static CACHE_FILE: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 /// Parse one canonical line (`tell: likes(anna, tea)`) back into an intent.
 pub fn from_canonical(line: &str) -> Option<Intent> {
     let (kind, payload) = line.split_once(':')?;
@@ -163,9 +166,16 @@ impl LlmTranslator {
     }
 
     fn remember(&mut self, key: String, lines: Vec<String>) {
-        if let Some(p) = &self.cache_path {
-            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
-                let _ = writeln!(f, "{key}\t{}", lines.join("\u{1f}"));
+        // Failures are remembered in memory only, so a failed translation is
+        // never retried later in the same turn (for example inside the vault
+        // lock); a new session tries again.
+        if !lines.is_empty() {
+            if let Some(p) = &self.cache_path {
+                // One writer at a time, one write per line: parallel agents never interleave.
+                let _g = CACHE_FILE.lock().unwrap_or_else(|e| e.into_inner());
+                if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
+                    let _ = f.write_all(format!("{key}\t{}\n", lines.join("\u{1f}")).as_bytes());
+                }
             }
         }
         self.cache.insert(key, lines);
@@ -207,9 +217,7 @@ impl LlmTranslator {
             Some(l) => l.clone(),
             None => {
                 let l = self.ask_model(text, ctx);
-                if !l.is_empty() {
-                    self.remember(key, l.clone());
-                }
+                self.remember(key, l.clone());
                 l
             }
         };
@@ -316,6 +324,32 @@ mod tests {
         assert!(!suspicious(&parse("Anna likes tea and coffee.", &ctx)));
         assert!(!suspicious(&parse("I live in New York.", &ctx)));
         assert!(!suspicious(&parse("Anna's job is teacher.", &ctx)));
+    }
+
+    #[test]
+    fn model_path_with_mock() {
+        use std::sync::Arc;
+        let ctx = Context::default();
+        // Valid lines are kept, invented formats are dropped, results are cached.
+        crate::claude::set_thread_mock(Arc::new(|role, prompt| {
+            assert_eq!(role, "translator");
+            assert!(prompt.contains("Message: My aunt Anna, who lives nearby, really enjoys green tea in the afternoon."));
+            Ok("tell: likes(anna, green_tea)\nThis is not a canonical line\n`ask: likes(anna, W)`".into())
+        }));
+        let mut t = LlmTranslator::new("haiku", None);
+        let text = "My aunt Anna, who lives nearby, really enjoys green tea in the afternoon.";
+        let v = t.parse_many(text, &ctx);
+        assert_eq!(v.iter().map(|i| i.canonical()).collect::<Vec<_>>(), vec!["tell: likes(anna, green_tea)", "ask: likes(anna, W)"]);
+        assert_eq!(t.calls, 1);
+        t.parse_many(text, &ctx);
+        assert_eq!(t.calls, 1, "the second time comes from the cache");
+        // A failed call gives `unknown` and is not repeated in the same session.
+        crate::claude::set_thread_mock(Arc::new(|_, _| Err("CLI not available".into())));
+        let text2 = "Something long that the pattern parser will not understand at all, sadly.";
+        assert_eq!(t.parse_many(text2, &ctx), vec![Intent::Unknown]);
+        assert_eq!(t.parse_many(text2, &ctx), vec![Intent::Unknown]);
+        assert_eq!(t.calls, 2);
+        crate::claude::clear_mocks();
     }
 
     #[test]

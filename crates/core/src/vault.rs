@@ -246,6 +246,15 @@ pub fn entity_of(f: &Fact) -> String {
     }
 }
 
+/// The in-memory state of a vault at one moment (see [`Vault::snapshot`]).
+#[derive(Debug, Clone)]
+pub struct VaultSnapshot {
+    facts: BTreeMap<String, FactFile>,
+    rules: BTreeMap<String, RuleFile>,
+    core: BTreeMap<String, RuleFile>,
+    dirty: std::collections::BTreeSet<(String, String)>,
+}
+
 #[derive(Debug, Default)]
 pub struct Vault {
     pub root: PathBuf,
@@ -257,6 +266,10 @@ pub struct Vault {
     pub core: BTreeMap<String, RuleFile>,
     /// Files changed since load, as (dir, stem).
     dirty: std::collections::BTreeSet<(String, String)>,
+    /// Bumped on every change in memory (facts, rules, reloads), so cached
+    /// models know when they are stale. Code that edits `facts` or `rules`
+    /// directly must call a `mark_*_dirty` method, which bumps it too.
+    pub generation: u64,
 }
 
 fn read_md_dir(dir: &Path) -> io::Result<Vec<(String, String)>> {
@@ -299,16 +312,25 @@ impl Vault {
 
     /// Re-read everything from disk, dropping unsaved changes.
     pub fn reload(&mut self) -> io::Result<()> {
+        let generation = self.generation + 1;
         *self = Vault::load(self.root.clone())?;
+        self.generation = generation;
         Ok(())
     }
 
     pub fn mark_fact_dirty(&mut self, stem: &str) {
+        self.generation += 1;
         self.dirty.insert(("facts".into(), stem.into()));
     }
 
     pub fn mark_rule_dirty(&mut self, stem: &str) {
+        self.generation += 1;
         self.dirty.insert(("rules".into(), stem.into()));
+    }
+
+    /// Note a change to core files made in memory.
+    pub fn touch(&mut self) {
+        self.generation += 1;
     }
 
     /// Write changed files. Rule files that were removed are deleted on disk.
@@ -435,11 +457,28 @@ impl Vault {
         let path = dir.join(format!("{y:04}-{m:02}-{d:02}.md"));
         let new = !path.exists();
         let mut f = fs::OpenOptions::new().create(true).append(true).open(&path)?;
-        if new {
-            writeln!(f, "# Change log {y:04}-{m:02}-{d:02}\n")?;
-        }
         let clean = |s: &str| s.replace(['\n', '\r'], " ").replace('|', "/");
-        writeln!(f, "- {at} | {} | {} | {}", clean(action), clean(subject), clean(reason))
+        // One write per entry: a line is never split by another writer's output.
+        let mut line = String::new();
+        if new {
+            line.push_str(&format!("# Change log {y:04}-{m:02}-{d:02}\n\n"));
+        }
+        line.push_str(&format!("- {at} | {} | {} | {}\n", clean(action), clean(subject), clean(reason)));
+        f.write_all(line.as_bytes())
+    }
+
+    /// A copy of everything in memory, for all-or-nothing changes.
+    pub fn snapshot(&self) -> VaultSnapshot {
+        VaultSnapshot { facts: self.facts.clone(), rules: self.rules.clone(), core: self.core.clone(), dirty: self.dirty.clone() }
+    }
+
+    /// Go back to a snapshot (the generation still moves forward).
+    pub fn restore(&mut self, s: VaultSnapshot) {
+        self.facts = s.facts;
+        self.rules = s.rules;
+        self.core = s.core;
+        self.dirty = s.dirty;
+        self.generation += 1;
     }
 
     /// Read all log entries in order: (time, action, subject, reason).

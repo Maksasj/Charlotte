@@ -774,6 +774,91 @@ impl Model {
     }
 }
 
+/// Check that rules can be evaluated together (safe and stratifiable) without
+/// evaluating them.
+pub fn check(rules: &[RuleInput]) -> Result<(), EvalError> {
+    let compiled: Vec<CRule> = rules
+        .iter()
+        .map(|r| compile(&r.rule.head, &r.rule.body, r.conf, &r.id))
+        .collect::<Result<_, _>>()?;
+    stratify(&compiled).map(|_| ())
+}
+
+/// Split rules into the ones that can run together and the ones that cannot.
+/// Rules with an id starting `core/` are always kept (if core itself is
+/// broken, the error is returned). Learned rules are added one at a time in
+/// order; a rule that makes the program unsafe or unstratifiable is set aside
+/// with its error.
+pub fn quarantine(rules: &[RuleInput]) -> Result<(Vec<RuleInput>, Vec<(RuleInput, EvalError)>), EvalError> {
+    let (mut kept, learned): (Vec<RuleInput>, Vec<RuleInput>) = rules.iter().cloned().partition(|r| r.id.starts_with("core/"));
+    check(&kept)?;
+    let mut bad = Vec::new();
+    for r in learned {
+        kept.push(r);
+        if let Err(e) = check(&kept) {
+            let r = kept.pop().unwrap();
+            bad.push((r, e));
+        }
+    }
+    Ok((kept, bad))
+}
+
+/// Predicates whose new facts can make a derived fact false: those that a
+/// negated body atom depends on (directly or through rules).
+pub fn naf_sensitive(rules: &[RuleInput]) -> HashSet<String> {
+    let mut feeds: HashMap<&str, Vec<&str>> = HashMap::new();
+    let mut out: HashSet<String> = HashSet::new();
+    let mut stack: Vec<String> = Vec::new();
+    for r in rules {
+        for l in &r.rule.body {
+            match l {
+                Literal::Pos(a) => feeds.entry(r.rule.head.pred.as_str()).or_default().push(a.pred.as_str()),
+                Literal::Neg(a) => stack.push(a.pred.clone()),
+                Literal::Cmp(..) => {}
+            }
+        }
+    }
+    while let Some(p) = stack.pop() {
+        if !out.insert(p.clone()) {
+            continue;
+        }
+        if let Some(srcs) = feeds.get(p.as_str()) {
+            stack.extend(srcs.iter().map(|s| s.to_string()));
+        }
+    }
+    out
+}
+
+/// The moments at which the past must be evaluated so that every fact that
+/// was ever true (given or derived) is true in at least one of them, newest
+/// first, at most `cap`. Facts are only ever joined at one moment, so a rule
+/// never combines premises that were not true together.
+///
+/// A derived fact stays true until one of its premises ends, or (through
+/// negation) until a new fact of a sensitive predicate starts, so the moment
+/// just before every such boundary is enough.
+pub fn past_moments(facts: &[Fact], rules: &[RuleInput], now: Timestamp, cap: usize) -> Vec<Timestamp> {
+    let sensitive = naf_sensitive(rules);
+    let mut ts: Vec<i64> = Vec::new();
+    for f in facts {
+        if let Some(u) = f.until {
+            if u.0 <= now.0 {
+                ts.push(u.0 - 1);
+            }
+        }
+        if let Some(fr) = f.from {
+            if fr.0 <= now.0 && sensitive.contains(f.atom.pred.as_str()) {
+                ts.push(fr.0 - 1);
+            }
+        }
+    }
+    ts.sort_unstable();
+    ts.dedup();
+    ts.reverse();
+    ts.truncate(cap);
+    ts.into_iter().map(Timestamp).collect()
+}
+
 // ---------------------------------------------------------------- KB helpers
 
 /// Facts valid at `at`, or every fact ever stored if `at` is `None` (history mode).

@@ -64,7 +64,7 @@ fn asks_about_contradiction_then_hypothesis() {
     }
     let q = asked_rule.expect("asked about the hypothesis");
     assert!(q.to_lowercase().contains("british") && q.contains("tea"), "{q}");
-    let confirmed = a.kb.vault.rules.values().filter(|rf| rf.meta().source == "learner" && rf.meta().status == RuleStatus::Confirmed).count();
+    let confirmed = a.brain().kb.vault.rules.values().filter(|rf| rf.meta().source == "learner" && rf.meta().status == RuleStatus::Confirmed).count();
     assert!(confirmed >= 1, "teacher's yes confirmed the rule");
     let _ = fs::remove_dir_all(&root);
 }
@@ -79,14 +79,21 @@ fn gaps_and_caps() {
         talk(&mut a, m);
     }
     let m = a.model(false);
-    let goals = a.curiosity.goals(&a.kb, &m);
+    let goals = {
+        let b = a.brain();
+        b.curiosity.goals(&b.kb, &m)
+    };
     assert!(goals.iter().any(|g| g.goal.key() == "gap:property(dan, job, W)"), "{goals:?}");
     let mut teacher = ScriptedTeacher { answers: vec![("Dan's job".into(), "Dan's job is doctor.".into())], default: "I don't know.".into() };
     let (q, _, reply) = a.ask_teacher(&mut teacher).unwrap();
     assert_eq!(q, "What is Dan's job?");
     assert!(reply.text.contains("Dan's job is doctor"), "{}", reply.text);
     // The gap is filled and not asked again.
-    let goals = a.curiosity.goals(&a.kb, &a.model(false));
+    let m = a.model(false);
+    let goals = {
+        let b = a.brain();
+        b.curiosity.goals(&b.kb, &m)
+    };
     assert!(!goals.iter().any(|g| g.goal.key().starts_with("gap:property(dan, job")));
 
     // Proactive messages are capped per day.
@@ -103,9 +110,9 @@ fn gaps_and_caps() {
     }
     assert!(proactive >= 1 && proactive <= 3, "proactive {proactive}");
     // Restart: asked questions are remembered.
-    let asked_before = a.curiosity.asked.clone();
+    let asked_before = a.brain().curiosity.asked.clone();
     drop(a);
     let b = Agent::open(&root, "maksim").unwrap();
-    assert!(asked_before.iter().all(|k| b.curiosity.asked.contains(k)));
+    assert!(asked_before.iter().all(|k| b.brain().curiosity.asked.contains(k)));
     let _ = fs::remove_dir_all(&root);
 }

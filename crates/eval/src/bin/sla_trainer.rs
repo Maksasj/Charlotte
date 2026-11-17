@@ -25,8 +25,13 @@ fn main() {
             }
         }
     }
-    println!("Training app for {}\nOpen http://localhost:{port}  (training starts only when you press Start)", vault.display());
-    if let Err(e) = serve(Trainer::new(vault), ui, port) {
+    let trainer = Trainer::new(vault);
+    println!(
+        "Training app for {}\nOpen http://localhost:{port}/?token={}  (the token is required; training starts only when you press Start)",
+        trainer.vault.display(),
+        trainer.token
+    );
+    if let Err(e) = serve(trainer, ui, port) {
         eprintln!("cannot serve on port {port}: {e}");
         std::process::exit(1);
     }

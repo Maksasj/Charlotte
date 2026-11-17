@@ -211,3 +211,34 @@ fn demonstrations_become_rules() {
     assert!(m.contains(&g("property(cup3, quality, full)")));
     assert!(!m.contains(&g("property(cup1, colour, blue)")));
 }
+
+/// Design 2.0 (milestone 12): a refinement that would make the program
+/// invalid leaves the rule, its counter and the vault exactly as they were,
+/// apart from the exception fact, and says so.
+#[test]
+fn refused_refinement_leaves_no_partial_change() {
+    let mut v = Vault::empty("unused");
+    for (s, rf) in sla_core::default_core() {
+        v.core.insert(s, rf);
+    }
+    let mut kb = KnowledgeBase::new(v);
+    kb.logging = false;
+    let t = Timestamp::from_ymd(2026, 1, 1);
+    for f in ["is_a(tweety, bird)", "is_a(robin, bird)", "is_a(pingu, bird)", "cold(pingu)"] {
+        kb.assert_fact(Fact::new(parse_ground(f).unwrap(), "test"), t, "setup");
+    }
+    let meta = |id: &str| RuleMeta { id: id.into(), status: RuleStatus::Confirmed, conf: 0.9, evidence: 0, counter: 0, module: "general".into(), source: "user".into() };
+    kb.vault.put_rule_file(RuleFile::new(&meta("flies_rule"), "Birds fly.", &[parse_rule("flies(X) :- is_a(X, bird).").unwrap()]));
+    // `brag` depends on `flies`: adding `not brag(X)` to the flies rule would
+    // put negation inside recursion.
+    kb.vault.put_rule_file(RuleFile::new(&meta("brag_rule"), "Cold fliers brag.", &[parse_rule("brag(X) :- flies(X), cold(X).").unwrap()]));
+    let before_rules = kb.vault.rules.get("flies_rule").unwrap().render();
+    let now = t.plus_days(1);
+    let out = correct_derived(&mut kb, &parse_ground("flies(pingu)").unwrap(), now, "user");
+    assert_eq!(out.change, Change::RefinementRefused, "{out:?}");
+    assert!(out.new_rule.is_none());
+    assert_eq!(kb.vault.rules.get("flies_rule").unwrap().render(), before_rules, "rule text and counter unchanged");
+    let negs: Vec<String> = kb.all_facts().iter().filter(|f| f.atom.pred == "-flies").map(|f| f.atom.to_string()).collect();
+    assert_eq!(negs, vec!["-flies(pingu)"], "exactly one exception fact");
+    assert!(evaluate_kb(&kb, Some(now), true).is_ok(), "the program stays valid");
+}

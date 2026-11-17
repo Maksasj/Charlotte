@@ -6,6 +6,7 @@ use crate::doc::Item;
 use crate::term::{Atom, Fact, GroundAtom, Rule, Term, Value};
 use crate::time::Timestamp;
 use crate::vault::{RuleStatus, Vault};
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
@@ -29,10 +30,25 @@ pub struct LoadedRule {
     pub module: String,
 }
 
+/// One change, as written to the audit log.
+#[derive(Debug, Clone, PartialEq)]
+pub struct JournalEntry {
+    pub at: Timestamp,
+    pub action: String,
+    pub subject: String,
+    pub reason: String,
+}
+
 pub struct KnowledgeBase {
     pub vault: Vault,
     /// Write changes to the log directory.
     pub logging: bool,
+    /// Every change since the knowledge base was opened, in order (also when
+    /// `logging` is off). Take a mark with [`KnowledgeBase::journal_len`] and
+    /// read what happened since with [`KnowledgeBase::journal_since`].
+    journal: RefCell<Vec<JournalEntry>>,
+    /// Inside a transaction: log lines wait here until it commits.
+    deferred: RefCell<Option<Vec<JournalEntry>>>,
 }
 
 /// Does ground atom `g` match `pattern` (variables bind consistently)?
@@ -70,7 +86,7 @@ pub fn confirm_conf(old: f64, new: f64) -> f64 {
 
 impl KnowledgeBase {
     pub fn new(vault: Vault) -> Self {
-        KnowledgeBase { vault, logging: true }
+        KnowledgeBase { vault, logging: true, journal: RefCell::new(Vec::new()), deferred: RefCell::new(None) }
     }
 
     /// Load a vault from disk, seeding the core ontology if it is missing.
@@ -100,9 +116,55 @@ impl KnowledgeBase {
     }
 
     fn log(&self, at: Timestamp, action: &str, subject: &str, reason: &str) {
+        let e = JournalEntry { at, action: action.into(), subject: subject.into(), reason: reason.into() };
+        self.journal.borrow_mut().push(e.clone());
+        if let Some(d) = self.deferred.borrow_mut().as_mut() {
+            d.push(e);
+            return;
+        }
+        self.write_log(&e);
+    }
+
+    fn write_log(&self, e: &JournalEntry) {
         if self.logging {
             // The log is best effort: a failed write must not lose the fact itself.
-            let _ = self.vault.log(at, action, subject, reason);
+            let _ = self.vault.log(e.at, &e.action, &e.subject, &e.reason);
+        }
+    }
+
+    pub fn journal_len(&self) -> usize {
+        self.journal.borrow().len()
+    }
+
+    /// Changes since a mark from [`KnowledgeBase::journal_len`].
+    pub fn journal_since(&self, mark: usize) -> Vec<JournalEntry> {
+        self.journal.borrow().get(mark..).map(|s| s.to_vec()).unwrap_or_default()
+    }
+
+    /// Run `f` as one all-or-nothing change: if it returns `Err`, the vault is
+    /// restored as it was, its journal entries are dropped and nothing reaches
+    /// the log. Nested calls join the outer transaction.
+    pub fn transaction<T, E>(&mut self, f: impl FnOnce(&mut Self) -> Result<T, E>) -> Result<T, E> {
+        if self.deferred.borrow().is_some() {
+            return f(self);
+        }
+        let snapshot = self.vault.snapshot();
+        let mark = self.journal_len();
+        *self.deferred.borrow_mut() = Some(Vec::new());
+        let out = f(self);
+        let pending = self.deferred.borrow_mut().take().unwrap_or_default();
+        match out {
+            Ok(v) => {
+                for e in &pending {
+                    self.write_log(e);
+                }
+                Ok(v)
+            }
+            Err(e) => {
+                self.vault.restore(snapshot);
+                self.journal.borrow_mut().truncate(mark);
+                Err(e)
+            }
         }
     }
 
@@ -234,6 +296,24 @@ impl KnowledgeBase {
             })
             .collect();
         AssertOutcome::Added { closed }
+    }
+
+    /// "It used to be true": true before `at`, not now. A current copy of the
+    /// fact is closed at `at` (it is no longer true); if there is none, a
+    /// closed fact is stored. Returns the facts that were closed.
+    pub fn assert_past(&mut self, mut fact: Fact, at: Timestamp, reason: &str) -> Vec<Fact> {
+        let atom = fact.atom.clone();
+        let closed = self.close_matching(&atom.to_atom(), at, reason);
+        if closed.is_empty() {
+            let already = self.all_facts().iter().any(|f| f.atom == atom && f.until.map_or(false, |u| u <= at));
+            if !already {
+                fact.from = None;
+                fact.until = Some(at);
+                self.log(at, "add_past", &atom.to_string(), reason);
+                self.vault.add_fact(fact);
+            }
+        }
+        closed
     }
 
     /// End every open fact matching `pattern` at `at` (without asserting the opposite).
@@ -420,6 +500,50 @@ mod tests {
         let f = &kb.all_facts()[0];
         assert_eq!(f.uses, 2);
         assert_eq!(f.last_used, Some(t));
+    }
+
+    #[test]
+    fn transaction_is_all_or_nothing() {
+        let mut kb = kb();
+        let t = Timestamp::from_ymd(2026, 1, 1);
+        kb.assert_fact(fact("likes(ann, tea)"), t, "x");
+        let gen = kb.vault.generation;
+        let mark = kb.journal_len();
+        let r: Result<(), &str> = kb.transaction(|kb| {
+            kb.assert_fact(fact("-likes(ann, tea)"), t.plus_days(1), "x");
+            kb.assert_fact(fact("likes(bob, tea)"), t.plus_days(1), "x");
+            Err("refused")
+        });
+        assert!(r.is_err());
+        let now: Vec<String> = kb.facts_at(t.plus_days(2)).iter().map(|f| f.atom.to_string()).collect();
+        assert_eq!(now, vec!["likes(ann, tea)"], "nothing of the failed change is left");
+        assert!(kb.journal_since(mark).is_empty());
+        assert!(kb.vault.generation > gen, "cached models must notice the restore");
+        let ok: Result<(), ()> = kb.transaction(|kb| {
+            kb.assert_fact(fact("likes(bob, tea)"), t.plus_days(1), "x");
+            Ok(())
+        });
+        assert!(ok.is_ok());
+        assert_eq!(kb.facts_at(t.plus_days(2)).len(), 2);
+        assert_eq!(kb.journal_since(mark).len(), 1);
+    }
+
+    #[test]
+    fn used_to_closes_the_current_fact() {
+        let mut kb = kb();
+        let t1 = Timestamp::from_ymd(2026, 1, 1);
+        let t2 = Timestamp::from_ymd(2026, 3, 1);
+        kb.assert_fact(fact("likes(ann, tea)"), t1, "x");
+        let closed = kb.assert_past(fact("likes(ann, tea)"), t2, "she used to");
+        assert_eq!(closed.len(), 1);
+        assert!(kb.facts_at(t2.plus_days(1)).is_empty(), "no longer true now");
+        assert_eq!(kb.facts_at(t1.plus_days(1)).len(), 1, "still true back then");
+        // A past fact with no current copy is stored closed, once.
+        kb.assert_past(fact("likes(bob, tea)"), t2, "x");
+        kb.assert_past(fact("likes(bob, tea)"), t2.plus_days(1), "x");
+        let h = kb.history(&parse_atom("likes(bob, X)").unwrap());
+        assert_eq!(h.len(), 1);
+        assert_eq!(h[0].until, Some(t2));
     }
 
     #[test]

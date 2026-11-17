@@ -1,24 +1,35 @@
 //! The agent: message -> parser -> knowledge base update or query -> reply -> log.
 //!
-//! [`Agent::respond`] handles one user message. The CLI in `main.rs` wraps it
-//! in a read-eval-print loop; tests and the evaluation harness call it directly.
+//! An [`Agent`] is one conversation (a session) over a [`Brain`], which owns
+//! the vault. Several agents can share one brain ([`Agent::with_brain`]), as
+//! the trainer's parallel teachers do: each keeps its own conversation state,
+//! all of them change knowledge through the brain's single lock.
+//!
+//! [`Agent::respond`] handles one user message: the message is translated
+//! first (outside the lock, since that may call a model), then handled while
+//! holding the lock, and every turn leaves a [`TurnTrace`].
 
 use sla_core::kb::matches;
-use sla_core::{Atom, AssertOutcome, Fact, GroundAtom, KnowledgeBase, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
+use sla_core::{Atom, AssertOutcome, Fact, GroundAtom, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
 use sla_learner::corrections::{self, Change, Demonstration};
-use sla_learner::{LearnReport, Learner};
+use sla_learner::LearnReport;
 use sla_nlg::{Act, Realizer, Reply, Truth};
 use sla_parser::{Context, Intent, Parser, PatternParser, Social};
-use sla_reasoner::{evaluate_kb, Model};
-use std::collections::HashSet;
+use sla_reasoner::{Model, RuleInput};
 use std::io;
-use std::path::{Path, PathBuf};
-use std::time::SystemTime;
+use std::path::PathBuf;
+use std::sync::{Arc, MutexGuard};
+use std::time::Instant;
 
+pub mod brain;
 pub mod curiosity;
+pub mod events;
 pub mod router;
+pub mod trace;
 
-use curiosity::{Curiosity, Teacher};
+pub use brain::{Brain, SharedBrain};
+use curiosity::Teacher;
+pub use trace::{ChangeTrace, PartTrace, TurnTrace};
 
 /// Something the agent asked and is waiting for an answer to.
 #[derive(Debug, Clone, PartialEq)]
@@ -34,7 +45,7 @@ pub enum Pending {
 }
 
 pub struct Agent {
-    pub kb: KnowledgeBase,
+    brain: SharedBrain,
     parser: Box<dyn Parser>,
     pub ctx: Context,
     pub realizer: Realizer,
@@ -45,7 +56,6 @@ pub struct Agent {
     pub clock: Option<Timestamp>,
     /// Source label for facts from this conversation partner.
     pub source: String,
-    pub learner: Learner,
     /// Whether the last message (sentence) was understood.
     pub last_understood: bool,
     /// Last recall (entity, items shown) for "what else?".
@@ -53,40 +63,41 @@ pub struct Agent {
     /// The fact count was already mentioned in this session.
     told_count: bool,
     small_talk_turn: usize,
-    pub curiosity: Curiosity,
     /// Add curiosity questions to replies while chatting.
     pub ask_in_chat: bool,
     /// What the learner did after the last message.
     pub last_learn: LearnReport,
-    vault_stamp: u64,
+    /// This conversation's id, used in traces.
+    pub session_id: String,
+    /// Turns handled so far.
+    pub turns: usize,
+    /// The trace of the last turn.
+    pub last_trace: Option<TurnTrace>,
+    /// Write each turn trace as a JSON line to `<dir>/<session>.jsonl`.
+    pub trace_dir: Option<PathBuf>,
+    /// Publish each turn trace on the brain's event stream.
+    pub publish_events: bool,
+    /// Trace being built for the current turn.
+    cur: Option<TurnTrace>,
 }
 
-/// Fingerprint of all vault files (mtimes + sizes) to notice hand edits.
-fn vault_fingerprint(root: &Path) -> u64 {
-    let mut h: u64 = 1469598103934665603;
-    for dir in ["facts", "rules", "core"] {
-        let Ok(rd) = std::fs::read_dir(root.join(dir)) else { continue };
-        let mut entries: Vec<_> = rd.flatten().collect();
-        entries.sort_by_key(|e| e.path());
-        for e in entries {
-            if let Ok(m) = e.metadata() {
-                let t = m.modified().ok().and_then(|t| t.duration_since(SystemTime::UNIX_EPOCH).ok()).map_or(0, |d| d.as_nanos() as u64);
-                for x in [t, m.len(), e.path().to_string_lossy().len() as u64] {
-                    h = (h ^ x).wrapping_mul(1099511628211);
-                }
-            }
-        }
-    }
-    h
+fn session_name() -> String {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static N: AtomicU64 = AtomicU64::new(1);
+    let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+    format!("s{t}-{}-{}", std::process::id(), N.fetch_add(1, Ordering::SeqCst))
 }
 
 impl Agent {
     /// Open (or create) a vault and start an agent talking to `speaker`.
     pub fn open(root: impl Into<PathBuf>, speaker: &str) -> io::Result<Self> {
-        let root = root.into();
-        let kb = KnowledgeBase::open(&root)?;
-        let mut a = Agent {
-            kb,
+        Ok(Agent::with_brain(Brain::shared(root)?, speaker))
+    }
+
+    /// A new conversation over a brain that may be shared with others.
+    pub fn with_brain(brain: SharedBrain, speaker: &str) -> Self {
+        Agent {
+            brain,
             parser: Box::new(PatternParser),
             ctx: Context { speaker: speaker.to_string(), last_entity: None },
             realizer: Realizer::new(speaker),
@@ -94,30 +105,32 @@ impl Agent {
             pending: None,
             clock: None,
             source: "user".into(),
-            learner: Learner::default(),
             last_understood: true,
             last_recall: None,
             told_count: false,
             small_talk_turn: 0,
-            curiosity: Curiosity::default(),
             ask_in_chat: true,
             last_learn: LearnReport::default(),
-            vault_stamp: 0,
-        };
-        a.vault_stamp = vault_fingerprint(&a.kb.vault.root);
-        a.refresh_names();
-        // Questions asked in earlier sessions are not asked again.
-        if let Ok(log) = a.kb.vault.read_log() {
-            for (_, action, subject, _) in log {
-                if action == "ask" || action == "proactive" {
-                    a.curiosity.asked.insert(subject);
-                }
-            }
+            session_id: session_name(),
+            turns: 0,
+            last_trace: None,
+            trace_dir: None,
+            publish_events: true,
+            cur: None,
         }
-        Ok(a)
     }
 
-    /// Swap the parser (for example an LLM translator).
+    /// The shared brain (clone it to start another conversation on it).
+    pub fn shared_brain(&self) -> SharedBrain {
+        Arc::clone(&self.brain)
+    }
+
+    /// Lock the brain. Do not hold the guard across a call to `respond`.
+    pub fn brain(&self) -> MutexGuard<'_, Brain> {
+        brain::lock(&self.brain)
+    }
+
+    /// Swap the parser (for example an LLM translator or the oracle parser).
     pub fn set_parser(&mut self, p: Box<dyn Parser>) {
         self.parser = p;
     }
@@ -125,7 +138,7 @@ impl Agent {
     /// Use the LLM translator (Claude CLI, headless) for messages the pattern
     /// parser does not understand. Translations are cached in the vault.
     pub fn enable_llm(&mut self, model: &str) {
-        let cache = self.kb.vault.root.join("llm_cache.tsv");
+        let cache = self.brain().kb.vault.root.join("llm_cache.tsv");
         self.parser = Box::new(sla_parser::llm::LlmTranslator::new(model, Some(cache)));
     }
 
@@ -134,7 +147,8 @@ impl Agent {
     }
 
     /// Translate a message ahead of `respond` (fills the translator's cache).
-    /// Lets slow LLM translation run outside any lock that serializes `respond`.
+    /// `respond` translates before taking the lock anyway; this only lets a
+    /// caller time translation separately.
     pub fn prepare(&mut self, text: &str) {
         if self.parser.name() != "pattern" {
             let _ = self.parser.parse_many(text, &self.ctx);
@@ -145,102 +159,112 @@ impl Agent {
         self.clock.unwrap_or_else(Timestamp::now)
     }
 
-    /// Reload if the vault files changed on disk since our last save.
     pub fn reload_if_edited(&mut self) -> io::Result<bool> {
-        let stamp = vault_fingerprint(&self.kb.vault.root);
-        if stamp != self.vault_stamp {
-            self.kb.reload()?;
-            self.vault_stamp = vault_fingerprint(&self.kb.vault.root);
-            self.refresh_names();
-            return Ok(true);
-        }
-        Ok(false)
+        self.brain().reload_if_edited()
     }
 
     pub fn save(&mut self) -> io::Result<()> {
-        self.kb.save()?;
-        self.vault_stamp = vault_fingerprint(&self.kb.vault.root);
-        Ok(())
+        self.brain().save()
     }
 
-    /// The model at the current time (`history`: over all time).
-    pub fn model(&self, history: bool) -> Model {
-        let at = if history { None } else { Some(self.now()) };
-        match evaluate_kb(&self.kb, at, false) {
-            Ok(m) => m,
-            Err(e) => {
-                // A bad rule must not take the agent down: evaluate without learned rules.
-                self.kb.log_change(self.now(), "error", "evaluate", &e.to_string());
-                let facts = sla_reasoner::facts_for(&self.kb.all_facts(), at);
-                sla_reasoner::evaluate(&facts, &[]).unwrap_or_default()
-            }
-        }
-    }
-
-    /// Capitalized words inside a sentence are proper names ("in Berlin",
-    /// "Is Rex a dog?"). They are stored as `proper_name(x)` facts so replies
-    /// can capitalize them after a restart too.
-    fn learn_names(&mut self, text: &str) {
+    /// The model at the current time (`history`: every moment of the past merged,
+    /// for inspection only; answers use the moment-by-moment models).
+    pub fn model(&self, history: bool) -> Arc<Model> {
         let now = self.now();
-        for name in proper_names(text) {
-            let atom = GroundAtom::new("proper_name", vec![Value::sym(name.as_str())]);
-            if !self.kb.all_facts().iter().any(|f| f.atom == atom) {
-                self.kb.vault.add_fact(Fact::new(atom, "parser").with_from(now));
-            }
+        let mut b = self.brain();
+        if !history {
+            return b.model_at(now);
         }
-    }
-
-    /// Entities written as names: people and places.
-    fn refresh_names(&mut self) {
-        let mut names: HashSet<String> = HashSet::new();
-        names.insert(self.ctx.speaker.clone());
-        for f in self.kb.all_facts() {
-            let a = &f.atom;
-            let first = a.args.first().and_then(|v| v.as_sym()).map(String::from);
-            let second = a.args.get(1).and_then(|v| v.as_sym()).map(String::from);
-            match a.base_pred() {
-                "likes" | "feels" | "wants" | "person" | "place" | "proper_name" => names.extend(first),
-                "knows" => names.extend(first.into_iter().chain(second)),
-                "is_a" if second.as_deref() == Some("person") => names.extend(first),
-                "located_in" => names.extend(second),
-                _ => {}
-            }
+        let past = b.past_models(now);
+        let mut facts: Vec<sla_reasoner::FactInput> = Vec::new();
+        for m in past.iter().chain(std::iter::once(&b.model_at(now))) {
+            facts.extend(m.all_facts().into_iter().map(sla_reasoner::FactInput::new));
         }
-        // Things in general knowledge are common nouns, not names ("Rain is wet" starts with a capital).
-        for f in self.kb.all_facts() {
-            if f.source.starts_with("teacher") {
-                for v in &f.atom.args {
-                    if let Some(x) = v.as_sym() {
-                        names.remove(x);
-                    }
-                }
-            }
-        }
-        // Categories are not names ("Fruit is a kind of food" starts with a capital).
-        for f in self.kb.all_facts() {
-            if f.atom.base_pred() == "is_a" {
-                if let Some(c) = f.atom.args.get(1).and_then(|v| v.as_sym()) {
-                    names.remove(c);
-                }
-            }
-        }
-        self.realizer.names = names;
+        Arc::new(sla_reasoner::evaluate(&facts, &[]).unwrap_or_default())
     }
 
     /// Handle one user message and return the reply. A message with several
     /// sentences is handled sentence by sentence.
     pub fn respond(&mut self, text: &str) -> Reply {
+        let started = Instant::now();
+        let calls_before = sla_parser::claude::thread_calls();
+        // Translation happens before the vault lock: it may call a model.
+        let translated = if self.parser.name() != "pattern" { Some(self.parser.parse_many(text, &self.ctx)) } else { None };
+        let translate_ms = started.elapsed().as_secs_f64() * 1000.0;
+        let brain = Arc::clone(&self.brain);
+        let mut b = brain::lock(&brain);
+        let think_started = Instant::now();
+        let evals_before = b.evaluations;
+        let mark = b.kb.journal_len();
+        self.turns += 1;
+        self.cur = Some(TurnTrace {
+            session: self.session_id.clone(),
+            turn: self.turns,
+            at: self.now().to_string(),
+            speaker: self.ctx.speaker.clone(),
+            source: self.source.clone(),
+            message: text.to_string(),
+            parser: self.parser.name().to_string(),
+            ..Default::default()
+        });
+        let _ = b.reload_if_edited();
+        let reply = match translated {
+            Some(intents) => self.respond_intents(&mut b, text, intents, "model"),
+            None => self.respond_sentences(&mut b, text),
+        };
+        let mut t = self.cur.take().unwrap_or_default();
+        t.reply = reply.text.clone();
+        t.claims = reply.claims.iter().map(|c| c.to_string()).collect();
+        t.changes = b.kb.journal_since(mark).into_iter().map(|e| ChangeTrace { action: e.action, subject: e.subject, reason: e.reason }).filter(|c| c.action != "turn").collect();
+        t.understood = t.parts.iter().any(|p| p.understood);
+        t.translate_ms = translate_ms;
+        t.think_ms = think_started.elapsed().as_secs_f64() * 1000.0;
+        t.model_calls = sla_parser::claude::thread_calls() - calls_before;
+        t.evaluations = b.evaluations - evals_before;
+        if let Err(e) = b.save() {
+            t.errors.push(format!("save failed: {e}"));
+        }
+        if self.publish_events {
+            b.events.publish("turn", &t);
+        }
+        drop(b);
+        if let Some(dir) = &self.trace_dir {
+            if let Err(e) = write_trace(dir, &t) {
+                eprintln!("warning: cannot write turn trace: {e}");
+            }
+        }
+        self.last_trace = Some(t);
+        reply
+    }
+
+    fn trace_part(&mut self, text: &str, intents: &[Intent], tier: &str) {
+        let understood = !matches!(intents, [Intent::Unknown] | []);
+        if let Some(t) = self.cur.as_mut() {
+            t.parts.push(PartTrace { text: text.to_string(), acts: intents.iter().map(|i| i.canonical()).collect(), tier: tier.into(), understood });
+        }
+    }
+
+    fn trace_move(&mut self, m: &str) {
+        if let Some(t) = self.cur.as_mut() {
+            t.moves.push(m.to_string());
+        }
+    }
+
+    /// The pattern parser: each sentence is parsed and handled in turn, so
+    /// "he" in the second sentence can refer to the first.
+    fn respond_sentences(&mut self, b: &mut Brain, text: &str) -> Reply {
         let sentences = split_sentences(text);
-        // With the LLM translator the whole message is translated at once (it needs the context).
-        if sentences.len() <= 1 || self.parser.name() != "pattern" {
-            return self.respond_one(text);
+        if sentences.len() <= 1 {
+            let intents = self.parser.parse_many(text, &self.ctx);
+            return self.respond_intents(b, text, intents, "pattern");
         }
         let mut texts: Vec<String> = Vec::new();
         let mut claims = Vec::new();
         let mut intent = "social";
         let mut not_understood = 0;
         for s in &sentences {
-            let r = self.respond_one(s);
+            let intents = self.parser.parse_many(s, &self.ctx);
+            let r = self.respond_intents(b, s, intents, "pattern");
             if !self.last_understood {
                 not_understood += 1;
                 continue;
@@ -263,13 +287,14 @@ impl Agent {
         Reply { text: texts.join(" "), intent, claims }
     }
 
-    fn respond_one(&mut self, text: &str) -> Reply {
-        let _ = self.reload_if_edited();
-        self.learn_names(text);
-        self.refresh_names();
-        let intents = self.parser.parse_many(text, &self.ctx);
-        self.last_understood = !matches!(intents.as_slice(), [Intent::Unknown]);
+    fn respond_intents(&mut self, b: &mut Brain, text: &str, intents: Vec<Intent>, tier: &str) -> Reply {
+        self.learn_names(b, text);
+        self.trace_part(text, &intents, tier);
+        self.last_understood = !matches!(intents.as_slice(), [Intent::Unknown] | []);
         let mut intents = intents;
+        if intents.is_empty() {
+            intents.push(Intent::Unknown);
+        }
         {
             let mut seen: Vec<String> = Vec::new();
             intents.retain(|i| {
@@ -310,7 +335,7 @@ impl Agent {
                 if has_content && (matches!(i, Intent::Social(Social::Reaction) | Intent::Unknown | Intent::Greet) || stray_yes_no) {
                     continue;
                 }
-                let r = self.respond_intent(i);
+                let r = self.respond_intent(b, i);
                 if r.intent != "social" {
                     intent_name = r.intent;
                 }
@@ -321,16 +346,44 @@ impl Agent {
             }
             let reply = Reply { text: texts.join(" "), intent: intent_name, claims };
             // One log entry per message, with the whole reply.
-            self.kb.log_change(self.now(), "turn", text, &reply.text);
+            b.kb.log_change(self.now(), "turn", text, &reply.text);
             return reply;
         }
         let intent = intents.into_iter().next().unwrap_or(Intent::Unknown);
-        let reply = self.respond_intent(intent);
-        self.kb.log_change(self.now(), "turn", text, &reply.text);
+        let reply = self.respond_intent(b, intent);
+        b.kb.log_change(self.now(), "turn", text, &reply.text);
         reply
     }
 
-    fn respond_intent(&mut self, intent: Intent) -> Reply {
+    /// Capitalized words inside a sentence are proper names ("in Berlin",
+    /// "Is Rex a dog?"). They are stored as `proper_name(x)` facts so replies
+    /// can capitalize them after a restart too.
+    fn learn_names(&mut self, b: &mut Brain, text: &str) {
+        let now = self.now();
+        for name in proper_names(text) {
+            let atom = GroundAtom::new("proper_name", vec![Value::sym(name.as_str())]);
+            if !b.has_stored(&atom) {
+                b.kb.vault.add_fact(Fact::new(atom, "parser").with_from(now));
+            }
+        }
+    }
+
+    /// Names for the realizer: the brain's, plus the speaker.
+    fn refresh_names(&mut self, b: &mut Brain) {
+        let names = b.names();
+        if self.realizer.names.len() != names.len() + 1 || !self.realizer.names.contains(&self.ctx.speaker) {
+            let mut n: std::collections::HashSet<String> = (*names).clone();
+            n.insert(self.ctx.speaker.clone());
+            self.realizer.names = n;
+        } else if !names.iter().all(|x| self.realizer.names.contains(x)) {
+            let mut n: std::collections::HashSet<String> = (*names).clone();
+            n.insert(self.ctx.speaker.clone());
+            self.realizer.names = n;
+        }
+    }
+
+    fn respond_intent(&mut self, b: &mut Brain, intent: Intent) -> Reply {
+        self.refresh_names(b);
         // Remember who we talk about, for "he", "she", "it", "they" next time.
         let subject = match &intent {
             // "My mom is Olga": the person named is who "she" will mean.
@@ -356,13 +409,15 @@ impl Agent {
             }
         }
         let was_pending = self.pending.is_some();
-        let facts_before = self.kb.all_facts().len();
-        let mut reply = self.handle(intent);
-        self.refresh_names();
+        let gen_before = b.kb.vault.generation;
+        let facts_before = b.kb.journal_len();
+        let mut reply = self.handle(b, intent);
+        self.trace_move(reply.intent);
+        self.refresh_names(b);
         // Learning progress lowers curiosity; answering its question lowers it most.
-        let learned = self.kb.all_facts().len() > facts_before;
+        let learned = b.kb.vault.generation != gen_before && b.kb.journal_since(facts_before).iter().any(|e| e.action == "add" || e.action == "add_rule");
         if learned {
-            self.curiosity.reward(if was_pending { 0.3 } else { 0.05 });
+            b.curiosity.reward(if was_pending { 0.3 } else { 0.05 });
         }
         if self.ask_in_chat && self.pending.is_none() && reply.intent != "ask" {
             // Only ask about what this turn talked about.
@@ -373,38 +428,36 @@ impl Agent {
                 .chain(self.ctx.last_entity.clone())
                 .filter(|e| e != &self.ctx.speaker)
                 .collect();
-            let cap = self.curiosity.chat_cap;
-            if let Some((q, key)) = (!topic.is_empty()).then(|| self.next_question_about(cap, "ask", Some(&topic))).flatten() {
+            let cap = b.curiosity.chat_cap;
+            if let Some((q, key)) = (!topic.is_empty()).then(|| self.next_question_about(b, cap, "ask", Some(&topic))).flatten() {
                 reply.text = format!("{} {q}", reply.text);
-                self.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
+                b.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
+                if let Some(t) = self.cur.as_mut() {
+                    t.question = Some(key);
+                }
             }
         }
-        let _ = self.save();
         reply
     }
 
     /// Questions logged today under `action`.
-    fn asked_today(&self, action: &str) -> usize {
+    fn asked_today(&self, b: &Brain, action: &str) -> usize {
         let today = self.now().to_string()[..10].to_string();
-        self.kb
-            .vault
-            .read_log()
-            .map(|l| l.iter().filter(|(t, a, _, _)| a == action && t.starts_with(&today)).count())
-            .unwrap_or(0)
+        b.kb.vault.read_log().map(|l| l.iter().filter(|(t, a, _, _)| a == action && t.starts_with(&today)).count()).unwrap_or(0)
     }
 
     /// Pick the best curiosity goal (if the drive is high enough and the daily
     /// cap allows), plan it into a question and set it as pending.
     /// Returns (question text, goal key).
-    fn next_question(&mut self, cap: usize, action: &str) -> Option<(String, String)> {
-        self.next_question_about(cap, action, None)
+    fn next_question(&mut self, b: &mut Brain, cap: usize, action: &str) -> Option<(String, String)> {
+        self.next_question_about(b, cap, action, None)
     }
 
     /// Like `next_question`, but if `topic` is given, only goals mentioning one
     /// of those entities count (chat: stay on what is being talked about).
-    fn next_question_about(&mut self, cap: usize, action: &str, topic: Option<&[String]>) -> Option<(String, String)> {
-        let m = self.model(false);
-        let mut goals = self.curiosity.goals(&self.kb, &m);
+    fn next_question_about(&mut self, b: &mut Brain, cap: usize, action: &str, topic: Option<&[String]>) -> Option<(String, String)> {
+        let m = b.model_at(self.now());
+        let mut goals = b.curiosity.goals(&b.kb, &m);
         if let Some(topic) = topic {
             goals.retain(|g| {
                 let key = g.goal.key();
@@ -412,29 +465,37 @@ impl Agent {
                 topic.iter().any(|e| words.contains(&e.as_str()))
             });
         }
-        self.curiosity.update(&goals);
-        if !self.curiosity.wants_to_ask(&goals) || self.asked_today(action) >= cap {
+        b.curiosity.update(&goals);
+        if !b.curiosity.wants_to_ask(&goals) || self.asked_today(b, action) >= cap {
             return None;
         }
         let g = goals.into_iter().next()?;
         let key = g.goal.key();
         let (act, pending) = curiosity::plan(&g.goal);
-        self.curiosity.asked.insert(key.clone());
+        b.curiosity.asked.insert(key.clone());
         self.pending = Some(pending);
         Some((self.say(act).text, key))
     }
 
     /// Ask the teacher the most useful question and learn from the answer.
     /// Returns (question, answer, the agent's reply), or `None` if nothing to ask.
+    /// The brain is not locked while the teacher answers.
     pub fn ask_teacher(&mut self, teacher: &mut dyn Teacher) -> Option<(String, String, Reply)> {
-        let saved = self.curiosity.level;
-        self.curiosity.level = 1.0; // asked explicitly: ignore the drive level
-        let q = self.next_question(usize::MAX, "ask");
-        if q.is_none() {
-            self.curiosity.level = saved;
-        }
-        let (question, key) = q?;
-        self.kb.log_change(self.now(), "ask", &key, "question for the teacher");
+        let (question, key) = {
+            let brain = Arc::clone(&self.brain);
+            let mut b = brain::lock(&brain);
+            let saved = b.curiosity.level;
+            b.curiosity.level = 1.0; // asked explicitly: ignore the drive level
+            let q = self.next_question(&mut b, usize::MAX, "ask");
+            if q.is_none() {
+                b.curiosity.level = saved;
+            }
+            let (question, key) = q?;
+            b.kb.log_change(self.now(), "ask", &key, "question for the teacher");
+            let _ = b.save();
+            (question, key)
+        };
+        let _ = key;
         let answer = teacher.answer(&question);
         let was_ask = self.ask_in_chat;
         self.ask_in_chat = false;
@@ -445,9 +506,12 @@ impl Agent {
 
     /// A message the agent starts by itself, at most `proactive_cap` per day.
     pub fn proactive(&mut self) -> Option<Reply> {
-        let cap = self.curiosity.proactive_cap;
-        let (q, key) = self.next_question(cap, "proactive")?;
-        self.kb.log_change(self.now(), "proactive", &key, "curiosity");
+        let brain = Arc::clone(&self.brain);
+        let mut b = brain::lock(&brain);
+        let cap = b.curiosity.proactive_cap;
+        let (q, key) = self.next_question(&mut b, cap, "proactive")?;
+        b.kb.log_change(self.now(), "proactive", &key, "curiosity");
+        let _ = b.save();
         Some(Reply { text: q, intent: "ask", claims: Vec::new() })
     }
 
@@ -455,36 +519,36 @@ impl Agent {
         self.realizer.realize(&act)
     }
 
-    fn handle(&mut self, intent: Intent) -> Reply {
+    fn handle(&mut self, b: &mut Brain, intent: Intent) -> Reply {
         let pending = self.pending.take();
         match intent {
             Intent::Tell { facts, rules, past } => {
                 // The answer to "which one is true?" settles the contradiction:
                 // the side the user states is kept, the other is made false.
-                if let Some(Pending::Contradiction(a, b)) = &pending {
-                    if facts.iter().any(|f| f.to_ground().map_or(false, |g| &g == a || &g == b)) {
-                        return self.correct(facts);
+                if let Some(Pending::Contradiction(a, bb)) = &pending {
+                    if facts.iter().any(|f| f.to_ground().map_or(false, |g| &g == a || &g == bb)) {
+                        return self.correct(b, facts);
                     }
                 }
                 // An answer to "What does Bob like?" arrives as a statement.
-                self.tell(facts, rules, past)
+                self.tell(b, facts, rules, past)
             }
-            Intent::Ask { query, history } => self.ask(query, history),
-            Intent::Recall(e) => self.recall(e, 0),
+            Intent::Ask { query, history } => self.ask(b, query, history),
+            Intent::Recall(e) => self.recall(b, e, 0),
             Intent::RecallMore(target) => {
                 let last = self.last_recall.clone();
                 match (target, last) {
-                    (Some(e), Some((le, shown))) if e == le => self.recall(e, shown),
-                    (Some(e), _) => self.recall(e, 0),
-                    (None, Some((le, shown))) => self.recall(le, shown),
+                    (Some(e), Some((le, shown))) if e == le => self.recall(b, e, shown),
+                    (Some(e), _) => self.recall(b, e, 0),
+                    (None, Some((le, shown))) => self.recall(b, le, shown),
                     (None, None) => match self.ctx.last_entity.clone() {
-                        Some(e) => self.recall(e, 0),
+                        Some(e) => self.recall(b, e, 0),
                         None => self.say(Act::Note("What would you like to know more about?".into())),
                     },
                 }
             }
             Intent::Social(Social::DontKnow) => self.say(Act::Note(if pending.is_some() { "Okay, never mind.".into() } else { "That's okay.".into() })),
-            Intent::Social(kind) => self.social(kind),
+            Intent::Social(kind) => self.social(b, kind),
             Intent::Why(target) => {
                 let atom = match target.and_then(|a| a.to_ground()) {
                     Some(a) => Some(a),
@@ -493,10 +557,10 @@ impl Agent {
                 match atom {
                     None => self.say(Act::Note("Why what? Ask me something first.".into())),
                     Some(a) => {
-                        let m = self.model(false);
+                        let m = b.model_at(self.now());
                         match m.proof(&a) {
                             Some(p) => {
-                                self.record_uses(&m, &p.leaves());
+                                self.record_uses(b, &m, &p.leaves());
                                 self.last_answer = Some(a);
                                 self.say(Act::Explain(p))
                             }
@@ -505,14 +569,13 @@ impl Agent {
                     }
                 }
             }
-            Intent::Correct(atoms) => self.correct(atoms),
-            Intent::Yes | Intent::No => self.answer_pending(pending, matches!(intent, Intent::Yes)),
+            Intent::Correct(atoms) => self.correct(b, atoms),
+            Intent::Yes | Intent::No => self.answer_pending(b, pending, matches!(intent, Intent::Yes)),
             Intent::Greet => self.say(Act::Greet),
             Intent::HowAreYou => {
                 // Honest small talk: report its own state instead of pretending feelings.
                 // The fact count is said once per session; after that, short replies.
-                let now = self.now();
-                let n = self.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count();
+                let n = self.current_fact_count(b);
                 self.small_talk_turn += 1;
                 let text = if n == 0 {
                     "I'm fine, thanks, and ready to learn. I don't know anything yet: tell me something, like \"Anna likes tea.\"".to_string()
@@ -524,19 +587,24 @@ impl Agent {
                 };
                 self.say(Act::Note(text))
             }
-            Intent::AboutYou(thing) => self.about_me(thing),
+            Intent::AboutYou(thing) => self.about_me(b, thing),
             Intent::Bye => self.say(Act::Bye),
             // A non-answer to the agent's own question: let it go.
             Intent::Unknown => self.say(Act::NotUnderstood),
         }
     }
 
+    fn current_fact_count(&self, b: &Brain) -> usize {
+        let now = self.now();
+        b.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count()
+    }
+
     /// Everything known about `e`, `RECALL_PAGE` items at a time from `offset`.
     /// Facts about `e` come first (kinds, parts, qualities, then the rest),
     /// then things of kind `e` ("penguins and robins are birds").
-    fn recall(&mut self, e: String, offset: usize) -> Reply {
+    fn recall(&mut self, b: &mut Brain, e: String, offset: usize) -> Reply {
         const RECALL_PAGE: usize = 8;
-        let m = self.model(false);
+        let m = b.model_at(self.now());
         let rank = |p: &str| match p {
             "is_a" => 0,
             "has" | "part_of" => 1,
@@ -568,7 +636,7 @@ impl Agent {
         let inst_from = offset.saturating_sub(about.len());
         let inst_take = end.saturating_sub(about.len().max(offset));
         let inst: Vec<GroundAtom> = instances.iter().skip(inst_from).take(inst_take).cloned().collect();
-        self.record_uses(&m, &facts);
+        self.record_uses(b, &m, &facts);
         self.last_recall = Some((e.clone(), end));
         self.last_answer = facts.first().or(inst.first()).cloned();
         let mut reply = self.say(Act::Recall { entity: e, facts, instances: inst, more: offset > 0 });
@@ -580,14 +648,14 @@ impl Agent {
 
     /// A personal question to the agent: it has no body, taste or experiences,
     /// so it says so plainly and offers what it knows about the thing instead.
-    fn about_me(&mut self, thing: Option<String>) -> Reply {
+    fn about_me(&mut self, b: &mut Brain, thing: Option<String>) -> Reply {
         self.small_talk_turn += 1;
         let k = self.small_talk_turn;
         let Some(e) = thing else {
             let text = ["I don't really do things myself, I only learn and think. Tell me about it!", "I'm a learning program, so I don't have days like you do. What about you?", "Nothing much happens to me; I just learn from talks like this one. What's new with you?"][k % 3];
             return self.say(Act::Note(text.into()));
         };
-        let m = self.model(false);
+        let m = b.model_at(self.now());
         let mut facts: Vec<GroundAtom> = m
             .all_facts()
             .into_iter()
@@ -611,10 +679,9 @@ impl Agent {
     }
 
     /// Friendly small talk, honest about what the agent is.
-    fn social(&mut self, kind: Social) -> Reply {
-        let now = self.now();
-        let facts = self.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name" && f.valid_at(now)).count();
-        let rules = self.kb.rules(false).iter().filter(|r| r.module != "core").count();
+    fn social(&mut self, b: &mut Brain, kind: Social) -> Reply {
+        let facts = self.current_fact_count(b);
+        let rules = b.kb.rules(false).iter().filter(|r| r.module != "core").count();
         self.small_talk_turn += 1;
         let k = self.small_talk_turn;
         let text = match kind {
@@ -645,25 +712,22 @@ impl Agent {
         self.say(Act::Note(text))
     }
 
-    fn tell(&mut self, facts: Vec<Atom>, rules: Vec<Rule>, past: bool) -> Reply {
+    fn tell(&mut self, b: &mut Brain, facts: Vec<Atom>, rules: Vec<Rule>, past: bool) -> Reply {
         let now = self.now();
         let mut added = Vec::new();
         let mut known = Vec::new();
         let mut closed = Vec::new();
         for a in facts {
             let Some(g) = a.to_ground() else { continue };
-            let mut fact = Fact::new(g.clone(), &self.source);
+            let fact = Fact::new(g.clone(), &self.source);
             if past {
-                // "I used to like tea": true before, not now.
-                fact.until = Some(now);
-                fact.from = None;
+                // "I used to like tea": true before, not now. A current copy is closed.
                 let reason = format!("{} said it used to be true", self.source);
-                self.kb.vault.add_fact(fact);
-                self.kb.log_change(now, "add", &g.to_string(), &reason);
+                b.kb.assert_past(fact, now, &reason);
                 added.push(g);
                 continue;
             }
-            match self.kb.assert_fact(fact, now, &format!("{} said so", self.source)) {
+            match b.kb.assert_fact(fact, now, &format!("{} said so", self.source)) {
                 AssertOutcome::Added { closed: c } => {
                     added.push(g);
                     closed.extend(c.into_iter().map(|f| f.atom));
@@ -673,7 +737,8 @@ impl Agent {
         }
         let mut new_rules = Vec::new();
         for r in rules {
-            match self.add_rule(r.clone(), RuleStatus::Confirmed, 0.9, &self.source.clone(), "stated by the user") {
+            let source = self.source.clone();
+            match add_rule_to(b, r.clone(), RuleStatus::Confirmed, 0.9, &source, "stated by the user", now) {
                 Ok(true) => new_rules.push(r),
                 Ok(false) => {}
                 Err(e) => return self.say(Act::Note(format!("I can't use that rule: {e}."))),
@@ -684,37 +749,26 @@ impl Agent {
         }
         // New facts may support, contradict or suggest learned rules.
         if !added.is_empty() {
-            self.last_learn = self.learner.update(&mut self.kb, now);
+            let learner = b.learner.clone();
+            b.evaluations += 1;
+            self.last_learn = learner.update(&mut b.kb, now);
         }
         self.say(Act::Acknowledge { added, closed, known, rules: new_rules, past })
     }
 
     /// Store a rule in its own file. Returns false if it already exists.
-    /// The rule is checked by evaluating; an unsafe or unstratifiable rule is refused.
+    /// An unsafe or unstratifiable rule is refused.
     pub fn add_rule(&mut self, rule: Rule, status: RuleStatus, conf: f64, source: &str, note: &str) -> Result<bool, String> {
-        if self.kb.find_rule(&rule).is_some() {
-            return Ok(false);
-        }
-        let module = router::module_for(&rule.head.pred);
-        let base = format!("{}_{}", rule.head.pred.trim_start_matches('-').replace('-', "not_"), if rule.head.pred.starts_with('-') { "neg" } else { "rule" });
-        let mut id = base.clone();
-        let mut n = 2;
-        while self.kb.vault.rules.contains_key(&sla_core::vault::file_stem(&id)) {
-            id = format!("{base}_{n}");
-            n += 1;
-        }
-        let meta = RuleMeta { id: id.clone(), status, conf, evidence: 0, counter: 0, module: module.into(), source: source.into() };
-        self.kb.vault.put_rule_file(RuleFile::new(&meta, note, &[rule.clone()]));
-        if let Err(e) = evaluate_kb(&self.kb, Some(self.now()), true) {
-            self.kb.vault.remove_rule_file(&id);
-            return Err(e.to_string());
-        }
-        self.kb.log_change(self.now(), "add_rule", &format!("{id}: {rule}"), note);
-        Ok(true)
+        let now = self.now();
+        let mut b = self.brain();
+        let out = add_rule_to(&mut b, rule, status, conf, source, note, now);
+        let _ = b.save();
+        out
     }
 
-    fn ask(&mut self, query: Vec<Literal>, history: bool) -> Reply {
-        let now_model = self.model(false);
+    fn ask(&mut self, b: &mut Brain, query: Vec<Literal>, history: bool) -> Reply {
+        let now = self.now();
+        let now_model = b.model_at(now);
         // Single ground atom: yes/no.
         if let [Literal::Pos(a)] = query.as_slice() {
             if let Some(g) = a.to_ground() {
@@ -723,7 +777,7 @@ impl Agent {
                     Truth::Yes
                 } else if now_model.contains(&g.complement()) && !history {
                     Truth::No
-                } else if self.model(true).contains(&g) {
+                } else if b.was_true(&g, now) {
                     Truth::WasTrue
                 } else if now_model.contains(&g.complement()) {
                     Truth::No
@@ -732,7 +786,7 @@ impl Agent {
                 };
                 if truth == Truth::Yes {
                     if let Some(p) = now_model.proof(&g) {
-                        self.record_uses(&now_model, &p.leaves());
+                        self.record_uses(b, &now_model, &p.leaves());
                     }
                 }
                 return self.say(Act::YesNo { atom: g, truth });
@@ -741,7 +795,7 @@ impl Agent {
             let mut found = now_model.query_atom(a);
             let mut past = false;
             if found.is_empty() || history {
-                let hist = self.model(true).query_atom(a);
+                let hist = b.past_matches(a, now);
                 if history || !hist.is_empty() {
                     past = found.is_empty() && !hist.is_empty();
                     if history {
@@ -759,7 +813,7 @@ impl Agent {
             found.sort();
             found.truncate(12);
             self.last_answer = found.first().cloned();
-            self.record_uses(&now_model, &found);
+            self.record_uses(b, &now_model, &found);
             return self.say(Act::Wh { pattern: a.clone(), found, past });
         }
         // Conjunctive query: answer with the matching first atoms.
@@ -777,7 +831,7 @@ impl Agent {
         }
     }
 
-    fn record_uses(&mut self, m: &Model, atoms: &[GroundAtom]) {
+    fn record_uses(&mut self, b: &mut Brain, m: &Model, atoms: &[GroundAtom]) {
         let mut leaves = Vec::new();
         for a in atoms {
             if let Some(p) = m.proof(a) {
@@ -785,11 +839,11 @@ impl Agent {
             }
         }
         let now = self.now();
-        self.kb.record_use(&leaves, now);
+        b.kb.record_use(&leaves, now);
     }
 
     /// "No, X" / "That's wrong".
-    fn correct(&mut self, atoms: Vec<Atom>) -> Reply {
+    fn correct(&mut self, b: &mut Brain, atoms: Vec<Atom>) -> Reply {
         let now = self.now();
         let mut retracted = Vec::new();
         let mut added = Vec::new();
@@ -800,12 +854,13 @@ impl Agent {
             let Some(a) = last else {
                 return self.say(Act::Note("What is wrong? I haven't said anything yet.".into()));
             };
-            if let Some(r) = self.make_false(&a, now, &mut retracted) {
+            if let Some(r) = self.make_false(b, &a, now, &mut retracted) {
                 rules.push(r);
             }
             return self.say(Act::Corrected { added, retracted, rules });
         }
-        let model = self.model(false);
+        let model = b.model_at(now);
+        let functional = b.kb.functional();
         for a in atoms {
             let Some(g) = a.to_ground() else { continue };
             let mut wrong = Vec::new();
@@ -813,18 +868,21 @@ impl Agent {
             if model.contains(&g.complement()) {
                 wrong.push(g.complement());
             }
-            // The last answer was about the same subject and relation with another value.
+            // The last answer gave another value of a single-valued relation
+            // ("No, Anna lives in Rome" after "Anna lives in Paris"). For a
+            // relation with many values ("No, Anna likes coffee" after "Anna
+            // likes tea") the old value stays: only an explicit negation removes it.
             if let Some(l) = &last {
-                if l.pred == g.pred && l.args.first() == g.args.first() && l != &g && model.contains(l) {
+                if l != &g && model.contains(l) && same_key(l, &g, &functional) {
                     wrong.push(l.clone());
                 }
             }
             for w in wrong {
-                if let Some(r) = self.make_false(&w, now, &mut retracted) {
+                if let Some(r) = self.make_false(b, &w, now, &mut retracted) {
                     rules.push(r);
                 }
             }
-            let out = self.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "correction");
+            let out = b.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "correction");
             if let AssertOutcome::Added { closed } = out {
                 retracted.extend(closed.into_iter().map(|f| f.atom));
             }
@@ -839,13 +897,13 @@ impl Agent {
     /// Make `a` false from now on. A stored fact is closed (and its negation
     /// recorded); a derived one has its rule refined by the learner. Returns
     /// the refined rule, if any.
-    fn make_false(&mut self, a: &GroundAtom, now: Timestamp, retracted: &mut Vec<GroundAtom>) -> Option<Rule> {
-        let stored = self.kb.all_facts().iter().any(|f| f.atom == *a && f.valid_at(now));
+    fn make_false(&mut self, b: &mut Brain, a: &GroundAtom, now: Timestamp, retracted: &mut Vec<GroundAtom>) -> Option<Rule> {
+        let stored = b.kb.all_facts().iter().any(|f| f.atom == *a && f.valid_at(now));
         if stored {
-            self.retract(a, now, retracted);
+            self.retract(b, a, now, retracted);
             return None;
         }
-        let out = corrections::correct_derived(&mut self.kb, a, now, &self.source);
+        let out = corrections::correct_derived(&mut b.kb, a, now, &self.source);
         if !matches!(out.change, Change::NotDerived) {
             retracted.push(a.clone());
         }
@@ -855,53 +913,54 @@ impl Agent {
     /// Learn effect rules from a before/after demonstration.
     pub fn demonstrate(&mut self, demo: &Demonstration) -> Vec<String> {
         let now = self.now();
+        let mut b = self.brain();
         for f in &demo.after {
-            self.kb.assert_fact(Fact::new(f.clone(), &self.source), now, "demonstration");
+            b.kb.assert_fact(Fact::new(f.clone(), &self.source), now, "demonstration");
         }
-        self.kb.assert_fact(Fact::new(demo.action.clone(), &self.source), now, "demonstration");
-        let learner = self.learner.clone();
-        let out = corrections::learn_from_demo(&mut self.kb, &learner, demo, now);
-        let _ = self.save();
+        b.kb.assert_fact(Fact::new(demo.action.clone(), &self.source), now, "demonstration");
+        let learner = b.learner.clone();
+        let out = corrections::learn_from_demo(&mut b.kb, &learner, demo, now);
+        let _ = b.save();
         out
     }
 
     /// Make `a` false from now on: close it if stored, and record the negation.
-    fn retract(&mut self, a: &GroundAtom, now: Timestamp, retracted: &mut Vec<GroundAtom>) {
+    fn retract(&mut self, b: &mut Brain, a: &GroundAtom, now: Timestamp, retracted: &mut Vec<GroundAtom>) {
         let pattern = a.to_atom();
-        let closed = self.kb.close_matching(&pattern, now, "user said it is wrong");
+        let closed = b.kb.close_matching(&pattern, now, "user said it is wrong");
         retracted.push(a.clone());
         retracted.extend(closed.into_iter().map(|f| f.atom));
-        self.kb.assert_fact(Fact::new(a.complement(), &self.source), now, "user said it is wrong");
+        b.kb.assert_fact(Fact::new(a.complement(), &self.source), now, "user said it is wrong");
     }
 
-    fn answer_pending(&mut self, pending: Option<Pending>, yes: bool) -> Reply {
+    fn answer_pending(&mut self, b: &mut Brain, pending: Option<Pending>, yes: bool) -> Reply {
         let now = self.now();
         match pending {
             Some(Pending::Fact(a)) => {
                 let g = if yes { a } else { a.complement() };
-                self.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "answer to my question");
+                b.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "answer to my question");
                 self.last_answer = Some(g.clone());
                 self.say(Act::Acknowledge { added: vec![g], closed: vec![], known: vec![], rules: vec![], past: false })
             }
             Some(Pending::Rule(id)) => {
                 let stem = sla_core::vault::file_stem(&id);
-                if let Some(rf) = self.kb.vault.rules.get_mut(&stem) {
+                if let Some(rf) = b.kb.vault.rules.get_mut(&stem) {
                     let mut m = rf.meta();
                     m.status = if yes { RuleStatus::Confirmed } else { RuleStatus::Rejected };
                     if yes {
                         m.conf = m.conf.max(0.9);
                     }
                     rf.set_meta(&m);
-                    self.kb.vault.mark_rule_dirty(&stem);
+                    b.kb.vault.mark_rule_dirty(&stem);
                     let action = if yes { "confirm_rule" } else { "reject_rule" };
-                    self.kb.log_change(now, action, &id, "user answered my question");
+                    b.kb.log_change(now, action, &id, "user answered my question");
                 }
                 self.say(Act::Note(if yes { "Thanks, I'll treat that as a rule now.".into() } else { "Okay, I'll drop that idea.".into() }))
             }
-            Some(Pending::Contradiction(a, b)) => {
+            Some(Pending::Contradiction(a, bb)) => {
                 // "yes" keeps the first, "no" the second.
-                let keep = if yes { a } else { b };
-                self.correct(vec![keep.to_atom()])
+                let keep = if yes { a } else { bb };
+                self.correct(b, vec![keep.to_atom()])
             }
             Some(Pending::Wh(_)) | None => self.say(Act::Note(if yes { "Good.".into() } else { "Okay.".into() })),
         }
@@ -910,13 +969,13 @@ impl Agent {
     /// Facts currently believed, rendered as Datalog lines (for the CLI).
     pub fn dump_facts(&self) -> Vec<String> {
         let now = self.now();
-        let mut v: Vec<String> = self.kb.all_facts().iter().filter(|f| f.valid_at(now)).map(|f| f.to_line()).collect();
+        let mut v: Vec<String> = self.brain().kb.all_facts().iter().filter(|f| f.valid_at(now)).map(|f| f.to_line()).collect();
         v.sort();
         v
     }
 
     pub fn dump_rules(&self) -> Vec<String> {
-        self.kb.rules(true).iter().filter(|r| r.module != "core").map(|r| format!("{} [{} {}] {}", r.id, r.status.as_str(), sla_core::term::fmt_conf(r.conf), r.rule)).collect()
+        self.brain().kb.rules(true).iter().filter(|r| r.module != "core").map(|r| format!("{} [{} {}] {}", r.id, r.status.as_str(), sla_core::term::fmt_conf(r.conf), r.rule)).collect()
     }
 
     /// True if `pattern` matches a fact valid now.
@@ -924,6 +983,55 @@ impl Agent {
         let Ok(p) = sla_core::parse_atom(pattern) else { return false };
         self.model(false).all_facts().iter().any(|g| matches(&p, g))
     }
+}
+
+/// Do `a` and `b` give two values of one single-valued key (same predicate
+/// and the same first K arguments of a `functional(P, K)` predicate)?
+fn same_key(a: &GroundAtom, b: &GroundAtom, functional: &std::collections::HashMap<String, usize>) -> bool {
+    if a.pred != b.pred || a.args.len() != b.args.len() || a.is_strong_negation() {
+        return false;
+    }
+    // A thing has one colour at a time, but many qualities.
+    if a.base_pred() == "property" && a.args.get(1).and_then(|v| v.as_sym()) == Some("quality") {
+        return false;
+    }
+    match functional.get(a.base_pred()) {
+        Some(&k) if k < a.args.len() => a.args[..k] == b.args[..k] && a.args[k..] != b.args[k..],
+        _ => false,
+    }
+}
+
+/// Store a rule in its own file in `b`. Returns false if it already exists.
+fn add_rule_to(b: &mut Brain, rule: Rule, status: RuleStatus, conf: f64, source: &str, note: &str, now: Timestamp) -> Result<bool, String> {
+    if b.kb.find_rule(&rule).is_some() {
+        return Ok(false);
+    }
+    let module = router::module_for(&rule.head.pred);
+    let base = format!("{}_{}", rule.head.pred.trim_start_matches('-').replace('-', "not_"), if rule.head.pred.starts_with('-') { "neg" } else { "rule" });
+    let mut id = base.clone();
+    let mut n = 2;
+    while b.kb.vault.rules.contains_key(&sla_core::vault::file_stem(&id)) {
+        id = format!("{base}_{n}");
+        n += 1;
+    }
+    let meta = RuleMeta { id: id.clone(), status, conf, evidence: 0, counter: 0, module: module.into(), source: source.into() };
+    b.kb.vault.put_rule_file(RuleFile::new(&meta, note, &[rule.clone()]));
+    let rules: Vec<RuleInput> = b.kb.rules(true).iter().map(RuleInput::from).collect();
+    if let Err(e) = sla_reasoner::check(&rules) {
+        b.kb.vault.remove_rule_file(&id);
+        return Err(e.to_string());
+    }
+    b.kb.log_change(now, "add_rule", &format!("{id}: {rule}"), note);
+    Ok(true)
+}
+
+fn write_trace(dir: &std::path::Path, t: &TurnTrace) -> io::Result<()> {
+    use std::io::Write;
+    std::fs::create_dir_all(dir)?;
+    let mut line = serde_json::to_string(t).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+    line.push('\n');
+    let mut f = std::fs::OpenOptions::new().create(true).append(true).open(dir.join(format!("{}.jsonl", t.session)))?;
+    f.write_all(line.as_bytes())
 }
 
 /// Convenience for building a constant term.

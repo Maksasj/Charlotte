@@ -3,7 +3,8 @@
 //! chat with the agent and score conversation quality. Scores are appended
 //! to `eval/history.csv` so trends are visible over time.
 
-pub mod pretrain;
+
+pub mod outcome;
 pub mod trainer;
 
 use sla_agent::curiosity::Teacher;
@@ -155,7 +156,7 @@ fn temp_dir(tag: &str) -> PathBuf {
 /// A stored rule satisfies an expected rule if the heads match and every
 /// expected body literal is present (corrections may add conditions).
 fn rule_satisfied(agent: &Agent, want: &Rule) -> bool {
-    agent.kb.rules(true).iter().any(|r| r.rule.head == want.head && want.body.iter().all(|l| r.rule.body.contains(l)))
+    agent.brain().kb.rules(true).iter().any(|r| r.rule.head == want.head && want.body.iter().all(|l| r.rule.body.contains(l)))
 }
 
 /// Run one dialogue on a fresh agent. With a teacher, the agent then asks up
@@ -211,14 +212,14 @@ pub fn run_dialogue(d: &Dialogue, teacher: Option<&mut dyn Teacher>, teacher_que
     // Live teacher phase: does the agent learn only true things from its questions?
     if let Some(teacher) = teacher {
         for _ in 0..teacher_questions {
-            let before = agent.kb.all_facts();
+            let before = agent.brain().kb.all_facts();
             t = t.plus_secs(60);
             agent.clock = Some(t);
             let Some((q, a, reply)) = agent.ask_teacher(teacher) else { break };
             res.transcript.push((format!("[agent asks] {q}"), format!("[teacher] {a} / [agent] {}", reply.text)));
             res.teacher_questions += 1;
-            let new: Vec<GroundAtom> = agent.kb.all_facts().into_iter().filter(|f| !before.contains(f)).map(|f| f.atom).collect();
-            let contradicts = new.iter().any(|g| d.truth.contains(&g.complement()) || (g.is_strong_negation() && d.truth.contains(&g.complement())));
+            let new: Vec<GroundAtom> = agent.brain().kb.all_facts().into_iter().filter(|f| !before.contains(f)).map(|f| f.atom).collect();
+            let contradicts = new.iter().any(|g| d.truth.contains(&g.complement()));
             if !contradicts {
                 res.teacher_consistent += 1;
             } else {

@@ -13,3 +13,5 @@ sla_reasoner = { path = "../reasoner" }
 sla_parser = { path = "../parser" }
 sla_nlg = { path = "../nlg" }
 sla_learner = { path = "../learner" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

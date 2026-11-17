@@ -42,7 +42,11 @@ fn main() -> io::Result<()> {
     if let Some(m) = &llm {
         agent.enable_llm(m);
     }
-    for (file, line, err) in agent.kb.vault.errors() {
+    // Turn traces live outside the vault, in `sessions/` beside it.
+    let vault_dir = std::path::Path::new(&vault);
+    agent.trace_dir = Some(vault_dir.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(std::path::Path::new(".")).join("sessions"));
+    let errors = agent.brain().kb.vault.errors();
+    for (file, line, err) in errors {
         eprintln!("warning: {file}: cannot read `{line}`: {err}");
     }
 
@@ -80,11 +84,11 @@ fn reply_or_command(agent: &mut Agent, line: &str) -> String {
     match line {
         ":facts" => or_empty(agent.dump_facts(), "No facts yet. Tell me something, like \"Anna likes tea.\""),
         ":rules" => or_empty(agent.dump_rules(), "No learned rules yet. Try \"If someone likes tea then they want tea.\""),
-        ":reload" => match agent.kb.reload() {
+        ":reload" => match agent.brain().kb.reload() {
             Ok(()) => "Reloaded the vault.".into(),
             Err(e) => format!("Reload failed: {e}"),
         },
-        ":log" => match agent.kb.vault.read_log() {
+        ":log" => match agent.brain().kb.vault.read_log() {
             Ok(entries) => entries.iter().rev().take(20).map(|(t, a, s, r)| format!("{t} {a} {s} ({r})")).collect::<Vec<_>>().join("\n"),
             Err(e) => format!("Cannot read log: {e}"),
         },

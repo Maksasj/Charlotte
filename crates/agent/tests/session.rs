@@ -46,7 +46,7 @@ fn teach_then_recall_after_restart() {
         assert!(r.contains("rule"), "{r}");
         let r = talk(&mut a, "If something is in Berlin then it is in Germany.");
         assert!(r.contains("rule"), "{r}");
-        assert_eq!(a.kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name").count(), 10);
+        assert_eq!(a.brain().kb.all_facts().iter().filter(|f| f.atom.pred != "proper_name").count(), 10);
         assert_eq!(a.dump_rules().len(), 2);
     }
 
@@ -97,12 +97,28 @@ fn contradiction_and_history() {
     assert!(r.starts_with("No"), "{r}");
     let r = talk(&mut a, "Did I like coffee?");
     assert!(r.contains("used to like coffee"), "{r}");
-    // Correction of a wrong statement.
+    // Correction of a wrong statement. `is_a` has many values (a dog is also
+    // an animal), so only an explicit negation removes the old one (2.0).
     talk(&mut a, "Rex is a cat.");
     let r = talk(&mut a, "No, Rex is a dog.");
     assert!(r.contains("Rex is a dog"), "{r}");
+    talk(&mut a, "Rex is not a cat.");
     let r = talk(&mut a, "Is Rex a cat?");
     assert!(r.starts_with("No"), "{r}");
+    // Design 2.0: "No, Anna likes coffee" no longer deletes "Anna likes tea"...
+    talk(&mut a, "Anna likes tea.");
+    talk(&mut a, "What does Anna like?");
+    talk(&mut a, "No, Anna likes coffee.");
+    let r = talk(&mut a, "Does Anna like tea?");
+    assert!(r.contains("Anna likes tea") && !r.starts_with("No"), "{r}");
+    let r = talk(&mut a, "Does Anna like coffee?");
+    assert!(r.contains("Anna likes coffee") && !r.starts_with("No"), "{r}");
+    // ...but a single-valued relation keeps one value.
+    talk(&mut a, "Anna lives in Paris.");
+    talk(&mut a, "Where does Anna live?");
+    talk(&mut a, "No, Anna lives in Rome.");
+    let r = talk(&mut a, "Does Anna live in Paris?");
+    assert!(r.starts_with("No") || r.contains("used to"), "{r}");
     // Unknown things stay unknown.
     let r = talk(&mut a, "Does Bob like jazz?");
     assert!(r.contains("know") || r.contains("sure") || r.contains("idea"), "{r}");

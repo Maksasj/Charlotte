@@ -18,7 +18,7 @@
 
 use crate::{rule_features, Learner};
 use sla_core::{Atom, Fact, GroundAtom, KnowledgeBase, Literal, Rule, RuleFile, RuleMeta, RuleStatus, Term, Timestamp, Value};
-use sla_reasoner::{evaluate_kb, Model, ProofStep};
+use sla_reasoner::{evaluate_kb, Model, ProofStep, RuleInput};
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -29,6 +29,9 @@ pub enum Change {
     Exception,
     /// The rule is core (read-only); only the negative fact was stored.
     CoreRuleUnchanged,
+    /// Refining the rule would make the program invalid; the rule is unchanged
+    /// and only the negative fact was stored.
+    RefinementRefused,
     /// The wrong atom is a stored fact; no rule involved.
     GivenFact,
     /// The atom is not believed at all.
@@ -112,42 +115,48 @@ pub fn correct_derived(kb: &mut KnowledgeBase, wrong: &GroundAtom, now: Timestam
             (Literal::Neg(neg_head), Change::Exception)
         }
     };
-    store_negation(kb);
+    if !kb.vault.rules.contains_key(&stem) {
+        return none(Change::NotDerived);
+    }
     let mut new_rule = rule.clone();
     if !new_rule.body.contains(&literal) {
         new_rule.body.push(literal);
     }
-    let Some(rf) = kb.vault.rules.get_mut(&stem) else { return none(Change::NotDerived) };
-    let old = rule.clone();
-    let nr = new_rule.clone();
-    rf.doc.update_items(|item| match item {
-        sla_core::doc::Item::Rule(r) if *r == old => {
-            *r = nr.clone();
-            true
-        }
-        _ => false,
-    });
-    let mut meta = rf.meta();
-    meta.counter += 1;
-    rf.set_meta(&meta);
-    kb.vault.mark_rule_dirty(&stem);
-    // A refinement must keep the program valid; otherwise fall back to the exception fact only.
-    if evaluate_kb(kb, Some(now), true).is_err() {
-        let rf = kb.vault.rules.get_mut(&stem).unwrap();
+    // All or nothing: the negative fact, the refined rule and the raised
+    // counter are kept together, or none of them is.
+    let refined = kb.transaction(|kb| -> Result<(), ()> {
+        store_negation(kb);
+        let rf = kb.vault.rules.get_mut(&stem).ok_or(())?;
+        let old = rule.clone();
+        let nr = new_rule.clone();
         rf.doc.update_items(|item| match item {
-            sla_core::doc::Item::Rule(r) if *r == new_rule => {
-                *r = rule.clone();
+            sla_core::doc::Item::Rule(r) if *r == old => {
+                *r = nr.clone();
                 true
             }
             _ => false,
         });
-        return CorrectionOutcome { rule: None, change: Change::Exception, new_rule: None };
+        let mut meta = rf.meta();
+        meta.counter += 1;
+        rf.set_meta(&meta);
+        kb.vault.mark_rule_dirty(&stem);
+        // A refinement must keep the program valid.
+        let rules: Vec<RuleInput> = kb.rules(true).iter().map(RuleInput::from).collect();
+        sla_reasoner::check(&rules).map_err(|_| ())?;
+        let what = match &change {
+            Change::Condition(c) => format!("added condition {c}"),
+            _ => "added exception for explicit negations".into(),
+        };
+        kb.log_change(now, "refine_rule", &format!("{stem}: {new_rule}"), &format!("{source} said {wrong} is wrong; {what}"));
+        Ok(())
+    });
+    if refined.is_err() {
+        // The refined rule would break the program: keep the rule as it was
+        // and store only the exception fact, and say so.
+        store_negation(kb);
+        kb.log_change(now, "correction", &wrong.to_string(), &format!("refining {stem} would make the program invalid; stored the exception fact only"));
+        return none(Change::RefinementRefused);
     }
-    let what = match &change {
-        Change::Condition(c) => format!("added condition {c}"),
-        _ => "added exception for explicit negations".into(),
-    };
-    kb.log_change(now, "refine_rule", &format!("{stem}: {new_rule}"), &format!("{source} said {wrong} is wrong; {what}"));
     CorrectionOutcome { rule: Some(stem), change, new_rule: Some(new_rule) }
 }
 

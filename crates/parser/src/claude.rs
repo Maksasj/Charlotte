@@ -44,16 +44,50 @@ static GLOBAL: Mutex<BTreeMap<String, Usage>> = Mutex::new(BTreeMap::new());
 
 thread_local! {
     static LOCAL: RefCell<BTreeMap<String, Usage>> = RefCell::new(BTreeMap::new());
+    /// Calls made by this thread, never reset (for per-turn counts).
+    static CALLS: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+    static THREAD_MOCK: RefCell<Option<Mock>> = const { RefCell::new(None) };
+}
+
+/// A stand-in for the model in tests: (role, prompt) -> answer.
+pub type Mock = std::sync::Arc<dyn Fn(&str, &str) -> Result<String, String> + Send + Sync>;
+
+static GLOBAL_MOCK: Mutex<Option<Mock>> = Mutex::new(None);
+
+/// Answer this thread's model calls with `f` instead of the Claude CLI.
+pub fn set_thread_mock(f: Mock) {
+    THREAD_MOCK.with(|m| *m.borrow_mut() = Some(f));
+}
+
+/// Answer every thread's model calls with `f` (for code that spawns threads).
+/// A thread mock takes precedence.
+pub fn set_global_mock(f: Mock) {
+    *GLOBAL_MOCK.lock().unwrap_or_else(|e| e.into_inner()) = Some(f);
+}
+
+pub fn clear_mocks() {
+    THREAD_MOCK.with(|m| *m.borrow_mut() = None);
+    *GLOBAL_MOCK.lock().unwrap_or_else(|e| e.into_inner()) = None;
+}
+
+fn mock() -> Option<Mock> {
+    THREAD_MOCK.with(|m| m.borrow().clone()).or_else(|| GLOBAL_MOCK.lock().unwrap_or_else(|e| e.into_inner()).clone())
+}
+
+/// Model calls made by the current thread so far.
+pub fn thread_calls() -> u64 {
+    CALLS.with(|c| c.get())
 }
 
 fn record(role: &str, u: &Usage) {
-    GLOBAL.lock().unwrap().entry(role.to_string()).or_default().add(u);
+    CALLS.with(|c| c.set(c.get() + u.calls));
+    GLOBAL.lock().unwrap_or_else(|e| e.into_inner()).entry(role.to_string()).or_default().add(u);
     LOCAL.with(|l| l.borrow_mut().entry(role.to_string()).or_default().add(u));
 }
 
 /// Usage of all calls so far, by role.
 pub fn global_usage() -> BTreeMap<String, Usage> {
-    GLOBAL.lock().unwrap().clone()
+    GLOBAL.lock().unwrap_or_else(|e| e.into_inner()).clone()
 }
 
 /// Usage of this thread's calls since the last take, by role (and reset).
@@ -66,6 +100,12 @@ const SYSTEM: &str = "You are a careful assistant inside a training program. Fol
 /// One model call. Returns the text of the answer.
 pub fn call(role: &str, model: &str, prompt: &str) -> Result<String, String> {
     let start = std::time::Instant::now();
+    if let Some(f) = mock() {
+        let out = f(role, prompt);
+        let u = Usage { calls: 1, errors: out.is_err() as u64, seconds: start.elapsed().as_secs_f64(), ..Default::default() };
+        record(role, &u);
+        return out;
+    }
     let child = Command::new("claude")
         .args(["-p", "--model", model, "--output-format", "json", "--system-prompt", SYSTEM, "--tools", "", "--no-session-persistence", "--strict-mcp-config"])
         .stdin(Stdio::piped())
