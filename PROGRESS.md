@@ -45,7 +45,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 65% by Haiku, 90% by the ground-truth check (target 70%); transfer 0% (target 40%) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 70% by Haiku, 95% by the ground-truth check (target 70%, met); transfer 0% (target 40%); training run waits for the user | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -318,6 +318,12 @@ the report's own regex found 57).
   training run waits for the user's go-ahead. The dashboard has a live curriculum
   panel and knowledge health. A hand-label sheet for the checklist judges is in
   `eval/curriculum/hand_labels.md` (to be filled in by the user).
+- 2026-11-17, sixth curriculum run (`eval/curriculum/2026-11-17T19-13-08.md`, 74 new
+  calls), with the duration fix and the curiosity round: second encounter **14 of
+  20 (70%) by Haiku** (target met), 19 of 20 (95%) by the ground-truth check;
+  taught-then-learned 13 of 20; retention 8 of 20 (40%, was 50%); transfer 0 of
+  15; not understood 1.7%; helpful + clarify 67.0%; contradicting facts 0.6%;
+  the agent asked its teacher 8 questions, 7 answered from the ground truth.
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the
