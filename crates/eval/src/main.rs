@@ -111,9 +111,9 @@ fn curriculum_command(args: &[String]) {
     sla_agent::brain::lock(&brain).install(&root.join("data/scenarios/dinner")).ok();
     let scenarios: Vec<_> = sla_eval::curriculum::load_scenarios(&root.join("data/curriculum/scenarios")).into_iter().take(limit).collect();
     let mut cfg = sla_eval::curriculum::CurriculumConfig {
-        user_agent: sla_eval::curriculum::llm_user(model.clone()),
-        teacher_agent: sla_eval::curriculum::llm_teacher(model.clone()),
-        judge: Box::new(sla_eval::curriculum::ModelJudge { model: judge.clone() }),
+        user_agent: sla_eval::curriculum::llm_user(model.clone(), Some(root.join("eval").join("translate_cache.jsonl"))),
+        teacher_agent: sla_eval::curriculum::llm_teacher(model.clone(), Some(root.join("eval").join("translate_cache.jsonl"))),
+        judge: Box::new(sla_eval::curriculum::ModelJudge::new(judge.clone(), Some(root.join("eval").join("curriculum_judge_cache.jsonl")))),
         labeller: Some(sla_eval::outcome::Labeller::new(Some(judge.clone()), Some(root.join("eval").join("label_cache.jsonl")))),
         max_turns: 4,
     };
@@ -130,10 +130,35 @@ fn curriculum_command(args: &[String]) {
     let _ = std::fs::write(&file, &md);
     // Every conversation is training data: keep it.
     let _ = sla_eval::archive::append(&sla_eval::archive::dir(&root), "curriculum", &r);
+    // Keep what the agent learned: a copy of the run's vault.
+    let keep = root.join("data").join("training").join("curriculum").join("vaults").join(&ts);
+    drop(brain);
+    if let Err(e) = copy_dir(&vault, &keep) {
+        eprintln!("could not keep the vault: {e}");
+    }
     println!("model calls: {calls} ({failed} failed); vault {}; wrote {}", vault.display(), file.display());
     if calls > 0 && failed * 10 > calls {
         eprintln!("WARNING: many model calls failed; treat this run as invalid.");
     }
+}
+
+fn copy_dir(from: &std::path::Path, to: &std::path::Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(to)?;
+    for e in std::fs::read_dir(from)? {
+        let e = e?;
+        let p = e.path();
+        let name = e.file_name();
+        // The translation cache is shared (eval/); the vault keeps knowledge only.
+        if name == "translate_cache.jsonl" {
+            continue;
+        }
+        if p.is_dir() {
+            copy_dir(&p, &to.join(&name))?;
+        } else {
+            std::fs::copy(&p, to.join(&name))?;
+        }
+    }
+    Ok(())
 }
 
 /// `sla_eval hygiene --vault DIR`: the hygiene pass on a vault (run it on a copy).
@@ -203,6 +228,8 @@ fn wording_command(args: &[String]) {
 }
 
 fn main() {
+    // Every real model call (prompt and answer) is kept as training data.
+    sla_parser::claude::set_call_log(root().join("data").join("training").join("calls"));
     let all: Vec<String> = std::env::args().skip(1).collect();
     match all.first().map(String::as_str) {
         Some("outcomes") => return outcomes(&all[1..]),

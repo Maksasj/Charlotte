@@ -10,6 +10,7 @@ use sla_eval::trainer::{serve, Trainer};
 fn main() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
     let root = root.canonicalize().unwrap_or(root);
+    sla_parser::claude::set_call_log(root.join("data").join("training").join("calls"));
     let mut vault = root.join("vault");
     let mut port: u16 = 8770;
     let mut ui = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("ui").join("trainer.html");

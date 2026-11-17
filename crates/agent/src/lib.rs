@@ -195,6 +195,11 @@ impl Agent {
     /// parser does not understand. Translations are cached in the vault.
     pub fn enable_llm(&mut self, model: &str) {
         let cache = self.brain().kb.vault.root.join("translate_cache.jsonl");
+        self.enable_llm_cached(model, cache);
+    }
+
+    /// The LLM translator with its cache in a given file (shared by runs).
+    pub fn enable_llm_cached(&mut self, model: &str, cache: PathBuf) {
         let registry = std::sync::Arc::clone(&self.translator.registry);
         let patterns = self.brain().kb.vault.root.join("grammar").join("input_patterns.json");
         let mut t = sla_translate::Translator::new((*registry).clone()).with_cache(cache);

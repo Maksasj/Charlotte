@@ -170,9 +170,50 @@ pub trait CheckJudge: Send + Sync {
     fn passes(&self, s: &Scenario, variant: bool, turns: &[Turn]) -> (bool, String);
 }
 
-/// The checklist judged by a model.
+/// The checklist judged by a model; verdicts are cached by the exact prompt.
 pub struct ModelJudge {
     pub model: String,
+    cache_path: Option<PathBuf>,
+    cache: std::sync::Mutex<std::collections::HashMap<String, String>>,
+}
+
+impl ModelJudge {
+    pub fn new(model: String, cache_path: Option<PathBuf>) -> Self {
+        let mut cache = std::collections::HashMap::new();
+        if let Some(p) = &cache_path {
+            for l in std::fs::read_to_string(p).unwrap_or_default().lines() {
+                if let Ok(v) = serde_json::from_str::<serde_json::Value>(l) {
+                    if let (Some(k), Some(o)) = (v["key"].as_str(), v["out"].as_str()) {
+                        cache.insert(k.to_string(), o.to_string());
+                    }
+                }
+            }
+        }
+        ModelJudge { model, cache_path, cache: std::sync::Mutex::new(cache) }
+    }
+
+    fn ask(&self, prompt: &str) -> Result<String, String> {
+        let key = {
+            let mut h: u64 = 0xcbf29ce484222325;
+            for b in self.model.bytes().chain([0u8]).chain(prompt.bytes()) {
+                h ^= b as u64;
+                h = h.wrapping_mul(0x100000001b3);
+            }
+            format!("{h:016x}")
+        };
+        if let Some(o) = self.cache.lock().unwrap_or_else(|e| e.into_inner()).get(&key) {
+            return Ok(o.clone());
+        }
+        let out = crate::claude_as("curriculum_judge", prompt, &self.model)?;
+        if let Some(p) = &self.cache_path {
+            use std::io::Write;
+            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
+                let _ = writeln!(f, "{}", serde_json::json!({"key": key, "out": out}));
+            }
+        }
+        self.cache.lock().unwrap_or_else(|e| e.into_inner()).insert(key, out.clone());
+        Ok(out)
+    }
 }
 
 impl CheckJudge for ModelJudge {
@@ -190,7 +231,7 @@ impl CheckJudge for ModelJudge {
              Checklist:\n{list}\nA check passes when the assistant's replies do it correctly; wording and small omissions of detail do not matter, \
              but wrong facts do. Reply with one line per check, `N: yes` or `N: no`, then a last line `VERDICT: pass` if every check passes, else `VERDICT: fail`."
         );
-        match crate::claude_as("curriculum_judge", &prompt, &self.model) {
+        match self.ask(&prompt) {
             Ok(out) => (out.lines().any(|l| l.trim().eq_ignore_ascii_case("VERDICT: pass")), out.trim().replace('\n', " | ")),
             Err(e) => (false, format!("judge failed: {e}")),
         }
@@ -265,6 +306,7 @@ impl CurriculumConfig {
         let mut a = (self.user_agent)(brain, &format!("user{n}"));
         let turns = converse(&mut a, request, situation, self.max_turns);
         let (passed, note) = self.judge.passes(s, variant, &turns);
+        eprintln!("[curriculum] encounter {n}: {kind:<13} {:<22} {}", s.id, if passed { "pass" } else { "fail" });
         EncounterResult { scenario: s.id.clone(), kind: kind.into(), passed, turns, teach_blocks: 0, judge_note: note }
     }
 
@@ -481,22 +523,28 @@ pub fn markdown(r: &CurriculumReport) -> String {
 }
 
 /// Make a user-side session with the given translator model.
-pub fn llm_user(model: String) -> Box<dyn Fn(&SharedBrain, &str) -> Agent + Send + Sync> {
+pub fn llm_user(model: String, cache: Option<PathBuf>) -> Box<dyn Fn(&SharedBrain, &str) -> Agent + Send + Sync> {
     Box::new(move |b, speaker| {
         let mut a = Agent::with_brain(Arc::clone(b), speaker);
         a.ask_in_chat = false;
-        a.enable_llm(&model);
+        match &cache {
+            Some(c) => a.enable_llm_cached(&model, c.clone()),
+            None => a.enable_llm(&model),
+        }
         a
     })
 }
 
 /// The teacher channel: its own session, tagged as teacher knowledge.
-pub fn llm_teacher(model: String) -> Box<dyn Fn(&SharedBrain) -> Agent + Send + Sync> {
+pub fn llm_teacher(model: String, cache: Option<PathBuf>) -> Box<dyn Fn(&SharedBrain) -> Agent + Send + Sync> {
     Box::new(move |b| {
         let mut a = Agent::with_brain(Arc::clone(b), "teacher");
         a.source = "teacher:curriculum".into();
         a.ask_in_chat = false;
-        a.enable_llm(&model);
+        match &cache {
+            Some(c) => a.enable_llm_cached(&model, c.clone()),
+            None => a.enable_llm(&model),
+        }
         a
     })
 }

@@ -116,6 +116,70 @@ pub fn call(role: &str, model: &str, prompt: &str) -> Result<String, String> {
 /// API across calls, so only the short user part is new each time.
 pub fn call_system(role: &str, model: &str, system: &str, prompt: &str) -> Result<String, String> {
     let start = std::time::Instant::now();
+    let mocked = mock().is_some();
+    let out = call_system_inner(role, model, system, prompt);
+    if !mocked {
+        log_call(role, model, system, prompt, &out, start.elapsed().as_secs_f64());
+    }
+    out
+}
+
+static CALL_LOG: std::sync::Mutex<Option<std::path::PathBuf>> = std::sync::Mutex::new(None);
+
+/// Log every real model call (role, model, the full prompt and answer, time)
+/// as one JSON line in `dir/<date>.jsonl`. System prompts are stored once, by
+/// hash, in `dir/systems.jsonl`.
+pub fn set_call_log(dir: std::path::PathBuf) {
+    let _ = std::fs::create_dir_all(&dir);
+    *CALL_LOG.lock().unwrap_or_else(|e| e.into_inner()) = Some(dir);
+}
+
+fn fnv(s: &str) -> String {
+    let mut h: u64 = 0xcbf29ce484222325;
+    for b in s.bytes() {
+        h ^= b as u64;
+        h = h.wrapping_mul(0x100000001b3);
+    }
+    format!("{h:016x}")
+}
+
+fn log_call(role: &str, model: &str, system: &str, prompt: &str, out: &Result<String, String>, seconds: f64) {
+    let guard = CALL_LOG.lock().unwrap_or_else(|e| e.into_inner());
+    let Some(dir) = guard.as_ref() else { return };
+    use std::io::Write;
+    let sys_hash = fnv(system);
+    let sys_file = dir.join("systems.jsonl");
+    let known = std::fs::read_to_string(&sys_file).map_or(false, |t| t.contains(&sys_hash));
+    if !known {
+        if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&sys_file) {
+            let _ = writeln!(f, "{}", serde_json::json!({"hash": sys_hash, "system": system}));
+        }
+    }
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let day = {
+        // Civil date from Unix days (UTC).
+        let z = (now / 86400) as i64 + 719468;
+        let era = z.div_euclid(146097);
+        let doe = z - era * 146097;
+        let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+        let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+        let mp = (5 * doy + 2) / 153;
+        let d = doy - (153 * mp + 2) / 5 + 1;
+        let m = if mp < 10 { mp + 3 } else { mp - 9 };
+        let y = yoe + era * 400 + (m <= 2) as i64;
+        format!("{y:04}-{m:02}-{d:02}")
+    };
+    let line = serde_json::json!({
+        "unix": now, "role": role, "model": model, "system": sys_hash, "prompt": prompt,
+        "ok": out.is_ok(), "answer": out.as_ref().map(String::as_str).unwrap_or_else(|e| e.as_str()), "seconds": seconds,
+    });
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(dir.join(format!("{day}.jsonl"))) {
+        let _ = writeln!(f, "{line}");
+    }
+}
+
+fn call_system_inner(role: &str, model: &str, system: &str, prompt: &str) -> Result<String, String> {
+    let start = std::time::Instant::now();
     if let Some(f) = mock() {
         let out = f(role, prompt);
         let u = Usage { calls: 1, errors: out.is_err() as u64, seconds: start.elapsed().as_secs_f64(), ..Default::default() };
