@@ -29,3 +29,44 @@ fn hygiene_pass_links_every_duplicate() {
     drop(b);
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The consolidation pass finds a step two procedures share.
+#[test]
+fn consolidation_finds_shared_steps() {
+    let dir = std::env::temp_dir().join(format!("sla_m18_consolidate_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let brain = sla_agent::Brain::shared(&dir).unwrap();
+    let mut b = sla_agent::brain::lock(&brain);
+    for (id, extra) in [("make_tea", "pour"), ("make_coffee", "stir")] {
+        let src = format!(
+            "---
+id: {id}
+status: hypothesis
+source: test
+uses: 0
+successes: 0
+---
+# {id}
+
+Test.
+
+```datalog
+task({id}).
+step({id}, {id}_s1).
+action({id}_s1, boil).
+object_of({id}_s1, water).
+step({id}, {id}_s2).
+action({id}_s2, {extra}).
+object_of({id}_s2, cup).
+before({id}_s1, {id}_s2).
+```
+"
+        );
+        b.kb.vault.put_procedure(sla_core::ProcedureKind::Procedure, sla_core::ProcedureFile::parse(&src, id));
+    }
+    let r = sla_agent::consolidate::run(&mut b, sla_core::Timestamp::now());
+    assert!(r.shared_steps.iter().any(|(a, o, t)| a == "boil" && o == "water" && t.len() == 2), "{:?}", r.shared_steps);
+    assert!(!r.shared_steps.iter().any(|(a, _, _)| a == "pour" || a == "stir"));
+    drop(b);
+    let _ = std::fs::remove_dir_all(&dir);
+}

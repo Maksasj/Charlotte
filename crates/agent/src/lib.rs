@@ -25,6 +25,7 @@ pub mod brain;
 pub mod curiosity;
 pub mod dialogue;
 pub mod events;
+pub mod consolidate;
 pub mod hygiene;
 pub mod learning;
 pub mod queue;

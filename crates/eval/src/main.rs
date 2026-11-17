@@ -277,6 +277,22 @@ fn calibrate_command() {
     println!("wrote {}", file.display());
 }
 
+/// `sla_eval consolidate --vault DIR`: the offline consolidation pass (rule
+/// search over the whole vault, hygiene, steps shared by procedures).
+fn consolidate_command(args: &[String]) {
+    let Some(dir) = args.iter().position(|a| a == "--vault").and_then(|i| args.get(i + 1)) else {
+        eprintln!("usage: sla_eval consolidate --vault DIR");
+        std::process::exit(2);
+    };
+    let brain = sla_agent::Brain::shared(dir).expect("open vault");
+    let mut b = sla_agent::brain::lock(&brain);
+    let r = sla_agent::consolidate::run(&mut b, sla_core::Timestamp::now());
+    println!("rules proposed {}, changed {}; duplicates linked {}; {:.0} ms", r.rules_proposed, r.rules_changed, r.hygiene.linked, r.ms);
+    for (a, o, tasks) in &r.shared_steps {
+        println!("  shared step: {a} {o} in {}", tasks.join(", "));
+    }
+}
+
 /// `sla_eval hygiene --vault DIR`: the hygiene pass on a vault (run it on a copy).
 fn hygiene_command(args: &[String]) {
     let Some(dir) = args.iter().position(|a| a == "--vault").and_then(|i| args.get(i + 1)) else {
@@ -357,6 +373,7 @@ fn main() {
         Some("hygiene") => return hygiene_command(&all[1..]),
         Some("curriculum") => return curriculum_command(&all[1..]),
         Some("calibrate") => return calibrate_command(),
+        Some("consolidate") => return consolidate_command(&all[1..]),
         _ => {}
     }
     let root = root();
