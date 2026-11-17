@@ -306,3 +306,29 @@ fn reply_notes_time_and_missing_items() {
     assert!(r.contains("You don't have garlic"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// A request in quite different words finds the task by what it involves,
+/// and the reply says what is needed.
+#[test]
+fn request_finds_task_by_what_it_involves() {
+    let dir = temp("involves");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let gold: &[(&str, &[&str])] = &[
+        ("To fix a flat tire you need a patch kit, a tube and a pump.", &["tell: task(fix_tire); needs(fix_tire, patch_kit); needs(fix_tire, tube); needs(fix_tire, pump)"]),
+        ("Step 1 of fixing a flat tire: take out the tube.", &["tell: step(fix_tire, fix_tire_s1); action(fix_tire_s1, remove); object_of(fix_tire_s1, tube)"]),
+        ("Step 2 of fixing a flat tire: patch the hole.", &["tell: step(fix_tire, fix_tire_s2); action(fix_tire_s2, patch); object_of(fix_tire_s2, hole)"]),
+        ("Can you walk me through patching the tube?", &["ask_how: patch_tube"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(gold)));
+    for (m, _) in &gold[..3] {
+        talk(&mut t, m);
+    }
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[3].0);
+    assert!(r.contains("Here is how to fix tire") && r.contains("You need patch kit, pump and tube"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

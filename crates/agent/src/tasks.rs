@@ -59,6 +59,53 @@ fn range(lo: &Value, hi: &Value, unit: &str) -> String {
     }
 }
 
+/// A known task that an unknown one is about, judged by what each involves:
+/// the request's object among a task's name, needs and step objects, and its
+/// verb among the task's name and step actions (`patch_tube` -> `fix_tire`,
+/// which needs a tube and has a step "patch"). Only a clear best counts.
+pub(crate) fn involved_task(m: &Model, t: &str, known: &[String]) -> Option<String> {
+    let parts: Vec<String> = t.split('_').map(singular).collect();
+    let (verb, objs) = match parts.split_first() {
+        Some((v, rest)) if !rest.is_empty() => (v.clone(), rest.to_vec()),
+        _ => return None,
+    };
+    let of = |pred: &str, first: &str| -> Vec<String> {
+        m.facts_of(pred)
+            .into_iter()
+            .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(first))
+            .filter_map(|a| a.args.get(1)?.as_sym().map(|s| s.split('_').map(singular).collect::<Vec<_>>().join("_")))
+            .collect()
+    };
+    let mut scored: Vec<(usize, &String)> = Vec::new();
+    for k in known {
+        let name: Vec<String> = k.split('_').map(singular).collect();
+        let steps = of("step", k);
+        let things: Vec<String> = of("needs", k).into_iter().chain(steps.iter().flat_map(|s| of("object_of", s))).collect();
+        let actions: Vec<String> = steps.iter().flat_map(|s| of("action", s)).collect();
+        let thing_words: Vec<&str> = things.iter().flat_map(|x| x.split('_')).collect();
+        let mut score = 0;
+        for o in &objs {
+            if name.contains(o) {
+                score += 3;
+            } else if thing_words.contains(&o.as_str()) {
+                score += 2;
+            }
+        }
+        if name.contains(&verb) || actions.contains(&verb) {
+            score += 1;
+        }
+        if score >= 3 {
+            scored.push((score, k));
+        }
+    }
+    scored.sort_by_key(|(s, _)| std::cmp::Reverse(*s));
+    match scored.as_slice() {
+        [(a, k), (b, _), ..] if a > b => Some((*k).clone()),
+        [(_, k)] => Some((*k).clone()),
+        _ => None,
+    }
+}
+
 /// Verbs that say only "do the task": `cook_egg` may be `boil_egg`.
 const GENERIC: &[&str] = &["make", "cook", "prepare", "do", "get", "have", "fix", "help"];
 
@@ -127,7 +174,7 @@ impl Agent {
             }
         }
         let known: Vec<String> = m.facts_of("task").iter().filter_map(|a| a.args.first().and_then(|v| v.as_sym()).map(String::from)).collect();
-        similar_task(t, known.iter().map(String::as_str))
+        similar_task(t, known.iter().map(String::as_str)).or_else(|| involved_task(m, t, &known))
     }
 
     /// The model with this conversation's situation facts on top of the vault.
@@ -235,6 +282,16 @@ impl Agent {
             claims.extend(c);
             lines.push(if steps.len() > 3 { format!("{}. {text}", i + 1) } else { text });
         }
+        // What the task needs comes first.
+        let needs = values(&m, "needs", &task, 1);
+        let lead = if needs.is_empty() || !missing.is_empty() && !self.session_facts.is_empty() {
+            lead
+        } else {
+            for x in &needs {
+                claims.push(g("needs", &[&task, x]));
+            }
+            format!("{lead} You need {}.", list(&needs.iter().map(|x| words(x)).collect::<Vec<_>>()))
+        };
         let mut text = format!("{lead} {}", lines.join(if steps.len() > 3 { "\n" } else { " " }));
         if steps.len() > 3 {
             text = format!("{lead}\n{}", lines.join("\n"));

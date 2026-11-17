@@ -262,6 +262,16 @@ the report's own regex found 57).
   to the message with what each involves; plurals only as the user said them;
   the reply notes too little time and missing items. Most transfer variants need
   knowledge never taught (soft-boil time, a squeegee substitute).
+- 2026-11-17, second full curriculum run (`eval/curriculum/2026-11-17T15-21-07.md`,
+  505 calls): second encounter 9 of 20 (45%), transfer 0 of 15, retention 3 of 20,
+  not understood 0.4%, helpful + clarify 62.5%, contradicting facts 0.8%. This run
+  used a release binary built before part 3 (the build in a shell background job
+  was killed), so it measured only the task-name matching and step order. Found
+  in its transcripts: help replies never said what the task needs (the first
+  checklist item of most scenarios), and requests like "patch the tube" still
+  missed `fix_tire`. Fixed: the help reply starts with what is needed; an unknown
+  request is matched against what each known task involves (name, needs, step
+  objects and actions).
 
 - 2026-11-17 (user decision): the teacher in curriculum training and the seed
   review is Haiku (or another cheap model), held to the ground truth by the
