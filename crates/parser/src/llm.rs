@@ -101,6 +101,7 @@ fn acceptable(i: &Intent) -> bool {
         Intent::Ask { query, .. } => query.iter().all(|l| match l {
             sla_core::Literal::Pos(a) | sla_core::Literal::Neg(a) => ok_pred(&a.pred) && a.args.iter().all(|t| !matches!(t, Term::Var(v) if v != "W" && v != "_")),
             sla_core::Literal::Cmp(..) => true,
+            sla_core::Literal::Arith(..) | sla_core::Literal::Agg { .. } => false,
         }),
         Intent::Correct(v) => v.iter().all(|a| ok_pred(&a.pred)),
         _ => true,
@@ -349,7 +350,7 @@ mod tests {
         assert_eq!(t.parse_many(text2, &ctx), vec![Intent::Unknown]);
         assert_eq!(t.parse_many(text2, &ctx), vec![Intent::Unknown]);
         assert_eq!(t.calls, 2);
-        crate::claude::clear_mocks();
+        crate::claude::clear_thread_mock();
     }
 
     #[test]

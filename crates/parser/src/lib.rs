@@ -7,6 +7,7 @@
 pub mod claude;
 pub mod lexicon;
 pub mod llm;
+pub mod oracle;
 mod words;
 
 pub use words::lemma;

@@ -319,11 +319,35 @@ fn teacher_prompt(scenario: &str, transcript: &[Msg]) -> String {
 }
 
 
+/// A fact a conversation stored: its id (to close exactly it) and its atom.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Stored {
+    pub id: Option<String>,
+    pub atom: GroundAtom,
+}
+
 /// What a turn stored, read from its trace: (facts added, rule ids added).
-fn learned(t: &sla_agent::TurnTrace) -> (Vec<GroundAtom>, Vec<String>) {
-    let facts = t.facts_added().into_iter().filter_map(|s| sla_core::parse_ground(s).ok()).filter(|a| a.pred != "proper_name").collect();
+fn learned(t: &sla_agent::TurnTrace) -> (Vec<Stored>, Vec<String>) {
+    let facts = t
+        .facts_added_with_ids()
+        .into_iter()
+        .filter_map(|(id, s)| sla_core::parse_ground(s).ok().map(|atom| Stored { id: id.map(String::from), atom }))
+        .filter(|f| f.atom.pred != "proper_name")
+        .collect();
     let rules = t.rules_added().into_iter().filter_map(|s| s.split(':').next().map(|x| x.trim().to_string())).collect();
     (facts, rules)
+}
+
+/// Close one stored fact: by id when it has one (never another conversation's copy).
+fn close_stored(b: &mut Brain, f: &Stored, now: sla_core::Timestamp, reason: &str) {
+    match &f.id {
+        Some(id) => {
+            b.kb.close_by_id(id, now, reason);
+        }
+        None => {
+            b.kb.close_matching(&f.atom.to_atom(), now, reason);
+        }
+    }
 }
 
 /// Personal remarks of the teacher's character are conversation, not general knowledge.
@@ -332,13 +356,14 @@ fn personal(g: &GroundAtom) -> bool {
 }
 
 /// The reviewer sees what a conversation stored, in plain English, and flags
-/// mistakes; flagged facts are closed and flagged rules rejected. The model
+/// mistakes; flagged facts are closed by id (only this conversation's copy,
+/// never a fact another teacher taught) and flagged rules rejected. The model
 /// call happens without the brain lock.
-pub fn review_and_fix(agent: &mut Agent, new_facts: &[GroundAtom], new_rules: &[String], model: &str, out: &mut Vec<String>) {
+pub fn review_and_fix(agent: &mut Agent, new_facts: &[Stored], new_rules: &[String], model: &str, out: &mut Vec<String>) {
     if new_facts.is_empty() && new_rules.is_empty() {
         return;
     }
-    let mut items: Vec<String> = new_facts.iter().map(|f| agent.realizer.clause(f)).collect();
+    let mut items: Vec<String> = new_facts.iter().map(|f| agent.realizer.clause(&f.atom)).collect();
     {
         let b = agent.brain();
         items.extend(new_rules.iter().map(|id| b.kb.vault.rules.get(id).and_then(|rf| rf.rules().first().map(|r| agent.realizer.rule_text(r))).unwrap_or_default()));
@@ -362,7 +387,7 @@ pub fn review_and_fix(agent: &mut Agent, new_facts: &[GroundAtom], new_rules: &[
         }
         let reason = format!("reviewer: {}", verdict.get(5..).unwrap_or("").trim());
         if n <= new_facts.len() {
-            b.kb.close_matching(&new_facts[n - 1].to_atom(), now, &reason);
+            close_stored(&mut b, &new_facts[n - 1], now, &reason);
         } else {
             let id = &new_rules[n - 1 - new_facts.len()];
             if let Some(rf) = b.kb.vault.rules.get_mut(id) {
@@ -579,7 +604,7 @@ impl Trainer {
         agent.trace_dir = Some(self.sessions.clone());
         agent.enable_llm(&cfg.model);
         brain::lock(brain).events.publish("conversation_start", serde_json::json!({ "teacher": id, "conversation": n + 1, "scenario": scenario, "session": agent.session_id }));
-        let mut new_facts: Vec<GroundAtom> = Vec::new();
+        let mut new_facts: Vec<Stored> = Vec::new();
         let mut new_rules: Vec<String> = Vec::new();
         let mut transcript: Vec<Msg> = Vec::new();
         let mut understood = 0;
@@ -630,7 +655,7 @@ impl Trainer {
                 if trace.understood {
                     s.understood += 1;
                 }
-                s.facts += facts_added.iter().filter(|f| !personal(f)).count();
+                s.facts += facts_added.iter().filter(|f| !personal(&f.atom)).count();
                 s.rules += rules_added.len();
                 *s.outcomes.entry(label.name().to_string()).or_default() += 1;
                 s.answer_ms_total += translate_ms + think_ms;
@@ -661,15 +686,15 @@ impl Trainer {
                 break;
             }
         }
-        if new_facts.iter().any(personal) {
+        if new_facts.iter().any(|f| personal(&f.atom)) {
             let now = agent.now();
             let mut b = agent.brain();
-            for f in new_facts.iter().filter(|f| personal(f)) {
-                b.kb.close_matching(&f.to_atom(), now, "personal remark in a training chat, not general knowledge");
+            for f in new_facts.iter().filter(|f| personal(&f.atom)) {
+                close_stored(&mut b, f, now, "personal remark in a training chat, not general knowledge");
             }
             let _ = b.save();
         }
-        new_facts.retain(|f| !personal(f));
+        new_facts.retain(|f| !personal(&f.atom));
         let mut rejected = Vec::new();
         if cfg.review && !self.stop.load(Ordering::SeqCst) {
             self.update(id, |t| t.status = "reviewing".into());
@@ -844,6 +869,40 @@ mod tests {
             r.headers.insert("x-trainer-token".into(), t.into());
         }
         r
+    }
+
+    #[test]
+    fn reviewer_closes_only_its_own_fact() {
+        let dir = std::env::temp_dir().join(format!("sla_review_{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let brain = Brain::shared(&dir).unwrap();
+        let mut a = Agent::with_brain(Arc::clone(&brain), "friend");
+        a.ask_in_chat = false;
+        a.respond("Anna likes tea.");
+        let (facts, rules) = learned(a.last_trace.as_ref().unwrap());
+        assert_eq!(facts.len(), 1);
+        assert!(facts[0].id.is_some(), "the trace carries the fact id");
+        // Another conversation's copy of the same atom (as v1 could store).
+        {
+            let mut b = brain::lock(&brain);
+            let mut other = sla_core::Fact::new(sla_core::parse_ground("likes(anna, tea)").unwrap(), "teacher:other").with_conv("s-other");
+            other.id = Some("f900".into());
+            other.from = Some(a.now());
+            b.kb.vault.add_fact(other);
+        }
+        sla_parser::claude::set_thread_mock(Arc::new(|role, _| {
+            assert_eq!(role, "reviewer");
+            Ok("1: WRONG not general knowledge".into())
+        }));
+        let mut rejected = Vec::new();
+        review_and_fix(&mut a, &facts, &rules, "mock", &mut rejected);
+        sla_parser::claude::clear_thread_mock();
+        assert_eq!(rejected.len(), 1);
+        let b = brain::lock(&brain);
+        let open: Vec<String> = b.kb.all_facts().into_iter().filter(|f| f.atom.to_string() == "likes(anna, tea)" && f.is_open()).filter_map(|f| f.id).collect();
+        assert_eq!(open, vec!["f900".to_string()], "only the reviewed conversation's fact was closed");
+        drop(b);
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     #[test]

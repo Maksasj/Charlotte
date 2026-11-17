@@ -65,6 +65,12 @@ pub fn set_global_mock(f: Mock) {
     *GLOBAL_MOCK.lock().unwrap_or_else(|e| e.into_inner()) = Some(f);
 }
 
+/// Remove this thread's mock only (a global mock stays).
+pub fn clear_thread_mock() {
+    THREAD_MOCK.with(|m| *m.borrow_mut() = None);
+}
+
+/// Remove this thread's mock and the global one.
 pub fn clear_mocks() {
     THREAD_MOCK.with(|m| *m.borrow_mut() = None);
     *GLOBAL_MOCK.lock().unwrap_or_else(|e| e.into_inner()) = None;

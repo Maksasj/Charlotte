@@ -1,1 +1,5 @@
 target/
+# Runtime state is not code (Design 2.0 decision): the vault and the
+# per-conversation traces live beside the code, with their own snapshots.
+/vault/
+/sessions/

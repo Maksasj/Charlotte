@@ -187,7 +187,7 @@ impl Realizer {
     /// Noun phrase for a value (object position).
     fn np(&self, v: &Value) -> String {
         match v {
-            Value::Int(n) => n.to_string(),
+            Value::Int(_) | Value::Dec(_) => v.to_string(),
             Value::Sym(s) if s == &self.speaker => "you".into(),
             Value::Sym(s) => {
                 // "my_family" was said by the user: it is "your family" to them.
@@ -231,7 +231,7 @@ impl Realizer {
     /// Plural noun phrase for a kind ("penguins", "berries"); names stay as they are.
     fn plural_np(&self, v: &Value) -> String {
         let np = self.np(v);
-        if self.is_person(v) || v.as_sym().map_or(false, |s| self.names.contains(s)) || matches!(v, Value::Int(_)) {
+        if self.is_person(v) || v.as_sym().map_or(false, |s| self.names.contains(s)) || v.is_number() {
             return np;
         }
         let (head, last) = match np.rsplit_once(' ') {
@@ -600,6 +600,8 @@ impl Realizer {
                 sla_core::Literal::Pos(a) => self.clause_terms(a),
                 sla_core::Literal::Neg(a) => format!("it is not known that {}", self.clause_terms(a)),
                 sla_core::Literal::Cmp(op, x, y) => format!("{} {} {}", self.np_term(x), cmp_words(*op), self.np_term(y)),
+                // Arithmetic and aggregates are said as written until milestone 16 gives them words.
+                other => other.to_string(),
             }
         };
         let body: Vec<String> = r.body.iter().map(lit).collect();

@@ -21,6 +21,9 @@ pub struct ChangeTrace {
     pub action: String,
     pub subject: String,
     pub reason: String,
+    /// The id of the fact added or closed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fact: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -50,8 +53,11 @@ pub struct TurnTrace {
     pub think_ms: f64,
     /// Model calls made by the translator this turn.
     pub model_calls: u64,
-    /// Full evaluations of the knowledge base this turn.
+    /// Full evaluations of the knowledge base this turn, and their time (ms).
     pub evaluations: u64,
+    pub eval_ms: f64,
+    /// Time in learner updates this turn (ms).
+    pub learn_ms: f64,
     pub understood: bool,
     /// Problems noticed this turn (quarantined rules, failed saves, ...).
     pub errors: Vec<String>,
@@ -60,6 +66,11 @@ pub struct TurnTrace {
 impl TurnTrace {
     pub fn facts_added(&self) -> Vec<&str> {
         self.changes.iter().filter(|c| c.action == "add" || c.action == "add_past").map(|c| c.subject.as_str()).collect()
+    }
+
+    /// (fact id, atom) of every fact the turn added.
+    pub fn facts_added_with_ids(&self) -> Vec<(Option<&str>, &str)> {
+        self.changes.iter().filter(|c| c.action == "add" || c.action == "add_past").map(|c| (c.fact.as_deref(), c.subject.as_str())).collect()
     }
 
     pub fn rules_added(&self) -> Vec<&str> {

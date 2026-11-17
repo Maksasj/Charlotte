@@ -74,21 +74,31 @@ impl Learner {
         r3(evidence as f64 / (evidence as f64 + counter as f64 + self.k))
     }
 
-    /// Features of every entity in the current model (learned hypotheses excluded).
-    pub fn features(&self, kb: &KnowledgeBase, now: Timestamp) -> BTreeMap<Value, BTreeSet<Feature>> {
-        let mut out: BTreeMap<Value, BTreeSet<Feature>> = BTreeMap::new();
-        // Learned rules must not count as their own evidence: use only core and
-        // non-learner confirmed rules.
-        let rules: Vec<RuleInput> = kb
-            .rules(false)
+    /// The rules whose conclusions count as evidence: core and confirmed rules
+    /// that the learner did not guess itself (a guessed rule must not support itself).
+    pub fn evidence_rules(kb: &KnowledgeBase) -> Vec<RuleInput> {
+        kb.rules(false)
             .iter()
             .filter(|r| {
                 let stem = r.id.split('#').next().unwrap_or("");
                 kb.vault.rules.get(stem).map_or(true, |rf| rf.meta().source != "learner")
             })
             .map(RuleInput::from)
-            .collect();
-        let Ok(m) = evaluate(&facts_for(&kb.all_facts(), Some(now)), &rules) else { return out };
+            .collect()
+    }
+
+    /// Does the vault have confirmed rules the learner guessed? If not, the
+    /// agent's own model is also the evidence model and can be shared.
+    pub fn has_confirmed_guesses(kb: &KnowledgeBase) -> bool {
+        kb.vault.rules.values().any(|rf| {
+            let m = rf.meta();
+            m.source == "learner" && m.status == RuleStatus::Confirmed
+        })
+    }
+
+    /// Features of every entity in a model.
+    pub fn features_from(&self, m: &sla_reasoner::Model) -> BTreeMap<Value, BTreeSet<Feature>> {
+        let mut out: BTreeMap<Value, BTreeSet<Feature>> = BTreeMap::new();
         for g in m.all_facts() {
             if g.args.is_empty() || IGNORE.contains(&g.base_pred()) || g.args.len() > 3 {
                 continue;
@@ -96,6 +106,13 @@ impl Learner {
             out.entry(g.args[0].clone()).or_default().insert(Feature { pred: g.pred.clone(), rest: g.args[1..].to_vec() });
         }
         out
+    }
+
+    /// Features of every entity in the current model (learned hypotheses excluded).
+    pub fn features(&self, kb: &KnowledgeBase, now: Timestamp) -> BTreeMap<Value, BTreeSet<Feature>> {
+        let rules = Self::evidence_rules(kb);
+        let Ok(m) = evaluate(&facts_for(&kb.all_facts(), Some(now)), &rules) else { return BTreeMap::new() };
+        self.features_from(&m)
     }
 
     /// Count (support, counterexamples) for `head :- body` with one shared variable.
@@ -115,10 +132,22 @@ impl Learner {
         (support, counter)
     }
 
-    /// Recount everything, propose new hypotheses, update and promote/reject old ones.
+    /// The full pass (the offline consolidation): recount everything, propose
+    /// new hypotheses from every pattern, update and promote/reject old ones.
     pub fn update(&self, kb: &mut KnowledgeBase, now: Timestamp) -> LearnReport {
-        let mut report = LearnReport::default();
         let features = self.features(kb, now);
+        self.update_with(kb, now, &features, None)
+    }
+
+    /// The cheap pass for one turn: re-score every hypothesis, and propose new
+    /// ones only around the entities in `focus` (the ones the turn told
+    /// something about): patterns elsewhere did not change.
+    pub fn update_turn(&self, kb: &mut KnowledgeBase, now: Timestamp, features: &BTreeMap<Value, BTreeSet<Feature>>, focus: &BTreeSet<Value>) -> LearnReport {
+        self.update_with(kb, now, features, Some(focus))
+    }
+
+    fn update_with(&self, kb: &mut KnowledgeBase, now: Timestamp, features: &BTreeMap<Value, BTreeSet<Feature>>, focus: Option<&BTreeSet<Value>>) -> LearnReport {
+        let mut report = LearnReport::default();
         // Stated (stored) features, to tell discoveries from consequences of known rules.
         let mut stated: BTreeMap<Value, BTreeSet<Feature>> = BTreeMap::new();
         for f in kb.all_facts() {
@@ -136,7 +165,7 @@ impl Learner {
                 continue;
             }
             let Some((body, negs, head)) = rf.rules().first().and_then(rule_features) else { continue };
-            let (support, counter) = Self::count(&features, &body, &negs, &head);
+            let (support, counter) = Self::count(features, &body, &negs, &head);
             let conf = self.conf(support, counter);
             let mut m = meta.clone();
             m.evidence = support;
@@ -169,48 +198,78 @@ impl Learner {
         }
 
         // 2. Propose new hypotheses: best single-feature body per head feature.
-        let mut count_of: BTreeMap<&Feature, u64> = BTreeMap::new();
-        for fs in features.values() {
+        // An inverted index (feature -> entities) keeps counting cheap.
+        let mut ents_of: BTreeMap<&Feature, Vec<&Value>> = BTreeMap::new();
+        for (e, fs) in features {
             for f in fs {
-                *count_of.entry(f).or_default() += 1;
+                ents_of.entry(f).or_default().push(e);
+            }
+        }
+        let count_of = |f: &Feature| ents_of.get(f).map_or(0, |v| v.len() as u64);
+        // Heads worth looking at: all of them in the full pass; in a turn, the
+        // features of the focus entities and everything that co-occurs with them.
+        let mut heads: BTreeSet<&Feature> = BTreeSet::new();
+        match focus {
+            None => heads.extend(ents_of.keys().copied()),
+            Some(focus) => {
+                for e in focus {
+                    for f in features.get(e).into_iter().flatten() {
+                        heads.insert(f);
+                        for e2 in ents_of.get(f).into_iter().flatten() {
+                            heads.extend(features.get(*e2).into_iter().flatten());
+                        }
+                    }
+                }
             }
         }
         let mut best: BTreeMap<Feature, (Feature, u64, u64, f64)> = BTreeMap::new();
-        for (head, &hc) in &count_of {
+        for head in heads {
+            let hc = count_of(head);
             if hc < self.min_support || NO_HEAD.contains(&head.pred.trim_start_matches('-')) {
                 continue;
             }
-            for (body, &bc) in &count_of {
+            // Bodies that co-occur with the head at least once.
+            let mut bodies: BTreeSet<&Feature> = BTreeSet::new();
+            for e in ents_of.get(head).into_iter().flatten() {
+                bodies.extend(features.get(*e).into_iter().flatten());
+            }
+            let neg = Feature { pred: sla_core::term::complement_pred(&head.pred), rest: head.rest.clone() };
+            for body in bodies {
+                let bc = count_of(body);
                 if body == head || bc < self.min_support || body.pred == head.pred {
                     continue;
                 }
-                let (support, counter) = Self::count(&features, std::slice::from_ref(*body), &[], head);
-                if support < self.min_support {
-                    continue;
+                let (mut support, mut counter, mut stated_support) = (0u64, 0u64, 0u64);
+                for e in ents_of.get(body).into_iter().flatten() {
+                    let fs = &features[*e];
+                    if fs.contains(head) {
+                        support += 1;
+                        // A pattern is a discovery only if enough cases state the head themselves;
+                        // otherwise existing rules already explain it (e.g. inherited parts).
+                        if stated.get(*e).map_or(false, |st| st.contains(head)) {
+                            stated_support += 1;
+                        }
+                    } else if fs.contains(&neg) || !is_open_world(head) {
+                        counter += 1;
+                    }
                 }
-                // A pattern is a discovery only if enough cases state the head themselves;
-                // otherwise existing rules already explain it (e.g. inherited parts).
-                let stated_support = features
-                    .iter()
-                    .filter(|(e, fs)| fs.contains(*body) && stated.get(*e).map_or(false, |st| st.contains(*head)))
-                    .count() as u64;
-                if stated_support < self.min_support {
+                if support < self.min_support || stated_support < self.min_support {
                     continue;
                 }
                 let ratio = support as f64 / bc as f64;
                 if ratio < self.min_ratio {
                     continue;
                 }
-                let better = match best.get(*head) {
+                let better = match best.get(head) {
                     None => true,
                     Some((b, _, _, r)) => {
                         // Higher ratio; then the more specific body; then bodies with constants.
                         (ratio, -(bc as i64), body.rest.len(), !NO_HEAD.contains(&body.pred.as_str()) as u8)
-                            > (*r, -(count_of[b] as i64), b.rest.len(), !NO_HEAD.contains(&b.pred.as_str()) as u8)
+                            > (*r, -(count_of(b) as i64), b.rest.len(), !NO_HEAD.contains(&b.pred.as_str()) as u8)
                     }
                 };
                 if better {
-                    best.insert((*head).clone(), ((*body).clone(), support, counter, ratio));
+                    best.insert(head.clone(), (body.clone(), support, counter, ratio));
                 }
             }
         }
@@ -277,7 +336,7 @@ pub fn rule_features(r: &Rule) -> Option<(Vec<Feature>, Vec<Feature>, Feature)> 
         match l {
             Literal::Pos(a) => body.push(feat(a)?),
             Literal::Neg(a) => negs.push(feat(a)?),
-            Literal::Cmp(..) => return None,
+            Literal::Cmp(..) | Literal::Arith(..) | Literal::Agg { .. } => return None,
         }
     }
     Some((body, negs, head))

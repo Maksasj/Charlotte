@@ -1,7 +1,7 @@
 //! Training app: serves the training UI and runs Haiku teachers on demand.
 //!
 //! ```text
-//! cargo run --release -p sla_eval --bin sla_trainer -- [--vault DIR] [--port 8770] [--ui FILE]
+//! cargo run --release -p sla_eval --bin sla_trainer -- [--vault DIR] [--port 8770] [--ui FILE] [--mock]
 //! ```
 //! Then open http://localhost:8770 and press Start. Nothing trains until then.
 
@@ -19,8 +19,16 @@ fn main() {
             "--vault" => vault = args.next().expect("--vault DIR").into(),
             "--port" => port = args.next().and_then(|p| p.parse().ok()).expect("--port N"),
             "--ui" => ui = args.next().expect("--ui FILE").into(),
+            // Every model role is played by a mock (no plan limits spent): for trying the dashboard.
+            "--mock" => {
+                if let Err(e) = sla_eval::ops::install_mock_models(&root) {
+                    eprintln!("cannot install the mock models: {e}");
+                    std::process::exit(1);
+                }
+                println!("mock models: teachers replay the regression set, the translator is the pattern parser");
+            }
             _ => {
-                eprintln!("usage: sla_trainer [--vault DIR] [--port N] [--ui FILE]");
+                eprintln!("usage: sla_trainer [--vault DIR] [--port N] [--ui FILE] [--mock]");
                 std::process::exit(2);
             }
         }

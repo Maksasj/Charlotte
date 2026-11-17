@@ -241,7 +241,7 @@ pub fn file_stem(name: &str) -> String {
 pub fn entity_of(f: &Fact) -> String {
     match f.atom.args.first() {
         Some(Value::Sym(s)) => file_stem(s),
-        Some(Value::Int(_)) => "_numbers".into(),
+        Some(Value::Int(_)) | Some(Value::Dec(_)) => "_numbers".into(),
         None => "_global".into(),
     }
 }
@@ -252,6 +252,7 @@ pub struct VaultSnapshot {
     facts: BTreeMap<String, FactFile>,
     rules: BTreeMap<String, RuleFile>,
     core: BTreeMap<String, RuleFile>,
+    lexicon: BTreeMap<String, RuleFile>,
     dirty: std::collections::BTreeSet<(String, String)>,
 }
 
@@ -264,12 +265,26 @@ pub struct Vault {
     pub rules: BTreeMap<String, RuleFile>,
     /// Core file stem -> file (rule format).
     pub core: BTreeMap<String, RuleFile>,
+    /// Lexicon files (the predicate registry, words), rule format: `vault/lexicon/`.
+    pub lexicon: BTreeMap<String, RuleFile>,
     /// Files changed since load, as (dir, stem).
     dirty: std::collections::BTreeSet<(String, String)>,
     /// Bumped on every change in memory (facts, rules, reloads), so cached
     /// models know when they are stale. Code that edits `facts` or `rules`
     /// directly must call a `mark_*_dirty` method, which bumps it too.
     pub generation: u64,
+    /// Usage counts per atom (`stats/uses.tsv`). Kept apart from the fact
+    /// files so answering a question never rewrites knowledge or invalidates
+    /// cached models.
+    pub stats: BTreeMap<String, UseStat>,
+    stats_dirty: bool,
+}
+
+/// How often a fact was used in an answer, and when last.
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct UseStat {
+    pub uses: u64,
+    pub last: Option<Timestamp>,
 }
 
 fn read_md_dir(dir: &Path) -> io::Result<Vec<(String, String)>> {
@@ -307,6 +322,20 @@ impl Vault {
             let rf = RuleFile::parse(&src, &stem);
             v.core.insert(stem, rf);
         }
+        for (stem, src) in read_md_dir(&v.root.join("lexicon"))? {
+            let rf = RuleFile::parse(&src, &stem);
+            v.lexicon.insert(stem, rf);
+        }
+        if let Ok(src) = fs::read_to_string(v.root.join("stats").join("uses.tsv")) {
+            for l in src.lines() {
+                let p: Vec<&str> = l.split('\t').collect();
+                if p.len() >= 2 {
+                    let uses = p[1].parse().unwrap_or(0);
+                    let last = p.get(2).and_then(|t| Timestamp::parse(t));
+                    v.stats.insert(p[0].to_string(), UseStat { uses, last });
+                }
+            }
+        }
         Ok(v)
     }
 
@@ -333,8 +362,29 @@ impl Vault {
         self.generation += 1;
     }
 
+    /// Count one use of `atom` at `at` (does not change the generation).
+    pub fn record_use(&mut self, atom: &str, at: Timestamp) {
+        let e = self.stats.entry(atom.to_string()).or_default();
+        e.uses += 1;
+        e.last = Some(at);
+        self.stats_dirty = true;
+    }
+
     /// Write changed files. Rule files that were removed are deleted on disk.
     pub fn save(&mut self) -> io::Result<()> {
+        if self.stats_dirty {
+            let d = self.root.join("stats");
+            fs::create_dir_all(&d)?;
+            let mut out = String::new();
+            for (a, u) in &self.stats {
+                out.push_str(&format!("{a}\t{}\t{}\n", u.uses, u.last.map(|t| t.to_string()).unwrap_or_default()));
+            }
+            // Write to a temporary file and rename, so a reader never sees half a file.
+            let tmp = d.join("uses.tsv.tmp");
+            fs::write(&tmp, out)?;
+            fs::rename(&tmp, d.join("uses.tsv"))?;
+            self.stats_dirty = false;
+        }
         for (dir, stem) in std::mem::take(&mut self.dirty) {
             let d = self.root.join(&dir);
             fs::create_dir_all(&d)?;
@@ -370,6 +420,11 @@ impl Vault {
         fs::create_dir_all(&core_dir)?;
         for (stem, rf) in &self.core {
             write_if_changed(&core_dir.join(format!("{stem}.md")), &rf.render())?;
+        }
+        let lex_dir = self.root.join("lexicon");
+        fs::create_dir_all(&lex_dir)?;
+        for (stem, rf) in &self.lexicon {
+            write_if_changed(&lex_dir.join(format!("{stem}.md")), &rf.render())?;
         }
         fs::create_dir_all(self.root.join("log"))?;
         self.save()
@@ -446,6 +501,11 @@ impl Vault {
                 out.push((format!("core/{s}.md"), l, e));
             }
         }
+        for (s, f) in &self.lexicon {
+            for (l, e) in f.doc.errors() {
+                out.push((format!("lexicon/{s}.md"), l, e));
+            }
+        }
         out
     }
 
@@ -469,7 +529,7 @@ impl Vault {
 
     /// A copy of everything in memory, for all-or-nothing changes.
     pub fn snapshot(&self) -> VaultSnapshot {
-        VaultSnapshot { facts: self.facts.clone(), rules: self.rules.clone(), core: self.core.clone(), dirty: self.dirty.clone() }
+        VaultSnapshot { facts: self.facts.clone(), rules: self.rules.clone(), core: self.core.clone(), lexicon: self.lexicon.clone(), dirty: self.dirty.clone() }
     }
 
     /// Go back to a snapshot (the generation still moves forward).
@@ -477,6 +537,7 @@ impl Vault {
         self.facts = s.facts;
         self.rules = s.rules;
         self.core = s.core;
+        self.lexicon = s.lexicon;
         self.dirty = s.dirty;
         self.generation += 1;
     }

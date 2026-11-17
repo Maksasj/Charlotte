@@ -4,14 +4,79 @@
 //! cargo run --release -p sla_eval -- [--judges N] [--turns N] [--teacher-questions N] [--no-claude] [--model M] [--notes TEXT]
 //! ```
 //! Appends one row to `eval/history.csv` and writes `eval/last_report.md`.
+//!
+//! Design 2.0 subcommands:
+//!
+//! ```text
+//! sla_eval outcomes [--v1] [--gold] [--parser pattern|llm[:MODEL]|oracle:FILE] [--judge MODEL] [--set trainer|judge] [--notes TEXT] [--no-write]
+//! sla_eval bench --vault DIR [--rounds N]
+//! sla_eval stress [--teachers N] [--minutes M] [--vault DIR]
+//! ```
 
+use sla_eval::regression::{outcome_command, OutcomeConfig, ParserMode};
 use sla_eval::{run, EvalConfig, EvalReport};
 
-fn main() {
+fn root() -> std::path::PathBuf {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..").join("..");
     let root = root.canonicalize().unwrap_or(root);
+    // Windows: drop the extended-length prefix that canonicalize adds.
+    let s = root.to_string_lossy().to_string();
+    match s.strip_prefix(r"\\?\") {
+        Some(rest) => rest.into(),
+        None => root,
+    }
+}
+
+fn outcomes(args: &[String]) {
+    let mut cfg = OutcomeConfig::new(root());
+    let mut it = args.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--v1" => cfg.v1 = true,
+            "--gold" => cfg.gold = true,
+            "--judge" => cfg.judge = Some(it.next().expect("--judge MODEL").clone()),
+            "--set" => cfg.set = Some(it.next().expect("--set NAME").clone()),
+            "--notes" => cfg.notes = it.next().expect("--notes TEXT").clone(),
+            "--no-write" => cfg.write = false,
+            "--parser" => {
+                let p = it.next().expect("--parser pattern|llm[:MODEL]|oracle:FILE");
+                cfg.parser = if p == "pattern" {
+                    ParserMode::Pattern
+                } else if let Some(m) = p.strip_prefix("llm") {
+                    ParserMode::Llm(m.trim_start_matches(':').to_string()).clone()
+                } else if let Some(f) = p.strip_prefix("oracle:") {
+                    ParserMode::Oracle(f.into())
+                } else {
+                    eprintln!("unknown parser {p}");
+                    std::process::exit(2);
+                };
+                if cfg.parser == ParserMode::Llm(String::new()) {
+                    cfg.parser = ParserMode::Llm("haiku".into());
+                }
+            }
+            other => {
+                eprintln!("unknown argument {other}");
+                std::process::exit(2);
+            }
+        }
+    }
+    if let Err(e) = outcome_command(&cfg) {
+        eprintln!("outcomes failed: {e}");
+        std::process::exit(1);
+    }
+}
+
+fn main() {
+    let all: Vec<String> = std::env::args().skip(1).collect();
+    match all.first().map(String::as_str) {
+        Some("outcomes") => return outcomes(&all[1..]),
+        Some("bench") => return sla_eval::ops::bench_command(&root(), &all[1..]),
+        Some("stress") => return sla_eval::ops::stress_command(&root(), &all[1..]),
+        _ => {}
+    }
+    let root = root();
     let mut cfg = EvalConfig::new(&root);
-    let mut args = std::env::args().skip(1);
+    let mut args = all.into_iter();
     while let Some(a) = args.next() {
         let mut num = |name: &str| -> usize { args.next().and_then(|v| v.parse().ok()).unwrap_or_else(|| panic!("{name} needs a number")) };
         match a.as_str() {
@@ -26,6 +91,9 @@ fn main() {
             "--history" => cfg.history = args.next().expect("--history PATH").into(),
             "-h" | "--help" => {
                 println!("sla_eval [--judges N] [--turns N] [--teacher-questions N] [--no-claude] [--model M] [--notes TEXT] [--history PATH]");
+                println!("sla_eval outcomes [--v1] [--gold] [--parser pattern|llm[:MODEL]|oracle:FILE] [--judge MODEL] [--set trainer|judge] [--notes TEXT] [--no-write]");
+                println!("sla_eval bench --vault DIR [--rounds N]");
+                println!("sla_eval stress [--teachers N] [--minutes M]");
                 return;
             }
             other => {

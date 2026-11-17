@@ -79,6 +79,8 @@ pub struct Agent {
     pub publish_events: bool,
     /// Trace being built for the current turn.
     cur: Option<TurnTrace>,
+    /// Entities this turn added facts about (the learner's focus).
+    told_about: std::collections::BTreeSet<Value>,
 }
 
 fn session_name() -> String {
@@ -117,6 +119,7 @@ impl Agent {
             trace_dir: None,
             publish_events: true,
             cur: None,
+            told_about: Default::default(),
         }
     }
 
@@ -175,7 +178,7 @@ impl Agent {
         if !history {
             return b.model_at(now);
         }
-        let past = b.past_models(now);
+        let past = b.all_past_models(now);
         let mut facts: Vec<sla_reasoner::FactInput> = Vec::new();
         for m in past.iter().chain(std::iter::once(&b.model_at(now))) {
             facts.extend(m.all_facts().into_iter().map(sla_reasoner::FactInput::new));
@@ -195,6 +198,7 @@ impl Agent {
         let mut b = brain::lock(&brain);
         let think_started = Instant::now();
         let evals_before = b.evaluations;
+        let (eval_ms_before, learn_ms_before) = (b.eval_ms, b.learn_ms);
         let mark = b.kb.journal_len();
         self.turns += 1;
         self.cur = Some(TurnTrace {
@@ -208,19 +212,50 @@ impl Agent {
             ..Default::default()
         });
         let _ = b.reload_if_edited();
-        let reply = match translated {
+        self.told_about.clear();
+        let mut reply = match translated {
             Some(intents) => self.respond_intents(&mut b, text, intents, "model"),
             None => self.respond_sentences(&mut b, text),
         };
+        // Learning: one cheap pass per message, around what it told about.
+        if !self.told_about.is_empty() {
+            let now = self.now();
+            let t = Instant::now();
+            let features = b.learner_features(now);
+            let learner = b.learner.clone();
+            let focus = std::mem::take(&mut self.told_about);
+            self.last_learn = learner.update_turn(&mut b.kb, now, &features, &focus);
+            b.learn_ms += t.elapsed().as_secs_f64() * 1000.0;
+        }
+        // At most one question per turn, about what the turn talked about.
+        if self.ask_in_chat && self.pending.is_none() && reply.intent != "ask" {
+            let topic: Vec<String> = reply
+                .claims
+                .iter()
+                .flat_map(|c| c.args.iter().filter_map(|v| v.as_sym().map(String::from)))
+                .chain(self.ctx.last_entity.clone())
+                .filter(|e| e != &self.ctx.speaker)
+                .collect();
+            let cap = b.curiosity.chat_cap;
+            if let Some((q, key)) = (!topic.is_empty()).then(|| self.next_question_about(&mut b, cap, "ask", Some(&topic))).flatten() {
+                reply.text = format!("{} {q}", reply.text);
+                b.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
+                if let Some(t) = self.cur.as_mut() {
+                    t.question = Some(key);
+                }
+            }
+        }
         let mut t = self.cur.take().unwrap_or_default();
         t.reply = reply.text.clone();
         t.claims = reply.claims.iter().map(|c| c.to_string()).collect();
-        t.changes = b.kb.journal_since(mark).into_iter().map(|e| ChangeTrace { action: e.action, subject: e.subject, reason: e.reason }).filter(|c| c.action != "turn").collect();
+        t.changes = b.kb.journal_since(mark).into_iter().map(|e| ChangeTrace { action: e.action, subject: e.subject, reason: e.reason, fact: e.fact }).filter(|c| c.action != "turn").collect();
         t.understood = t.parts.iter().any(|p| p.understood);
         t.translate_ms = translate_ms;
         t.think_ms = think_started.elapsed().as_secs_f64() * 1000.0;
         t.model_calls = sla_parser::claude::thread_calls() - calls_before;
         t.evaluations = b.evaluations - evals_before;
+        t.eval_ms = b.eval_ms - eval_ms_before;
+        t.learn_ms = b.learn_ms - learn_ms_before;
         if let Err(e) = b.save() {
             t.errors.push(format!("save failed: {e}"));
         }
@@ -411,31 +446,13 @@ impl Agent {
         let was_pending = self.pending.is_some();
         let gen_before = b.kb.vault.generation;
         let facts_before = b.kb.journal_len();
-        let mut reply = self.handle(b, intent);
+        let reply = self.handle(b, intent);
         self.trace_move(reply.intent);
         self.refresh_names(b);
         // Learning progress lowers curiosity; answering its question lowers it most.
         let learned = b.kb.vault.generation != gen_before && b.kb.journal_since(facts_before).iter().any(|e| e.action == "add" || e.action == "add_rule");
         if learned {
             b.curiosity.reward(if was_pending { 0.3 } else { 0.05 });
-        }
-        if self.ask_in_chat && self.pending.is_none() && reply.intent != "ask" {
-            // Only ask about what this turn talked about.
-            let topic: Vec<String> = reply
-                .claims
-                .iter()
-                .flat_map(|c| c.args.iter().filter_map(|v| v.as_sym().map(String::from)))
-                .chain(self.ctx.last_entity.clone())
-                .filter(|e| e != &self.ctx.speaker)
-                .collect();
-            let cap = b.curiosity.chat_cap;
-            if let Some((q, key)) = (!topic.is_empty()).then(|| self.next_question_about(b, cap, "ask", Some(&topic))).flatten() {
-                reply.text = format!("{} {q}", reply.text);
-                b.kb.log_change(self.now(), "ask", &key, "curiosity while chatting");
-                if let Some(t) = self.cur.as_mut() {
-                    t.question = Some(key);
-                }
-            }
         }
         reply
     }
@@ -719,7 +736,7 @@ impl Agent {
         let mut closed = Vec::new();
         for a in facts {
             let Some(g) = a.to_ground() else { continue };
-            let fact = Fact::new(g.clone(), &self.source);
+            let fact = Fact::new(g.clone(), &self.source).with_conv(&self.session_id);
             if past {
                 // "I used to like tea": true before, not now. A current copy is closed.
                 let reason = format!("{} said it used to be true", self.source);
@@ -747,11 +764,12 @@ impl Agent {
         if let Some(a) = added.first().or(known.first()) {
             self.last_answer = Some(a.clone());
         }
-        // New facts may support, contradict or suggest learned rules.
-        if !added.is_empty() {
-            let learner = b.learner.clone();
-            b.evaluations += 1;
-            self.last_learn = learner.update(&mut b.kb, now);
+        // New facts may support, contradict or suggest learned rules: the
+        // learner looks at them once, at the end of the message.
+        for g in &added {
+            if let Some(e) = g.args.first() {
+                self.told_about.insert(e.clone());
+            }
         }
         self.say(Act::Acknowledge { added, closed, known, rules: new_rules, past })
     }
@@ -882,7 +900,7 @@ impl Agent {
                     rules.push(r);
                 }
             }
-            let out = b.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "correction");
+            let out = b.kb.assert_fact(Fact::new(g.clone(), &self.source).with_conv(&self.session_id), now, "correction");
             if let AssertOutcome::Added { closed } = out {
                 retracted.extend(closed.into_iter().map(|f| f.atom));
             }
@@ -930,7 +948,7 @@ impl Agent {
         let closed = b.kb.close_matching(&pattern, now, "user said it is wrong");
         retracted.push(a.clone());
         retracted.extend(closed.into_iter().map(|f| f.atom));
-        b.kb.assert_fact(Fact::new(a.complement(), &self.source), now, "user said it is wrong");
+        b.kb.assert_fact(Fact::new(a.complement(), &self.source).with_conv(&self.session_id), now, "user said it is wrong");
     }
 
     fn answer_pending(&mut self, b: &mut Brain, pending: Option<Pending>, yes: bool) -> Reply {
@@ -938,7 +956,7 @@ impl Agent {
         match pending {
             Some(Pending::Fact(a)) => {
                 let g = if yes { a } else { a.complement() };
-                b.kb.assert_fact(Fact::new(g.clone(), &self.source), now, "answer to my question");
+                b.kb.assert_fact(Fact::new(g.clone(), &self.source).with_conv(&self.session_id), now, "answer to my question");
                 self.last_answer = Some(g.clone());
                 self.say(Act::Acknowledge { added: vec![g], closed: vec![], known: vec![], rules: vec![], past: false })
             }

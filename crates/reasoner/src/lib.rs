@@ -10,6 +10,7 @@
 //! - Derived confidence is the minimum of the rule's and the premises'.
 
 use sla_core::kb::LoadedRule;
+use sla_core::term::{AggOp, ArithOp, Expr};
 use sla_core::{Atom, CmpOp, Fact, GroundAtom, KnowledgeBase, Literal, Rule, Term, Timestamp, Value};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
@@ -18,8 +19,10 @@ use std::fmt;
 pub enum EvalError {
     /// A variable in the head, a negation or a comparison does not occur in a positive body atom.
     Unsafe { rule: String, var: String },
-    /// Negation inside a recursive cycle.
+    /// Negation (or an aggregate) inside a recursive cycle.
     Unstratifiable { pred: String },
+    /// Arithmetic inside a recursive cycle (it could create values forever).
+    ArithmeticInRecursion { pred: String },
 }
 
 impl fmt::Display for EvalError {
@@ -27,6 +30,7 @@ impl fmt::Display for EvalError {
         match self {
             EvalError::Unsafe { rule, var } => write!(f, "unsafe variable {var} in rule {rule}"),
             EvalError::Unstratifiable { pred } => write!(f, "negation through recursion involving {pred}"),
+            EvalError::ArithmeticInRecursion { pred } => write!(f, "arithmetic inside recursion involving {pred}"),
         }
     }
 }
@@ -94,10 +98,20 @@ enum CTerm {
 }
 
 #[derive(Debug, Clone)]
+enum CExpr {
+    Term(CTerm),
+    Bin(ArithOp, Box<CExpr>, Box<CExpr>),
+}
+
+#[derive(Debug, Clone)]
 enum CLit {
     Pos { pred: String, args: Vec<CTerm> },
     Neg { pred: String, args: Vec<CTerm>, text: String },
     Cmp(CmpOp, CTerm, CTerm),
+    Arith(CTerm, CExpr),
+    /// `local`: slots of the aggregate's own variables; distinct bindings of
+    /// them are what is counted or summed.
+    Agg { op: AggOp, result: CTerm, value: Option<CTerm>, body: Vec<CLit>, local: Vec<usize> },
 }
 
 #[derive(Debug, Clone)]
@@ -109,6 +123,10 @@ struct CRule {
     conf: f64,
     /// Variable names by slot (for query answers).
     names: Vec<String>,
+    /// Predicates read inside aggregates (they must be in a lower stratum).
+    agg_preds: Vec<String>,
+    /// The rule computes new values with arithmetic.
+    arith: bool,
 }
 
 fn compile_term(t: &Term, slots: &mut HashMap<String, usize>, names: &mut Vec<String>) -> CTerm {
@@ -130,108 +148,157 @@ fn compile_term(t: &Term, slots: &mut HashMap<String, usize>, names: &mut Vec<St
     }
 }
 
-fn compile(head: &Atom, body: &[Literal], conf: f64, label: &str) -> Result<CRule, EvalError> {
-    let mut slots = HashMap::new();
-    let mut names = Vec::new();
+fn compile_expr(e: &Expr, slots: &mut HashMap<String, usize>, names: &mut Vec<String>) -> CExpr {
+    match e {
+        Expr::Term(t) => CExpr::Term(compile_term(t, slots, names)),
+        Expr::Bin(op, a, b) => CExpr::Bin(*op, Box::new(compile_expr(a, slots, names)), Box::new(compile_expr(b, slots, names))),
+    }
+}
 
-    // Safety: named variables must occur in a positive body atom.
-    let mut positive_vars: HashSet<&str> = HashSet::new();
-    for l in body {
-        if let Literal::Pos(a) = l {
-            positive_vars.extend(a.vars().filter(|v| *v != "_"));
+/// Named variables of a term list.
+fn named<'a>(ts: impl IntoIterator<Item = &'a Term>) -> Vec<String> {
+    ts.into_iter().filter_map(|t| if let Term::Var(v) = t { (v != "_").then(|| v.clone()) } else { None }).collect()
+}
+
+/// All named variables in an aggregate (body, value, not the result).
+fn agg_vars(value: &Option<Term>, body: &[Literal]) -> HashSet<String> {
+    let mut out: HashSet<String> = body.iter().flat_map(|l| l.vars()).filter(|v| *v != "_").map(String::from).collect();
+    out.extend(named(value.iter()));
+    out
+}
+
+/// What a non-atom literal needs bound before it can run, and what it binds.
+fn needs_binds(l: &Literal, outside: &HashSet<String>) -> (Vec<String>, Vec<String>) {
+    match l {
+        Literal::Pos(a) => (Vec::new(), named(a.args.iter())),
+        Literal::Neg(a) => (named(a.args.iter()), Vec::new()),
+        Literal::Cmp(_, x, y) => (named([x, y]), Vec::new()),
+        Literal::Arith(t, e) => (e.vars().into_iter().filter(|v| *v != "_").map(String::from).collect(), named(std::iter::once(t))),
+        Literal::Agg { result, value, body, .. } => {
+            let shared: Vec<String> = agg_vars(value, body).into_iter().filter(|v| outside.contains(v) && Some(v) != named(std::iter::once(result)).first()).collect();
+            (shared, named(std::iter::once(result)))
         }
     }
-    let check = |v: &str| -> Result<(), EvalError> {
-        if v != "_" && !positive_vars.contains(v) {
-            Err(EvalError::Unsafe { rule: label.to_string(), var: v.to_string() })
-        } else {
-            Ok(())
+}
+
+/// Order a body: positive atoms as written; every other literal right after
+/// the variables it needs are bound (by atoms or by earlier literals' results).
+/// `bound` holds the variables bound before the body starts (an aggregate's
+/// shared variables). Returns the ordered literals and the variables bound at the end.
+fn order_body<'a>(body: &'a [Literal], outside: &HashSet<String>, mut bound: HashSet<String>, label: &str) -> Result<(Vec<&'a Literal>, HashSet<String>), EvalError> {
+    let mut out: Vec<&Literal> = Vec::new();
+    let mut pending: Vec<&Literal> = body.iter().filter(|l| !matches!(l, Literal::Pos(_))).collect();
+    let place_ready = |bound: &mut HashSet<String>, out: &mut Vec<&'a Literal>, pending: &mut Vec<&'a Literal>| loop {
+        let ready = pending.iter().position(|l| needs_binds(l, outside).0.iter().all(|v| bound.contains(v)));
+        match ready {
+            Some(i) => {
+                let l = pending.remove(i);
+                bound.extend(needs_binds(l, outside).1);
+                out.push(l);
+            }
+            None => break,
         }
     };
+    place_ready(&mut bound, &mut out, &mut pending);
+    for l in body.iter().filter(|l| matches!(l, Literal::Pos(_))) {
+        out.push(l);
+        bound.extend(needs_binds(l, outside).1);
+        place_ready(&mut bound, &mut out, &mut pending);
+    }
+    if let Some(l) = pending.first() {
+        let missing = needs_binds(l, outside).0.into_iter().find(|v| !bound.contains(v)).unwrap_or_default();
+        return Err(EvalError::Unsafe { rule: label.to_string(), var: missing });
+    }
+    Ok((out, bound))
+}
+
+fn compile_lits(lits: &[&Literal], bound: &mut HashSet<String>, slots: &mut HashMap<String, usize>, names: &mut Vec<String>, agg_preds: &mut Vec<String>, label: &str) -> Result<Vec<CLit>, EvalError> {
+    let mut out = Vec::new();
+    for l in lits {
+        out.push(match l {
+            Literal::Pos(a) => {
+                bound.extend(named(a.args.iter()));
+                CLit::Pos { pred: a.pred.clone(), args: a.args.iter().map(|t| compile_term(t, slots, names)).collect() }
+            }
+            Literal::Neg(a) => CLit::Neg { pred: a.pred.clone(), args: a.args.iter().map(|t| compile_term(t, slots, names)).collect(), text: a.to_string() },
+            Literal::Cmp(op, x, y) => {
+                for t in [x, y] {
+                    if matches!(t, Term::Var(v) if v == "_") {
+                        return Err(EvalError::Unsafe { rule: label.to_string(), var: "_".into() });
+                    }
+                }
+                let cx = compile_term(x, slots, names);
+                let cy = compile_term(y, slots, names);
+                CLit::Cmp(*op, cx, cy)
+            }
+            Literal::Arith(t, e) => {
+                if matches!(t, Term::Var(v) if v == "_") || e.vars().contains(&"_") {
+                    return Err(EvalError::Unsafe { rule: label.to_string(), var: "_".into() });
+                }
+                let ce = compile_expr(e, slots, names);
+                bound.extend(named(std::iter::once(t)));
+                CLit::Arith(compile_term(t, slots, names), ce)
+            }
+            Literal::Agg { result, op, value, body } => {
+                // Variables bound before the aggregate are shared (they group it);
+                // the rest are its own, and their distinct bindings are aggregated.
+                let shared: HashSet<String> = bound.clone();
+                let (ordered, _) = order_body(body, &shared, shared.clone(), label)?;
+                for l in body {
+                    if let Literal::Pos(a) | Literal::Neg(a) = l {
+                        agg_preds.push(a.pred.clone());
+                    }
+                }
+                if let Some(Term::Var(v)) = value {
+                    if v == "_" || !body.iter().any(|l| matches!(l, Literal::Pos(_)) && l.vars().contains(&v.as_str())) {
+                        return Err(EvalError::Unsafe { rule: label.to_string(), var: v.clone() });
+                    }
+                }
+                let mut inner_bound = shared.clone();
+                let cbody = compile_lits(&ordered, &mut inner_bound, slots, names, agg_preds, label)?;
+                let value_c = value.as_ref().map(|v| compile_term(v, slots, names));
+                let mut own: Vec<String> = agg_vars(value, body).into_iter().filter(|v| !shared.contains(v)).collect();
+                own.sort();
+                let local: Vec<usize> = own.iter().filter_map(|v| slots.get(v).copied()).collect();
+                let result_c = compile_term(result, slots, names);
+                bound.extend(named(std::iter::once(result)));
+                CLit::Agg { op: *op, result: result_c, value: value_c, body: cbody, local }
+            }
+        });
+    }
+    Ok(out)
+}
+
+fn compile(head: &Atom, body: &[Literal], conf: f64, label: &str) -> Result<CRule, EvalError> {
     for v in head.vars() {
         if v == "_" {
             return Err(EvalError::Unsafe { rule: label.to_string(), var: "_".into() });
         }
-        check(v)?;
     }
+    // Variables used outside each aggregate: the head and every top-level literal.
+    let mut outside: HashSet<String> = head.vars().map(String::from).collect();
     for l in body {
-        match l {
-            Literal::Pos(_) => {}
-            Literal::Neg(a) => {
-                for v in a.vars() {
-                    check(v)?;
-                }
-            }
-            Literal::Cmp(_, x, y) => {
-                for t in [x, y] {
-                    if let Term::Var(v) = t {
-                        if v == "_" {
-                            return Err(EvalError::Unsafe { rule: label.to_string(), var: "_".into() });
-                        }
-                        check(v)?;
-                    }
-                }
-            }
+        if !matches!(l, Literal::Agg { .. }) {
+            outside.extend(l.vars().into_iter().filter(|v| *v != "_").map(String::from));
+        } else if let Literal::Agg { result: Term::Var(r), .. } = l {
+            outside.insert(r.clone());
         }
     }
-
-    // Order: positive atoms as written; each filter right after its variables are bound.
-    let pos: Vec<&Atom> = body.iter().filter_map(|l| if let Literal::Pos(a) = l { Some(a) } else { None }).collect();
-    let filters: Vec<&Literal> = body.iter().filter(|l| !matches!(l, Literal::Pos(_))).collect();
-    let filter_vars = |l: &Literal| -> Vec<String> {
-        match l {
-            Literal::Neg(a) => a.vars().filter(|v| *v != "_").map(String::from).collect(),
-            Literal::Cmp(_, x, y) => [x, y]
-                .iter()
-                .filter_map(|t| if let Term::Var(v) = t { Some(v.clone()) } else { None })
-                .collect(),
-            Literal::Pos(_) => Vec::new(),
+    // An aggregate's shared variables are those also used outside it.
+    let (ordered, bound) = order_body(body, &outside, HashSet::new(), label)?;
+    for v in head.vars() {
+        if !bound.contains(v) {
+            return Err(EvalError::Unsafe { rule: label.to_string(), var: v.to_string() });
         }
-    };
-    // place[k] = number of positive atoms that must come before filter k.
-    let mut place = Vec::new();
-    for f in &filters {
-        let need = filter_vars(*f);
-        let mut bound: HashSet<&str> = HashSet::new();
-        let mut k = 0;
-        while !need.iter().all(|v| bound.contains(v.as_str())) && k < pos.len() {
-            bound.extend(pos[k].vars());
-            k += 1;
-        }
-        place.push(k);
     }
-
-    let mut cbody = Vec::new();
-    let emit_filters = |k: usize, cbody: &mut Vec<CLit>, slots: &mut HashMap<String, usize>, names: &mut Vec<String>| {
-        for (fi, f) in filters.iter().enumerate() {
-            if place[fi] != k {
-                continue;
-            }
-            match f {
-                Literal::Neg(a) => cbody.push(CLit::Neg {
-                    pred: a.pred.clone(),
-                    args: a.args.iter().map(|t| compile_term(t, slots, names)).collect(),
-                    text: a.to_string(),
-                }),
-                Literal::Cmp(op, x, y) => {
-                    let cx = compile_term(x, slots, names);
-                    let cy = compile_term(y, slots, names);
-                    cbody.push(CLit::Cmp(*op, cx, cy));
-                }
-                Literal::Pos(_) => {}
-            }
-        }
-    };
-    emit_filters(0, &mut cbody, &mut slots, &mut names);
-    for (k, a) in pos.iter().enumerate() {
-        cbody.push(CLit::Pos {
-            pred: a.pred.clone(),
-            args: a.args.iter().map(|t| compile_term(t, &mut slots, &mut names)).collect(),
-        });
-        emit_filters(k + 1, &mut cbody, &mut slots, &mut names);
-    }
+    let mut slots = HashMap::new();
+    let mut names = Vec::new();
+    let mut agg_preds = Vec::new();
+    let mut bound_now = HashSet::new();
+    let cbody = compile_lits(&ordered, &mut bound_now, &mut slots, &mut names, &mut agg_preds, label)?;
     let chead = head.args.iter().map(|t| compile_term(t, &mut slots, &mut names)).collect();
-    Ok(CRule { head_pred: head.pred.clone(), head: chead, body: cbody, nvars: names.len(), conf, names })
+    let arith = body.iter().any(|l| matches!(l, Literal::Arith(..)));
+    Ok(CRule { head_pred: head.pred.clone(), head: chead, body: cbody, nvars: names.len(), conf, names, agg_preds, arith })
 }
 
 // ---------------------------------------------------------------- relations
@@ -484,7 +551,7 @@ impl Model {
         let mut trail = Vec::new();
         let mut prem = Vec::new();
         let mut absent = Vec::new();
-        self.join(&cr, 0, None, &HashMap::new(), &mut b, &mut trail, &mut prem, &mut absent, &mut |b: &Bindings, prem: &[GroundAtom], absent: &[String]| {
+        self.join(&cr.body, 0, None, &HashMap::new(), &mut b, &mut trail, &mut prem, &mut absent, &mut |b: &Bindings, prem: &[GroundAtom], absent: &[String]| {
             raw.push((b.clone(), prem.to_vec(), absent.to_vec()));
         });
         let mut seen = HashSet::new();
@@ -556,7 +623,7 @@ impl Model {
     #[allow(clippy::too_many_arguments)]
     fn join(
         &self,
-        r: &CRule,
+        body: &[CLit],
         li: usize,
         delta_at: Option<usize>,
         delta: &HashMap<String, Rel>,
@@ -566,11 +633,11 @@ impl Model {
         absent: &mut Vec<String>,
         emit: &mut dyn FnMut(&Bindings, &[GroundAtom], &[String]),
     ) {
-        if li == r.body.len() {
+        if li == body.len() {
             emit(b, prem, absent);
             return;
         }
-        match &r.body[li] {
+        match &body[li] {
             CLit::Pos { pred, args } => {
                 let rel = if delta_at == Some(li) { delta.get(pred) } else { self.rels.get(pred) };
                 let Some(rel) = rel else { return };
@@ -581,7 +648,7 @@ impl Model {
                     let mark = trail.len();
                     if unify(args, t, b, trail) {
                         prem.push(GroundAtom { pred: pred.clone(), args: t.clone() });
-                        self.join(r, li + 1, delta_at, delta, b, trail, prem, absent, emit);
+                        self.join(body, li + 1, delta_at, delta, b, trail, prem, absent, emit);
                         prem.pop();
                     }
                     undo(b, trail, mark);
@@ -609,16 +676,68 @@ impl Model {
                     // Record the checked atom with bound values filled in.
                     let shown = ground_text(pred, args, b).unwrap_or_else(|| text.clone());
                     absent.push(shown);
-                    self.join(r, li + 1, delta_at, delta, b, trail, prem, absent, emit);
+                    self.join(body, li + 1, delta_at, delta, b, trail, prem, absent, emit);
                     absent.pop();
                 }
             }
             CLit::Cmp(op, x, y) => {
                 if let (Some(vx), Some(vy)) = (resolve(x, b), resolve(y, b)) {
                     if op.eval(vx, vy) {
-                        self.join(r, li + 1, delta_at, delta, b, trail, prem, absent, emit);
+                        self.join(body, li + 1, delta_at, delta, b, trail, prem, absent, emit);
                     }
                 }
+            }
+            CLit::Arith(t, e) => {
+                let Some(v) = eval_expr(e, b) else { return };
+                let mark = trail.len();
+                if unify(std::slice::from_ref(t), std::slice::from_ref(&v), b, trail) {
+                    self.join(body, li + 1, delta_at, delta, b, trail, prem, absent, emit);
+                }
+                undo(b, trail, mark);
+            }
+            CLit::Agg { op, result, value, body: inner, local } => {
+                // Distinct bindings of the aggregate's own variables, with the premises behind them.
+                let mut seen: HashSet<Vec<Option<Value>>> = HashSet::new();
+                let mut values: Vec<Value> = Vec::new();
+                let mut used: Vec<GroundAtom> = Vec::new();
+                {
+                    let mut sub_prem = Vec::new();
+                    let mut sub_abs = Vec::new();
+                    let none: HashMap<String, Rel> = HashMap::new();
+                    let mut collect = |b: &Bindings, p: &[GroundAtom], _: &[String]| {
+                        let key: Vec<Option<Value>> = local.iter().map(|i| b[*i].clone()).collect();
+                        if seen.insert(key) {
+                            if let Some(v) = value.as_ref().and_then(|t| resolve(t, b)) {
+                                values.push(v.clone());
+                            }
+                            for g in p {
+                                if !used.contains(g) {
+                                    used.push(g.clone());
+                                }
+                            }
+                        }
+                    };
+                    self.join(inner, 0, None, &none, b, trail, &mut sub_prem, &mut sub_abs, &mut collect);
+                }
+                let out = match op {
+                    AggOp::Count => Value::number(seen.len() as i128 * sla_core::term::DEC_SCALE as i128),
+                    AggOp::Sum => values.iter().try_fold(Value::Int(0), |acc, v| ArithOp::Add.apply(&acc, v)),
+                    AggOp::Min => values.iter().filter(|v| v.is_number()).min().cloned(),
+                    AggOp::Max => values.iter().filter(|v| v.is_number()).max().cloned(),
+                };
+                let Some(out) = out else { return };
+                let mark = trail.len();
+                if unify(std::slice::from_ref(result), std::slice::from_ref(&out), b, trail) {
+                    let n = prem.len();
+                    for g in used {
+                        if !prem.contains(&g) {
+                            prem.push(g);
+                        }
+                    }
+                    self.join(body, li + 1, delta_at, delta, b, trail, prem, absent, emit);
+                    prem.truncate(n);
+                }
+                undo(b, trail, mark);
             }
         }
     }
@@ -631,6 +750,13 @@ impl Model {
         } else {
             false
         }
+    }
+}
+
+fn eval_expr(e: &CExpr, b: &Bindings) -> Option<Value> {
+    match e {
+        CExpr::Term(t) => resolve(t, b).filter(|v| v.is_number()).cloned(),
+        CExpr::Bin(op, x, y) => op.apply(&eval_expr(x, b)?, &eval_expr(y, b)?),
     }
 }
 
@@ -651,7 +777,9 @@ fn ground_text(pred: &str, args: &[CTerm], b: &Bindings) -> Option<String> {
 
 // ---------------------------------------------------------------- evaluation
 
-/// Assign each derived predicate a stratum; negated dependencies must be lower.
+/// Assign each derived predicate a stratum; negated dependencies and
+/// predicates read inside aggregates must be lower. Arithmetic may not take
+/// part in recursion, so evaluation cannot create endless new values.
 fn stratify(rules: &[CRule]) -> Result<Vec<Vec<usize>>, EvalError> {
     let idb: HashSet<&str> = rules.iter().map(|r| r.head_pred.as_str()).collect();
     let mut st: HashMap<&str, usize> = idb.iter().map(|p| (*p, 0)).collect();
@@ -668,6 +796,11 @@ fn stratify(rules: &[CRule]) -> Result<Vec<Vec<usize>>, EvalError> {
                     _ => {}
                 }
             }
+            for p in &r.agg_preds {
+                if idb.contains(p.as_str()) {
+                    need = need.max(st[p.as_str()] + 1);
+                }
+            }
             if need > st[h] {
                 if need > limit {
                     return Err(EvalError::Unstratifiable { pred: h.to_string() });
@@ -678,6 +811,40 @@ fn stratify(rules: &[CRule]) -> Result<Vec<Vec<usize>>, EvalError> {
         }
         if !changed {
             break;
+        }
+    }
+    // Arithmetic in recursion: a rule computing values whose head can reach
+    // one of its own positive body predicates.
+    let mut uses: HashMap<&str, HashSet<&str>> = HashMap::new();
+    for r in rules {
+        for l in &r.body {
+            if let CLit::Pos { pred, .. } = l {
+                uses.entry(r.head_pred.as_str()).or_default().insert(pred.as_str());
+            }
+        }
+    }
+    let reaches = |from: &str, to: &str| -> bool {
+        let mut stack = vec![from];
+        let mut seen: HashSet<&str> = HashSet::new();
+        while let Some(p) = stack.pop() {
+            if p == to {
+                return true;
+            }
+            if seen.insert(p) {
+                if let Some(n) = uses.get(p) {
+                    stack.extend(n.iter().copied());
+                }
+            }
+        }
+        false
+    };
+    for r in rules.iter().filter(|r| r.arith) {
+        for l in &r.body {
+            if let CLit::Pos { pred, .. } = l {
+                if idb.contains(pred.as_str()) && reaches(pred, &r.head_pred) {
+                    return Err(EvalError::ArithmeticInRecursion { pred: r.head_pred.clone() });
+                }
+            }
         }
     }
     let max = st.values().copied().max().unwrap_or(0);
@@ -763,7 +930,7 @@ impl Model {
         let mut trail = Vec::new();
         let mut prem = Vec::new();
         let mut absent = Vec::new();
-        self.join(r, 0, delta_at, delta, &mut b, &mut trail, &mut prem, &mut absent, &mut |b: &Bindings, prem: &[GroundAtom], absent: &[String]| {
+        self.join(&r.body, 0, delta_at, delta, &mut b, &mut trail, &mut prem, &mut absent, &mut |b: &Bindings, prem: &[GroundAtom], absent: &[String]| {
             let g = head_atom(r, b);
             if self.contains(&g) {
                 return;
@@ -814,7 +981,15 @@ pub fn naf_sensitive(rules: &[RuleInput]) -> HashSet<String> {
             match l {
                 Literal::Pos(a) => feeds.entry(r.rule.head.pred.as_str()).or_default().push(a.pred.as_str()),
                 Literal::Neg(a) => stack.push(a.pred.clone()),
-                Literal::Cmp(..) => {}
+                // A count or sum can go down when facts are added, like negation.
+                Literal::Agg { body, .. } => {
+                    for x in body {
+                        if let Literal::Pos(a) | Literal::Neg(a) = x {
+                            stack.push(a.pred.clone());
+                        }
+                    }
+                }
+                Literal::Cmp(..) | Literal::Arith(..) => {}
             }
         }
     }
@@ -824,6 +999,37 @@ pub fn naf_sensitive(rules: &[RuleInput]) -> HashSet<String> {
         }
         if let Some(srcs) = feeds.get(p.as_str()) {
             stack.extend(srcs.iter().map(|s| s.to_string()));
+        }
+    }
+    out
+}
+
+/// The predicates whose facts can affect `preds`: themselves and every
+/// predicate in the body (positive or negated) of a rule deriving one of them,
+/// transitively.
+pub fn depends_on(rules: &[RuleInput], preds: &[&str]) -> HashSet<String> {
+    let mut by_head: HashMap<&str, Vec<&str>> = HashMap::new();
+    for r in rules {
+        for l in &r.rule.body {
+            let inner: Vec<&Literal> = match l {
+                Literal::Agg { body, .. } => body.iter().collect(),
+                other => vec![other],
+            };
+            for x in inner {
+                if let Literal::Pos(a) | Literal::Neg(a) = x {
+                    by_head.entry(r.rule.head.pred.as_str()).or_default().push(a.pred.as_str());
+                }
+            }
+        }
+    }
+    let mut out: HashSet<String> = HashSet::new();
+    let mut stack: Vec<String> = preds.iter().map(|p| p.to_string()).collect();
+    while let Some(p) = stack.pop() {
+        if !out.insert(p.clone()) {
+            continue;
+        }
+        if let Some(b) = by_head.get(p.as_str()) {
+            stack.extend(b.iter().map(|x| x.to_string()));
         }
     }
     out
@@ -879,15 +1085,18 @@ pub fn parse_program(src: &str) -> Result<(Vec<FactInput>, Vec<RuleInput>), Stri
     let mut facts = Vec::new();
     let mut rules = Vec::new();
     for (n, line) in src.lines().enumerate() {
-        let t = line.trim();
-        if t.is_empty() || t.starts_with('%') {
-            continue;
-        }
-        let r = sla_core::parse_rule(t).map_err(|e| format!("line {}: {e}", n + 1))?;
-        if r.body.is_empty() && r.head.is_ground() {
-            facts.push(FactInput { atom: r.head.to_ground().unwrap(), conf: 1.0, source: "program".into() });
-        } else {
-            rules.push(RuleInput::new(&format!("r{}", rules.len() + 1), r));
+        // A line may hold several statements: `p(a). q(b). r(X) :- p(X).`
+        let mut rest = line.trim();
+        while !rest.is_empty() && !rest.starts_with('%') {
+            let end = sla_core::syntax::statement_end(rest).ok_or_else(|| format!("line {}: missing '.' at end of statement", n + 1))?;
+            let stmt = &rest[..=end];
+            rest = rest[end + 1..].trim();
+            let r = sla_core::parse_rule(stmt).map_err(|e| format!("line {}: {e}", n + 1))?;
+            if r.body.is_empty() && r.head.is_ground() {
+                facts.push(FactInput { atom: r.head.to_ground().unwrap(), conf: 1.0, source: "program".into() });
+            } else {
+                rules.push(RuleInput::new(&format!("r{}", rules.len() + 1), r));
+            }
         }
     }
     Ok((facts, rules))

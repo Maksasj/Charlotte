@@ -46,8 +46,11 @@ pub struct Brain {
     pub quarantined: BTreeMap<String, String>,
     /// Full evaluations so far (tests check the per-message count).
     pub evaluations: u64,
+    /// Milliseconds spent in those evaluations, and in learner updates.
+    pub eval_ms: f64,
+    pub learn_ms: f64,
     now_cache: Option<NowCache>,
-    past_cache: Option<(u64, i64, Arc<Vec<Arc<Model>>>)>,
+    past_cache: Option<(u64, i64, String, Arc<Vec<Arc<Model>>>)>,
     names: (u64, Arc<HashSet<String>>),
     vault_stamp: u64,
 }
@@ -55,7 +58,7 @@ pub struct Brain {
 /// Fingerprint of all vault files (mtimes + sizes) to notice hand edits.
 fn vault_fingerprint(root: &Path) -> u64 {
     let mut h: u64 = 1469598103934665603;
-    for dir in ["facts", "rules", "core"] {
+    for dir in ["facts", "rules", "core", "lexicon", "procedures", "tasks"] {
         let Ok(rd) = std::fs::read_dir(root.join(dir)) else { continue };
         let mut entries: Vec<_> = rd.flatten().collect();
         entries.sort_by_key(|e| e.path());
@@ -83,6 +86,8 @@ impl Brain {
             events: Arc::new(EventBus::default()),
             quarantined: BTreeMap::new(),
             evaluations: 0,
+            eval_ms: 0.0,
+            learn_ms: 0.0,
             now_cache: None,
             past_cache: None,
             names: (u64::MAX, Arc::new(HashSet::new())),
@@ -151,7 +156,10 @@ impl Brain {
 
     fn eval(&mut self, facts: &[FactInput], rules: &[RuleInput]) -> Result<Model, EvalError> {
         self.evaluations += 1;
-        evaluate(facts, rules)
+        let t = std::time::Instant::now();
+        let out = evaluate(facts, rules);
+        self.eval_ms += t.elapsed().as_secs_f64() * 1000.0;
+        out
     }
 
     /// The model at time `at`, shared until the vault changes or `at` crosses
@@ -182,19 +190,26 @@ impl Brain {
         model
     }
 
-    /// Models of the past, one per moment that matters (see
-    /// [`sla_reasoner::past_moments`]), newest first. Facts are only joined
-    /// within one moment, so a history answer never mixes facts that were not
-    /// true together.
-    pub fn past_models(&mut self, now: Timestamp) -> Arc<Vec<Arc<Model>>> {
+    /// Models of the past for questions about `pred`, one per moment that
+    /// matters (see [`sla_reasoner::past_moments`]), newest first. Only the
+    /// facts and rules `pred` depends on take part, so the past of one
+    /// predicate costs little. Facts are only joined within one moment, so a
+    /// history answer never mixes facts that were not true together.
+    pub fn past_models(&mut self, pred: &str, now: Timestamp) -> Arc<Vec<Arc<Model>>> {
         let generation = self.kb.vault.generation;
-        if let Some((g, t, m)) = &self.past_cache {
-            if *g == generation && *t == now.0 {
+        let rules = self.runnable_rules(false, now);
+        let deps = sla_reasoner::depends_on(&rules, &[pred]);
+        // Predicates with the same dependencies share one past.
+        let mut key: Vec<&str> = deps.iter().map(String::as_str).collect();
+        key.sort_unstable();
+        let key = key.join(",");
+        if let Some((g, t, k, m)) = &self.past_cache {
+            if *g == generation && *t == now.0 && *k == key {
                 return Arc::clone(m);
             }
         }
-        let facts: Vec<Fact> = self.kb.all_facts();
-        let rules = self.runnable_rules(false, now);
+        let rules: Vec<RuleInput> = rules.into_iter().filter(|r| deps.contains(r.rule.head.pred.as_str())).collect();
+        let facts: Vec<Fact> = self.kb.all_facts().into_iter().filter(|f| deps.contains(f.atom.pred.as_str())).collect();
         let moments = sla_reasoner::past_moments(&facts, &rules, now, PAST_MOMENTS);
         let mut models = Vec::new();
         for t in moments {
@@ -204,21 +219,53 @@ impl Brain {
             }
         }
         let models = Arc::new(models);
-        self.past_cache = Some((self.kb.vault.generation, now.0, Arc::clone(&models)));
+        self.past_cache = Some((self.kb.vault.generation, now.0, key, Arc::clone(&models)));
         models
     }
 
     /// Was `g` true at some moment in the past?
     pub fn was_true(&mut self, g: &GroundAtom, now: Timestamp) -> bool {
-        self.past_models(now).iter().any(|m| m.contains(g))
+        self.past_models(&g.pred, now).iter().any(|m| m.contains(g))
     }
 
     /// Atoms matching `pattern` at some moment in the past (deduplicated, sorted).
     pub fn past_matches(&mut self, pattern: &sla_core::Atom, now: Timestamp) -> Vec<GroundAtom> {
-        let mut out: Vec<GroundAtom> = self.past_models(now).iter().flat_map(|m| m.query_atom(pattern)).collect();
+        let mut out: Vec<GroundAtom> = self.past_models(&pattern.pred, now).iter().flat_map(|m| m.query_atom(pattern)).collect();
         out.sort();
         out.dedup();
         out
+    }
+
+    /// Every past moment, all predicates (for inspection; costs a full
+    /// evaluation per moment).
+    pub fn all_past_models(&mut self, now: Timestamp) -> Vec<Arc<Model>> {
+        let facts: Vec<Fact> = self.kb.all_facts();
+        let rules = self.runnable_rules(false, now);
+        let moments = sla_reasoner::past_moments(&facts, &rules, now, PAST_MOMENTS);
+        let mut out = Vec::new();
+        for t in moments {
+            let inputs = facts_for(&facts, Some(t));
+            if let Ok(m) = self.eval(&inputs, &rules) {
+                out.push(Arc::new(m));
+            }
+        }
+        out
+    }
+
+    /// The learner's view of the world now: entity features from the model
+    /// built with evidence rules only (no rule the learner guessed). When no
+    /// guessed rule is confirmed that is the agent's own model, so it is shared.
+    pub fn learner_features(&mut self, now: Timestamp) -> std::collections::BTreeMap<sla_core::Value, std::collections::BTreeSet<sla_learner::Feature>> {
+        if !Learner::has_confirmed_guesses(&self.kb) {
+            let m = self.model_at(now);
+            return self.learner.features_from(&m);
+        }
+        let rules = Learner::evidence_rules(&self.kb);
+        let inputs = facts_for(&self.kb.all_facts(), Some(now));
+        match self.eval(&inputs, &rules) {
+            Ok(m) => self.learner.features_from(&m),
+            Err(_) => Default::default(),
+        }
     }
 
     /// Entities written as names (people, places), recomputed only when the vault changes.
@@ -265,7 +312,7 @@ impl Brain {
     pub fn has_stored(&self, atom: &GroundAtom) -> bool {
         let stem = match atom.args.first() {
             Some(sla_core::Value::Sym(s)) => sla_core::vault::file_stem(s),
-            Some(sla_core::Value::Int(_)) => "_numbers".into(),
+            Some(sla_core::Value::Int(_)) | Some(sla_core::Value::Dec(_)) => "_numbers".into(),
             None => "_global".into(),
         };
         self.kb.vault.facts.get(&stem).map_or(false, |ff| ff.doc.facts().any(|f| f.atom == *atom))

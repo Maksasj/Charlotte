@@ -37,6 +37,8 @@ pub struct JournalEntry {
     pub action: String,
     pub subject: String,
     pub reason: String,
+    /// The id of the fact added or closed, if any.
+    pub fact: Option<String>,
 }
 
 pub struct KnowledgeBase {
@@ -49,6 +51,9 @@ pub struct KnowledgeBase {
     journal: RefCell<Vec<JournalEntry>>,
     /// Inside a transaction: log lines wait here until it commits.
     deferred: RefCell<Option<Vec<JournalEntry>>>,
+    /// The next fact id number (`f<n>`) and event id number (`e<n>`).
+    next_fact: u64,
+    next_event: u64,
 }
 
 /// Does ground atom `g` match `pattern` (variables bind consistently)?
@@ -86,16 +91,30 @@ pub fn confirm_conf(old: f64, new: f64) -> f64 {
 
 impl KnowledgeBase {
     pub fn new(vault: Vault) -> Self {
-        KnowledgeBase { vault, logging: true, journal: RefCell::new(Vec::new()), deferred: RefCell::new(None) }
+        let mut kb = KnowledgeBase { vault, logging: true, journal: RefCell::new(Vec::new()), deferred: RefCell::new(None), next_fact: 1, next_event: 1 };
+        kb.scan_ids();
+        kb
     }
 
     /// Load a vault from disk, seeding the core ontology if it is missing.
     pub fn open(root: impl Into<PathBuf>) -> io::Result<Self> {
         let mut vault = Vault::load(root)?;
-        if vault.core.is_empty() {
-            for (stem, rf) in crate::default_core() {
+        // Seed every built-in core file the vault does not have yet (a vault
+        // made by an older build gets the new layers too).
+        let mut added = false;
+        for (stem, rf) in crate::default_core() {
+            if !vault.core.contains_key(&stem) {
                 vault.core.insert(stem, rf);
+                added = true;
             }
+        }
+        for (stem, rf) in crate::default_lexicon() {
+            if !vault.lexicon.contains_key(&stem) {
+                vault.lexicon.insert(stem, rf);
+                added = true;
+            }
+        }
+        if added {
             vault.save_all()?;
         }
         Ok(KnowledgeBase::new(vault))
@@ -105,18 +124,74 @@ impl KnowledgeBase {
         self.vault.save()
     }
 
+    /// Continue numbering after the highest fact and event ids in the vault.
+    fn scan_ids(&mut self) {
+        let num = |s: &str, p: char| s.strip_prefix(p).and_then(|n| n.parse::<u64>().ok());
+        for (_, f) in self.vault.all_facts() {
+            if let Some(n) = f.id.as_deref().and_then(|i| num(i, 'f')) {
+                self.next_fact = self.next_fact.max(n + 1);
+            }
+            for v in &f.atom.args {
+                if let Some(n) = v.as_sym().and_then(|s| num(s, 'e')) {
+                    if f.atom.pred == "event" {
+                        self.next_event = self.next_event.max(n + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    /// A new fact id (`f12`).
+    pub fn new_fact_id(&mut self) -> String {
+        let id = format!("f{}", self.next_fact);
+        self.next_fact += 1;
+        id
+    }
+
+    /// A new event id (`e7`): statements with more than two participants become events.
+    pub fn new_event_id(&mut self) -> String {
+        let id = format!("e{}", self.next_event);
+        self.next_event += 1;
+        id
+    }
+
+    /// The stored fact with this id.
+    pub fn fact_by_id(&self, id: &str) -> Option<Fact> {
+        self.all_facts().into_iter().find(|f| f.id.as_deref() == Some(id))
+    }
+
+    /// End exactly the fact with this id (not other copies of its atom).
+    pub fn close_by_id(&mut self, id: &str, at: Timestamp, reason: &str) -> Option<Fact> {
+        let target = self.fact_by_id(id).filter(|f| f.is_open())?;
+        self.vault.update_facts(|f| {
+            if f.id.as_deref() == Some(id) && f.is_open() {
+                f.until = Some(at);
+                true
+            } else {
+                false
+            }
+        });
+        self.log_fact(at, "close", &target.atom.to_string(), reason, Some(id));
+        Some(Fact { until: Some(at), ..target })
+    }
+
     pub fn reload(&mut self) -> io::Result<()> {
         self.vault.reload()?;
-        if self.vault.core.is_empty() {
-            for (stem, rf) in crate::default_core() {
-                self.vault.core.insert(stem, rf);
-            }
+        for (stem, rf) in crate::default_core() {
+            self.vault.core.entry(stem).or_insert(rf);
+        }
+        for (stem, rf) in crate::default_lexicon() {
+            self.vault.lexicon.entry(stem).or_insert(rf);
         }
         Ok(())
     }
 
     fn log(&self, at: Timestamp, action: &str, subject: &str, reason: &str) {
-        let e = JournalEntry { at, action: action.into(), subject: subject.into(), reason: reason.into() };
+        self.log_fact(at, action, subject, reason, None);
+    }
+
+    fn log_fact(&self, at: Timestamp, action: &str, subject: &str, reason: &str, fact: Option<&str>) {
+        let e = JournalEntry { at, action: action.into(), subject: subject.into(), reason: reason.into(), fact: fact.map(String::from) };
         self.journal.borrow_mut().push(e.clone());
         if let Some(d) = self.deferred.borrow_mut().as_mut() {
             d.push(e);
@@ -286,7 +361,10 @@ impl KnowledgeBase {
                 self.log(at, "close", &c.atom.to_string(), &format!("contradicted by {atom}"));
             }
         }
-        self.log(at, "add", &atom.to_string(), reason);
+        if fact.id.is_none() {
+            fact.id = Some(self.new_fact_id());
+        }
+        self.log_fact(at, "add", &atom.to_string(), reason, fact.id.as_deref());
         self.vault.add_fact(fact);
         let closed = to_close
             .into_iter()
@@ -309,7 +387,10 @@ impl KnowledgeBase {
             if !already {
                 fact.from = None;
                 fact.until = Some(at);
-                self.log(at, "add_past", &atom.to_string(), reason);
+                if fact.id.is_none() {
+                    fact.id = Some(self.new_fact_id());
+                }
+                self.log_fact(at, "add_past", &atom.to_string(), reason, fact.id.as_deref());
                 self.vault.add_fact(fact);
             }
         }
@@ -351,20 +432,24 @@ impl KnowledgeBase {
         n
     }
 
-    /// Count a use of each fact valid at `at` with one of these atoms.
+    /// Count a use of each of these atoms (given facts behind an answer).
+    /// Counts go to `stats/`, not to the fact files: answering never rewrites knowledge.
     pub fn record_use(&mut self, atoms: &[GroundAtom], at: Timestamp) {
-        if atoms.is_empty() {
-            return;
+        for a in atoms {
+            self.vault.record_use(&a.to_string(), at);
         }
-        self.vault.update_facts(|f| {
-            if f.valid_at(at) && atoms.contains(&f.atom) {
-                f.uses += 1;
-                f.last_used = Some(at);
-                true
-            } else {
-                false
+    }
+
+    /// Uses of an atom: counted in `stats/` plus any old `@uses` on its fact lines.
+    pub fn uses(&self, atom: &GroundAtom) -> crate::vault::UseStat {
+        let mut u = self.vault.stats.get(&atom.to_string()).copied().unwrap_or_default();
+        for f in self.all_facts().iter().filter(|f| f.atom == *atom) {
+            u.uses += f.uses;
+            if u.last.is_none() {
+                u.last = f.last_used;
             }
-        });
+        }
+        u
     }
 
     /// All rules for the reasoner: core rules (conf 1) and learned rules
@@ -497,9 +582,13 @@ mod tests {
         kb.assert_fact(fact("likes(ann, tea)"), t, "x");
         kb.record_use(&[parse_ground("likes(ann, tea)").unwrap()], t);
         kb.record_use(&[parse_ground("likes(ann, tea)").unwrap()], t);
-        let f = &kb.all_facts()[0];
-        assert_eq!(f.uses, 2);
-        assert_eq!(f.last_used, Some(t));
+        let gen = kb.vault.generation;
+        kb.record_use(&[parse_ground("likes(ann, tea)").unwrap()], t);
+        assert_eq!(kb.vault.generation, gen, "a use is not a change of knowledge");
+        let u = kb.uses(&parse_ground("likes(ann, tea)").unwrap());
+        assert_eq!(u.uses, 3);
+        assert_eq!(u.last, Some(t));
+        assert_eq!(kb.all_facts()[0].uses, 0, "the fact line is untouched");
     }
 
     #[test]
@@ -544,6 +633,37 @@ mod tests {
         let h = kb.history(&parse_atom("likes(bob, X)").unwrap());
         assert_eq!(h.len(), 1);
         assert_eq!(h[0].until, Some(t2));
+    }
+
+    #[test]
+    fn fact_ids() {
+        let mut kb = kb();
+        let t = Timestamp::from_ymd(2026, 1, 1);
+        kb.assert_fact(fact("likes(ann, tea)"), t, "x");
+        kb.assert_fact(fact("likes(bob, tea)"), t, "x");
+        let ids: Vec<String> = kb.all_facts().iter().filter_map(|f| f.id.clone()).collect();
+        assert_eq!(ids.len(), 2);
+        assert_ne!(ids[0], ids[1]);
+        // The same atom stored in another file by another conversation keeps its own id.
+        let mut copy = fact("likes(ann, tea)");
+        copy.id = Some("f99".into());
+        copy.conv = Some("s2".into());
+        kb.vault.add_fact(copy.clone());
+        let ann = kb.all_facts().into_iter().find(|f| f.id.as_deref() == Some("f99")).unwrap();
+        assert_eq!(ann.conv.as_deref(), Some("s2"));
+        // A reviewer closes exactly the fact it judged.
+        let closed = kb.close_by_id("f99", t.plus_days(1), "reviewer").unwrap();
+        assert_eq!(closed.id.as_deref(), Some("f99"));
+        let open: Vec<_> = kb.facts_at(t.plus_days(2)).into_iter().filter(|f| f.atom.to_string() == "likes(ann, tea)").collect();
+        assert_eq!(open.len(), 1, "the other copy stays");
+        // Ids survive a reload and numbering continues after the highest one.
+        assert!(fact("likes(x, y)").with_conf(1.0).to_line().find("@id").is_none());
+        let line = kb.fact_by_id(&ids[0]).unwrap().to_line();
+        let back = crate::syntax::parse_fact_line(&line).unwrap();
+        assert_eq!(back.id, Some(ids[0].clone()));
+        let mut kb2 = KnowledgeBase::new(std::mem::take(&mut kb.vault));
+        assert_eq!(kb2.new_fact_id(), "f100");
+        assert_eq!(kb2.new_event_id(), "e1");
     }
 
     #[test]

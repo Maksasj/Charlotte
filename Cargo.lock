@@ -79,6 +79,8 @@ dependencies = [
 name = "sla_agent"
 version = "0.1.0"
 dependencies = [
+ "serde",
+ "serde_json",
  "sla_core",
  "sla_learner",
  "sla_nlg",
@@ -107,6 +109,13 @@ version = "0.1.0"
 dependencies = [
  "sla_core",
  "sla_reasoner",
+]
+
+[[package]]
+name = "sla_lexicon"
+version = "0.1.0"
+dependencies = [
+ "sla_core",
 ]
 
 [[package]]

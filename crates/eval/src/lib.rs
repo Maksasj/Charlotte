@@ -4,7 +4,9 @@
 //! to `eval/history.csv` so trends are visible over time.
 
 
+pub mod ops;
 pub mod outcome;
+pub mod regression;
 pub mod trainer;
 
 use sla_agent::curiosity::Teacher;

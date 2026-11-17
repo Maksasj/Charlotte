@@ -123,6 +123,24 @@
   .empty { color: var(--muted); font-style: italic; }
   .error-line { color: var(--bad); font-size: 12px; }
   .mono { font-family: var(--mono); font-size: 12px; }
+  /* Outcome labels: one colour per label, used in chips and the stacked bar. */
+  .lab-helpful { --c: var(--ok); } .lab-clarify { --c: var(--accent); } .lab-partial { --c: #6f8f2f; } .lab-teach_me { --c: var(--agent); }
+  .lab-not_understood { --c: var(--bad); } .lab-wrong_move { --c: #c0603a; } .lab-wrong_content { --c: #8e3b8e; } .lab-echo { --c: var(--warn); } .lab-unjudged { --c: var(--muted); }
+  .chip { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 999px; padding: 0 7px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); white-space: nowrap; }
+  .chip.btn { cursor: pointer; border: none; font-family: inherit; }
+  .stack { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--line); margin: 8px 0 6px; }
+  .stack > span { background: var(--c); height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--muted); }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--c); margin-right: 4px; vertical-align: 0; }
+  .acts { margin-top: 4px; font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: pre-wrap; }
+  .drill { position: fixed; inset: 0; background: color-mix(in srgb, var(--fg) 30%, transparent); display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; z-index: 10; overflow-y: auto; }
+  .drill-box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; width: min(900px, 100%); display: flex; flex-direction: column; gap: 10px; }
+  .drill-box dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; margin: 0; font-size: 13px; }
+  .drill-box dt { color: var(--muted); font-size: 12px; }
+  .drill-box dd { margin: 0; overflow-wrap: anywhere; }
+  .spark { display: flex; align-items: flex-end; gap: 1px; height: 36px; margin-top: 6px; }
+  .spark span { flex: 1; background: var(--accent); min-height: 1px; border-radius: 1px 1px 0 0; }
+  .spark span.slow { background: var(--bad); }
 </style>
 </head>
 <body>
@@ -141,6 +159,13 @@ const fmtDur = (s) => { s = Math.max(0, Math.round(s || 0)); const h = Math.floo
 const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
 const STATUS = { idle: 'Idle', thinking: 'Teacher writing…', agent: 'Agent answering…', reviewing: 'Reviewing…', done: 'Done', stopped: 'Stopped', error: 'Error' };
 
+// The trainer prints an address with ?token=...; every API call must carry it.
+const TOKEN = (() => {
+  const q = new URLSearchParams(location.search).get('token');
+  try { if (q) sessionStorage.setItem('trainer-token', q); return q || sessionStorage.getItem('trainer-token') || ''; } catch (e) { return q || ''; }
+})();
+const api = (path, opts = {}) => fetch(path, { cache: 'no-store', ...opts, headers: { ...(opts.headers || {}), 'X-Trainer-Token': TOKEN } });
+
 function useTrainerState() {
   const [state, setState] = useState(null);
   const [offline, setOffline] = useState(false);
@@ -148,11 +173,12 @@ function useTrainerState() {
     let alive = true, timer;
     const tick = async () => {
       try {
-        const r = await fetch('/api/state', { cache: 'no-store' });
+        const r = await api('/api/state');
+        if (r.status === 401) throw new Error('token');
         if (!r.ok) throw new Error(r.status);
         const s = await r.json();
         if (alive) { setState(s); setOffline(false); }
-      } catch (e) { if (alive) setOffline(true); }
+      } catch (e) { if (alive) setOffline(e.message === 'token' ? 'token' : true); }
       if (alive) timer = setTimeout(tick, 1000);
     };
     tick();
@@ -160,6 +186,41 @@ function useTrainerState() {
   }, []);
   return [state, offline];
 }
+
+// The event stream: turn traces by (session, turn), for the drill-down.
+function useEvents() {
+  const [traces, setTraces] = useState({});
+  useEffect(() => {
+    let alive = true, timer, after = 0;
+    const tick = async () => {
+      try {
+        const r = await api('/api/events?after=' + after);
+        if (r.ok) {
+          const evs = await r.json();
+          if (evs.length) {
+            after = evs[evs.length - 1].seq;
+            const add = {};
+            for (const e of evs) if (e.kind === 'turn') add[e.data.session + '#' + e.data.turn] = e.data;
+            if (alive && Object.keys(add).length) setTraces((t) => {
+              const n = { ...t, ...add };
+              const keys = Object.keys(n);
+              if (keys.length > 3000) for (const k of keys.slice(0, keys.length - 3000)) delete n[k];
+              return n;
+            });
+          }
+        }
+      } catch (e) {}
+      if (alive) timer = setTimeout(tick, 1000);
+    };
+    tick();
+    return () => { alive = false; clearTimeout(timer); };
+  }, []);
+  return traces;
+}
+
+const LABELS = ['helpful', 'clarify', 'partial', 'teach_me', 'not_understood', 'wrong_move', 'wrong_content', 'echo', 'unjudged'];
+const LABEL_TEXT = { helpful: 'helpful', clarify: 'fitting question', partial: 'partial', teach_me: 'teach me', not_understood: 'not understood', wrong_move: 'wrong move', wrong_content: 'wrong content', echo: 'echo only', unjudged: 'not judged yet' };
+const quantile = (v, p) => { if (!v || !v.length) return null; const s = [...v].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.round(p * (s.length - 1)))]; };
 
 function Controls({ state, offline }) {
   const saved = (() => { try { return JSON.parse(localStorage.getItem('trainer-config') || 'null'); } catch (e) { return null; } })();
@@ -170,11 +231,11 @@ function Controls({ state, offline }) {
   const start = async () => {
     setError(null);
     try { localStorage.setItem('trainer-config', JSON.stringify(cfg)); } catch (e) {}
-    const r = await fetch('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+    const r = await api('/api/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
     if (!r.ok) { const j = await r.json().catch(() => ({})); setError(j.error || 'Could not start training.'); }
   };
-  const stop = () => fetch('/api/stop', { method: 'POST' });
-  const status = offline ? ['offline', 'Trainer not reachable'] : !state ? ['idle', 'Connecting'] : state.stopping ? ['stopping', 'Stopping after current turns'] : running ? ['running', 'Training'] : ['idle', 'Stopped'];
+  const stop = () => api('/api/stop', { method: 'POST' });
+  const status = offline === 'token' ? ['offline', 'Open the address with ?token= that the trainer printed'] : offline ? ['offline', 'Trainer not reachable'] : !state ? ['idle', 'Connecting'] : state.stopping ? ['stopping', 'Stopping after current turns'] : running ? ['running', 'Training'] : ['idle', 'Stopped'];
   const elapsed = state && state.started_at ? (state.finished_at || state.now) - state.started_at : 0;
   return html`
     <section class="bar" aria-label="Training controls">
@@ -211,16 +272,8 @@ function Summary({ s }) {
         <div class="progress" role="progressbar" aria-valuenow=${done} aria-valuemin="0" aria-valuemax=${planned}><div style=${{ width: pct(done, planned) + '%' }}></div></div>
         <div class="sub">${eta != null ? 'About ' + fmtDur(eta) + ' left' : s.running ? 'Estimating…' : ' '}</div>
       </div>
-      <div class="card">
-        <div class="label">Teacher messages understood</div>
-        <div class="big">${pct(s.understood, s.turns)}%</div>
-        <div class="sub">${fmtInt(s.understood)} of ${fmtInt(s.turns)} messages</div>
-      </div>
-      <div class="card">
-        <div class="label">Agent answer time, average</div>
-        <div class="big">${s.turns && s.answer_ms_total != null ? secs(Math.round(s.answer_ms_total / s.turns)) : '—'}</div>
-        <div class="sub">${s.turns && s.answer_ms_total != null ? 'translate ' + secs(Math.round(s.translate_ms_total / s.turns)) + ' · agent ' + secs(Math.round(s.think_ms_total / s.turns)) : 'appears after the first answer'}</div>
-      </div>
+      <${OutcomeMix} s=${s} />
+      <${Speed} s=${s} />
       <div class="card">
         <div class="label">Learned this run</div>
         <div class="big">+${fmtInt(s.facts)} <small>facts</small></div>
@@ -233,6 +286,71 @@ function Summary({ s }) {
       </div>
     </section>`;
 }
+
+// What the replies did for the user. "Understood" alone hid that almost no reply helped.
+function OutcomeMix({ s }) {
+  const o = s.outcomes || {};
+  const n = Object.values(o).reduce((a, b) => a + b, 0);
+  const good = (o.helpful || 0) + (o.clarify || 0);
+  return html`
+    <div class="card">
+      <div class="label">Outcome mix this run</div>
+      <div class="big">${n ? pct(good, n) + '%' : '—'} <small>helpful or a fitting question</small></div>
+      <div class="stack" role="img" aria-label=${LABELS.filter((l) => o[l]).map((l) => LABEL_TEXT[l] + ' ' + o[l]).join(', ') || 'no turns yet'}>
+        ${LABELS.filter((l) => o[l]).map((l) => html`<span key=${l} class=${'lab-' + l} style=${{ width: (o[l] / n) * 100 + '%' }} title=${LABEL_TEXT[l] + ': ' + o[l]}></span>`)}
+      </div>
+      <div class="legend">${LABELS.filter((l) => o[l]).map((l) => html`<span key=${l} class=${'lab-' + l}><i></i>${LABEL_TEXT[l]} ${o[l]}</span>`)}</div>
+      <div class="sub" style=${{ marginTop: '4px' }}>${fmtInt(s.understood)} of ${fmtInt(s.turns)} messages had at least one part understood. Content replies stay “not judged yet” until a judge labels them.</div>
+    </div>`;
+}
+
+// The agent's own work per turn (inside the vault lock); the budget is 100 ms at the 95th percentile.
+function Speed({ s }) {
+  const v = s.think_ms || [];
+  const p50 = quantile(v, 0.5), p95 = quantile(v, 0.95);
+  const recent = v.slice(-60);
+  const top = Math.max(100, ...recent);
+  return html`
+    <div class="card">
+      <div class="label">Agent's own work per turn</div>
+      <div class="big">${p95 != null ? p95.toFixed(0) + ' ms' : '—'} <small>95th pct</small></div>
+      <div class="sub">${p50 != null ? 'median ' + p50.toFixed(1) + ' ms · budget 100 ms' : 'appears after the first answer'}${s.turns && s.translate_ms_total != null ? ' · translation ' + secs(Math.round(s.translate_ms_total / s.turns)) + ' avg' : ''}</div>
+      <div class="spark" aria-hidden="true">${recent.map((x, i) => html`<span key=${i} class=${x > 100 ? 'slow' : ''} style=${{ height: Math.max(2, (x / top) * 100) + '%' }}></span>`)}</div>
+    </div>`;
+}
+
+// One turn's whole trace: parts, acts, moves, changes, timings. Exportable as a test case.
+function Drill({ trace, msg, onClose }) {
+  useEffect(() => { const k = (e) => e.key === 'Escape' && onClose(); window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
+  const t = trace;
+  const exportCase = () => {
+    const c = { message: t.message, speaker: t.speaker, acts: t.parts.flatMap((p) => p.acts), moves: t.moves, reply: t.reply, label: msg.label };
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(c, null, 2) + '\n'], { type: 'application/json' }));
+    a.download = `turn-${t.session}-${t.turn}.json`;
+    a.click();
+  };
+  return html`
+    <div class="drill" role="dialog" aria-modal="true" aria-label="Turn trace" onClick=${(e) => e.target === e.currentTarget && onClose()}>
+      <div class="drill-box">
+        <div class="teacher-head"><b>Turn ${t.turn} · <span class="mono">${t.session}</span></b>
+          <span class="teacher-head-right"><span class=${'chip lab-' + (msg.label || 'unjudged')}>${LABEL_TEXT[msg.label] || msg.label}</span>
+          <button class="link-btn" onClick=${exportCase}>Export as test case</button><button class="link-btn" onClick=${onClose}>Close</button></span></div>
+        <dl>
+          <dt>Message</dt><dd>${t.message}</dd>
+          <dt>Parser</dt><dd>${t.parser} · ${t.model_calls} model call(s) · translate ${t.translate_ms.toFixed(0)} ms</dd>
+          ${t.parts.map((p, i) => html`<dt key=${'p' + i}>Part ${i + 1} ${p.understood ? '' : '(not understood)'}</dt><dd key=${'d' + i}>${p.text}<div class="acts">${p.tier}: ${p.acts.join('\n') || '—'}</div></dd>`)}
+          <dt>Moves</dt><dd class="mono">${t.moves.join(', ') || '—'}${t.question ? ' + question ' + t.question : ''}</dd>
+          <dt>Reply</dt><dd>${t.reply}</dd>
+          <dt>Claims</dt><dd class="mono">${t.claims.join('\n') || '—'}</dd>
+          <dt>Vault changes</dt><dd class="mono">${t.changes.length ? t.changes.map((c) => c.action + ' ' + c.subject).join('\n') : 'none'}</dd>
+          <dt>Agent's work</dt><dd>${t.think_ms.toFixed(1)} ms · ${t.evaluations} evaluation(s), ${t.eval_ms.toFixed(1)} ms · learner ${t.learn_ms.toFixed(1)} ms</dd>
+          ${t.errors.length ? html`<dt>Errors</dt><dd class="error-line">${t.errors.join('; ')}</dd>` : null}
+        </dl>
+      </div>
+    </div>`;
+}
+const Traces = React.createContext({ traces: {}, open: () => {} });
 
 const tokensIn = (u) => (u.input_tokens || 0) + (u.cache_write_tokens || 0) + (u.cache_read_tokens || 0);
 const sumTokens = (m) => Object.values(m || {}).reduce((a, u) => ({ calls: a.calls + u.calls, tin: a.tin + tokensIn(u), tout: a.tout + u.output_tokens }), { calls: 0, tin: 0, tout: 0 });
@@ -291,15 +409,18 @@ const secs = (ms) => ms == null ? '—' : ms < 1000 ? ms + ' ms' : (ms / 1000).t
 const clock = (t) => new Date(t * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
 function Bubble({ m }) {
+  const { traces, open } = React.useContext(Traces);
   if (m.role === 'note') return html`<div class="row note"><div class="bubble">${m.text}</div></div>`;
+  const trace = m.trace ? traces[m.trace[0] + '#' + m.trace[1]] : null;
   return html`
     <div class=${'row ' + m.role}>
       <div class="bubble">
         <div class="bubble-head">
-          <span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}</span>
+          <span class="who">${m.role === 'teacher' ? 'Teacher' : 'Agent'}${m.label ? html` <button type="button" class=${'chip btn lab-' + m.label} disabled=${!trace} title=${trace ? 'Open the turn trace' : 'Trace not received yet'} onClick=${() => trace && open(trace, m)}>${LABEL_TEXT[m.label] || m.label}</button>` : null}</span>
           <span class="when">${m.ms != null ? html`<span class="took" title=${m.role === 'agent' ? 'Translating ' + secs(m.translate_ms) + ' · agent ' + secs(m.think_ms) : 'Time the teacher took to write'}>${m.role === 'agent' ? 'answered in ' : 'wrote in '}${secs(m.ms)}${m.role === 'agent' && m.translate_ms != null ? html` <span class="split">(translate ${secs(m.translate_ms)} · agent ${secs(m.think_ms)})</span>` : null}</span> · ` : null}${clock(m.at)}</span>
         </div>
         ${m.text}
+        ${m.role === 'agent' && (m.acts || []).length ? html`<div class="acts">${m.acts.join(' · ')}${(m.moves || []).length ? ' → ' + m.moves.join(', ') : ''}</div>` : null}
       </div>
     </div>`;
 }
@@ -362,8 +483,12 @@ function Finished({ list }) {
 
 function App() {
   const [state, offline] = useTrainerState();
-  return html`
+  const traces = useEvents();
+  const [drill, setDrill] = useState(null);
+  const ctx = { traces, open: (trace, msg) => setDrill({ trace, msg }) };
+  return html`<${Traces.Provider} value=${ctx}>
     <${Controls} state=${state} offline=${offline} />
+    ${drill ? html`<${Drill} trace=${drill.trace} msg=${drill.msg} onClose=${() => setDrill(null)} />` : null}
     ${state ? html`
       <${Summary} s=${state} />
       <${Usage} s=${state} />
@@ -376,7 +501,8 @@ function App() {
         <h2 style=${{ marginBottom: '8px' }}>Finished conversations</h2>
         <${Finished} list=${state.finished} />
       </section>
-      <p class="sub">Vault: <span class="mono">${state.vault_path.replace(/^\\\\\?\\/, '')}</span></p>` : null}`;
+      <p class="sub">Vault: <span class="mono">${state.vault_path.replace(/^\\\\\?\\/, '')}</span> · ${fmtInt(state.vault.quarantined)} quarantined rule(s) · ${fmtInt(state.last_event)} events</p>` : null}
+  <//>`;
 }
 
 ReactDOM.createRoot(document.getElementById('app')).render(html`<${App} />`);

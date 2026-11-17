@@ -2,14 +2,16 @@
 //!
 //! ```text
 //! statement   := atom [ ":-" literal ("," literal)* ] "."  annotations?
-//! literal     := "not" atom | term cmp term | atom
+//! literal     := "not" atom | term cmp term | term "=" expr | term "=" agg | atom
+//! expr        := term (("+" | "-" | "*" | "/") term)*   (usual precedence, brackets allowed)
+//! agg         := ("count" | "sum" Var | "min" Var | "max" Var) "{" literal ("," literal)* "}"
 //! atom        := ["-"] ident [ "(" term ("," term)* ")" ]
-//! term        := Var | ident | int | "quoted string"
+//! term        := Var | ident | number | "quoted string"     (number: 12, -3, 2.5)
 //! annotations := ( "@" key value )*      (values may be quoted)
 //! ```
 //! Variables start with an uppercase letter or `_`. `%` starts a comment.
 
-use crate::term::{Atom, CmpOp, Fact, GroundAtom, Literal, Rule, Term, Value};
+use crate::term::{AggOp, ArithOp, Atom, CmpOp, Expr, Fact, GroundAtom, Literal, Rule, Term, Value};
 use crate::time::Timestamp;
 use std::fmt;
 
@@ -32,10 +34,13 @@ fn err<T>(msg: impl Into<String>) -> Result<T, ParseError> {
 enum Tok {
     Ident(String),
     Var(String),
-    Int(i64),
+    Num(Value),
     Str(String),
     LParen,
     RParen,
+    LBrace,
+    RBrace,
+    Arith(ArithOp),
     Comma,
     ColonDash,
     Minus,
@@ -63,16 +68,23 @@ fn lex(src: &str) -> Result<Vec<Tok>, ParseError> {
             } else {
                 out.push(Tok::Ident(w));
             }
-        } else if c.is_ascii_digit() || (c == '-' && i + 1 < cs.len() && cs[i + 1].is_ascii_digit()) {
+        } else if c.is_ascii_digit() || (c == '-' && i + 1 < cs.len() && cs[i + 1].is_ascii_digit() && !matches!(out.last(), Some(Tok::Num(_)) | Some(Tok::Var(_)) | Some(Tok::RParen))) {
+            // A leading '-' is a sign only where an operand starts (`X - 1` is a subtraction).
             let start = i;
             i += 1;
             while i < cs.len() && cs[i].is_ascii_digit() {
                 i += 1;
             }
+            if i + 1 < cs.len() && cs[i] == '.' && cs[i + 1].is_ascii_digit() {
+                i += 1;
+                while i < cs.len() && cs[i].is_ascii_digit() {
+                    i += 1;
+                }
+            }
             let w: String = cs[start..i].iter().collect();
-            match w.parse::<i64>() {
-                Ok(n) => out.push(Tok::Int(n)),
-                Err(_) => return err(format!("bad number {w}")),
+            match Value::parse_number(&w) {
+                Some(n) => out.push(Tok::Num(n)),
+                None => return err(format!("bad number {w}")),
             }
         } else if c == '"' {
             i += 1;
@@ -105,6 +117,11 @@ fn lex(src: &str) -> Result<Vec<Tok>, ParseError> {
             let (tok, len) = match (c, next) {
                 ('(', _) => (Tok::LParen, 1),
                 (')', _) => (Tok::RParen, 1),
+                ('{', _) => (Tok::LBrace, 1),
+                ('}', _) => (Tok::RBrace, 1),
+                ('+', _) => (Tok::Arith(ArithOp::Add), 1),
+                ('*', _) => (Tok::Arith(ArithOp::Mul), 1),
+                ('/', _) => (Tok::Arith(ArithOp::Div), 1),
                 (',', _) => (Tok::Comma, 1),
                 (':', Some('-')) => (Tok::ColonDash, 2),
                 ('!', Some('=')) => (Tok::Op(CmpOp::Ne), 2),
@@ -147,7 +164,7 @@ impl P {
             Some(Tok::Var(v)) => Ok(Term::Var(v)),
             Some(Tok::Ident(s)) => Ok(Term::Val(Value::Sym(s))),
             Some(Tok::Str(s)) => Ok(Term::Val(Value::Sym(s))),
-            Some(Tok::Int(n)) => Ok(Term::Val(Value::Int(n))),
+            Some(Tok::Num(n)) => Ok(Term::Val(n)),
             other => err(format!("expected a term, found {other:?}")),
         }
     }
@@ -198,10 +215,95 @@ impl P {
                 Some(Tok::Op(op)) => op,
                 _ => unreachable!(),
             };
+            if op == CmpOp::Eq {
+                // `S = sum D { ... }` / `N = count { ... }`.
+                if let Some(Tok::Ident(w)) = self.peek() {
+                    if let Some(agg) = AggOp::parse(w) {
+                        if matches!(self.peek_at(1), Some(Tok::LBrace) | Some(Tok::Var(_))) {
+                            self.pos += 1;
+                            return self.aggregate(l, agg);
+                        }
+                    }
+                }
+                // `T = X + Y`: arithmetic when the right side has an operator.
+                let e = self.expr()?;
+                return Ok(match e {
+                    Expr::Term(r) => Literal::Cmp(CmpOp::Eq, l, r),
+                    e => Literal::Arith(l, e),
+                });
+            }
             let r = self.term()?;
             return Ok(Literal::Cmp(op, l, r));
         }
         Ok(Literal::Pos(self.atom()?))
+    }
+
+    fn aggregate(&mut self, result: Term, op: AggOp) -> Result<Literal, ParseError> {
+        let value = match self.peek() {
+            Some(Tok::Var(_)) => Some(self.term()?),
+            _ => None,
+        };
+        if op != AggOp::Count && value.is_none() {
+            return err(format!("{} needs a variable to aggregate, as in `S = {} X {{ ... }}`", op.as_str(), op.as_str()));
+        }
+        if self.next() != Some(Tok::LBrace) {
+            return err("expected '{' after the aggregate");
+        }
+        let mut body = Vec::new();
+        loop {
+            let l = self.literal()?;
+            if matches!(l, Literal::Agg { .. }) {
+                return err("aggregates cannot be nested");
+            }
+            body.push(l);
+            match self.next() {
+                Some(Tok::Comma) => continue,
+                Some(Tok::RBrace) => break,
+                other => return err(format!("expected ',' or '}}' in the aggregate, found {other:?}")),
+            }
+        }
+        Ok(Literal::Agg { result, op, value, body })
+    }
+
+    /// expr := sum; sum := product (("+"|"-") product)*; product := factor (("*"|"/") factor)*
+    fn expr(&mut self) -> Result<Expr, ParseError> {
+        let mut e = self.product()?;
+        loop {
+            let op = match self.peek() {
+                Some(Tok::Arith(ArithOp::Add)) => ArithOp::Add,
+                Some(Tok::Minus) => ArithOp::Sub,
+                _ => return Ok(e),
+            };
+            self.pos += 1;
+            let r = self.product()?;
+            e = Expr::Bin(op, Box::new(e), Box::new(r));
+        }
+    }
+
+    fn product(&mut self) -> Result<Expr, ParseError> {
+        let mut e = self.factor()?;
+        loop {
+            let op = match self.peek() {
+                Some(Tok::Arith(ArithOp::Mul)) => ArithOp::Mul,
+                Some(Tok::Arith(ArithOp::Div)) => ArithOp::Div,
+                _ => return Ok(e),
+            };
+            self.pos += 1;
+            let r = self.factor()?;
+            e = Expr::Bin(op, Box::new(e), Box::new(r));
+        }
+    }
+
+    fn factor(&mut self) -> Result<Expr, ParseError> {
+        if self.peek() == Some(&Tok::LParen) {
+            self.pos += 1;
+            let e = self.expr()?;
+            if self.next() != Some(Tok::RParen) {
+                return err("expected ')' in an expression");
+            }
+            return Ok(e);
+        }
+        Ok(Expr::Term(self.term()?))
     }
 
     fn rule(&mut self) -> Result<Rule, ParseError> {
@@ -225,11 +327,13 @@ impl P {
     }
 }
 
-/// Byte index of the `.` ending the statement (outside parens and quotes).
+/// Byte index of the `.` ending the statement (outside brackets and quotes,
+/// and not the point of a decimal number).
 pub fn statement_end(line: &str) -> Option<usize> {
     let mut depth = 0i32;
     let mut in_str = false;
     let mut escaped = false;
+    let bytes = line.as_bytes();
     for (i, c) in line.char_indices() {
         if in_str {
             if escaped {
@@ -243,10 +347,16 @@ pub fn statement_end(line: &str) -> Option<usize> {
         }
         match c {
             '"' => in_str = true,
-            '(' => depth += 1,
-            ')' => depth -= 1,
+            '(' | '{' => depth += 1,
+            ')' | '}' => depth -= 1,
             '%' => return None,
-            '.' if depth == 0 => return Some(i),
+            '.' if depth == 0 => {
+                let digit_before = i > 0 && bytes[i - 1].is_ascii_digit();
+                let digit_after = bytes.get(i + 1).map_or(false, |b| b.is_ascii_digit());
+                if !(digit_before && digit_after) {
+                    return Some(i);
+                }
+            }
             _ => {}
         }
     }
@@ -389,6 +499,8 @@ pub fn parse_fact_line(line: &str) -> Result<Fact, ParseError> {
                 fact.conf = c;
             }
             "source" => fact.source = v,
+            "id" => fact.id = Some(v),
+            "conv" => fact.conv = Some(v),
             "uses" => fact.uses = v.parse().map_err(|_| ParseError(format!("bad @uses {v}")))?,
             "last" => fact.last_used = Some(Timestamp::parse(&v).ok_or_else(|| ParseError(format!("bad @last time {v}")))?),
             other => return err(format!("unknown annotation @{other}")),

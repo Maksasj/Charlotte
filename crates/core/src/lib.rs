@@ -17,7 +17,16 @@ pub use vault::{RuleFile, RuleMeta, RuleStatus, Vault};
 pub const CORE_FILES: &[(&str, &str)] = &[
     ("ontology", include_str!("../assets/core/ontology.md")),
     ("rules", include_str!("../assets/core/rules.md")),
+    ("procedural", include_str!("../assets/core/procedural.md")),
 ];
+
+/// The built-in lexicon files (the predicate registry): (file stem, contents).
+pub const LEXICON_FILES: &[(&str, &str)] = &[("registry", include_str!("../assets/lexicon/registry.md"))];
+
+/// Parsed lexicon files, for seeding a new vault.
+pub fn default_lexicon() -> Vec<(String, RuleFile)> {
+    LEXICON_FILES.iter().map(|(s, src)| (s.to_string(), RuleFile::parse(src, s))).collect()
+}
 
 /// Parsed core files, for seeding a new vault.
 pub fn default_core() -> Vec<(String, RuleFile)> {

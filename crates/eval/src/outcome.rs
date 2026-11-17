@@ -276,6 +276,54 @@ impl Labeller {
         Labeller { judge, cache_path, cache, gold: HashMap::new(), judge_calls: 0 }
     }
 
+    /// Ask the judge about every turn that needs it, `parallel` calls at a
+    /// time, and keep the answers in the cache; `label` then reads them.
+    pub fn prefetch(&mut self, turns: &[TurnToLabel], parallel: usize) {
+        let Some(model) = self.judge.clone() else { return };
+        let mut todo: Vec<(String, &TurnToLabel)> = Vec::new();
+        for t in turns {
+            if self.gold.contains_key(&t.id) || template_label(&t.user, &t.reply).is_some() {
+                continue;
+            }
+            let k = cache_key(&model, t);
+            if !self.cache.contains_key(&k) && !todo.iter().any(|(x, _)| *x == k) {
+                todo.push((k, t));
+            }
+        }
+        let next = std::sync::atomic::AtomicUsize::new(0);
+        let found: std::sync::Mutex<Vec<(String, Label)>> = std::sync::Mutex::new(Vec::new());
+        std::thread::scope(|s| {
+            for _ in 0..parallel.max(1) {
+                s.spawn(|| loop {
+                    let i = next.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                    let Some((k, t)) = todo.get(i) else { break };
+                    if let Ok(out) = crate::claude_as("labeller", &judge_prompt(t), &model) {
+                        if let Some(l) = parse_judge(&out) {
+                            found.lock().unwrap_or_else(|e| e.into_inner()).push((k.clone(), l));
+                        }
+                    }
+                });
+            }
+        });
+        self.judge_calls += todo.len();
+        let found = found.into_inner().unwrap_or_default();
+        if let Some(p) = &self.cache_path {
+            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(p) {
+                let mut text = String::new();
+                for (k, l) in &found {
+                    if let Ok(line) = serde_json::to_string(&CacheLine { key: k.clone(), label: *l }) {
+                        text.push_str(&line);
+                        text.push('\n');
+                    }
+                }
+                let _ = f.write_all(text.as_bytes());
+            }
+        }
+        for (k, l) in found {
+            self.cache.insert(k, l);
+        }
+    }
+
     pub fn label(&mut self, t: &TurnToLabel) -> (Label, LabelSource) {
         if let Some(l) = self.gold.get(&t.id) {
             return (*l, LabelSource::Gold);
@@ -406,6 +454,25 @@ mod tests {
     }
 
     #[test]
+    fn prefetch_in_parallel() {
+        use std::sync::Arc;
+        // Worker threads do not see a thread mock: use the global one.
+        sla_parser::claude::set_global_mock(Arc::new(|_, prompt| Ok(if prompt.contains("Agent: Step one") { "LABEL: helpful".into() } else { "LABEL: wrong_content".into() })));
+        let turns: Vec<TurnToLabel> = (0..20)
+            .map(|i| TurnToLabel { id: format!("t{i}"), scenario: "s".into(), history: vec![], user: format!("How do I do thing {i}?"), reply: if i % 2 == 0 { format!("Step one {i}.") } else { format!("Cats are blue {i}.") } })
+            .collect();
+        let mut lab = Labeller::new(Some("haiku".into()), None);
+        lab.prefetch(&turns, 4);
+        assert_eq!(lab.judge_calls, 20);
+        for (i, t) in turns.iter().enumerate() {
+            let want = if i % 2 == 0 { Label::Helpful } else { Label::WrongContent };
+            assert_eq!(lab.label(t), (want, LabelSource::Cache));
+        }
+        assert_eq!(lab.judge_calls, 20, "labels came from the prefetch");
+        sla_parser::claude::clear_mocks();
+    }
+
+    #[test]
     fn judge_with_mock_and_cache() {
         use std::sync::Arc;
         let dir = std::env::temp_dir().join(format!("sla_label_{}", std::process::id()));
@@ -429,7 +496,7 @@ mod tests {
         // Without a judge, content replies stay unjudged.
         let mut none = Labeller::new(None, None);
         assert_eq!(none.label(&t), (Label::Unjudged, LabelSource::None));
-        sla_parser::claude::clear_mocks();
+        sla_parser::claude::clear_thread_mock();
         let _ = std::fs::remove_dir_all(&dir);
     }
 }
