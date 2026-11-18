@@ -906,9 +906,21 @@ fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
                 .any(|w| msg.iter().any(|m| m == w.trim_end_matches('s')))
         })
         .collect();
-    let task = match (named.as_slice(), owners.as_slice()) {
-        ([t], _) => (**t).clone(),
-        (_, [t]) => (*t).clone(),
+    // Otherwise the owner whose items the message mentions most, if clearly first.
+    let mention = |t: &String| -> usize {
+        ctx.task_hints.iter().find(|(k, _)| k == t).map_or(0, |(_, h)| h.iter().filter(|x| low.contains(&x.replace('_', " "))).count())
+    };
+    let mut ranked: Vec<(usize, &String)> = owners.iter().map(|t| (mention(t), *t)).collect();
+    ranked.sort_by(|a, b| b.0.cmp(&a.0));
+    let by_items = match ranked.as_slice() {
+        [(a, t), (b, _), ..] if *a >= 2 && a > b => Some((*t).clone()),
+        [(a, t)] if *a >= 1 => Some((*t).clone()),
+        _ => None,
+    };
+    let task = match (named.as_slice(), owners.as_slice(), by_items) {
+        ([t], _, _) => (**t).clone(),
+        (_, [t], _) => (*t).clone(),
+        (_, _, Some(t)) => t,
         _ => return,
     };
     if let Some(p) = parts.iter_mut().find(|p| p.acts.iter().any(|a| matches!(a, Intent::Inform(f) if f.iter().any(|x| x.pred == "-available")))) {
