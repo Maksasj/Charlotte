@@ -853,10 +853,12 @@ fn curriculum_running() -> bool {
     other_run_pids().is_some()
 }
 
-/// sla_eval processes not started by this server (Windows: tasklist).
+/// sla_eval processes not started by this server (Windows: tasklist, else pgrep).
 fn other_run_pids() -> Option<Vec<String>> {
     if !cfg!(windows) {
-        return None;
+        let out = std::process::Command::new("pgrep").args(["-x", "sla_eval"]).output().ok()?;
+        let pids: Vec<String> = String::from_utf8_lossy(&out.stdout).lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect();
+        return (!pids.is_empty()).then_some(pids);
     }
     let out = std::process::Command::new("tasklist").args(["/FI", "IMAGENAME eq sla_eval.exe", "/FO", "CSV", "/NH"]).output().ok()?;
     let text = String::from_utf8_lossy(&out.stdout);
@@ -870,7 +872,11 @@ fn stop_curriculum() {
         let _ = c.kill();
     }
     for pid in other_run_pids().unwrap_or_default() {
-        let _ = std::process::Command::new("taskkill").args(["/PID", &pid, "/F"]).output();
+        if cfg!(windows) {
+            let _ = std::process::Command::new("taskkill").args(["/PID", &pid, "/F"]).output();
+        } else {
+            let _ = std::process::Command::new("kill").arg(&pid).output();
+        }
     }
 }
 
