@@ -139,7 +139,7 @@ impl Agent {
                     },
                 },
                 // "Can I still make one?" with something missing: the whole adapted help.
-                Intent::AskNeed(t) if !lacks.is_empty() => direct = Some(self.task_help(b, t)),
+                Intent::AskNeed(t) if !lacks.is_empty() || self.last_message_asks_steps() => direct = Some(self.task_help(b, t)),
                 Intent::AskNeed(t) => direct = Some(self.task_needs(b, t)),
                 // "How long ... and what are the steps?": the duration alone
                 // is half an answer; give the whole help (it ends with the time).

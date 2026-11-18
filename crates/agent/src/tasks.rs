@@ -141,10 +141,12 @@ pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
     // The preposition the tool takes with this action: you remove a wheel from
     // the bike, put a dish on the rack, add detergent to the drawer.
     const SURFACES: &[&str] = &["drying_rack", "rack", "ironing_board", "board", "tray", "baking_tray", "shelf", "table", "plate", "hanger", "line", "washing_line", "wall", "counter", "blanket"];
+    const TOOLS: &[&str] = &["lever", "wrench", "driver", "screwdriver", "knife", "fork", "spoon", "scissors", "pliers", "opener", "tongs", "spatula", "hammer", "brush", "cloth", "sponge", "squeegee", "pump", "whisk", "peeler", "hand", "finger"];
     let prep = |u: &String| -> &'static str {
         let surface = SURFACES.contains(&u.as_str()) || u.ends_with("_rack") || u.ends_with("_board");
+        let tool = u.split('_').any(|w| TOOLS.contains(&w.trim_end_matches('s')) || TOOLS.contains(&w));
         match action {
-            "remove" | "take" | "lift" | "unscrew" | "detach" => "from",
+            "remove" | "take" | "lift" | "unscrew" | "detach" if !tool => "from",
             "put" | "place" | "hang" | "lay" | "set" | "leave" | "stand" | "spread" | "dry" if surface => "on",
             "add" | "attach" | "stick" | "fix" | "pin" | "tape" | "send" | "give" | "deliver" | "post" => "to",
             _ => "with",
@@ -439,6 +441,10 @@ impl Agent {
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
         }
         text.push_str(&self.constraint_notes(&m, &task));
+        // A friend's close, unless the reply ends by asking something.
+        if !text.trim_end().ends_with('?') {
+            text.push_str(" Let me know if any step is unclear.");
+        }
         self.last_step = steps.first().cloned();
         Reply { text, intent: "answer", claims }
     }
@@ -578,7 +584,7 @@ impl Agent {
     /// Did the user's last message also ask for the steps ("what are the steps", "how do I")?
     pub(crate) fn last_message_asks_steps(&self) -> bool {
         let last = self.heard_text.rsplit('\n').next().unwrap_or("");
-        ["step", "how do i", "how do you", "how to", "walk me through", "what do i do"].iter().any(|k| last.contains(k))
+        ["step", "how do i", "how do you", "how to", "walk me through", "what do i do", "what do i need to do", "in what order", "where do i start", "how should i", "how can i"].iter().any(|k| last.contains(k))
     }
 
     /// What the user's situation changes: too little time, or a needed item
@@ -692,6 +698,8 @@ impl Agent {
         }
         let claims = needs.iter().map(|x| g("needs_all", &[&task, x])).collect();
         let notes = self.constraint_notes(&m, &task);
+        // Not "a frying pan ... and a pan": a bare word covered by a longer item.
+        let needs: Vec<String> = needs.iter().filter(|x| !needs.iter().any(|y| y != *x && y.split('_').count() > 1 && y.split('_').any(|w| w == x.as_str()))).cloned().collect();
         let need_list = list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>());
         Reply { text: format!("To {} you need {need_list}.{notes}", self.task_phrase(b, &task)), intent: "answer", claims }
     }

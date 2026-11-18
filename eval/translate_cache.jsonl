@@ -8979,3 +8979,83 @@
 {"key":"bfd04860c9815fec:1,2","lines":[[1,["inform: wants(user100, pancake); feels(user100, hungry)"]],[2,["ask_need: make_pancake","ask_how: make_pancake"]]]}
 {"key":"a0ab99ec93981dd1:1:retry","lines":[[1,["inform: located_in(bulb, my_hallway); property(bulb, state, blown)"]]]}
 {"key":"70ca57d037618618:1:retry","lines":[[1,["inform: wants(user100, pancake); feels(user100, hungry)"]]]}
+{"key":"165abd6a2eacdb3a:1,2","lines":[[1,["inform: has(my_bike, flat_tire); needs(my_bike, work_tomorrow)"]],[2,["ask_how: change_bike_tire"]]]}
+{"key":"a575216b1cc3250f:1","lines":[[1,["inform: available(flour); available(egg); available(milk); available(butter); available(bowl); available(whisk); available(frying_pan); available(spatula)"]]]}
+{"key":"8f6818c33be5c457:1,2","lines":[[1,["inform: has(my_window, streak); has(my_window, dust)"]],[2,["ask_how: clean_window"]]]}
+{"key":"87a097ab4f24f89a:1","lines":[[1,["inform: has(my_bucket, bucket); available(bucket); available(warm_water); available(dish_soap); available(sponge); available(squeegee); available(dry_cloth)"]]]}
+{"key":"46433a71a4881717:1,2","lines":[[1,["inform: has(my_shirt, crease); time_available(1, day)"]],[2,["ask_how: iron_shirt"]]]}
+{"key":"1a16f8753d287138:1,2","lines":[[1,["inform: wants(user22, make_smoothie); wants(user22, breakfast)"]],[2,["ask_how: make_smoothie"]]]}
+{"key":"215c6544719bff51:1,2","lines":[[1,["inform: has(my_dishwasher, fault); available(dirty_plate)"]],[2,["ask_how: wash_dish"]]]}
+{"key":"ba8d81573cf838a0:1","lines":[[1,["request: make_tea","ask_how: make_tea"]]]}
+{"key":"2896089e657446b2:1","lines":[[1,["ask_how: make_omelette"]]]}
+{"key":"1c0c3a6437f090f8:1","lines":[[1,["request: plan_party"]]]}
+{"key":"4fb9aa9b947133f2:1","lines":[[1,["request: travel_pack"]]]}
+{"key":"64b1a1132811e925:1","lines":[[1,["inform: located_in(maksim, outdoors)"]],[2,["request: plan_picnic"]]]}
+{"key":"5ca2e4929ff9bcd8:1,2","lines":[[1,["tell: wants(kid, pancake)"]],[2,["ask_how: make_pancake"]]]}
+{"key":"215c6544719bff51:1,2:retry","lines":[[1,["inform: has(my_dishwasher, broken); available(dirty_plate)"]],[2,["ask_how: wash_plate"]]]}
+{"key":"49efdd463fe6c170:1,2","lines":[[1,["inform: located_in(my_ceiling_light, my_kitchen); property(my_ceiling_light, state, off)"]],[2,["ask_how: change_bulb"]]]}
+{"key":"54a013f067cfb0d8:1,2","lines":[[1,["tell: streaked(my_window); covered_in(my_window, dust)"]],[2,["ask_how: clean_window"]]]}
+{"key":"deb5a03f8ff2d882:1,2","lines":[[1,["lack: lemon"]],[2,["ask_next:"]]]}
+{"key":"3aaf1485977b0de8:1,2","lines":[[1,["inform: has(my_aunt, scarf)","tell: sent(my_aunt, scarf)"]],[2,["ask_how: write_birthday_card"]]]}
+{"key":"d66b7fdaba436de3:1,2","lines":[[1,["inform: wants(user47, make_tea)"]],[2,["ask_how: make_tea"]]]}
+{"key":"bfe8ad84a53889d6:1,2","lines":[[1,["ask_how: make_omelette"]],[2,["inform: feels(user48, excited)"]]]}
+{"key":"890d395bb5df009e:1,2","lines":[[1,["inform: has(my_bike, flat_tire); wants(user50, bike_ready_tomorrow)"]],[2,["ask_how: fix_tire"]]]}
+{"key":"4c99fca11ba229f1:1,2","lines":[[1,["inform: time_available(2, day); available(hand_luggage)"]],[2,["ask_how: pack_bag"]]]}
+{"key":"e7e4de3b531c52ff:1,2","lines":[[1,["inform: wants(user49, plan_party)"]],[2,["ask_how: plan_party"]]]}
+{"key":"64b1a1132811e925:1:retry","lines":[[1,["inform: feels(user43, nice)","inform: wants(user43, picnic)"]],[2,["request: plan_picnic"]]]}
+{"key":"9bf2b5f6e4d06c17:1,2","lines":[[1,["inform: has(my_laundry_basket, overflow)"]],[2,["request: do_laundry"]]]}
+{"key":"5cc1ffde51c62149:1,2","lines":[[1,["inform: wants(user40, hang_picture)","tell: -allow(my_landlord, nail)"]],[2,["ask_how: hang_picture"]]]}
+{"key":"4c99fca11ba229f1:1,2:retry","lines":[[1,["inform: time_available(2, day); available(hand_luggage)"]],[2,["ask_how: travel_pack"]]]}
+{"key":"fd8e35a225fb894c:1:retry","lines":[[1,["inform: has(my_window, streak); has(my_window, dust)"]]]}
+{"key":"915ce68cdc9c8c74:1:retry","lines":[[1,["inform: located_in(my_ceiling_light, my_kitchen); go_out(my_ceiling_light)"]]]}
+{"key":"3bd8e6b407357149:1","lines":[[1,["inform: available(sink); available(hot_water); available(dish_soap); available(sponge); available(drying_rack)"]]]}
+{"key":"dea9554234a0f3ad:1,2","lines":[[1,["inform: -has_experience(user58, plan_party)","tell: -has_experience(user58, plan_party)"]],[2,["ask_need: plan_party","ask_how: plan_party"]]]}
+{"key":"7897041f9f3c2196:1","lines":[[1,["inform: available(lettuce); available(tomato); available(cucumber); available(olive_oil); available(vinegar); available(knife); available(bowl)","lack: lemon"]]]}
+{"key":"67e15de2b4084fda:2:retry","lines":[[2,["tell: likes(user48, omelette); property(omelette, texture, gooey)"]]]}
+{"key":"c00203819c35d09c:1,2","lines":[[1,["inform: -available(maksim)"]],[2,["ask_how: pack_bag"]]]}
+{"key":"aef3d4a7473e1b9c:1,2","lines":[[1,["feeling: feels(user60, scared)"]],[2,["ask_how: water_plant"]]]}
+{"key":"3fdd9afef93aa007:1","lines":[[1,["inform: has(maksim, new_bulb); available(step_ladder)"]]]}
+{"key":"058f483bb9d53731:1:retry","lines":[[1,["inform: -has_experience(user58, plan_party)"]]]}
+{"key":"5407f2fa0dcd6d32:1:retry","lines":[[1,["inform: has(my_bike, flat_tire); wants(user50, my_bike)"]]]}
+{"key":"777cc898ec84285a:1","lines":[[1,["request: make_pancake"]]]}
+{"key":"62cf20dc93feaa12:1,2","lines":[[1,["inform: has(my_shirt, wrinkle); -available(iron)"]],[2,["request: iron_shirt"]]]}
+{"key":"7273dd250fcd73a8:1,2","lines":[[1,["inform: available(brown_rice)"]],[2,["ask_how: cook_rice"]]]}
+{"key":"dc6e5b149ad740f4:1,2","lines":[[1,["inform: has(my_dishwasher, broken); available(dirty_plate)"]],[2,["ask_how: wash_dish"]]]}
+{"key":"9f341e122808a415:1:retry","lines":[[1,["inform: wants(user40, hang_picture)","new_pred: allow(x, y) | x permits y to be done or used","tell: -allow(my_landlord, nail)"]]]}
+{"key":"5831ce794134ab28:1:retry","lines":[[1,["inform: -available(user59)"]]]}
+{"key":"ee1dd73befde650b:1","lines":[[1,["inform: has(maksim, egg); available(egg)"]],[2,["inform: wants(maksim, make_omelette)"]]]}
+{"key":"96a87a68c396a40b:1,2","lines":[[1,["inform: has(my_laundry_basket, overflow)"]],[2,["request: do_laundry"]]]}
+{"key":"3fdd9afef93aa007:1:retry","lines":[[1,["inform: has(user34, new_bulb); available(step_ladder)"]]]}
+{"key":"efe9cee3ed8a086c:1,2","lines":[[1,["inform: -available(egg)","tell: needs(make_pancake, egg)"]],[2,["request: make_pancake"]]]}
+{"key":"dba9b38d78b45b4f:1","lines":[[1,["inform: has(my_shirt, ...)"]]]}
+{"key":"d323da4ef46487d4:1,2","lines":[[1,["request: hang_picture"]],[2,["inform: -available(nail)"]]]}
+{"key":"ac6b9315db75b1d0:1:retry","lines":[[1,["inform: has(my_dishwasher, dirty_plate); available(dirty_plate)"]]]}
+{"key":"ee1dd73befde650b:1:retry","lines":[[1,["inform: has(user68, egg); available(egg); feels(user68, hungry); wants(user68, make_omelette)"]]]}
+{"key":"a5faa2b69fb6d78a:1","lines":[[1,["ask_how: do_laundry"]]]}
+{"key":"85cb3a3e474449c1:1,2","lines":[[1,["inform: has(my_kitchen, ceiling_light)"]],[2,["ask_how: replace_lightbulb"]]]}
+{"key":"dba9b38d78b45b4f:1:retry","lines":[[1,["inform: has(user63, shirt); available(iron); available(ironing_board); available(water); available(hanger)"]]]}
+{"key":"00b923c2bfc6fe28:1:retry","lines":[[1,["inform: has(user60, my_house_plant); feels(user60, scared)"]]]}
+{"key":"3701d367a3a10bf4:1,2","lines":[[1,["inform: -can_do(maksim, make_hole)"]],[2,["inform: available(picture); available(pencil); available(tape_measure); available(adhesive_strip)"]]]}
+{"key":"d43228a409f3c4d3:1,2","lines":[[1,["inform: has(my_bike, puncture)"]],[2,["request: fix_tire"]]]}
+{"key":"c22ab2060ffc4cdb:1","lines":[[1,["request: write_note"]]]}
+{"key":"25031a81a8b6f1f8:1","lines":[[1,["ask_how: replace_lightbulb"]]]}
+{"key":"6f63def5dfe30e27:1:retry","lines":[[1,["inform: has(my_bike, puncture)"]],[2,["request: fix_tire"]]]}
+{"key":"b491cbb5b5a66e64:1","lines":[[1,["inform: available(flour); available(milk); available(butter); available(banana); property(banana, state, ripe); available(bowl); available(whisk); available(frying_pan); available(spatula)","lack: egg"]]]}
+{"key":"f4e67f0829c5b1a1:1","lines":[[1,["ask_how: wash_dish"]]]}
+{"key":"f4bb37bbd7b8807d:1,2","lines":[[1,["feels(user78, scared); inform: has(user78, house_plant)"]],[2,["ask_how: water_plant"]]]}
+{"key":"8509aacef2a2b129:1,2","lines":[[1,["request: bake_potato","inform: time_available(25, minute)"]],[2,["ask: possible(bake_potato)"]]]}
+{"key":"acde42c3df6d84d0:1:retry","lines":[[1,["inform: rent(maksim); -make(maksim, hole)"]]]}
+{"key":"a91f283e5f9a5fab:1,2","lines":[[1,["ask_how: cook_rice"]],[2,["inform: property(rice, texture, fluffy)"]]]}
+{"key":"b491cbb5b5a66e64:1:retry","lines":[[1,["inform: available(flour); available(milk); available(butter); available(banana); property(banana, ripeness, ripe); available(bowl); available(whisk); available(pan); available(spatula)","lack: egg"]]]}
+{"key":"109065c0f0c5dda1:1:retry","lines":[[1,["inform: feels(user78, scared); has(user78, house_plant)"]],[2,["ask_how: water_plant"]]]}
+{"key":"956ff302b9865635:2:retry","lines":[[2,["ask: possible(bake_potato)"]]]}
+{"key":"753b0d7b13a99a0a:1,2","lines":[[1,["inform: available(flour); available(milk); available(butter); available(banana); available(bowl); available(whisk); available(frying_pan); available(spatula)"]],[2,["inform: -available(egg)"]]]}
+{"key":"6bd7b5d4707e1dc9:1","lines":[[1,["ask_how: clean_window"]]]}
+{"key":"8d0f65a959dab027:1,2","lines":[[1,["inform: wants(user89, soft_boiled_egg); feels(user89, runny_yolk)"]],[2,["ask_how: boil_egg"]]]}
+{"key":"a3cf9956476b07c7:1,2","lines":[[1,["inform: has(my_bike, flat_tire); available(inner_tube)"]],[2,["ask_how: change_bike_tire"]]]}
+{"key":"e02d84e0df28bd79:1,2","lines":[[1,["inform: property(user40, housing, renting)"]],[2,["new_pred: can_make(user40, hole) | the speaker is able to make holes in a wall","inform: -can_make(user40, hole)"]]]}
+{"key":"c49384227329ec93:1,2","lines":[[1,["inform: wants(user88, pancake)"]],[2,["ask_need: make_pancake","ask_how: make_pancake"]]]}
+{"key":"e0c507d6cf7822ac:1","lines":[[1,["ask_how: wash_dish"]]]}
+{"key":"6ddc2d1062162f30:1,2","lines":[[1,["request: clean_window","inform: -available(squeegee)"]],[2,["unknown:"]]]}
+{"key":"e93e90c271c364d0:1,2","lines":[[1,["ask_how: fix_tire"]],[2,["inform: available(patch_kit)","ask_how: use_patch_kit"]]]}
+{"key":"cf4d832251b79c36:1","lines":[[1,["inform: available(bucket); available(water); available(dish_soap); available(sponge); available(newspaper)","lack: squeegee"]]]}
