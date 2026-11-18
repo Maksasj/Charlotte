@@ -724,3 +724,306 @@
 {"key":"e9461fc4ac785338","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
 {"key":"a7185aade39b0d8f","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
 {"key":"1759b28cc0fc1eb2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"c44a2c12e62d140b","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"a6c827d186437a8a","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"63beacf1810dca7c","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"aaa818f8209ad20f","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"983c46855ceb4ede","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"50336bb661ab5c2d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"edb32c9e013d6ed1","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"b8539ca03603c7ff","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c78c2f1a4105db50","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"478758e38abb965f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"9a79b54476930761","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8cc38accb19d7641","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"fd4a5aa0f8faaa7d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"5d898675a8bb0f20","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"de65444f9d23ca1f","out":"1: yes\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8ebc11ef31670be9","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"b27a6bba71eb15c4","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"ed5a4c8af606f885","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"dde8e839ea0ed05c","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"85718dc9abcf99b5","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"c75430a63431c054","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"84535bad87d0eeda","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"80cadf762a8f7bbf","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"886a79c4c05a1d94","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"20711907ae432c1b","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2796371f6f8b2e41","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"995bec27dd00755b","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"d4516a2d79e7b09b","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"efd7de79fceaed62","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"554fdc1481b7a104","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"41d4915ea98073d7","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"9678beb8dfd9fdf6","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2b4468e41d79e0e1","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2cd720b27dcf6218","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"ccf8d474c6c5b761","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"5b24273522f005fc","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c36c3742f2c2afae","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"ac25d73a7211d005","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"bd5b6185e4c029f2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"5862cac216c75c6f","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"62df9468e5907830","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8c032a8b23a91e61","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"d8309a641d5d4e50","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"eae2531e7bad3adf","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"9aa2d532224c8792","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"ef7cc5d2286254e4","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"330f7de73d999135","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c0420c5637cab81c","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"82592d041b546427","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"afbf36c3943e9b14","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f4cd50d057e7615a","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"182c5bb5e0a1dc5a","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"6803a6c5adae8d8c","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"5b34773640a297d2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a896aa1be587284e","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f580373a9b1c304c","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"817d00ac6029179e","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"c397b6c232863881","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"df4ba6ce887e6127","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"c47056778bf4eb52","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"10716b4a6d094dd2","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"e7f23c50679b5df2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"9f10be63555e63c0","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"165dbd6ddaadc383","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"e69ec7774c6e7706","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c0022d071cb1cce2","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"90c435efd2dad668","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"9fe8a9a76f10b30f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"6a0c5b0bf6d7464d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"04fc2418e53b8e48","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"a065cd940ab1e776","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"64e92d7c3dc6b92a","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"08f350db530a3ec1","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"90d7d57bcdfd30d1","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"f098222f8dae35a6","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"4962342ff8308f27","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"258061f709c6251e","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"acbca2c13f0e2843","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"8c6146a24cccf4bb","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"c5ca0cf912093f66","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"27c2b204556859bd","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"4f3e52c1d66836b1","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"0deabfb754a9affb","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"b0889ccea164ae61","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"0ce1ab508c523cfe","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"96fd41361f115f61","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"e3aa0e89379847ac","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"5f26c7172258215f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"870afcf4ead80a9d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"b6e5a7a538b925ff","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"1593119fd23072ce","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"a88f5870c5ce1873","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c8f395325b8472cf","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"0179d156a874810d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"a0fedd9d2c73db96","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"70659a9a324d5c69","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"f7abf6be9843876d","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f577f07c3fd3c5ec","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f6acdfb2b70e0384","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"9f74084108816c06","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"e669b57565a64e18","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"ff62c8a7f655a3f4","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"90597573eb3b9751","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"ef12d0e8ad10a8a3","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"d218ff5f35af3b5d","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"b61e0e279aef2d63","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"0c28d5177c0a6e64","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f4d144df95c52b9d","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"65e03465baacd8f9","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"e7b9b009efe0151e","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"c10d29b13f464de3","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"8f6df794e3fcdb14","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"e49800e3e0149d7b","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"feeb5e5916e596e2","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"460ab74f241a7891","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"5288079823926ce5","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"999442336880e6dc","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"6caf755db152b106","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"4f72e71cda0d4796","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"e6c1c0d658f18047","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"837f73a73380ed48","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"e0cfbfb806e4dff2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"fbf78175b30d9491","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"7e957883f4feded0","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"24e3e25dfd7b75bc","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"1c75844b22794390","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"cc5dbf6485bd0b7f","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"4dbb059c090b3847","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"da137bed7fc3307f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"c499381f66b19133","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"26fa6996c960c0c4","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"4d1d70d8e96111cb","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"d0b82316233d492e","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f70d63a26a41264c","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"60c75ce197831bdc","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"a4a33948ddb72630","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"1c67757f1259820f","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"c3294963f0bcd9e7","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"3b8dc355a1ee666e","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"e4fb1741174f4753","out":"1: no\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"b3de8c95fe78d9e3","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"16f028b85b2c7d29","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3cc8ef9dd759e425","out":"1: yes\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"1c074642bb506ddc","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"c4d904c5b9b68afb","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"c110fc47589f61ed","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"9773b6dbb0e4a507","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"438448ae5f0a6a9c","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"164a29c92ae768b8","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2024ca7e0e98d4ff","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"524433086eb21ec7","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"21d84e213727931c","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"6c9899abc20d97f7","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"f16cd749c1a54621","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"275c8fade1e6cd85","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a7aa1069facc1a2b","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"dcde45c012f7ada1","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"1df739ad636c0fd3","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2148d4f3b8ab49ab","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"d40bbe85f156f895","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"20c0c8c1a231ee26","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"f4d5f92adb250866","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a5d724749b8409b8","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"6000cdc53a59c4ea","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"ea90f8230296d652","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3144dfefbc54738f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"f3cea51149640e99","out":"1: yes\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"9266f7b2d7db53d4","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3cf26716fab5fd0e","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"8349bbcbb786082a","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"1f698174496a2be2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"75da3a415650754b","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"d772a3ab057ee238","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3cabadb406140a69","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"0089ee128ae499d5","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"2bfe8c0d255a19d5","out":"Two notes before the grades. Check 1 says \"two tortillas,\" but the ground truth lists one tortilla, and the assistant correctly said one, so I graded it against the ground truth. The assistant's fry step also says \"1 minute,\" while the ground truth gives 2 to 3 minutes. That is a wrong fact, but none of the four checks covers step durations, so it does not change the grades.\n\n1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"62e33197507ebfcf","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"16ee1ff9263e8d7e","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"12f69f36115bd422","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"57d8ec03061a8b4a","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"1d6db6fc67a56988","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"1086803c25bb80a6","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"b45cb92406f250cd","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"b2144b377b12ac6c","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"4407da1c938ee61b","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"e2f6c847b19935ab","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"100e291da364a9ed","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"d6dcdd8f07e0e017","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"afbdb7cb1e90c894","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"a4385eca9bbaa200","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"01e232e58efa8391","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"8385970b37c0cfa2","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"e05250d977fc98c9","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"b21e12496bf06d74","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"3b5bc1e9a56c73c3","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"6769e2f68dae570a","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"f1ce2b1dcca224b8","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"dba86fab23cd193e","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"bf93aa27ff4b45e3","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"61ecd68f83630fbd","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c2d570f5fcfdea2d","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"df58aedd0f6cac0d","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"188e7c2c7e8284b2","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"9bcf5968b564794f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"7184559331bcd484","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"7532d0b3da215ca3","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"7610f201edc85cc2","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"03f684b4e9146ec1","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a3018b64eb74fcb5","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"5e7dd76ea434fd10","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"7583bdb099e5a217","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"5ac6747a3d824530","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8e1825eb73b31301","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"4c659ffd6dcbbef9","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"4e41994d15a16821","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"765020e9ef470fe1","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"2f51ffde5861e55f","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"d977a33ac0f0c075","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"b3637485f4a02741","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"97432a24c39e3c1e","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"481274e779a96cc8","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"21bcd18d0d6a089b","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"dd473d12287e628d","out":"1: no\n2: no\n3: no\n4: no\nVERDICT: fail"}
+{"key":"645a968aed31fe3b","out":"1: no\n2: no\n3: no\n4: no\nVERDICT: fail"}
+{"key":"290ad84fb2a23839","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"1ff5c071623d7e29","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"999efaf1fcab0bcc","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"9bd625c90fb24adf","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"7810984759194348","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"20318cc90eb9db47","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"e22cbc14af9beb9e","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"326a75dafa6304c8","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"70b0d2014e5dcbc7","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"7e6077dd37a15396","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"dadf50eab3586f2c","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"af3a92701a5d959d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"ce0bbe9eaddb5f46","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"7d715763ae74c0ba","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"4afef7ff707b216d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"aefa1a0ae02c7f8c","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"87ca561e5f58219d","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"611a5051dcfe19fa","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a45bf2cba6e5e5d3","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"85931d589b3c33b0","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"24f43d404b4a98a6","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"7e16d1461f70382b","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"25bc2fe94743746c","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"663d75765efdd9d0","out":"1: no\n2: yes\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"9acdf2775cfa1663","out":"1: no\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3e35618c0cbda503","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"7a2b2be51623c9ea","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"3133bfdd360845b4","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"0dbf8f0dcc845d00","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"284906d98efa27b2","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"399767ec5ec093ef","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"94b8c376ee81258d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"ab81fb0a796121a1","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"52386bfc90773c7d","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"801d8421e99bc075","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"a7d5d6330a5f6142","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"08d61b4cf59dd44b","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"f08c4ce9bd2d344a","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"80ae98ebd05be70c","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"2abec61fca489a97","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"b56228af9d30ecac","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"eb634adb179bb2b7","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"b9d3e22c618e3d79","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"3beafce5a49a805a","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"86a8419eef7d5eb6","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"e5ef97ff75bab36b","out":"1: no\n2: no\n3: no\n4: no\nVERDICT: fail"}
+{"key":"86c0995068a5842e","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"870b58c6d2813cb6","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"7fb0b0f7ba42fb89","out":"1: no\n2: no\n3: no\n4: no\n5: no\nVERDICT: fail"}
+{"key":"e46f0213f1b0f272","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"44d8fb24f418d14a","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"b452aa71cfb054c6","out":"SCORE: 3"}
+{"key":"dab38bff6433dabf","out":"SCORE: 7"}
+{"key":"91b765b144e1828e","out":"SCORE: 4"}
+{"key":"33044e8da74de056","out":"SCORE: 4"}
+{"key":"8b4cc54786bb07c8","out":"SCORE: 5"}
+{"key":"1f2a44d9698cce9d","out":"SCORE: 4"}
+{"key":"de7d3280a1f7f994","out":"SCORE: 3"}
+{"key":"7305c7dd16f0079b","out":"SCORE: 4"}
+{"key":"72e59358d604b9cc","out":"SCORE: 6"}
+{"key":"a10a17dabc3e1600","out":"SCORE: 5"}
+{"key":"d201ad53bc9f5d04","out":"SCORE: 2"}
+{"key":"dd204769616ea0ae","out":"SCORE: 3"}
+{"key":"15f8d21fbc7aed42","out":"SCORE: 3"}
+{"key":"2de92cb00d8f4aed","out":"SCORE: 3"}
+{"key":"bc082121a1d57abe","out":"SCORE: 5"}
+{"key":"56a296939b13f8fb","out":"SCORE: 1"}
+{"key":"10e588e51a61aa89","out":"SCORE: 3"}
+{"key":"33e01f73919198b3","out":"SCORE: 3"}
+{"key":"bc5ff2ae4e45c7f2","out":"SCORE: 6"}
+{"key":"7ecde1a41aa6ac43","out":"SCORE: 4"}
+{"key":"eca5dbcb6fc5b241","out":"SCORE: 4"}
+{"key":"d9e2d57bacaca9bb","out":"SCORE: 5"}
+{"key":"fdaec6eb2f94000a","out":"SCORE: 7"}
+{"key":"f60b1919fbebd5e3","out":"SCORE: 4"}
+{"key":"050cc07dfbfd7189","out":"SCORE: 6"}
+{"key":"cce9741a1e1c5211","out":"SCORE: 4"}
+{"key":"6cbb417dd04e85d0","out":"SCORE: 1"}
+{"key":"ac87cfcf36d421b6","out":"SCORE: 1"}

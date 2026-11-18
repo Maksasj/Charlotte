@@ -856,7 +856,7 @@ fn curriculum_running() -> bool {
 /// sla_eval processes not started by this server (Windows: tasklist, else pgrep).
 fn other_run_pids() -> Option<Vec<String>> {
     if !cfg!(windows) {
-        let out = std::process::Command::new("pgrep").args(["-x", "sla_eval"]).output().ok()?;
+        let out = std::process::Command::new("pgrep").args(["-x", "-r", "R,S,D", "sla_eval"]).output().ok()?;
         let pids: Vec<String> = String::from_utf8_lossy(&out.stdout).lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect();
         return (!pids.is_empty()).then_some(pids);
     }

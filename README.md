@@ -99,6 +99,7 @@ The training dashboard has two parts: the API server, and the page.
 
 ## Status
 
-Milestones 12 to 17 are built, and milestone 18 (curriculum training and
-hygiene) is in progress. Per-milestone acceptance numbers, unmet targets and
-the decisions behind them are in [`PROGRESS.md`](PROGRESS.md).
+Design 2.0 is finished (v2.0.0): milestones 12 to 18 are built and measured, and
+the trained vault is in `vault/` (committed copy in
+`data/training/curriculum/vaults/2026-11-18T05-11-26/`). Acceptance numbers,
+missed targets with their causes, and decisions are in [`PROGRESS.md`](PROGRESS.md).

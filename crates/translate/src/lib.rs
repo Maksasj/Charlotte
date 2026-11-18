@@ -302,6 +302,21 @@ fn sentence_rules(sentence: &str, acts: &mut [Intent], ctx: &TContext) {
         // "B can replace A" / "B can be used instead of A" is a substitute:
         // substitute(A, B), not the verb `replace(B, A)`.
         if low.contains(" can replace ") || low.contains("instead of") {
+            // Plural subject ("Lentils can replace minced beef"): the patterns
+            // make a rule `replace(A, minced_beef) :- is_a(A, lentil)`; it is the
+            // substitute fact `substitute(minced_beef, lentil)`.
+            if let Intent::Tell { facts, rules, .. } = a {
+                rules.retain(|r| {
+                    let head_ok = matches!(r.head.pred.as_str(), "replace" | "replaces") && r.head.args.len() == 2;
+                    if let (true, [sla_core::Literal::Pos(b)]) = (head_ok, r.body.as_slice()) {
+                        if b.pred == "is_a" && b.args.len() == 2 && b.args[0] == r.head.args[0] {
+                            facts.push(sla_core::Atom { pred: "substitute".into(), args: vec![r.head.args[1].clone(), b.args[1].clone()] });
+                            return false;
+                        }
+                    }
+                    true
+                });
+            }
             if let Intent::Tell { facts, .. } | Intent::Inform(facts) = a {
                 for f in facts.iter_mut() {
                     if matches!(f.pred.as_str(), "replace" | "replaces" | "use_instead_of" | "instead_of") && f.args.len() == 2 {
@@ -624,7 +639,8 @@ impl Translator {
         for (i, s) in sentences.iter().enumerate() {
             let short = s.split_whitespace().count() <= self.pattern_words || self.model.is_none();
             if short {
-                if let Some(acts) = self.pattern(s, ctx, &last_entity) {
+                if let Some(mut acts) = self.pattern(s, ctx, &last_entity) {
+                    sentence_rules(s, &mut acts, ctx);
                     if let Some(e) = subject_of(&acts, &ctx.speaker) {
                         last_entity = Some(e);
                     }
@@ -863,6 +879,14 @@ mod substitute_tests {
             Intent::Tell { facts, .. } => assert_eq!(facts[0].to_string(), "substitute(washer, ceramic_cartridge)"),
             other => panic!("{other:?}"),
         }
+    }
+
+    #[test]
+    fn plural_can_replace_is_a_substitute() {
+        let mut t = Translator::new(Registry::builtin());
+        let tr = t.translate("Lentils can replace minced beef.", &TContext::default());
+        let facts: Vec<String> = tr.parts.iter().flat_map(|p| p.acts.iter()).filter_map(|a| if let Intent::Tell { facts, .. } = a { Some(facts.iter().map(|f| f.to_string()).collect::<Vec<_>>()) } else { None }).flatten().collect();
+        assert!(facts.contains(&"substitute(minced_beef, lentil)".to_string()), "{:?}", tr.parts);
     }
 }
 

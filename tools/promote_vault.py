@@ -42,12 +42,15 @@ def main():
     if os.path.exists(backup):
         print(f"{backup} already exists; not overwriting")
         sys.exit(1)
-    with zipfile.ZipFile(backup, "w", zipfile.ZIP_DEFLATED) as z:
-        for base, _, files in os.walk(dst):
-            for f in files:
-                p = os.path.join(base, f)
-                z.write(p, os.path.relpath(p, ROOT))
-    shutil.rmtree(dst)
+    if os.path.isdir(dst):
+        with zipfile.ZipFile(backup, "w", zipfile.ZIP_DEFLATED) as z:
+            for base, _, files in os.walk(dst):
+                for f in files:
+                    p = os.path.join(base, f)
+                    z.write(p, os.path.relpath(p, ROOT))
+        shutil.rmtree(dst)
+    else:
+        print("no vault/ yet: nothing to back up")
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("translate_cache.jsonl"))
     print(f"done: vault/ is the trained vault; the old one is in {backup}")
 

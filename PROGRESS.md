@@ -7,10 +7,13 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
 
 ## Current milestone
 
-**Milestones 12 to 17 built.** Milestones 13 and 16 pass every acceptance
-check. Milestones 14, 15 and 17 each miss one or more targets, listed with
-their numbers below and under "2.0 problems". Next: milestone 18
-(curriculum training and hygiene).
+**Design 2.0 is finished (v2.0.0, 2026-11-18).** All milestones 12 to 18
+are built and measured; the final vault is the one trained in the 2026-11-18
+run below, promoted to `vault/` (a copy is committed in
+`data/training/curriculum/vaults/2026-11-18T05-11-26/`). Targets still missed
+are listed with their numbers and causes under "2.0 problems"; the ones that
+are out of scope (translation speed, act accuracy) were decided by the user.
+The next design is 3.0; see "Notes for Design 3.0".
 
 ## How to run
 
@@ -39,13 +42,13 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | # | Milestone | Status | Acceptance test |
 |---|-----------|--------|-----------------|
 | 1-10 | v1 | passing | see the v1 table below |
-| 12 | Honest measurement and safe ground | built; model-run parts pending | `crates/agent/tests/safe_ground.rs`, `crates/eval/tests/measurement.rs`, `sla_eval bench`, `sla_eval stress` |
+| 12 | Honest measurement and safe ground | done | `crates/agent/tests/safe_ground.rs`, `crates/eval/tests/measurement.rs`, `sla_eval bench`, `sla_eval stress` |
 | 13 | Knowledge model | done | `crates/reasoner/tests/knowledge_model.rs` (44 cases), `crates/core/tests/procedures.rs`, `crates/lexicon/tests/v1_facts.rs`, `crates/agent/tests/knowledge_model.rs` |
 | 14 | Understanding | built; act accuracy and speed below target | `crates/translate` (unit tests), `sla_eval gold` |
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | in progress: runner, scenarios, seeds, hygiene, live view, teacher fix pass built; second encounter 65-70% by Haiku, 95% by the ground-truth check (target 70%); pairwise over milestone 12 100% (met); judge score 4.05 (target 6.0); transfer 0% (target 40%); training run waits for the user | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | done: second encounter after training 14 of 20 (70%, target met) by the Haiku judge; pairwise over milestone 12 100% (met); not understood, helpful + clarify, contradicting facts, meta requests, duplicates met; judge score 3.80 (3.29 to 4.31; run 7: 4.05) and transfer 0 of 15 below target (causes under 2.0 problems) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -134,6 +137,35 @@ shared vault). Nothing of 2.0's dialogue is built yet; this row is the
 starting point the next milestones are compared with. 80 "requests" are
 counted by surface cues over all 296 user messages (61 in the trainer set;
 the report's own regex found 57).
+
+## Final training run (2026-11-18)
+
+Rerun with the fixes from the first run (substitutes stored as `substitute`, the
+variant teacher teaches substitutes only), on the new PC: 16 parallel Haiku
+teachers, 55 training scenarios, then the 20 held-out scenarios on the trained
+vault (`eval/curriculum/2026-11-18T05-11-26.md`, `...-training.md`; 2,064 calls,
+none failed).
+
+| Held-out measure | Before training (run 7) | First training (11-17) | Final training (11-18) | Target |
+|---|---|---|---|---|
+| Second encounter (Haiku judge) | 13 of 20 (65%) | 13 of 20 (65%) | **14 of 20 (70%)** | 70% |
+| Second encounter (ground-truth check) | 19 of 20 | | 20 of 20 | |
+| Transfer | 0 of 15 | 0 of 15 | 0 of 15 | 40% |
+| Retention | 11 of 20 | 10 of 20 | 11 of 20 | |
+| Not understood | 0.9% | 1.3% | 2.1% | 10% or less |
+| Helpful + clarify | 67.0% | 67.2% | 67.4% | 60% |
+| Contradicting facts | 0.6% | 0.6% | 0.7% | 1% or less |
+| Judge score, 1-10 (`sla_eval rate`) | 4.05 | | 3.80 (3.29 to 4.31) | 6.0 |
+
+Training stage: second encounter 19 of 55, retention 13 of 55, 20 variant teach
+lines, transfer after them 0 of 18. The teach log showed why: "Lentils can replace
+minced beef." has a plural subject, so the fixed patterns made it a rule
+(`replace(A, minced_beef) :- is_a(A, lentil)`) instead of `substitute(minced_beef,
+lentil)`, and the help reply offered a substitute only when the user said they
+lacked an item, not when they listed the replacement. Both are fixed after the
+run (`plural_can_replace_is_a_substitute`, `reply_offers_a_substitute_the_user_has`);
+held-out transfer is measured without teaching, so these fixes matter for later
+training, not for this measurement.
 
 ## Training run (2026-11-17)
 

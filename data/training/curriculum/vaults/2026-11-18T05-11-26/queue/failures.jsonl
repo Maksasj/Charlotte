@@ -1,0 +1,124 @@
+{"key":"make_chili_con_carne","kind":"unknown_task","message":"How do I make a pot of chili con carne?","source":"user"}
+{"key":"make_bruschetta","kind":"unknown_task","message":"How do I make tomato bruschetta as a starter?","source":"user"}
+{"key":"clean_oven","kind":"unknown_task","message":"My oven is caked in grease. How do I clean it without harsh chemicals?","source":"user"}
+{"key":"clean_fridge","kind":"unknown_task","message":"Something smells in my fridge. How do I give it a proper clean?","source":"user"}
+{"key":"make_crumble","kind":"unknown_task","message":"I'd like to make an apple crumble for pudding. How?","source":"user"}
+{"key":"build_bookshelf","kind":"unknown_task","message":"I just bought a flat-pack bookshelf. What's the best order to put it together?","source":"user"}
+{"key":"declutter_wardrobe","kind":"unknown_task","message":"My wardrobe is overflowing. How do I declutter it?","source":"user"}
+{"key":"My bookshelves are covered in dust. What's the best way to clean them?","kind":"not_understood","message":"My bookshelves are covered in dust. What's the best way to clean them?","source":"user"}
+{"key":"make_banana_bread","kind":"unknown_task","message":"I've got three brown bananas going soft. How do I make banana bread?","source":"user"}
+{"key":"freshen_carpet","kind":"unknown_task","message":"My living room carpet smells musty. How do I freshen it up?","source":"user"}
+{"key":"get_yen","kind":"unknown_task","message":"I'm going to Japan next month. How do I get some yen before I leave?","source":"user"}
+{"key":"bleed_radiator","kind":"unknown_task","message":"My radiator is cold at the top and warm at the bottom. How do I bleed it?","source":"user"}
+{"key":"fix_tap","kind":"unknown_task","message":"My kitchen tap won't stop dripping. Can I fix it myself?","source":"user"}
+{"key":"To dust the shelves you need a microfibre cloth, water and a step stool.","kind":"not_understood","message":"To dust the shelves you need a microfibre cloth, water and a step stool.","source":"teacher:curriculum"}
+{"key":"Dusting the shelves takes 15 to 25 minutes.","kind":"not_understood","message":"Dusting the shelves takes 15 to 25 minutes.","source":"teacher:curriculum"}
+{"key":"host_game_night","kind":"unknown_task","message":"To host a game night you need board games, snacks, drinks and a table.","source":"teacher:curriculum"}
+{"key":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","kind":"not_understood","message":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","kind":"not_understood","message":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","kind":"not_understood","message":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","kind":"not_understood","message":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","kind":"not_understood","message":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 1 of decluttering a closet: take everything out of the closet for 10 to 15 minutes.","kind":"not_understood","message":"Step 1 of decluttering a closet: take everything out of the closet for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"stop_squeak","kind":"unknown_task","message":"My bedroom door squeaks every time I open it. How do I stop it?","source":"user"}
+{"key":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","kind":"not_understood","message":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"My bookshelves are covered in dust. What's the best way to clean them?","kind":"not_understood","message":"My bookshelves are covered in dust. What's the best way to clean them?","source":"user"}
+{"key":"make_pesto","kind":"unknown_task","message":"I have a big bunch of basil. How do I turn it into pesto?","source":"user"}
+{"key":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","kind":"not_understood","message":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","kind":"not_understood","message":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"Step 5 of bleeding a radiator: check the boiler pressure and switch the heating back on for 1 to 2 minutes.","kind":"not_understood","message":"Step 5 of bleeding a radiator: check the boiler pressure and switch the heating back on for 1 to 2 minutes.","source":"teacher:curriculum"}
+{"key":"mow_lawn","kind":"unknown_task","message":"The grass is getting long. How do I mow the lawn properly?","source":"user"}
+{"key":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","kind":"not_understood","message":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"make_hummus","kind":"unknown_task","message":"I'd like to make my own hummus instead of buying it. How?","source":"user"}
+{"key":"make_couscous","kind":"unknown_task","message":"How do I make couscous? The packet instructions are worn off.","source":"user"}
+{"key":"make_hot_chocolate","kind":"unknown_task","message":"It's freezing out and I want a proper mug of hot chocolate. How do I make it from cocoa powder?","source":"user"}
+{"key":"make_mulled_wine","kind":"unknown_task","message":"We're having friends round on a cold evening. How do I make mulled wine?","source":"user"}
+{"key":"make_yogurt_parfait","kind":"unknown_task","message":"I want a nice breakfast in a glass. How do I put together a yogurt parfait?","source":"user"}
+{"key":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","kind":"not_understood","message":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"make_quesadilla","kind":"unknown_task","message":"I want a quick cheesy lunch. How do I make a quesadilla?","source":"user"}
+{"key":"make_pizza","kind":"unknown_task","message":"I want pizza but I don't have time to make dough. Can I use a flatbread?","source":"user"}
+{"key":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","kind":"not_understood","message":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","kind":"not_understood","message":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"repot_houseplant","kind":"unknown_task","message":"My houseplant has roots coming out of the bottom. How do I repot it?","source":"user"}
+{"key":"Step 5 of fixing a dripping tap: put the valve and the handle back on the tap and tighten them with the spanner and the screwdriver for 3 to 5 minutes.","kind":"not_understood","message":"Step 5 of fixing a dripping tap: put the valve and the handle back on the tap and tighten them with the spanner and the screwdriver for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","kind":"not_understood","message":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"change_battery","kind":"unknown_task","message":"My smoke alarm keeps chirping. How do I change its battery?","source":"user"}
+{"key":"I have the plant, a bigger pot, potting soil, a trowel, water and some newspaper.","kind":"not_understood","message":"I have the plant, a bigger pot, potting soil, a trowel, water and some newspaper.","source":"user"}
+{"key":"clear_leaf","kind":"unknown_task","message":"The garden is covered in autumn leaves. How do I clear them efficiently?","source":"user"}
+{"key":"paint_chair","kind":"unknown_task","message":"I found an old wooden chair at a flea market. How do I paint it?","source":"user"}
+{"key":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","kind":"not_understood","message":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","source":"teacher:curriculum"}
+{"key":"organise_meeting","kind":"unknown_task","message":"It's my turn to host book club. How do I organise the meeting?","source":"user"}
+{"key":"make_guacamole","kind":"unknown_task","message":"Friends are coming over and I want to make guacamole. How do I do it?","source":"user"}
+{"key":"polish_shoe","kind":"unknown_task","message":"I have an interview tomorrow and my leather shoes look scuffed. How do I polish them?","source":"user"}
+{"key":"renew_passport","kind":"unknown_task","message":"My passport runs out next year and I've got a holiday booked. How do I renew it?","source":"user"}
+{"key":"throw_shower","kind":"unknown_task","message":"My best friend is pregnant and I want to throw her a baby shower. Where do I begin?","source":"user"}
+{"key":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"redo_sealant","kind":"unknown_task","message":"The sealant around my bath is mouldy and peeling. How do I redo it?","source":"user"}
+{"key":"cook_salmon","kind":"unknown_task","message":"How do I cook a salmon fillet in a pan so the skin goes crispy?","source":"user"}
+{"key":"make_stir_fry","kind":"unknown_task","message":"How do I make a quick vegetable stir fry?","source":"user"}
+{"key":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","kind":"not_understood","message":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"sharpen_knife","kind":"unknown_task","message":"My chef's knife won't even cut a tomato. How do I sharpen it?","source":"user"}
+{"key":"organise_meeting","kind":"unknown_task","message":"It's my turn to host book club. How do I organise the meeting?","source":"user"}
+{"key":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","kind":"not_understood","message":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"make_stir_fry","kind":"unknown_task","message":"How do I make a quick vegetable stir fry?","source":"user"}
+{"key":"Step 5 of making beef tacos: fill the taco shells with the beef, the lettuce and the cheese, for 2 to 3 minutes.","kind":"not_understood","message":"Step 5 of making beef tacos: fill the taco shells with the beef, the lettuce and the cheese, for 2 to 3 minutes.","source":"teacher:curriculum"}
+{"key":"fix_hole","kind":"unknown_task","message":"There's a hole in the wall where a picture hook was ripped out. How do I fix it?","source":"user"}
+{"key":"steam_broccoli","kind":"unknown_duration","message":"How long do I steam broccoli so it's not mushy?","source":"user"}
+{"key":"sort_recycling","kind":"unknown_task","message":"Our recycling is a mess. How should I sort it properly?","source":"user"}
+{"key":"B can replace A.","kind":"not_understood","message":"B can replace A.","source":"teacher:curriculum"}
+{"key":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of preparing a car for a road trip: pack the emergency kit with a torch, a first aid kit and a warning triangle, for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"squeeze_orange","kind":"unknown_task","message":"I want fresh orange juice with breakfast. How do I squeeze it myself?","source":"user"}
+{"key":"plan_party","kind":"unknown_task","message":"Can you help me plan a bring-a-dish party with my neighbours?","source":"user"}
+{"key":"My door squeaks but I don't have any spray oil. Is there something from the bathroom cabinet I can use?","kind":"not_understood","message":"My door squeaks but I don't have any spray oil. Is there something from the bathroom cabinet I can use?","source":"user"}
+{"key":"organise_meeting_online","kind":"unknown_task","message":"Half of our book club has moved away. How do I organise the meeting online?","source":"user"}
+{"key":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","kind":"not_understood","message":"Step 4 of decluttering a closet: wipe the empty shelves with the damp cloth for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"Step 5 of bleeding a radiator: check the boiler pressure and switch the heating back on for 1 to 2 minutes.","kind":"not_understood","message":"Step 5 of bleeding a radiator: check the boiler pressure and switch the heating back on for 1 to 2 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","kind":"not_understood","message":"Step 3 of assembling a flat-pack bookshelf: slide in the shelves and lock them with the allen key for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"make_stir_fry","kind":"unknown_task","message":"I don't have a wok, just normal frying pans. Can I still do a stir fry?","source":"user"}
+{"key":"reseal_edge","kind":"unknown_task","message":"Water is getting behind my bath. How do I reseal the edge?","source":"user"}
+{"key":"run_first_meeting","kind":"unknown_task","message":"I'm starting a book club with friends. How do I run the first meeting?","source":"user"}
+{"key":"The potluck is next Saturday.","kind":"not_understood","message":"The potluck is next Saturday.","source":"user"}
+{"key":"I have a dull kitchen knife, a ceramic mug with an unglazed bottom ring and a towel.","kind":"not_understood","message":"I have a dull kitchen knife, a ceramic mug with an unglazed bottom ring and a towel.","source":"user"}
+{"key":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","kind":"not_understood","message":"Step 6 of fixing a dripping tap: open the water supply and check that the tap no longer drips for 1 to 2 minutes.","source":"teacher:curriculum"}
+{"key":"Step 5 of making beef tacos: fill the taco shells with the beef, the lettuce and the cheese, for 2 to 3 minutes.","kind":"not_understood","message":"Step 5 of making beef tacos: fill the taco shells with the beef, the lettuce and the cheese, for 2 to 3 minutes.","source":"teacher:curriculum"}
+{"key":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","kind":"not_understood","message":"Step 2 of cleaning the microwave: heat the bowl in the microwave on high until the window steams up, for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","kind":"not_understood","message":"Step 1 of planning a baby shower: ask the parents-to-be about a date and who they want there for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","kind":"not_understood","message":"While step 1 runs, step 2 of baking banana bread: mash the bananas in the bowl with the fork for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","kind":"not_understood","message":"Step 3 of cleaning the fridge: remove the shelves and drawers for 3 to 5 minutes.","source":"teacher:curriculum"}
+{"key":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","kind":"not_understood","message":"Step 4 of cleaning the fridge: wash the shelves and drawers with the sponge in warm water and dish soap for 10 to 15 minutes.","source":"teacher:curriculum"}
+{"key":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","kind":"not_understood","message":"Step 6 of cleaning the fridge: dry the shelves with the towel, put them back and return the food, for 5 to 10 minutes.","source":"teacher:curriculum"}
+{"key":"How do I make sure a potluck doesn't end up with five desserts and no mains?","kind":"not_understood","message":"How do I make sure a potluck doesn't end up with five desserts and no mains?","source":"user"}
+{"key":"reconnect_colleague","kind":"unknown_task","message":"I'd like to reconnect with a former colleague over coffee. How do I go about it?","source":"user"}
+{"key":"make_pancake","kind":"unknown_task","message":"The kids want pancakes this morning. How do I make them from scratch?","source":"user"}
+{"key":"cook_rice","kind":"unknown_task","message":"I need to cook some white rice to go with dinner. How do I do it on the stove?","source":"user"}
+{"key":"plan_picnic","kind":"unknown_task","message":"I'd like to take a few friends on a picnic this Saturday. How should I plan it?","source":"user"}
+{"key":"make_one_properly","kind":"unknown_task","message":"I could really use a cup of tea right now. How do I make one properly?","source":"user"}
+{"key":"hang_print","kind":"unknown_task","message":"I bought a framed print and want to put it up in the hallway. How do I hang it?","source":"user"}
+{"key":"make_one","kind":"unknown_task","message":"I want a fruit smoothie for breakfast. How do I make one?","source":"user"}
+{"key":"make_omelette","kind":"unknown_task","message":"I want to make an omelette for lunch. Can you tell me how?","source":"user"}
+{"key":"make_salad","kind":"unknown_task","message":"I want a fresh green salad as a side tonight. How should I put it together?","source":"user"}
+{"key":"make_baked_potato","kind":"unknown_task","message":"I'd like a baked potato with crispy skin for dinner. How do I make one in the oven?","source":"user"}
+{"key":"iron_shirt","kind":"unknown_task","message":"I have a job interview tomorrow and my shirt is all creased. How do I iron it?","source":"user"}
+{"key":"clean_window","kind":"unknown_task","message":"My windows are covered in streaks and dust. How do I get them properly clean?","source":"user"}
+{"key":"plan_party","kind":"unknown_task","message":"My daughter turns eight next month and I want to throw her a party at home. How do I plan it?","source":"user"}
+{"key":"do_laundry","kind":"unknown_task","message":"I just moved out and have never done my own laundry. How does it work?","source":"user"}
+{"key":"pack","kind":"unknown_task","message":"I'm flying abroad for a week on Friday and I always forget something. How should I pack?","source":"user"}
+{"key":"Step 2 of making a smoothie: break the banana into pieces into the blender.","kind":"not_understood","message":"Step 2 of making a smoothie: break the banana into pieces into the blender.","source":"teacher:curriculum"}
+{"key":"I can spend a few hours in total on getting it ready.","kind":"not_understood","message":"I can spend a few hours in total on getting it ready.","source":"user"}
+{"key":"make_one_properly","kind":"unknown_task","message":"I could really use a cup of tea right now. How do I make one properly?","source":"user"}
+{"key":"make_one","kind":"unknown_task","message":"I want a fruit smoothie for breakfast. How do I make one?","source":"user"}
+{"key":"wash_plate","kind":"unknown_task","message":"My dishwasher broke and there's a pile of dirty plates. How do I wash them by hand?","source":"user"}
+{"key":"change_bulb_safely","kind":"unknown_task","message":"The ceiling light in my kitchen just went out. How do I change the bulb safely?","source":"user"}
+{"key":"Step 2 of making a smoothie: break the banana into pieces into the blender.","kind":"not_understood","message":"Step 2 of making a smoothie: break the banana into pieces into the blender.","source":"teacher:curriculum"}
+{"key":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","kind":"not_understood","message":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","source":"teacher:curriculum"}
+{"key":"I feel like pancakes for breakfast. What do I need and how do I cook them?","kind":"not_understood","message":"I feel like pancakes for breakfast. What do I need and how do I cook them?","source":"user"}
+{"key":"wash_clothes","kind":"unknown_task","message":"How do I wash my clothes in the washing machine without ruining them?","source":"user"}
+{"key":"I've never planned a birthday party before. What do I need to do and in what order?","kind":"not_understood","message":"I've never planned a birthday party before. What do I need to do and in what order?","source":"user"}
+{"key":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","kind":"not_understood","message":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","source":"teacher:curriculum"}
+{"key":"change_bulb_safely","kind":"unknown_task","message":"The ceiling light in my kitchen just went out. How do I change the bulb safely?","source":"user"}
+{"key":"I have a new bulb of the same type and a step ladder.","kind":"not_understood","message":"I have a new bulb of the same type and a step ladder.","source":"user"}
+{"key":"pack_bag","kind":"unknown_task","message":"I'm terrible at packing. What's a good way to get my bag ready for a trip?","source":"user"}
+{"key":"I have a suitcase, my clothes, a toiletry bag and my passport.","kind":"not_understood","message":"I have a suitcase, my clothes, a toiletry bag and my passport.","source":"user"}

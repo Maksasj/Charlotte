@@ -380,3 +380,28 @@ fn known_substitute_is_offered() {
     assert!(!r.contains("I don't know what can replace"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Transfer: a taught substitute is offered when the user has it instead.
+#[test]
+fn reply_offers_a_substitute_the_user_has() {
+    let dir = temp("substitute_have");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    let mut teach: Vec<(&str, &[&str])> = TEACH.to_vec();
+    teach.push(("Shallots can replace garlic.", &["tell: substitute(garlic, shallot)"]));
+    t.set_parser(Box::new(oracle(&teach)));
+    for (m, _) in &teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[(
+        "How do I make garlic tomato pasta? I have pasta, a shallot, olive oil and cherry tomatoes.",
+        &["ask_how: garlic_tomato_pasta", "inform: available(pasta); available(shallot); available(olive_oil); available(cherry_tomato)"],
+    )];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("You can use a shallot instead of the garlic"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

@@ -425,6 +425,18 @@ impl Agent {
             .filter_map(|a| a.args.first()?.as_sym().map(String::from))
             .filter(|x| used.contains(x))
             .collect();
+        // Also: a needed item the user did not list, while they listed a known
+        // substitute for it ("I have lentils" for chili with minced beef).
+        let have: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "available").filter_map(|a| a.args.first()?.as_sym().map(String::from)).collect();
+        let mut lacking_all = lacking_all;
+        if !have.is_empty() {
+            for a in m.facts_of("substitute") {
+                let (Some(x), Some(sub)) = (a.args.first().and_then(|v| v.as_sym()), a.args.get(1).and_then(|v| v.as_sym())) else { continue };
+                if used.iter().any(|u| u == x) && !have.iter().any(|h| h == x) && have.iter().any(|h| h == sub) && !lacking_all.iter().any(|l| l == x) {
+                    lacking_all.push(x.to_string());
+                }
+            }
+        }
         for x in &lacking_all {
             let subs: Vec<String> = m
                 .facts_of("substitute")
@@ -432,7 +444,9 @@ impl Agent {
                 .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str()))
                 .filter_map(|a| a.args.get(1)?.as_sym().map(String::from))
                 .collect();
-            if let Some(sub) = subs.first() {
+            // Prefer the substitute the user has.
+            let sub = subs.iter().find(|s| have.contains(s)).or(subs.first());
+            if let Some(sub) = sub {
                 out.push_str(&format!(" You can use {} instead of the {}.", with_article(sub), words(x)));
             }
         }
