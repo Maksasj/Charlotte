@@ -2,8 +2,8 @@
 
 40 conversations (second encounter and retention) of the latest full curriculum run, rated 1 to 10.
 
-- all: mean **3.80** (95% interval 3.29 to 4.31); target 6.0 or more, interval above v1's best 4.3
-- second encounter only: mean 4.35 (3.81 to 4.89)
+- all: mean **3.58** (95% interval 3.12 to 4.03); target 6.0 or more, interval above v1's best 4.3
+- second encounter only: mean 4.40 (3.90 to 4.90)
 
 | Scenario | Encounter | Score |
 |---|---|---|
@@ -17,9 +17,9 @@
 | wash_dishes | retention | 4 |
 | clean_window | repeat | 6 |
 | water_plant | repeat | 3 |
-| clean_window | retention | 5 |
+| clean_window | retention | 1 |
 | water_plant | retention | 4 |
-| cook_rice | repeat | 2 |
+| cook_rice | repeat | 3 |
 | write_thank_you_note | repeat | 3 |
 | cook_rice | retention | 3 |
 | write_thank_you_note | retention | 3 |
@@ -28,22 +28,22 @@
 | fix_flat_tire | repeat | 3 |
 | fix_flat_tire | retention | 3 |
 | hang_picture | repeat | 5 |
-| hang_picture | retention | 6 |
+| hang_picture | retention | 2 |
 | iron_shirt | repeat | 4 |
 | iron_shirt | retention | 4 |
 | make_omelette | repeat | 4 |
 | make_omelette | retention | 1 |
 | make_pancake | repeat | 5 |
-| make_pancake | retention | 1 |
+| make_pancake | retention | 2 |
 | make_salad | repeat | 5 |
-| make_salad | retention | 7 |
+| make_salad | retention | 2 |
 | make_smoothie | repeat | 4 |
 | make_smoothie | retention | 1 |
 | make_tea | repeat | 6 |
 | make_tea | retention | 6 |
 | pack_for_trip | repeat | 4 |
-| pack_for_trip | retention | 1 |
+| pack_for_trip | retention | 2 |
 | plan_birthday_party | repeat | 4 |
-| plan_birthday_party | retention | 1 |
+| plan_birthday_party | retention | 3 |
 | plan_picnic | repeat | 5 |
-| plan_picnic | retention | 3 |
+| plan_picnic | retention | 2 |

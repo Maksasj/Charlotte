@@ -99,7 +99,9 @@ The training dashboard has two parts: the API server, and the page.
 
 ## Status
 
-Design 2.0 is finished (v2.0.0): milestones 12 to 18 are built and measured, and
-the trained vault is in `vault/` (committed copy in
-`data/training/curriculum/vaults/2026-11-18T05-11-26/`). Acceptance numbers,
-missed targets with their causes, and decisions are in [`PROGRESS.md`](PROGRESS.md).
+Design 2.0 (v2.0.0): milestones 12 to 18 are built and measured. Most
+acceptance targets are met; transfer (0 of 15, target 40%) and the judge score
+(3.58, target 6.0) are not, and the second encounter is borderline (65-70%,
+target 70%). Numbers, causes and decisions are in [`PROGRESS.md`](PROGRESS.md).
+The trained vault is in `vault/` (committed copy in
+`data/training/curriculum/vaults/2026-11-18T05-11-26/`).

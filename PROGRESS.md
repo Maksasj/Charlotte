@@ -7,12 +7,23 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
 
 ## Current milestone
 
-**Design 2.0 is finished (v2.0.0, 2026-11-18).** All milestones 12 to 18
-are built and measured; the final vault is the one trained in the 2026-11-18
-run below, promoted to `vault/` (a copy is committed in
-`data/training/curriculum/vaults/2026-11-18T05-11-26/`). Targets still missed
-are listed with their numbers and causes under "2.0 problems"; the ones that
-are out of scope (translation speed, act accuracy) were decided by the user.
+**Design 2.0: all milestones (12 to 18) are built and measured (v2.0.0,
+2026-11-18). Not every acceptance target is met.** Milestone 18, measured on the
+20 held-out scenarios after training:
+
+- met: pairwise preference over the milestone 12 build (20 of 20), not
+  understood (1.7%), helpful + clarify (67%), contradicting facts (0.7%), teacher
+  meta requests (0), duplicate pairs after hygiene (0);
+- borderline: second encounter 14 of 20 (70%) in the first 2026-11-18 run and 13
+  of 20 (65%) in the last one, against 70% (one scenario is within the noise of 20);
+- **not met: transfer 0 of 15 (target 40%) and the judge score 3.58 (target 6.0)**.
+  Causes and what was tried are under "Final training runs (2026-11-18)".
+
+Earlier milestones' missed targets are listed under "2.0 problems". Two of them
+were put out of scope by the user on 2026-11-17 (entries marked "user decision"
+there): the 2 s translation time and act accuracy. The final vault is the one
+from the first 2026-11-18 run, in `vault/` (committed copy in
+`data/training/curriculum/vaults/2026-11-18T05-11-26/`), consolidated afterwards.
 The next design is 3.0; see "Notes for Design 3.0".
 
 ## How to run
@@ -48,7 +59,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | built; dinner dialogue passes; help-turn replay below target | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | done: second encounter after training 14 of 20 (70%, target met) by the Haiku judge; pairwise over milestone 12 100% (met); not understood, helpful + clarify, contradicting facts, meta requests, duplicates met; judge score 3.80 (3.29 to 4.31; run 7: 4.05) and transfer 0 of 15 below target (causes under 2.0 problems) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | built and measured; met: pairwise 20 of 20, not understood, helpful + clarify, contradicting facts, meta requests, duplicates; second encounter 65-70% (target 70%, borderline); **not met: transfer 0 of 15 (target 40%), judge score 3.58 (target 6.0)** | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
@@ -138,7 +149,7 @@ starting point the next milestones are compared with. 80 "requests" are
 counted by surface cues over all 296 user messages (61 in the trainer set;
 the report's own regex found 57).
 
-## Final training run (2026-11-18)
+## Final training runs (2026-11-18)
 
 Rerun with the fixes from the first run (substitutes stored as `substitute`, the
 variant teacher teaches substitutes only), on the new PC: 16 parallel Haiku
@@ -166,6 +177,40 @@ lacked an item, not when they listed the replacement. Both are fixed after the
 run (`plural_can_replace_is_a_substitute`, `reply_offers_a_substitute_the_user_has`);
 held-out transfer is measured without teaching, so these fixes matter for later
 training, not for this measurement.
+
+Two more runs measured the transfer fixes made after the first one (same 55 training
+and 20 held-out scenarios, 16 Haiku teachers, none of ~2,040 calls failed):
+`eval/curriculum/2026-11-18T05-52-04.md` and `eval/curriculum/2026-11-18T06-01-35.md`.
+
+| Held-out measure | Run 05-11 | Run 05-52 | Run 06-01 (last) | Target |
+|---|---|---|---|---|
+| Second encounter | 14 of 20 | 13 of 20 | 13 of 20 | 70% |
+| Transfer | 0 of 15 | 0 of 15 | 0 of 15 | 40% |
+| Retention | 11 of 20 | 8 of 20 | 8 of 20 | |
+| Not understood | 2.1% | 1.7% | 1.7% | 10% or less |
+| Helpful + clarify | 67.4% | 67.4% | 67.0% | 60% |
+| Contradicting facts | 0.7% | 0.7% | 0.7% | 1% or less |
+| Pairwise over milestone 12 (`sla_eval pairwise`) | | | 20 of 20 | 70% |
+| Judge score (`sla_eval rate`) | 3.80 | | 3.58 (3.12 to 4.03) | 6.0 |
+
+Fixes for transfer between the runs, each with a test: "B can replace A" is stored as
+`substitute(A, B)` on every tier (it was the verb `replace(B, A)` on the fixed-pattern
+tier, so 15 of 18 taught substitutes were unusable); consolidation migrates the old form;
+a lack cue next to a known item ("my kettle just broke", "out of eggs") always becomes
+`-available(item)`; help and needs replies swap a known substitute into the steps and
+needs ("mix the olive oil with the white vinegar") and say so. In the last run the salad
+variant passed its adaptation check (white vinegar for lemon) but failed "names what is
+needed"; the tea variant had no substitute, because that run's variant teacher did not
+teach one.
+
+Why transfer stays at 0: the held-out variants are measured without teaching, so a
+variant can pass only if training happened to teach the exact substitute or change it
+needs (a pot for a kettle, vinegar for lemon, a banana for eggs, a shorter boiling time).
+Two of the 15 variants overlap with training at all, and only when the Haiku variant
+teacher teaches that line. Raising it to 40% means training scenarios that cover the
+held-out situations, which would teach to the test; that is left to Design 3.0 (a larger,
+independently written training set). The judge score is limited the same way: the judge
+marks down missing advice that nothing taught (why rice goes mushy, a water ratio).
 
 ## Training run (2026-11-17)
 
@@ -196,6 +241,11 @@ in their own encounter 1 either way, and the training tasks are different ones.
 
 ## Notes for Design 3.0 (after all of 2.0 is done)
 
+- **Transfer and the judge score need knowledge that 2.0's training does not
+  teach.** Held-out variants pass only with substitutes or changes taught elsewhere.
+  3.0 should have a larger training set written independently of the held-out one,
+  plus a way for the agent to ask about an unknown variant during a conversation
+  (curiosity already logs it as a failed turn). (2026-11-18)
 - **Training lab with a real-time dashboard.** In 2.0 the dashboard (`dashboard/`,
   Vite + React) works, but it polls the trainer's API every 2 seconds and the API
   re-reads the run's files on each request, so updates are slow and not real time.

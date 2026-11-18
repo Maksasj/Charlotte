@@ -1,0 +1,7 @@
+{"pred":"fits","arity":2,"definition":"the washer is the right size for the tap","source":"user","facts":["fits(washer, tap)"],"status":"pending","frame":null}
+{"pred":"cut_partway","arity":2,"definition":"the baguette is cut into slices without cutting all the way through","source":"teacher:curriculum","facts":["cut_partway(make_garlic_bread_s3, baguette)"],"status":"pending","frame":null}
+{"pred":"hosts","arity":2,"definition":"user60 is having friends round","source":"user","facts":["hosts(user60, friend)"],"status":"pending","frame":null}
+{"pred":"coming_over","arity":2,"definition":"friends visit the speaker's home","source":"user","facts":["coming_over(friend, user53)"],"status":"pending","frame":null}
+{"pred":"near","arity":2,"definition":"the speaker is close to a photo booth","source":"user","facts":["near(user55, photo_booth)"],"status":"pending","frame":null}
+{"pred":"hours_away","arity":2,"definition":"the friend lives 5 hours away from the speaker","source":"user","facts":["hours_away(friend, 5)"],"status":"pending","frame":null}
+{"pred":"behind","arity":2,"definition":"water is getting into the space behind the bath","source":"user","facts":["behind(water, my_bath)"],"status":"pending","frame":null}
