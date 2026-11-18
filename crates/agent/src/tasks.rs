@@ -330,7 +330,7 @@ impl Agent {
             for x in &needs {
                 claims.push(g("needs", &[&task, x]));
             }
-            format!("{lead} You need {}.", swap(&list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>())))
+            format!("{lead} You need {}.", list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>()))
         };
         let mut text = format!("{lead} {}", lines.join(if steps.len() > 3 { "\n" } else { " " }));
         if steps.len() > 3 {
@@ -412,6 +412,15 @@ impl Agent {
             }
             if let Some((_, y, other)) = best {
                 out.push((x.clone(), y, Some(other)));
+                continue;
+            }
+            // Asked "what do you have that could do the job?", the user named
+            // something the task does not otherwise use: their proposal.
+            if self.asked_lack.borrow().contains(x) {
+                let offered: Vec<&String> = have.iter().filter(|y| !used.contains(y) && *y != x).collect();
+                if let [y] = offered.as_slice() {
+                    out.push((x.clone(), (*y).clone(), Some(String::new())));
+                }
             }
         }
         out
@@ -503,9 +512,16 @@ impl Agent {
         // Guesses by analogy (nothing taught): say where the idea comes from.
         let mut guessed: Vec<String> = Vec::new();
         for (x, y, why) in self.substitutions_why(m, task) {
-            if let Some(other) = why {
-                out.push_str(&format!(" I haven't been taught this, but you could probably use {} instead of the {}: I use {} like that when I {}.", with_article(&y), words(&x), with_article(&y), self.task_phrase_m(&other)));
-                guessed.push(x);
+            match why.as_deref() {
+                Some("") => {
+                    out.push_str(&format!(" Since you have {}, use it instead of the {}.", with_article(&y), words(&x)));
+                    guessed.push(x);
+                }
+                Some(other) => {
+                    out.push_str(&format!(" I haven't been taught this, but you could probably use {} instead of the {}: I use {} like that when I {}.", with_article(&y), words(&x), with_article(&y), self.task_phrase_m(other)));
+                    guessed.push(x);
+                }
+                None => {}
             }
         }
         for x in &lacking_all {
@@ -532,6 +548,7 @@ impl Agent {
             } else {
                 // Ask what they have: an answer lets me look for something that does the same job.
                 out.push_str(&format!(" You don't have {l}: what do you have that could do the job?"));
+                self.asked_lack.borrow_mut().extend(lacking.iter().cloned());
             }
         }
         out

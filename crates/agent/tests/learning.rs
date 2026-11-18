@@ -461,3 +461,33 @@ fn transfer_by_analogy_after_asking() {
     assert!(r.contains("Boil the water in the pot") && r.contains("probably use a pot instead of the kettle") && r.contains("boil an egg"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Asked what could do the job, the user names a replacement: the agent uses it.
+#[test]
+fn adopts_the_replacement_the_user_names() {
+    let dir = temp("user_proposal");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To water a plant you need a watering can and water.", &["tell: task(water_plant); needs(water_plant, watering_can); needs(water_plant, water)"]),
+        ("Step 1 of watering a plant: fill the watering can with water.", &["tell: step(water_plant, water_plant_s1); action(water_plant_s1, fill); object_of(water_plant_s1, watering_can); uses(water_plant_s1, water)"]),
+        ("Step 2 of watering a plant: pour the water with the watering can.", &["tell: step(water_plant, water_plant_s2); action(water_plant_s2, pour); object_of(water_plant_s2, water); uses(water_plant_s2, watering_can)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("I don't own a watering can. How do I water my plant?", &["inform: -available(watering_can)", "ask_how: water_plant"]),
+        ("I have a kitchen jug and tap water.", &["inform: available(jug); available(water)"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("what do you have"), "{r}");
+    let r = talk(&mut a, gold[1].0);
+    assert!(r.contains("Since you have a jug, use it instead of the watering can") && r.contains("Fill the jug"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

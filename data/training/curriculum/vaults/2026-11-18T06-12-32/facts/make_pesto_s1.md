@@ -1,0 +1,5 @@
+# make_pesto_s1
+
+```datalog
+during(make_pesto_s1, make_pesto_s2). @from 2026-11-18T06:12:57 @conf 1 @source teacher:curriculum @id f17 @conv s1794982376431-336211-88
+```

@@ -117,6 +117,9 @@ pub struct Agent {
     exception_noted: bool,
     /// Everything the user said in this conversation, lowercased.
     heard_text: String,
+    /// Items the agent asked the user for a replacement of ("what do you have
+    /// that could do the job?").
+    pub(crate) asked_lack: std::cell::RefCell<Vec<String>>,
 }
 
 fn session_name() -> String {
@@ -175,6 +178,7 @@ impl Agent {
             dialogue_ran: false,
             exception_noted: false,
             heard_text: String::new(),
+            asked_lack: Default::default(),
             cur_tier: String::new(),
             said: Default::default(),
         }
