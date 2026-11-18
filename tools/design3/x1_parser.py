@@ -170,13 +170,42 @@ class Perceptron:
             self.w[k] = self.tot[k] / max(self.t, 1)
 
 
-def tag_seq(model, toks, known=frozenset()):
+def tag_seq(model, toks, known=frozenset(), margins=None):
     prev, prev2 = "<s>", "<s>"
     out = []
     for i in range(len(toks)):
-        t = model.predict(feats(toks, i, prev, prev2, known))
+        fs = feats(toks, i, prev, prev2, known)
+        if margins is None:
+            t = model.predict(fs)
+        else:
+            sc = sorted(((model.score(fs, tg), tg) for tg in sorted(model.tags)), reverse=True)
+            t = sc[0][1]
+            margins.append(sc[0][0] - sc[1][0] if len(sc) > 1 else 99.0)
         out.append(t)
         prev2, prev = prev, t
+    return out
+
+
+def selective(model, forms, examples, levels=(0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)):
+    """Accuracy when the parser keeps only its most confident lines (min token margin)."""
+    rows = []
+    for e in examples:
+        if e["kind"] != "step":
+            continue
+        m = []
+        tags = tag_seq(model, e["toks"], e.get("known", frozenset()), margins=m)
+        ok = compare_step(decode(e["toks"], tags, forms), e)["exact"]
+        rows.append((min(m) if m else 0.0, ok))
+    rows.sort(key=lambda r: -r[0])
+    out = {}
+    for lv in levels:
+        k = max(1, int(round(lv * len(rows))))
+        out[str(lv)] = round(sum(o for _, o in rows[:k]) / k, 3)
+    best = 0
+    for k in range(1, len(rows) + 1):
+        if sum(o for _, o in rows[:k]) / k >= 0.95:
+            best = k
+    out["coverage_at_95"] = round(best / max(len(rows), 1), 3)
     return out
 
 
@@ -292,9 +321,11 @@ def compare_step(pred, ex):
     return res
 
 
-def run(gt, quiet=False):
+def run(gt, quiet=False, extra=None):
     corpus = load_corpus(gt)
     ex = {split: [e for sc in corpus[split] for e in step_examples(sc)] for split in corpus}
+    if extra:
+        ex["train"] = ex["train"] + list(extra)
     report = {"gt": gt, "counts": {}, "alignment": {}}
     for split, es in ex.items():
         missed_lines = 0
@@ -359,6 +390,7 @@ def run(gt, quiet=False):
             "needs_exact": needs_ok,
             "fail_examples": fails,
         }
+        report[split]["selective"] = selective(model, forms, ex[split])
     # training fit
     roles = Counter()
     for e in [x for x in train_ex if x["kind"] == "step"]:

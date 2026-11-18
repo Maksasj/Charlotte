@@ -124,3 +124,81 @@ Agreement with the Haiku judge:
 - The algorithmic tier is **repeated random task splits**: 5 seeds, reported as a mean and range. This replaces a single MCD split.
 - Atom-held-out tests add the cases MCD cannot make here: one item or one action never seen in training.
 - MCD is re-run on the larger generated dataset, where compounds repeat.
+
+
+## Results on the v3 ground truth (all 105 tasks re-authored)
+
+### X1 (v3), learned parser
+
+v3 is stricter than v2:
+- implied tools now count (the oven in "bake the potato");
+- `into` and `uses` are separate;
+- 45 more compound steps were split.
+
+| Split | Exact step lines | Object | Tools | Coverage at ≥ 95% precision |
+|---|---|---|---|---|
+| dev (101 lines) | **66.3%** | 84.2% | 84.2% | **19.8%** |
+| dev, without the needs-line feature | 57.4% | 79.2% | 75.2% | |
+| gardening (20 lines) | 35.0% | 70.0% | 60.0% | 0% |
+
+- **Ceiling.** 95 of 101 dev lines have every fact in their own words. The other 6 hold an implied fact, mostly `into`.
+- **Coverage at 95%.** This is the share of lines the parser keeps when it trusts only its most confident lines (minimum token margin), at the largest share whose accuracy is still at least 95%. Confidence is weakly calibrated. The most confident 25% are 88% exact, and the most confident 50% are 82%.
+- **One feature change was tried and reverted:** a "governor word" feature gave 62.4%. No further tuning was done on dev, to avoid fitting it.
+
+### X7, supervision pilot (21 live Haiku calls, all cached in `data/training/calls3/`)
+
+Haiku rewrote the step facts of 20 training tasks as 3 differently worded instructions each, giving 414 pairs labelled by construction.
+
+| Parser configuration | Before | After +414 pairs |
+|---|---|---|
+| Weak (no needs-line feature, unaligned lines dropped) | 50.5% | 57.4% (+6.9, 1.7 points per 100 pairs) |
+| Full X1 configuration | 66.3% | 66.3% (+0) |
+
+Generated paraphrases help a weak parser but not the full one. Gains per 100 pairs are small and shrink, so more generated pairs of this kind will not reach 85%.
+
+### X2 (v3), requests
+
+| Split | Baseline top-1 | Learned top-1 |
+|---|---|---|
+| dev, base requests | **56/57 (98.2%)** | 54/57 |
+| dev, variant requests | 13/14 | 12/14 |
+| gardening, base | 10/12 | 10/12 |
+| gardening, variant | 4/4 | 4/4 |
+
+- With the v3 task aliases in the agent's knowledge, word overlap reaches 98%, and learned associations make it worse.
+- **Detection:** request recall is 86/87 (98.9%), with 0 false alarms on 231 statements.
+
+### X5, situation noticing tied to knowledge
+
+`tools/design3/x5_notice.py`. The perceptron's features are only the places where the request links to a known item (2-word context, whether the item belongs to the identified task) or a number. It is trained on the training requests: 156 base and 34 variant.
+
+| Split | False alarms on base requests | Variants noticed |
+|---|---|---|
+| dev | 2/57 (3.5%) | 6/14 (43%) |
+| gardening | 1/12 (8.3%) | 3/4 |
+
+[M4], which flagged any unusual word, raised false alarms on 169-204 of 225 base requests. Tying signals to knowledge cuts false alarms to 3.5%, but it notices only 43% of variants.
+
+### X4, adaptation in fact space (leave one task out, 48 train and dev cases; 4 gardening)
+
+| Method | Change recall | Cases passed | Cases with a wrong change |
+|---|---|---|---|
+| null | 0.0% | 3/48 | 0 |
+| affordance (substitution by learned role) | 19.2% | 5/48 | 9 |
+| cases (A4, most similar case mapped by role) | 19.2% | 4/48 | 20 |
+| rules (A3-lite, patterns with support ≥ 2) | 1.4% | 3/48 | 0 |
+| gardening: affordance / cases / rules | 25.9 / 25.9 / 14.8% | 1/4 each | 1 / 2 / 0 |
+
+- **Most variants need knowledge that is in no other task.** Examples: microwaving a potato first, or what a newspaper can do to a window. Situations rarely repeat (DESIGN_3_alternatives [M2]), so induced rules almost never fire.
+- Case transfer finds as much as substitution, but makes twice as many wrong changes.
+
+## Decision outcomes (rules of DESIGN_3_alternatives section 5.3)
+
+| Rule | Outcome | Decision |
+|---|---|---|
+| **5.3.1 Teaching parser:** ≥ 95% → learned only; 85-95% → learned with fallback; < 85% after X7 → frame grammar | **66.3% after X7: below 85%** | **Deviation, recorded:** user decision D3 (a learned parser, with Haiku as its teacher and fallback) and the no-word-list rule rule out a hand frame grammar. Phase B builds the learned parser with Haiku fallback below a confidence threshold. Every fallback answer is stored as a training pair, so the parser is retrained from it (distillation). The measure of language learning becomes **coverage at ≥ 95% precision as teaching accumulates**, now 19.8%. The final PDF states plainly that language-to-meaning was not learned to 85% in phase A |
+| **5.3.2 User channel:** recall ≥ 95% and learned top-1 ≥ baseline + 10 | Detection 98.9%. Learned identity −3.5 points | Request detection is learned. Task identity is overlap over the agent's own knowledge and learned task aliases (98% on dev). If the top two scores are close, the agent confirms with the user. Haiku is the fallback only for unparsed requests |
+| **5.3.3 Adaptation:** A4 if it is ≥ 15 points over null **and** wrong-claim rate ≤ null's; rules if they add ≥ 5 | Cases +19.2 points but 20 cases with wrong changes, against 0 for null. Rules +1.4 | **Neither arm passes the wrong-claim condition.** Both stay as arms (D6), but **gated**: a proposed change is offered only when its support is enough (a role seen in at least one other task, or a case with similarity ≥ 0.5), otherwise the agent states the gap and asks the teacher. The transfer claim becomes "substitution by learned function, plus honest gaps, plus learning the variant from one teaching". Rules are kept as the arm that grows with repeated situations, and are measured on the generated dataset, where situations repeat |
+| **5.3.4 Noticing:** ≤ 10% false alarms → keep the blindness target | 3.5% on dev | Keep. Noticing is tied to knowledge; a missed situation costs a clarifying question, not a wrong answer |
+| **5.3.5 Output** | No experiment needed | Relation lines (D5) |
+| **X8 split** | Every split already has compound divergence of about 0.91, and the hand dev split is easier than random | Algorithmic tier = repeated random task splits (5 seeds) plus atom-held-out tests |

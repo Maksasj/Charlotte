@@ -121,9 +121,15 @@ def main():
             gen += generated_examples(sc, ans)
     before = evaluate([dict(e) for e in base], [dict(e) for e in dev])
     after = evaluate([dict(e) for e in base] + gen, [dict(e) for e in dev])
+    # the full X1 configuration (needs-line feature, all training lines) with and without the pairs
+    X.KNOWN = True
+    full_before = X.run(a.gt)["dev"]
+    X.KNOWN = True
+    full_after = X.run(a.gt, extra=[dict(e) for e in gen])["dev"]
+    full = {k: {x: v[x] for x in ("exact_rate", "per_role")} for k, v in (("before", full_before), ("after", full_after))}
     out = {"tasks": a.tasks, "calls": calls, "generated_pairs": len(gen), "before": before, "after": after,
            "gain_per_100_pairs": round((after["exact_rate"] - before["exact_rate"]) * 100 / max(len(gen) / 100, 1e-9), 2),
-           "live_calls_total": haiku.live_calls()}
+           "live_calls_total": haiku.live_calls(), "x1_config": full}
     print(json.dumps(out, indent=1))
 
 
