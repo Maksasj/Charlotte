@@ -542,7 +542,10 @@ pub fn fix_lines(brain: &SharedBrain, s: &Scenario, session: &str) -> Vec<String
     let mut out = Vec::new();
     for (k, a) in &want {
         let object_wrong = matches!((have_obj.get(k), want_obj.get(k)), (Some(h), Some(w)) if h != w);
-        if have.get(k) != Some(a) || object_wrong {
+        // A taught "until it drains" that was not stored.
+        let until_of = |set: &[GroundAtom]| set.iter().any(|g| g.pred == "until" && num(&sym(g, 0)) == Some(*k));
+        let until_lost = until_of(&s.truth) && !until_of(&stored);
+        if have.get(k) != Some(a) || object_wrong || until_lost {
             let key = format!("step {k} of");
             if let Some(line) = s.teach.iter().find(|l| l.to_lowercase().contains(&key)) {
                 out.push(line.clone());

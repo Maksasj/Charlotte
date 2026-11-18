@@ -1,0 +1,116 @@
+live transcript: /home/maksasj/Programming/Charlotte/data/training/curriculum/live/2026-11-18T10-54-40.jsonl (watch: python tools/curriculum_live.py)
+[curriculum] encounter 3: teach         boil_egg               fail
+[curriculum] encounter 5: teach         fix_flat_tire          fail
+[curriculum] encounter 9: teach         pack_for_trip          fail
+[curriculum] encounter 11: teach         make_salad             fail
+[curriculum] encounter 16: teach         plan_birthday_party    fail
+[curriculum] encounter 2: teach         clean_window           fail
+[curriculum] encounter 1: teach         cook_rice              fail
+[curriculum] encounter 15: teach         make_pancake           fail
+[curriculum] encounter 8: teach         make_omelette          fail
+[curriculum] encounter 10: teach         make_tea               fail
+[curriculum] encounter 7: teach         do_laundry             fail
+[curriculum] encounter 17: teach_retry   boil_egg               pass
+[curriculum] encounter 14: teach         make_smoothie          fail
+[curriculum] encounter 18: teach_retry   clean_window           pass
+[curriculum] encounter 19: teach_retry   make_tea               pass
+[curriculum] encounter 20: teach_retry   make_salad             pass
+[curriculum] encounter 21: teach_retry   make_pancake           pass
+[curriculum] encounter 24: teach_retry   make_omelette          pass
+[curriculum] encounter 28: repeat        make_tea               pass
+[curriculum] encounter 26: teach         water_plant            fail
+[curriculum] encounter 13: teach         iron_shirt             fail
+[curriculum] encounter 6: teach         bake_potato            fail
+[curriculum] encounter 12: teach         plan_picnic            fail
+[curriculum] encounter 31: repeat        make_pancake           pass
+[curriculum] encounter 32: repeat        make_omelette          pass
+[curriculum] encounter 30: repeat        make_salad             pass
+[curriculum] encounter 39: transfer      make_omelette          fail
+[curriculum] encounter 41: retention     make_omelette          fail
+[curriculum] encounter 36: teach_retry   iron_shirt             pass
+[curriculum] encounter 27: teach_retry   fix_flat_tire          pass
+[curriculum] encounter 29: teach_retry   pack_for_trip          pass
+[curriculum] encounter 25: teach_retry   cook_rice              pass
+[curriculum] encounter 42: teach_retry   make_smoothie          pass
+[curriculum] encounter 48: repeat        make_smoothie          pass
+[curriculum] encounter 49: retention     make_smoothie          fail
+[curriculum] encounter 43: repeat        iron_shirt             pass
+[curriculum] encounter 50: retention     iron_shirt             pass
+[curriculum] encounter 34: teach_retry   water_plant            fail
+[curriculum] encounter 51: repeat        clean_window           pass
+[curriculum] encounter 46: teach_retry   plan_picnic            pass
+[curriculum] encounter 4: teach         hang_picture           fail
+[curriculum] encounter 47: teach         write_thank_you_note   fail
+[curriculum] encounter 38: transfer      make_pancake           pass
+[curriculum] encounter 54: retention     make_pancake           fail
+[curriculum] encounter 37: teach_retry   bake_potato            fail
+[curriculum] encounter 57: teach         replace_lightbulb      fail
+[curriculum] encounter 53: repeat        plan_picnic            pass
+[curriculum] encounter 44: repeat        fix_flat_tire          pass
+[curriculum] encounter 35: teach_retry   plan_birthday_party    fail
+[curriculum] encounter 56: teach_retry   write_thank_you_note   fail
+[curriculum] encounter 22: teach_retry   do_laundry             fail
+[curriculum] encounter 52: repeat        water_plant            fail
+[curriculum] encounter 45: repeat        pack_for_trip          pass
+[curriculum] encounter 55: teach_retry   hang_picture           pass
+[curriculum] encounter 60: repeat        plan_birthday_party    fail
+[curriculum] encounter 23: teach         wash_dishes            fail
+[curriculum] encounter 62: repeat        do_laundry             fail
+[curriculum] encounter 66: transfer      plan_birthday_party    fail
+[curriculum] encounter 65: repeat        hang_picture           pass
+[curriculum] encounter 69: transfer      hang_picture           pass
+[curriculum] encounter 63: transfer      clean_window           pass
+[curriculum] encounter 33: transfer      make_tea               pass
+[curriculum] encounter 58: transfer      plan_picnic            fail
+[curriculum] encounter 68: spaced_repeat plan_birthday_party    fail
+[curriculum] encounter 40: transfer      make_salad             pass
+[curriculum] encounter 72: retention     make_tea               pass
+[curriculum] encounter 67: transfer      do_laundry             fail
+[curriculum] encounter 59: transfer      fix_flat_tire          fail
+[curriculum] encounter 61: repeat        cook_rice              pass
+[curriculum] encounter 77: teach_retry   replace_lightbulb      pass
+[curriculum] encounter 81: repeat        bake_potato            fail
+[curriculum] encounter 64: transfer      pack_for_trip          fail
+[curriculum] encounter 78: spaced_repeat do_laundry             fail
+[curriculum] encounter 75: retention     plan_birthday_party    fail
+[curriculum] encounter 71: retention     hang_picture           fail
+[curriculum] encounter 80: repeat        write_thank_you_note   fail
+[curriculum] encounter 74: retention     plan_picnic            fail
+[curriculum] encounter 76: retention     make_salad             pass
+[curriculum] encounter 82: repeat        replace_lightbulb      pass
+[curriculum] encounter 73: teach_retry   wash_dishes            pass
+[curriculum] encounter 84: retention     do_laundry             fail
+[curriculum] encounter 85: transfer      cook_rice              fail
+[curriculum] encounter 88: spaced_repeat write_thank_you_note   fail
+[curriculum] encounter 70: transfer      water_plant            fail
+[curriculum] encounter 87: repeat        boil_egg               pass
+[curriculum] encounter 79: retention     fix_flat_tire          pass
+[curriculum] encounter 90: spaced_repeat water_plant            fail
+[curriculum] encounter 89: retention     cook_rice              pass
+[curriculum] encounter 83: retention     pack_for_trip          pass
+[curriculum] encounter 86: transfer      bake_potato            fail
+[curriculum] encounter 94: spaced_repeat bake_potato            fail
+[curriculum] encounter 93: retention     write_thank_you_note   fail
+[curriculum] encounter 91: repeat        wash_dishes            pass
+[curriculum] encounter 96: transfer      boil_egg               fail
+[curriculum] encounter 95: retention     bake_potato            fail
+[curriculum] encounter 97: retention     boil_egg               pass
+[curriculum] encounter 92: retention     clean_window           fail
+[curriculum] encounter 100: retention     water_plant            fail
+[curriculum] encounter 99: retention     wash_dishes            pass
+[curriculum] encounter 98: retention     replace_lightbulb      pass
+| Measure | Result | Target |
+|---|---|---|
+| Encounter 1 solved before teaching | 0 of 20 | |
+| Taught, learned / taught, not learned | 15 / 5 | |
+| **Encounter 2 solved without teaching** | **15 of 20 (75.0%)** | 70% |
+| Encounter 3, transfer | 5 of 15 (33.3%) | 40% |
+| Encounter 4, retention | 9 of 20 (45.0%) | |
+| Spaced queue, repeated after reteaching | 0 of 5 | |
+| Not understood | 1 of 224 turns (0.4%) | 10% or less |
+| Helpful + clarify | 164 of 224 labelled turns (73.2%) | 60% |
+| Stored facts contradicting ground truth | 4 of 501 (0.8%) | 1% or less |
+| Teacher meta requests | 0 | 0 |
+| Questions the agent asked its teacher (answered from the ground truth) | 11 (2) | |
+| Transfer after a variant teach block (training) | 0 of 0 (0 teach lines) | |
+model calls: 143 (0 failed); vault /tmp/sla_curriculum_2026-11-18T10-54-40; wrote /home/maksasj/Programming/Charlotte/eval/curriculum/2026-11-18T10-54-40.md

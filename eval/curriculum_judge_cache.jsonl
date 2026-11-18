@@ -1698,3 +1698,19 @@
 {"key":"832a458bd43c4abe","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
 {"key":"87ca7d4b191f736c","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
 {"key":"3bf971529d947e9b","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"dd80dfe118b9e0cc","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"397003673c3eb6b9","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"e498cf107d754d15","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"2e0c80d6746621b7","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"70e92c6348b4da9c","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"e6c92f4efc28f64a","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"bd255d13463b7bda","out":"1: no\n2: yes\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"042924edc12b6816","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"b476c3ba6a30d3fb","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"b04ce002de579378","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"a7793d9fcba805eb","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"7fd845c0ef5d9290","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"d574aace7574eccd","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"1a61114173eac834","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"187d81d7f4147f5d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"49498e6ac3404610","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
