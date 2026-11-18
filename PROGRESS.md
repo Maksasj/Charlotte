@@ -16,7 +16,7 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
   meta requests (0), duplicate pairs after hygiene (0);
 - borderline: second encounter 14 of 20 (70%) in the first 2026-11-18 run and 13
   of 20 (65%) in the last one, against 70% (one scenario is within the noise of 20);
-- **not met: transfer 0 of 15 (target 40%) and the judge score 3.58 (target 6.0)**.
+- **not met: transfer 1 of 15 in the last run (target 40%) and the judge score 3.58 (target 6.0)**.
   Causes and what was tried are under "Final training runs (2026-11-18)".
 
 Earlier milestones' missed targets are listed under "2.0 problems". Two of them
@@ -211,6 +211,19 @@ teacher teaches that line. Raising it to 40% means training scenarios that cover
 held-out situations, which would teach to the test; that is left to Design 3.0 (a larger,
 independently written training set). The judge score is limited the same way: the judge
 marks down missing advice that nothing taught (why rice goes mushy, a water ratio).
+
+Transfer by analogy and by asking (after the runs above; held-out stage on a fresh
+seeded vault, `eval/curriculum/2026-11-18T06-27-34.md`, 194 calls): when a needed item
+is missing and no substitute is known, the agent asks "what do you have that could do the
+job?"; it then uses an item another known procedure uses for the same action (boil water
+in a pot, from boiling an egg), or the replacement the user names, swaps it into the steps,
+drops a step whose action was a tool only the missing item needed ("hammer the nail"), and
+names both in the needs ("an adhesive strip (instead of a nail)"). Result: **transfer 1 of
+15** (pancakes without eggs, with the banana the user named; first pass), helpful + clarify
+70.1%, second encounter 13 of 20, retention 11 of 20, not understood 1.2%. Most remaining
+transfer failures are understanding (filler clauses such as "so I can't make holes" get a
+clarifying question) and variants that change a time or a plan rather than an item (soft
+boil, brown rice, surprise party, rain).
 
 ## Training run (2026-11-17)
 
