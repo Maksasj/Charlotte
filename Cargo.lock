@@ -3,6 +3,29 @@
 version = 4
 
 [[package]]
+name = "agent3"
+version = "0.1.0"
+dependencies = [
+ "kb3",
+ "parse3",
+ "serde",
+ "serde_json",
+ "teach3",
+]
+
+[[package]]
+name = "eval3"
+version = "0.1.0"
+dependencies = [
+ "agent3",
+ "kb3",
+ "parse3",
+ "serde",
+ "serde_json",
+ "teach3",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"

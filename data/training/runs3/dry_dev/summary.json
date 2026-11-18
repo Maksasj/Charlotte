@@ -1,0 +1,52 @@
+{
+  "arm": "Function",
+  "by_kind": {
+    "retention": {
+      "ci95": [
+        0.0,
+        0.168
+      ],
+      "identity": 17,
+      "mean_recall": 0.596,
+      "n": 19,
+      "pass": 0,
+      "rate": 0.0,
+      "with_wrong_claim": 2
+    },
+    "second": {
+      "ci95": [
+        0.0,
+        0.168
+      ],
+      "identity": 18,
+      "mean_recall": 0.615,
+      "n": 19,
+      "pass": 0,
+      "rate": 0.0,
+      "with_wrong_claim": 2
+    },
+    "variant": {
+      "ci95": [
+        0.0,
+        0.215
+      ],
+      "identity": 12,
+      "mean_recall": 0.5,
+      "n": 14,
+      "pass": 0,
+      "rate": 0.0,
+      "with_wrong_claim": 9
+    }
+  },
+  "ingest": {
+    "fallback": 0,
+    "fallback_failed": 0,
+    "learned": 139,
+    "lines": 139,
+    "rejected": 0
+  },
+  "live_calls": 0,
+  "name": "dry_dev",
+  "set": "dev",
+  "theta": 18.83409954407295
+}

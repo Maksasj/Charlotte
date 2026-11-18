@@ -13,6 +13,8 @@ members = [
     "crates/kb3",
     "crates/parse3",
     "crates/teach3",
+    "crates/agent3",
+    "crates/eval3",
 ]
 
 [workspace.package]

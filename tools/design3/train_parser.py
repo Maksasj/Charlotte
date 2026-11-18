@@ -424,7 +424,11 @@ def build(seed=1):
         for e in teach_examples(sc):
             teach.append(e)
             pairs += form_pairs(sc, e)
-    tagger = train_tagger(teach, seed)
+    tagger = train_tagger([e for e in teach if e["kind"] == "step"], seed)
+    needs_tagger = train_tagger([e for e in teach if e["kind"] == "needs"], seed)
+    time_tagger = train_tagger([e for e in teach if e["kind"] == "time"], seed)
+    kind_items = [(bow_feats(e["toks"]), e["kind"]) for e in teach]
+    kinds = {k: train_binary([(f, int(y == k)) for f, y in kind_items]) for k in ("step", "needs", "time")}
     sit = [e for sc in train for e in situation_examples(sc)]
     sit_tagger = train_tagger(sit, seed) if sit else Tagger()
     det_items = []
@@ -437,6 +441,9 @@ def build(seed=1):
     forms = learn_forms([{"toks": [], "labels": [], "pairs": pairs}])
     return {"version": 1, "epochs": EPOCHS, "train_tasks": len(train), "fallback_pairs": len(load_pairs()),
             "teach": {"tags": tagger.tags, "w": tagger.w},
+            "needs": {"tags": needs_tagger.tags, "w": needs_tagger.w},
+            "time": {"tags": time_tagger.tags, "w": time_tagger.w},
+            "kinds": kinds,
             "situation": {"tags": sit_tagger.tags, "w": sit_tagger.w},
             "detect": detect, "forms": forms}, c, teach
 
@@ -457,6 +464,8 @@ def main():
     for sc in c["dev"]:
         sc["time"] = next((a[1:] for p, a in sc["atoms"] if p == "takes_time" and a[0] == sc["task"]), None)
         for e in teach_examples(sc):
+            if e["kind"] != "step":
+                continue
             rows.append({"toks": e["toks"], "known": e["known"], "tags": t.tag(e["toks"], e["known"])})
     with open(a.parity, "w") as f:
         for r in rows:

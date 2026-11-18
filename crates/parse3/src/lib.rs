@@ -59,6 +59,13 @@ pub struct Forms {
 pub struct Models {
     pub version: u32,
     pub teach: TaggerModel,
+    #[serde(default)]
+    pub needs: TaggerModel,
+    #[serde(default)]
+    pub time: TaggerModel,
+    /// line kind classifiers (one-against-rest): step, needs, time
+    #[serde(default)]
+    pub kinds: HashMap<String, HashMap<String, f64>>,
     pub situation: TaggerModel,
     pub detect: HashMap<String, f64>,
     pub forms: Forms,
@@ -243,17 +250,36 @@ impl Models {
         bow_feats(&tokenize(text)).iter().map(|f| self.detect.get(f).copied().unwrap_or(0.0)).sum::<f64>() > 0.0
     }
 
+    /// The learned kind of a teach line (the highest-scoring kind classifier).
+    pub fn line_kind(&self, line: &str) -> LineKind {
+        let fs = bow_feats(&tokenize(line));
+        let score = |k: &str| self.kinds.get(k).map(|w| fs.iter().map(|f| w.get(f).copied().unwrap_or(0.0)).sum::<f64>()).unwrap_or(f64::NEG_INFINITY);
+        let mut best = (LineKind::Step, score("step"));
+        for (k, kind) in [("needs", LineKind::Needs), ("time", LineKind::Time)] {
+            let s = score(k);
+            if s > best.1 {
+                best = (kind, s);
+            }
+        }
+        best.0
+    }
+
     /// Item words the agent already knows for this task (from its parsed needs line).
     pub fn known_words(&self, needs_line: &str) -> BTreeSet<String> {
         let toks = tokenize(needs_line);
-        let (tags, _) = self.teach.tag(&toks, &BTreeSet::new());
+        let (tags, _) = self.needs.tag(&toks, &BTreeSet::new());
         toks.iter().zip(&tags).filter(|(_, g)| g.ends_with("NEED")).map(|(t, _)| t.clone()).collect()
     }
 
     /// Parse one teach line of `task`. `known` comes from the task's needs line.
     pub fn parse_teach(&self, task: &str, line: &str, known: &BTreeSet<String>) -> Parsed {
         let toks = tokenize(line);
-        let (tags, margin) = self.teach.tag(&toks, known);
+        let lk = self.line_kind(line);
+        let (tags, margin) = match lk {
+            LineKind::Needs => self.needs.tag(&toks, &BTreeSet::new()),
+            LineKind::Time => self.time.tag(&toks, &BTreeSet::new()),
+            _ => self.teach.tag(&toks, known),
+        };
         let sp = spans(&toks, &tags);
         let sym = |r: &str| -> Vec<String> { sp.get(r).map(|v| v.iter().map(|s| self.forms.symbol(s)).collect()).unwrap_or_default() };
         let raw = |r: &str| -> Vec<String> { sp.get(r).map(|v| v.iter().map(|s| s.concat()).collect()).unwrap_or_default() };
