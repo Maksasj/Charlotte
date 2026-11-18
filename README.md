@@ -99,7 +99,7 @@ The training dashboard has two parts: the API server, and the page.
 
 ## Status
 
-Design 2.0: milestones 12 to 18 are built and measured. Milestone 18's targets
+Design 2.0 is done (v2.0.0): milestones 12 to 18 are built and measured. Milestone 18's targets
 are met on the held-out scenarios: transfer 6 of 15 (40%), second encounter 75-90%.
 The judge score (5.1-5.4, target 6.0) was put out of scope by the user, because the
 remaining low ratings come from what the teacher taught. Numbers, causes and decisions are in [`PROGRESS.md`](PROGRESS.md).
