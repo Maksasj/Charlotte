@@ -551,3 +551,33 @@ fn named_extra_ingredient_goes_before_the_last_step() {
     assert!(!r.contains("Sprinkle"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The answer to "what do you have?" with a lack and a property still adapts.
+#[test]
+fn proposal_with_lack_and_property_adapts() {
+    let dir = temp("proposal_lack");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To make pancakes you need flour, an egg and a pan.", &["tell: task(make_pancake); needs(make_pancake, flour); needs(make_pancake, egg); needs(make_pancake, frying_pan)"]),
+        ("Step 1 of making pancakes: mix the batter with the egg and flour.", &["tell: step(make_pancake, make_pancake_s1); action(make_pancake_s1, mix); object_of(make_pancake_s1, batter); uses(make_pancake_s1, egg); uses(make_pancake_s1, flour)"]),
+        ("Step 2 of making pancakes: cook the batter in the pan.", &["tell: step(make_pancake, make_pancake_s2); action(make_pancake_s2, cook); object_of(make_pancake_s2, batter); uses(make_pancake_s2, frying_pan); before(make_pancake_s1, make_pancake_s2)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("I want to make pancakes but we're out of eggs.", &["inform: -available(egg)", "ask_how: make_pancake"]),
+        ("I have flour, a ripe banana and a pan, but no eggs.", &["inform: available(flour); available(banana); property(banana, state, ripe); available(frying_pan)", "lack: egg"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("what do you have"), "{r}");
+    let r = talk(&mut a, gold[1].0);
+    assert!(r.contains("use it instead of the egg"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

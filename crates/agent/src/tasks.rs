@@ -411,7 +411,7 @@ impl Agent {
         let missing: Vec<String> = missing
             .into_iter()
             .filter(|x| needs_now.contains(x))
-            .filter(|x| !have_now.iter().any(|h| h.split('_').any(|w| w == x.as_str())))
+            .filter(|x| !have_now.iter().any(|h| h.split('_').any(|w| w == x.as_str()) || x.split('_').any(|w| w == h.as_str())))
             .filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x) && !dropped_tools.contains(x))
             .collect();
         if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
@@ -519,8 +519,13 @@ impl Agent {
                 // Not something the task already uses, nor a form of it ("tap water" for water).
                 let used_words: Vec<&str> = used.iter().flat_map(|u| u.split('_')).collect();
                 let offered: Vec<&String> = have.iter().filter(|y| !used.contains(y) && *y != x && !y.split('_').any(|w| used_words.contains(&w))).collect();
-                if let [y] = offered.as_slice() {
-                    out.push((x.clone(), (*y).clone(), Some(String::new())));
+                // Several: the one that shares a stem with the missing item
+                // ("tumble dryer" for the drying rack).
+                let stem = |w: &str| w.chars().take(3).collect::<String>();
+                let akin: Vec<&String> = offered.iter().copied().filter(|y| y.split('_').any(|w| w.len() > 3 && x.split('_').any(|xw| xw.len() > 3 && stem(xw) == stem(w)))).collect();
+                match (offered.as_slice(), akin.as_slice()) {
+                    ([y], _) | (_, [y]) => out.push((x.clone(), (**y).clone(), Some(String::new()))),
+                    _ => {}
                 }
             }
         }
@@ -659,6 +664,8 @@ impl Agent {
     pub(crate) fn task_needs(&mut self, b: &mut Brain, t: &str) -> Reply {
         let m = self.session_model(b);
         let Some(task) = self.resolve_task(&m, t) else { return self.teach_me(t) };
+        // What the user says next ("I have X but no Y") is about this task.
+        self.active_task = Some(task.clone());
         let needs = values(&m, "needs_all", &task, 1);
         if needs.is_empty() {
             return self.teach_me(t);

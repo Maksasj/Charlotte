@@ -502,6 +502,10 @@ impl Agent {
         if self.dialogue_ran && texts.len() > 1 {
             const SIDE: &[&str] = &["I don't know whether", "I'm not sure whether", "I have no idea whether", "I don't know what", "I'm not sure what", "I have no idea what"];
             texts.retain(|t| !SIDE.iter().any(|p| t.starts_with(p)));
+            // Nor a check-back of the request itself ("So you want to make pancakes, right?").
+            if texts.len() > 1 {
+                texts.retain(|t| !(t.starts_with("So ") && t.ends_with(", right?")));
+            }
         }
         // A social reply to the opening greeting is dropped when content follows.
         if texts.len() > 1 && matches!(texts[0].as_str(), "Hello!" | "Hi there!" | "Hello, nice to talk to you.") {

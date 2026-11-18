@@ -1734,3 +1734,22 @@
 {"key":"96154c005c794bf6","out":"1: yes\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
 {"key":"fc0ec3a473126f35","out":"1: yes\n2: yes\n3: no\n4: yes\n5: yes\nVERDICT: fail"}
 {"key":"2e2b899e67d12eea","out":"1: yes\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"0defe7f1eb620686","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"bfd4cda4a25327c4","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"7e596ea28348fb38","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"53652e657020b83b","out":"1: no\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8d72b9574cba7cbf","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: yes\nVERDICT: pass"}
+{"key":"0bee52f8e73d13e9","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"bb776748c1fc86b8","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"d7b1329251904e2d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"19a68764f6cd1db4","out":"1: yes\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"8fe5159d9b90c093","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"61d516c4cc6b90a5","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"c830d9f331f13d6b","out":"1: yes\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"6b614ec374f3fb6f","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"97c2f4698af1a56f","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"630d2d4a52d35d2a","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"770edf44761fad53","out":"1: yes\n2: yes\n3: no\n4: yes\n5: yes\nVERDICT: fail"}
+{"key":"0a4ed94e9fb600d9","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"36f49c93e8aeafa0","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"e78d544467c4a255","out":"1: no\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
