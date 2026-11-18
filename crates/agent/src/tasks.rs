@@ -25,7 +25,7 @@ fn g(pred: &str, args: &[&str]) -> GroundAtom {
     GroundAtom::new(pred, args.iter().map(|a| sym(a)).collect())
 }
 
-fn values(m: &Model, pred: &str, first: &str, pos: usize) -> Vec<String> {
+pub(crate) fn values(m: &Model, pred: &str, first: &str, pos: usize) -> Vec<String> {
     let mut out: Vec<String> = m
         .facts_of(pred)
         .into_iter()

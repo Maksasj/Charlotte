@@ -125,6 +125,11 @@ impl Agent {
                         }
                     }
                 }
+                // A taught procedure by that very name is what was asked for,
+                // not whatever else solves a schema of the same name.
+                Intent::Request(t) | Intent::AskHow(t) if base.contains(&g("task", &[t.as_str()])) && !crate::tasks::values(&base, "step", t, 1).is_empty() => {
+                    requested = Some(t.clone());
+                }
                 Intent::Request(t) | Intent::AskHow(t) => match self.schema_for(&base, t) {
                     Some(schema) => {
                         if self.frame.as_deref() != Some(schema.as_str()) {
