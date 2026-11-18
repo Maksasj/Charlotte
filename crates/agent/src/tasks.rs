@@ -346,6 +346,9 @@ impl Agent {
             text.push_str(&format!(" It takes about {} in all.", range(&a.args[1], &a.args[2], "minute")));
             claims.push(a);
         }
+        // Not what is replaced or known to be lacking: the notes below say those.
+        let lacking_now: Vec<String> = self.session_facts.iter().filter(|f| f.pred == "-available").filter_map(|f| f.args.first()?.as_sym().map(String::from)).collect();
+        let missing: Vec<String> = missing.into_iter().filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x)).collect();
         if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
             text.push_str(&format!(" You still need {}.", list(&missing.iter().map(|x| words(x)).collect::<Vec<_>>())));
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
@@ -417,7 +420,9 @@ impl Agent {
             // Asked "what do you have that could do the job?", the user named
             // something the task does not otherwise use: their proposal.
             if self.asked_lack.borrow().contains(x) {
-                let offered: Vec<&String> = have.iter().filter(|y| !used.contains(y) && *y != x).collect();
+                // Not something the task already uses, nor a form of it ("tap water" for water).
+                let used_words: Vec<&str> = used.iter().flat_map(|u| u.split('_')).collect();
+                let offered: Vec<&String> = have.iter().filter(|y| !used.contains(y) && *y != x && !y.split('_').any(|w| used_words.contains(&w))).collect();
                 if let [y] = offered.as_slice() {
                     out.push((x.clone(), (*y).clone(), Some(String::new())));
                 }
@@ -543,7 +548,8 @@ impl Agent {
         lacking.retain(|x| !guessed.contains(x) && !m.facts_of("substitute").iter().any(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())));
         if !lacking.is_empty() {
             let l = list(&lacking.iter().map(|x| words(x)).collect::<Vec<_>>());
-            if self.session_facts.iter().any(|f| f.pred == "available") {
+            let asked = lacking.iter().all(|x| self.asked_lack.borrow().contains(x));
+            if asked {
                 out.push_str(&format!(" You don't have {l}, and I don't know what can replace it yet."));
             } else {
                 // Ask what they have: an answer lets me look for something that does the same job.
