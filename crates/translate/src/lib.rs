@@ -817,14 +817,32 @@ fn lack_cues(part: &mut Part, ctx: &TContext) {
     if !CUES.iter().any(|c| low.contains(c)) {
         return;
     }
-    let words: Vec<String> = low.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).map(String::from).collect();
+    let words: Vec<String> = low.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).map(String::from).collect();
     let joined = format!(" {} ", words.join(" "));
     let mut items: Vec<String> = Vec::new();
     for (_, hints) in &ctx.task_hints {
         for h in hints {
             let phrase = h.replace('_', " ");
             let forms = [phrase.clone(), format!("{phrase}s"), format!("{phrase}es"), phrase.strip_suffix('y').map(|r| format!("{r}ies")).unwrap_or_default()];
-            if forms.iter().any(|f| !f.is_empty() && joined.contains(&format!(" {f} "))) && !items.contains(h) {
+            // The item must be what the cue is about: right after it ("no kettle",
+            // "out of eggs", "don't have a watering can", up to two words between)
+            // or right before a "broke" ("my kettle just broke").
+            const BEFORE: &[&str] = &["no", "without", "out of", "ran out of", "run out of", "don't have", "do not have", "dont have", "don't own", "do not own", "haven't got", "not got"];
+            const AFTER: &[&str] = &["broke", "broken", "is broken", "isn't working", "doesn't work"];
+            let near = forms.iter().filter(|f| !f.is_empty()).any(|f| {
+                let item = format!(" {f} ");
+                let Some(at) = joined.find(&item) else { return false };
+                let before: Vec<&str> = joined[..at].split_whitespace().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect();
+                let after: Vec<&str> = joined[at + item.len()..].split_whitespace().take(3).collect();
+                let b = before.join(" ");
+                let cue_before = BEFORE.iter().any(|c| {
+                    b.ends_with(c) || before.len() >= 2 && before[..before.len() - 1].join(" ").ends_with(c) || before.len() >= 3 && before[..before.len() - 2].join(" ").ends_with(c)
+                });
+                let a = after.join(" ");
+                let cue_after = AFTER.iter().any(|c| a.starts_with(c) || a.split_whitespace().skip(1).collect::<Vec<_>>().join(" ").starts_with(c));
+                cue_before || cue_after
+            });
+            if near && !items.contains(h) {
                 items.push(h.clone());
             }
         }
@@ -938,6 +956,9 @@ mod substitute_tests {
         let mut p = Part { text: "I don't own a watering can.".into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false };
         lack_cues(&mut p, &ctx);
         assert_eq!(p.acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(watering_can)"]);
+        let mut p = Part { text: "I have tea bags, a mug and a small pot, but no kettle.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
+        lack_cues(&mut p, &ctx);
+        assert_eq!(p.acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(kettle)"], "only the item the cue is about");
         let mut p = Part { text: "I have a kettle and tea bags.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
         lack_cues(&mut p, &ctx);
         assert!(p.acts.is_empty(), "no cue, nothing added");

@@ -328,6 +328,7 @@ impl Agent {
                 let action = values(&m, "action", st, 1).into_iter().next().unwrap_or_default();
                 let only_here: Vec<String> = tools_of(st)
                     .into_iter()
+                    .chain(values(&m, "needs", &task, 1).into_iter().filter(|n| n == &action))
                     .filter(|t| t.split('_').next() == Some(action.as_str()))
                     .filter(|t| !subs.iter().any(|(x, _)| x == t) && steps.iter().filter(|o| o != st).all(|o| !tools_of(o).contains(t)))
                     .collect();
@@ -450,7 +451,7 @@ impl Agent {
             }
             // Asked "what do you have that could do the job?", the user named
             // something the task does not otherwise use: their proposal.
-            if self.asked_lack.borrow().contains(x) {
+            {
                 // Not something the task already uses, nor a form of it ("tap water" for water).
                 let used_words: Vec<&str> = used.iter().flat_map(|u| u.split('_')).collect();
                 let offered: Vec<&String> = have.iter().filter(|y| !used.contains(y) && *y != x && !y.split('_').any(|w| used_words.contains(&w))).collect();

@@ -1,0 +1,206 @@
+{
+  "templates": {
+    "i can order {0} from bakery and buy balloons .": {
+      "acts": [
+        "inform: -available({0})"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i do not have {0} , but i have kitchen {1} and {2} .": {
+      "acts": [
+        "lack: {0}",
+        "inform: available({1}); available({2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have got small {0} to put up above my desk .": {
+      "acts": [
+        "inform: available({0})"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} , {3} and {4} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} and pack of {3} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} {2} , {3} and full {4} of clothes .": {
+      "acts": [
+        "inform: available({0}); available({2}); available({3}); available({4}); available({1})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "to {0} you need {1} and {2} .": {
+      "acts": [
+        "tell: needs({0}, {1}); needs({0}, {2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 2,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    }
+  }
+}
