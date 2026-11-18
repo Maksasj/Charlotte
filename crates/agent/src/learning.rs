@@ -134,6 +134,21 @@ impl Agent {
     /// help can say it the way it was taught (the facts still carry the claims).
     fn keep_wording(&mut self, b: &mut Brain, learned: &[GroundAtom]) {
         let last = self.heard_text.rsplit('\n').next().unwrap_or("").to_string();
+        // "To pack for a trip you need ...": how the task itself is said.
+        if let Some(g) = learned.iter().find(|g| g.pred == "needs") {
+            if let (Some(task), Some(rest)) = (g.args[0].as_sym(), last.strip_prefix("to ")) {
+                if let Some((phrase, _)) = rest.split_once(" you need") {
+                    let first = phrase.split_whitespace().next().unwrap_or("");
+                    if task.split('_').next() == Some(first) || task.contains(first) {
+                        let stem = sla_core::vault::file_stem(task);
+                        if let Some(pf) = b.kb.vault.procedures.get_mut(&stem) {
+                            set_wording(&mut pf.doc, "task", phrase.trim());
+                            b.kb.vault.mark_procedure_dirty(ProcedureKind::Procedure, &stem);
+                        }
+                    }
+                }
+            }
+        }
         for g in learned.iter().filter(|g| g.pred == "action") {
             let (Some(st), Some(action)) = (g.args[0].as_sym(), g.args.get(1).and_then(|v| v.as_sym())) else { continue };
             let Some((task, n)) = st.rsplit_once("_s") else { continue };

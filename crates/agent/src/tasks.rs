@@ -169,6 +169,17 @@ pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
     out
 }
 
+/// "Remove the wheel (2 to 3 minutes)." -> "Remove the wheel."
+fn strip_time(t: &str) -> String {
+    if let Some(i) = t.rfind(" (") {
+        let inner = &t[i..];
+        if ["minute", "hour", "second"].iter().any(|u| inner.contains(u)) && inner.trim_end().ends_with(").") {
+            return format!("{}.", &t[..i]);
+        }
+    }
+    t.to_string()
+}
+
 /// Verbs that say only "do the task": `cook_egg` may be `boil_egg`.
 const GENERIC: &[&str] = &["make", "cook", "prepare", "do", "get", "have", "fix", "help"];
 
@@ -412,6 +423,22 @@ impl Agent {
                 }
                 _ => text,
             };
+            // A step already said inside an earlier one ("seal the envelope and
+            // stick the stamp on it", then "stick the stamp in the envelope").
+            let object = values(&m, "object_of", s, 1).into_iter().next().unwrap_or_default();
+            let said_before = !action.is_empty()
+                && !object.is_empty()
+                && texts.iter().any(|p| {
+                    let p = p.to_lowercase();
+                    p.contains(&format!("{action} ")) && p.contains(&words(&object)) && !p.starts_with(&action)
+                });
+            if said_before {
+                continue;
+            }
+            // Times only where waiting is the step (boil, simmer, the machine
+            // cycle); on hands-on steps they read like a manual.
+            const WAIT: &[&str] = &["boil", "simmer", "bake", "roast", "cook", "fry", "run", "rest", "steep", "brew", "soak", "microwave", "heat", "cool", "chill", "dry", "melt", "grill", "toast", "rise", "wait", "leave", "steam", "poach", "marinate", "charge", "wash", "tumble"];
+            let text = if WAIT.contains(&action.as_str()) { text } else { strip_time(&text) };
             texts.push(swap(&text));
         }
         if let Some(line) = &extra {
@@ -647,6 +674,10 @@ impl Agent {
 
     /// "boil egg" for a verb phrase, "make garlic tomato pasta" for a thing.
     pub(crate) fn task_phrase(&self, b: &Brain, task: &str) -> String {
+        // As it was taught ("To pack for a trip you need ...").
+        if let Some(w) = b.kb.vault.procedures.get(&sla_core::vault::file_stem(task)).and_then(|pf| crate::learning::wordings(&pf.doc).get("task").cloned()) {
+            return w;
+        }
         if self.is_verb_phrase(b, task) {
             // "fix a tire", "boil an egg"; mass nouns and plurals as they are.
             match task.split_once('_') {
