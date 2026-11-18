@@ -1054,6 +1054,8 @@ pub const MASS: &[&str] = &[
     "meat", "chicken", "beef", "fish", "yogurt", "honey", "juice", "wine", "beer", "sand", "air", "time", "music", "information", "advice", "help", "money",
     "furniture", "luggage", "equipment", "wood", "paper", "glue", "soap", "toothpaste", "ice", "snow", "rain", "sunscreen", "cream", "stock", "broth", "dough",
     "spinach", "lettuce", "broccoli", "corn", "oats", "jam", "sauce", "vinegar",
+    "detergent", "laundry", "dish_soap", "washing_up_liquid", "shampoo", "polish", "paint", "primer", "sealant", "tape", "foil", "string",
+    "granola", "salsa", "hummus", "pesto", "tahini", "chili_powder", "cinnamon", "batter", "food", "clothing", "potting_soil", "soil", "grass",
 ];
 
 /// The plural of a count noun ("cherry tomato" -> "cherry tomatoes").

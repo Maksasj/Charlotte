@@ -266,7 +266,9 @@ impl Agent {
             for u in &uses {
                 claims.push(g("uses", &[s, u]));
             }
-            text.push_str(&uses_phrase(action.as_deref().unwrap_or(""), &uses));
+            // Not the step's own object again ("heat the oven in the oven").
+            let shown: Vec<String> = uses.iter().filter(|u| Some(*u) != object.as_ref()).cloned().collect();
+            text.push_str(&uses_phrase(action.as_deref().unwrap_or(""), &shown));
         }
         if let Some(u) = values(m, "until", s, 1).into_iter().next().filter(|u| Some(u) != action.as_ref()) {
             claims.push(g("until", &[s, &u]));
