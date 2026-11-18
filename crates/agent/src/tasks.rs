@@ -455,7 +455,7 @@ impl Agent {
                     }
                     let score = if obj.is_some() && obj == &obj2 { 2 } else { 1 };
                     for y in values(m, "uses", &st2, 1) {
-                        if &y != x && have.contains(&y) && best.as_ref().map_or(true, |b| b.0 < score) {
+                        if &y != x && have.contains(&y) && !used.contains(&y) && best.as_ref().map_or(true, |b| b.0 < score) {
                             best = Some((score, y.clone(), other.clone()));
                         }
                     }

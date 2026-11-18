@@ -1586,3 +1586,26 @@
 {"key":"c6181f20edc95d99","out":"1: no\n2: yes\n3: no\n4: yes\n5: yes\nVERDICT: fail"}
 {"key":"5d3a4e0b2177ea22","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
 {"key":"6c2a7b83770d3bc1","out":"1: no\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"6a0c1413f06f208d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"00e99114922e5c8f","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"9d39ef42abb53b69","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"416578e60d8ec53a","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"795f4adbf83d7404","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"8d618955c39a8647","out":"1: no\n2: yes\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"3efe85d656dbd183","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"696a37c94f4eda42","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"cde7c0e52eca661e","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"c5210831e2193a34","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"804b86a8720013a7","out":"1: no\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"dba59b6019235e85","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"9017cd1f660d1633","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"8245aa4499d1faa7","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"aa013c04a02fa311","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"4c2b7f4bb11b7396","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: yes\nVERDICT: pass"}
+{"key":"5eb6e4d3a5708e3c","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"471b6c6eac7ba030","out":"1: yes\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"fc14b442e200a8a5","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: yes\nVERDICT: pass"}
+{"key":"0346ae9dc8fd1118","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"55fcdc4f3cb82654","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"278ed2a014be4f42","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"d739435d9775a517","out":"1: no\n2: yes\n3: no\n4: yes\n5: no\nVERDICT: fail"}

@@ -813,7 +813,7 @@ impl Translator {
 /// whatever the earlier tiers made of the sentence (the model sometimes drops it).
 /// Only items that known tasks need count, so the fact is always grounded.
 fn lack_cues(part: &mut Part, ctx: &TContext) {
-    const CUES: &[&str] = &["broke", "broken", "don't have", "do not have", "dont have", "out of", "ran out", "run out", "without", "don't own", "do not own", "no ", "not got", "haven't got", "isn't working", "doesn't work"];
+    const CUES: &[&str] = &["allow", "can't use", "cannot use", "broke", "broken", "don't have", "do not have", "dont have", "out of", "ran out", "run out", "without", "don't own", "do not own", "no ", "not got", "haven't got", "isn't working", "doesn't work"];
     let low = part.text.to_lowercase().replace('\u{2019}', "'");
     if !CUES.iter().any(|c| low.contains(c)) {
         return;
@@ -828,7 +828,7 @@ fn lack_cues(part: &mut Part, ctx: &TContext) {
             // The item must be what the cue is about: right after it ("no kettle",
             // "out of eggs", "don't have a watering can", up to two words between)
             // or right before a "broke" ("my kettle just broke").
-            const BEFORE: &[&str] = &["no", "without", "out of", "ran out of", "run out of", "don't have", "do not have", "dont have", "don't own", "do not own", "haven't got", "not got"];
+            const BEFORE: &[&str] = &["no", "without", "out of", "doesn't allow", "does not allow", "don't allow", "not allowed", "can't use", "cannot use", "ran out of", "run out of", "don't have", "do not have", "dont have", "don't own", "do not own", "haven't got", "not got"];
             const AFTER: &[&str] = &["broke", "broken", "is broken", "isn't working", "doesn't work"];
             let near = forms.iter().filter(|f| !f.is_empty()).any(|f| {
                 let item = format!(" {f} ");
@@ -878,7 +878,7 @@ fn lack_cues(part: &mut Part, ctx: &TContext) {
 /// fits (its name is in the message, or it is the only task using the item).
 fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
     let asks = parts.iter().flat_map(|p| p.acts.iter()).any(|a| matches!(a, Intent::Request(_) | Intent::AskHow(_) | Intent::AskNeed(_) | Intent::AskDuration(_)));
-    if asks {
+    if asks || ctx.active_task.is_some() {
         return;
     }
     let lacking: Vec<String> = parts
