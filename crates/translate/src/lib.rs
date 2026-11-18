@@ -910,6 +910,24 @@ fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
     // "I want a picnic. Where do I start?": a how-question about a task named by its words.
     const HOW: &[&str] = &["where do i start", "where should i start", "what are the steps", "what do i do", "how do i", "how should i", "how can i", "walk me through", "talk me through", "show me how", "what's the best way", "what is the best way", "the right way", "how to "];
     let how = lacking.is_empty() && HOW.iter().any(|c| low.contains(c));
+    // After "I don't know how to hang painting yet", the user lists what they
+    // have: the task those items clearly fit (at least three of its items).
+    let after_unknown = ctx.last_reply.as_deref().map_or(false, |r| r.starts_with("I don't know how to "));
+    if lacking.is_empty() && !how && after_unknown {
+        let score = |h: &Vec<String>| h.iter().filter(|x| low.contains(&x.replace('_', " "))).count();
+        let mut ranked: Vec<(usize, &String)> = ctx.task_hints.iter().map(|(t, h)| (score(h), t)).collect();
+        ranked.sort_by(|a, b| b.0.cmp(&a.0));
+        if let [(a, t), rest @ ..] = ranked.as_slice() {
+            if *a >= 3 && rest.first().map_or(true, |(b, _)| b < a) {
+                if let Some(p) = parts.last_mut() {
+                    p.acts.retain(|a| !matches!(a, Intent::Unknown | Intent::AskNext | Intent::Ask { .. }));
+                    p.acts.push(Intent::AskHow((*t).clone()));
+                    p.ok = true;
+                }
+            }
+        }
+        return;
+    }
     if lacking.is_empty() && !how {
         return;
     }

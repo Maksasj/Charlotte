@@ -1,0 +1,335 @@
+{
+  "templates": {
+    "how do i {0} safely ?": {
+      "acts": [
+        "ask_how: {0}"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "how long do i {0} yolk is firm , and what are steps ?": {
+      "acts": [
+        "ask_duration: {0}",
+        "ask_how: {0}"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i am making salad but i do not have any {0} for dressing .": {
+      "acts": [
+        "lack: {0}"
+      ],
+      "inflect": [
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i do not have {0} , but i have kitchen {1} and {2} .": {
+      "acts": [
+        "lack: {0}",
+        "inform: available({1}); available({2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have got small {0} to put up above my desk .": {
+      "acts": [
+        "inform: available({0})"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i have got {0} and fancy omelette .": {
+      "acts": [
+        "inform: available({0})"
+      ],
+      "inflect": [
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} , {3} , {4} , {5} and big {6} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4}); available({5}); available({6})"
+      ],
+      "inflect": [
+        "",
+        "es",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} , {3} and {4} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} and {3} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3})"
+      ],
+      "inflect": [
+        "s",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "to {0} you need {1} , {2} , {3} , {4} , {5} , {6} and {7} .": {
+      "acts": [
+        "tell: needs({0}, {1}); needs({0}, {2}); needs({0}, {3}); needs({0}, {4}); needs({0}, {5}); needs({0}, {6}); needs({0}, {7})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "to {0} you need {1} and {2} .": {
+      "acts": [
+        "tell: needs({0}, {1}); needs({0}, {2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 2,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          2
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "what can i do ?": {
+      "acts": [
+        "ask_next:"
+      ],
+      "inflect": [],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [],
+      "classes": []
+    }
+  }
+}

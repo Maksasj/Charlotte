@@ -219,6 +219,11 @@ impl Agent {
     /// The task a request names: itself if known, a known task that solves
     /// it (a feasible one first), or one said to be the same.
     pub(crate) fn resolve_task(&self, m: &Model, t: &str) -> Option<String> {
+        // A step's name ("make_pancake_s4") means its task.
+        let t = match t.rsplit_once("_s") {
+            Some((head, n)) if !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()) && m.contains(&g("task", &[head])) => head,
+            _ => t,
+        };
         if m.contains(&g("task", &[t])) {
             return Some(t.to_string());
         }
@@ -433,7 +438,7 @@ impl Agent {
         let missing: Vec<String> = missing
             .into_iter()
             .filter(|x| needs_now.contains(x))
-            .filter(|x| !have_now.iter().any(|h| h.split('_').any(|w| w == x.as_str()) || x.split('_').any(|w| w == h.as_str())))
+            .filter(|x| !have_now.iter().any(|h| *h == *x || h.split('_').any(|w| w == x.as_str()) || x.split('_').any(|w| w == h.as_str())))
             .filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x) && !dropped_tools.contains(x))
             .collect();
         if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
