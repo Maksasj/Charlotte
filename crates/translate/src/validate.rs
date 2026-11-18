@@ -426,6 +426,14 @@ mod tests {
     }
 
     #[test]
+    fn step_with_until_clause_passes() {
+        let m = "Step 3 of watering a plant: pour the water slowly onto the soil with the watering can until it drains out of the bottom, for 1 to 2 minutes.";
+        let p = check(m, &["tell: step(water_plant, water_plant_s3); action(water_plant_s3, pour); object_of(water_plant_s3, water); uses(water_plant_s3, watering_can); uses(water_plant_s3, soil); takes_time(water_plant_s3, 1, 2, minute); until(water_plant_s3, drains_out_of_bottom)"]);
+        let q = check(m, &["tell: step(water_plant, water_plant_s3); action(water_plant_s3, pour); object_of(water_plant_s3, water); uses(water_plant_s3, watering_can); takes_time(water_plant_s3, 1, 2, minute); until(water_plant_s3, drain)"]);
+        assert!(q.is_empty() && !p.is_empty(), "the glued form is repaired before validation, not accepted: {p:?} / {q:?}");
+    }
+
+    #[test]
     fn bad_translations_fail() {
         // The model added knowledge that is not in the message.
         assert!(!check("I have pasta.", &["inform: available(pasta); available(basil)"]).is_empty());

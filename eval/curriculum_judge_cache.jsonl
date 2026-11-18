@@ -1714,3 +1714,17 @@
 {"key":"1a61114173eac834","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
 {"key":"187d81d7f4147f5d","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
 {"key":"49498e6ac3404610","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"4fbc12329721e57e","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"68bddbf782e2bd3c","out":"1: no\n2: yes\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"b782de88348848d9","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"be10280ad0688a25","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"d44fc34b8a081633","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"6ddadd566f872efc","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"81d65ea05e8c517a","out":"1: yes\n2: yes\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"94cf968abdad429f","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"d23fc1e62af42caa","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"b266131bc99ad8e1","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"77f5bf12a5e06f38","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: yes\nVERDICT: pass"}
+{"key":"af193b217838a074","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail\n\nCheck 2 fails because step 1 says to boil \"the rice in the pot,\" but the ground truth is to boil the water. The order of the remaining steps is correct."}
+{"key":"9ed38a2360ee91e4","out":"1: yes\n2: yes\n3: no\n4: yes\n5: yes\nVERDICT: fail"}
+{"key":"69be53071fc59c69","out":"1: yes\n2: no\n3: no\n4: yes\nVERDICT: fail"}

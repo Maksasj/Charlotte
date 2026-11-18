@@ -299,6 +299,23 @@ fn sentence_rules(sentence: &str, acts: &mut [Intent], ctx: &TContext) {
     let words: Vec<&str> = low.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).collect();
     let speaker_word = words.iter().any(|w| matches!(*w, "i" | "me" | "my" | "i'm" | "i've" | "i'd" | "mine" | "myself"));
     for a in acts.iter_mut() {
+        // "until it drains out of the bottom": the model glues the clause
+        // (`drains_out_of_bottom`); the end state is its verb (`drain`).
+        if let Intent::Tell { facts, .. } = a {
+            for f in facts.iter_mut().filter(|f| f.pred == "until" && f.args.len() == 2) {
+                if let sla_core::Term::Val(sla_core::Value::Sym(v)) = &f.args[1] {
+                    let ws: Vec<&str> = v.split('_').filter(|w| !matches!(*w, "it" | "they" | "is" | "are" | "the" | "a")).collect();
+                    if ws.len() >= 3 || v.contains("_out_") || v.contains("_of_") {
+                        if let Some(first) = ws.first() {
+                            let w = first.strip_suffix("es").filter(|r| r.ends_with("sh") || r.ends_with("ch")).or_else(|| first.strip_suffix('s')).unwrap_or(first);
+                            f.args[1] = sla_core::Term::Val(sla_core::Value::Sym(w.to_string()));
+                        }
+                    }
+                }
+            }
+            // Places the step does not need ("location(s3, bottom)") are not facts we keep.
+            facts.retain(|f| f.pred != "location" || !f.args.first().map_or(false, |x| matches!(x, sla_core::Term::Val(sla_core::Value::Sym(s)) if s.contains("_s"))));
+        }
         // "B can replace A" / "B can be used instead of A" is a substitute:
         // substitute(A, B), not the verb `replace(B, A)`.
         if low.contains(" can replace ") || low.contains("instead of") {
@@ -1023,6 +1040,13 @@ mod substitute_tests {
         let mut p = Part { text: "I have a kettle and tea bags.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
         lack_cues(&mut p, &ctx);
         assert!(p.acts.is_empty(), "no cue, nothing added");
+    }
+
+    #[test]
+    fn glued_until_becomes_its_verb() {
+        let mut acts = vec![sla_parser::llm::from_canonical("tell: step(water_plant, water_plant_s3); until(water_plant_s3, drains_out_of_bottom); location(water_plant_s3, bottom)").unwrap()];
+        sentence_rules("pour the water until it drains out of the bottom", &mut acts, &TContext::default());
+        assert_eq!(acts[0].canonical(), "tell: step(water_plant, water_plant_s3); until(water_plant_s3, drain)");
     }
 
     #[test]
