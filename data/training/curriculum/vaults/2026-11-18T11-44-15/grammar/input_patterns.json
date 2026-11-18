@@ -1,0 +1,321 @@
+{
+  "templates": {
+    "can you give me simple way to {0} in frying pan ?": {
+      "acts": [
+        "request: {0}"
+      ],
+      "inflect": [
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i am making salad but i do not have any {0} for dressing .": {
+      "acts": [
+        "lack: {0}"
+      ],
+      "inflect": [
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "i do not have {0} , but i have kitchen {1} and {2} .": {
+      "acts": [
+        "lack: {0}",
+        "inform: available({1}); available({2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , warm {1} , {2} , {3} and old {4} , but no {5} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4})",
+        "lack: {5}"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        "s",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} , {3} , {4} and frying {5} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4}); available({5})"
+      ],
+      "inflect": [
+        "s",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i have {0} , {1} , {2} , {3} and {4} .": {
+      "acts": [
+        "inform: available({0}); available({1}); available({2}); available({3}); available({4})"
+      ],
+      "inflect": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "i want to {0} but i realised we're out of {1} .": {
+      "acts": [
+        "inform: wants({speaker}, {0}); -available({1})"
+      ],
+      "inflect": [
+        "s",
+        "s"
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        ""
+      ]
+    },
+    "i want to {0} for lunch .": {
+      "acts": [
+        "request: {0}"
+      ],
+      "inflect": [
+        ""
+      ],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ]
+      ],
+      "classes": [
+        ""
+      ]
+    },
+    "to {0} you need {1} , {2} , {3} , {4} , {5} and {6} .": {
+      "acts": [
+        "tell: needs({0}, {1}); needs({0}, {2}); needs({0}, {3}); needs({0}, {4}); needs({0}, {5}); needs({0}, {6})"
+      ],
+      "inflect": [
+        "",
+        "s",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "seen": 2,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "to {0} you need {1} and {2} .": {
+      "acts": [
+        "tell: needs({0}, {1}); needs({0}, {2})"
+      ],
+      "inflect": [
+        "",
+        "",
+        ""
+      ],
+      "seen": 2,
+      "conflicted": false,
+      "lengths": [
+        [
+          2
+        ],
+        [
+          2
+        ],
+        [
+          1
+        ]
+      ],
+      "classes": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "what can i do ?": {
+      "acts": [
+        "ask_next:"
+      ],
+      "inflect": [],
+      "seen": 1,
+      "conflicted": false,
+      "lengths": [],
+      "classes": []
+    }
+  }
+}

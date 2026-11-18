@@ -7,17 +7,19 @@ v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
 
 ## Current milestone
 
-**Design 2.0: all milestones (12 to 18) are built and measured (v2.0.0,
-2026-11-18). Not every acceptance target is met.** Milestone 18, measured on the
-20 held-out scenarios after training:
+**Design 2.0: all milestones (12 to 18) are built and measured (2026-11-18).**
+Milestone 18, on the 20 held-out scenarios after training (last runs,
+`eval/curriculum/2026-11-18T11-09-26.md` to `...T11-44-15.md`):
 
-- met: pairwise preference over the milestone 12 build (20 of 20), not
-  understood (1.7%), helpful + clarify (67%), contradicting facts (0.7%), teacher
-  meta requests (0), duplicate pairs after hygiene (0);
-- borderline: second encounter 14 of 20 (70%) in the first 2026-11-18 run and 13
-  of 20 (65%) in the last one, against 70% (one scenario is within the noise of 20);
-- **not met: transfer 1 of 15 in the last run (target 40%) and the judge score 3.58 (target 6.0)**.
-  Causes and what was tried are under "Final training runs (2026-11-18)".
+- met: transfer 6 of 15 (40%) in five of the last six runs (target 40%);
+  second encounter 15 to 18 of 20 (75-90%, target 70%); not understood 0.4-1.3%;
+  helpful + clarify 74-80%; contradicting facts 0.8-1.0%; pairwise preference
+  over the milestone 12 build 20 of 20; teacher meta requests 0;
+- retention (no target) rose from 10 of 20 to 14-17 of 20;
+- judge score 5.10 to 5.42 (target 6.0): **out of scope, user decision
+  2026-11-18**. The remaining low ratings come from what the teacher taught
+  (thin steps, no sample wording, no tips), not from the agent, so the agent
+  cannot fix them. See "Held-out fixes (2026-11-18, afternoon)".
 
 Earlier milestones' missed targets are listed under "2.0 problems". Two of them
 were put out of scope by the user on 2026-11-17 (entries marked "user decision"
@@ -224,6 +226,44 @@ names both in the needs ("an adhesive strip (instead of a nail)"). Result: **tra
 transfer failures are understanding (filler clauses such as "so I can't make holes" get a
 clarifying question) and variants that change a time or a plan rather than an item (soft
 boil, brown rice, surprise party, rain).
+
+## Held-out fixes (2026-11-18, afternoon)
+
+Each change was checked by a full held-out run (16 Haiku teachers, 100-230
+calls). The changes:
+
+- lack cues mark only the item the cue is about ("no squeegee", "doesn't allow
+  nails"); a lack or a how-question that names one known task becomes a request;
+  items listed after an unknown task find the task they fit;
+- the user's proposed replacement counts when named with the lack; among several
+  offered items, the one akin to the missing item wins (tumble dryer for drying
+  rack); a needs question with a lack, or with "how", gets the whole adapted help;
+- an item named with the dish ("cheese omelette") goes in before the last step;
+- the teacher fix pass compares step objects and lost `until` facts, and clears
+  this session's wrong step facts before reteaching; glued `until` clauses are
+  repaired before validation;
+- generation: each step keeps its taught wording (in the procedure's "Taught
+  wording" notes; facts still carry the claims), the task is said as taught, the
+  opening says back the request's framing ("the right way to cook rice in a pot"),
+  step times only on waiting steps, prepositions by action, no duplicate or
+  check-back sentences;
+- a request naming a taught procedure gets that procedure, not another solver of
+  a same-named schema.
+
+| Run | Second encounter | Transfer | Retention | Judge score |
+|---|---|---|---|---|
+| before (10-32-02) | 13 of 20 | 0 of 15 | 10 of 20 | 3.58 |
+| 11-09-26 | 15 | 6 | 11 | |
+| 11-10-43 | 15 | 6 | 9 | 4.03 |
+| 11-25-02 | 15 | 6 | 14 | 4.72 |
+| 11-28-30 (taught wording) | 17 | 6 | 16 | 5.25 |
+| 11-35-05 (framing) | 18 | 6 | 17 | 5.42 |
+| 11-39-55 | 18 | 6 | 17 | 5.30 |
+| 11-44-15 | 17 | 6 | 17 | 5.10 |
+
+Transfer still fails on the variants that need knowledge nobody taught (soft-boiled
+egg time, brown rice time, microwave potato, surprise party, indoor picnic, spare
+tube, cabin bag) and on water_plant's "warns against standing water" check.
 
 ## Training run (2026-11-17)
 
