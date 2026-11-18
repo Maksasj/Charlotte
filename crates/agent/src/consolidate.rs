@@ -6,7 +6,10 @@
 //!   one turn talked about;
 //! - the hygiene pass (duplicates linked and queued as merges);
 //! - steps shared by several procedures (the same action on the same object),
-//!   reported as candidates for a shared sub-task.
+//!   reported as candidates for a shared sub-task;
+//! - old forms migrated: "B can replace A" stored as the verb `replace(B, A)`
+//!   (or, with a plural subject, the rule `replace(X, A) :- is_a(X, B)`) by
+//!   builds before that was fixed becomes `substitute(A, B)`.
 
 use crate::Brain;
 use serde::Serialize;
@@ -20,11 +23,49 @@ pub struct ConsolidationReport {
     pub hygiene: crate::hygiene::HygieneReport,
     /// (action, object) shared by two or more procedures, with them.
     pub shared_steps: Vec<(String, String, Vec<String>)>,
+    /// `replace` facts and rules migrated to `substitute`.
+    pub substitutes_migrated: usize,
     pub ms: f64,
+}
+
+/// Migrate `replace(B, A)` facts and `replace(X, A) :- is_a(X, B)` rules to
+/// `substitute(A, B)` facts. Returns how many were migrated.
+pub fn migrate_substitutes(b: &mut Brain, now: Timestamp) -> usize {
+    use sla_core::{Fact, GroundAtom, Literal, Term, Value};
+    let mut n = 0;
+    let olds: Vec<Fact> = b.kb.all_facts().into_iter().filter(|f| f.is_open() && f.atom.pred == "replace" && f.atom.args.len() == 2).collect();
+    for f in olds {
+        let sub = GroundAtom::new("substitute", vec![f.atom.args[1].clone(), f.atom.args[0].clone()]);
+        if let Some(id) = &f.id {
+            b.kb.close_by_id(id, now, "migrated to substitute");
+        }
+        b.kb.assert_fact(Fact::new(sub, &f.source), now, "migrated from replace");
+        n += 1;
+    }
+    let stems: Vec<String> = b.kb.vault.rules.keys().cloned().collect();
+    for stem in stems {
+        let rules = b.kb.vault.rules[&stem].rules();
+        let [r] = rules.as_slice() else { continue };
+        if r.head.pred != "replace" || r.head.args.len() != 2 {
+            continue;
+        }
+        let [Literal::Pos(body)] = r.body.as_slice() else { continue };
+        if body.pred != "is_a" || body.args.len() != 2 || body.args[0] != r.head.args[0] {
+            continue;
+        }
+        let (Term::Val(a @ Value::Sym(_)), Term::Val(bv @ Value::Sym(_))) = (&r.head.args[1], &body.args[1]) else { continue };
+        let source = b.kb.vault.rules[&stem].meta().source;
+        b.kb.vault.remove_rule_file(&stem);
+        b.kb.log_change(now, "remove_rule", &stem, "migrated to substitute");
+        b.kb.assert_fact(Fact::new(GroundAtom::new("substitute", vec![a.clone(), bv.clone()]), &source), now, "migrated from a replace rule");
+        n += 1;
+    }
+    n
 }
 
 pub fn run(b: &mut Brain, now: Timestamp) -> ConsolidationReport {
     let t = std::time::Instant::now();
+    let substitutes_migrated = migrate_substitutes(b, now);
     let learner = b.learner.clone();
     let lr = learner.update(&mut b.kb, now);
     let hygiene = crate::hygiene::run(b, now);
@@ -46,5 +87,5 @@ pub fn run(b: &mut Brain, now: Timestamp) -> ConsolidationReport {
     let shared_steps = by_step.into_iter().filter(|(_, v)| v.len() >= 2).map(|((a, o), v)| (a, o, v)).collect();
     b.kb.log_change(now, "consolidate", &format!("{} rules proposed", lr.proposed.len()), "offline consolidation pass");
     let _ = b.save();
-    ConsolidationReport { rules_proposed: lr.proposed.len(), rules_changed: lr.changed.len(), hygiene, shared_steps, ms: t.elapsed().as_secs_f64() * 1000.0 }
+    ConsolidationReport { rules_proposed: lr.proposed.len(), rules_changed: lr.changed.len(), hygiene, shared_steps, substitutes_migrated, ms: t.elapsed().as_secs_f64() * 1000.0 }
 }

@@ -70,3 +70,24 @@ before({id}_s1, {id}_s2).
     drop(b);
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Consolidation migrates old `replace` facts and rules to `substitute`.
+#[test]
+fn consolidation_migrates_replace_to_substitute() {
+    let dir = std::env::temp_dir().join(format!("sla_m18_migrate_{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let a = Agent::open(&dir, "maksim").unwrap();
+    let mut b = a.brain();
+    let now = sla_core::Timestamp::now();
+    b.kb.assert_fact(sla_core::Fact::new(sla_core::parse_ground("replace(saucepan, kettle)").unwrap(), "teacher"), now, "test");
+    let meta = sla_core::RuleMeta { id: "replace_rule".into(), status: sla_core::RuleStatus::Confirmed, conf: 0.9, evidence: 0, counter: 0, module: "general".into(), source: "teacher".into() };
+    b.kb.vault.put_rule_file(sla_core::RuleFile::new(&meta, "", &[sla_core::parse_rule("replace(A, minced_beef) :- is_a(A, lentil).").unwrap()]));
+    assert_eq!(sla_agent::consolidate::migrate_substitutes(&mut b, now), 2);
+    let open: Vec<String> = b.kb.all_facts().into_iter().filter(|f| f.is_open()).map(|f| f.atom.to_string()).collect();
+    assert!(open.contains(&"substitute(kettle, saucepan)".to_string()), "{open:?}");
+    assert!(open.contains(&"substitute(minced_beef, lentil)".to_string()), "{open:?}");
+    assert!(!open.iter().any(|f| f.starts_with("replace(")), "{open:?}");
+    assert!(!b.kb.vault.rules.contains_key("replace_rule"));
+    drop(b);
+    let _ = std::fs::remove_dir_all(&dir);
+}
