@@ -15,6 +15,10 @@ fn formal() -> Vec<String> {
     for w in ["do", "need", "time", "gap", "ask", "uses", "user", "start", "level", "teach", "dataset", "derived", "seed", "learned", "fallback", "core"] {
         v.push(w.into());
     }
+    // technical names: CLI flags and JSON record keys of the call archive (not language)
+    for w in ["key", "answer", "model", "output", "format", "json", "system", "prompt", "tools", "session", "persistence", "strict", "mcp", "config", "result", "unix", "tag", "seconds", "line", "facts", "error"] {
+        v.push(w.into());
+    }
     v
 }
 
