@@ -466,7 +466,9 @@ impl Agent {
             return self.teach_me(t);
         }
         let claims = needs.iter().map(|x| g("needs_all", &[&task, x])).collect();
-        Reply { text: format!("For {} you need {}.", words(&task), list(&needs.iter().map(|x| words(x)).collect::<Vec<_>>())), intent: "answer", claims }
+        let notes = self.constraint_notes(&m, &task);
+        let need_list = list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>());
+        Reply { text: format!("To {} you need {need_list}.{notes}", self.task_phrase(b, &task)), intent: "answer", claims }
     }
 
     pub(crate) fn task_duration(&mut self, b: &mut Brain, t: &str) -> Reply {

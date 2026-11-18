@@ -757,6 +757,9 @@ impl Translator {
             });
         }
         out.retain(|p| !(p.ok && p.acts.is_empty()));
+        for part in out.iter_mut() {
+            lack_cues(part, ctx);
+        }
         Translation { parts: out, model_calls: self.calls - calls_before }
     }
 
@@ -800,6 +803,51 @@ impl Translator {
             }
         }
         out
+    }
+}
+
+
+/// "My kettle just broke", "we're out of eggs", "I don't own a watering can":
+/// a known task's item named with a lack cue is `inform: -available(item)`,
+/// whatever the earlier tiers made of the sentence (the model sometimes drops it).
+/// Only items that known tasks need count, so the fact is always grounded.
+fn lack_cues(part: &mut Part, ctx: &TContext) {
+    const CUES: &[&str] = &["broke", "broken", "don't have", "do not have", "dont have", "out of", "ran out", "run out", "without", "don't own", "do not own", "no ", "not got", "haven't got", "isn't working", "doesn't work"];
+    let low = part.text.to_lowercase().replace('\u{2019}', "'");
+    if !CUES.iter().any(|c| low.contains(c)) {
+        return;
+    }
+    let words: Vec<String> = low.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).map(String::from).collect();
+    let joined = format!(" {} ", words.join(" "));
+    let mut items: Vec<String> = Vec::new();
+    for (_, hints) in &ctx.task_hints {
+        for h in hints {
+            let phrase = h.replace('_', " ");
+            let forms = [phrase.clone(), format!("{phrase}s"), format!("{phrase}es"), phrase.strip_suffix('y').map(|r| format!("{r}ies")).unwrap_or_default()];
+            if forms.iter().any(|f| !f.is_empty() && joined.contains(&format!(" {f} "))) && !items.contains(h) {
+                items.push(h.clone());
+            }
+        }
+    }
+    // A longer item wins over the shorter one it contains ("watering can" over "can").
+    let all = items.clone();
+    items.retain(|i| !all.iter().any(|o| o != i && o.contains(i.as_str())));
+    for item in items {
+        let neg = sla_core::Atom { pred: "-available".into(), args: vec![sla_core::Term::sym(&item)] };
+        let have = part.acts.iter().any(|a| matches!(a, Intent::Inform(f) if f.contains(&neg)));
+        if have {
+            continue;
+        }
+        part.acts.retain(|a| *a != Intent::Unknown);
+        // Drop a contradicting "has it" from the same sentence.
+        for a in part.acts.iter_mut() {
+            if let Intent::Inform(f) = a {
+                f.retain(|x| !(x.args.last() == neg.args.first() && matches!(x.pred.as_str(), "available" | "has")));
+            }
+        }
+        part.acts.retain(|a| !matches!(a, Intent::Inform(f) if f.is_empty()));
+        part.acts.push(Intent::Inform(vec![neg]));
+        part.ok = true;
     }
 }
 
@@ -879,6 +927,20 @@ mod substitute_tests {
             Intent::Tell { facts, .. } => assert_eq!(facts[0].to_string(), "substitute(washer, ceramic_cartridge)"),
             other => panic!("{other:?}"),
         }
+    }
+
+    #[test]
+    fn lack_cues_add_not_available() {
+        let ctx = TContext { known_tasks: vec!["make_tea".into(), "water_plant".into()], task_hints: vec![("make_tea".into(), vec!["kettle".into(), "tea_bag".into()]), ("water_plant".into(), vec!["watering_can".into(), "can".into()])], ..Default::default() };
+        let mut p = Part { text: "I want a cup of tea but my kettle just broke.".into(), acts: vec![Intent::AskHow("make_tea".into())], tier: Tier::Model, ok: true, problems: vec![], retried: false };
+        lack_cues(&mut p, &ctx);
+        assert_eq!(p.acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["ask_how: make_tea", "inform: -available(kettle)"]);
+        let mut p = Part { text: "I don't own a watering can.".into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false };
+        lack_cues(&mut p, &ctx);
+        assert_eq!(p.acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(watering_can)"]);
+        let mut p = Part { text: "I have a kettle and tea bags.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
+        lack_cues(&mut p, &ctx);
+        assert!(p.acts.is_empty(), "no cue, nothing added");
     }
 
     #[test]
