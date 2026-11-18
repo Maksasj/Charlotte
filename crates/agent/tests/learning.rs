@@ -491,3 +491,32 @@ fn adopts_the_replacement_the_user_names() {
     assert!(r.contains("Since you have a jug, use it instead of the watering can") && r.contains("Fill the jug"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// A step that acted on the replaced item with its own tool is dropped, with the tool.
+#[test]
+fn replaced_item_drops_its_tool_step() {
+    let dir = temp("drop_step");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To hang a picture you need a hammer, a nail and a picture.", &["tell: task(hang_picture); needs(hang_picture, hammer); needs(hang_picture, nail); needs(hang_picture, picture)"]),
+        ("Step 1 of hanging a picture: hammer the nail with the hammer.", &["tell: step(hang_picture, hang_picture_s1); action(hang_picture_s1, hammer); object_of(hang_picture_s1, nail); uses(hang_picture_s1, hammer)"]),
+        ("Step 2 of hanging a picture: hang the picture on the nail.", &["tell: step(hang_picture, hang_picture_s2); action(hang_picture_s2, hang); object_of(hang_picture_s2, picture); uses(hang_picture_s2, nail)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("No nails allowed. How do I hang a picture?", &["inform: -available(nail)", "ask_how: hang_picture"]),
+        ("I have the picture and adhesive strips.", &["inform: available(picture); available(adhesive_strip)"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    talk(&mut a, gold[0].0);
+    let r = talk(&mut a, gold[1].0);
+    assert!(!r.to_lowercase().contains("hammer") && r.contains("an adhesive strip (instead of a nail)") && r.contains("Hang the picture with the adhesive strip"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

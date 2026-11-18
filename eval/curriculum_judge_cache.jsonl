@@ -1498,3 +1498,25 @@
 {"key":"29263150dc9ec479","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
 {"key":"641d973e23d37e9b","out":"1: yes\n2: no\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
 {"key":"059b2b8eaae31afc","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"e310cb93b38148b5","out":"1: no\n2: no\n3: no\n4: no\nVERDICT: fail"}
+{"key":"8e3ee6881c03ff3e","out":"1: no\n2: no\n3: no\n4: no\nVERDICT: fail"}
+{"key":"d33f353c547fb98c","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"2401ef9675a92f36","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"0230fbb79ce06257","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"3533f3765a0b9166","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"ece731453224b45b","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"d3a83960845d9329","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"db59edc036abdac5","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"c7d31eaf2c45b1cf","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"1d5893bec33db89d","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"dfb308f9f5dacffa","out":"1: no\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"bc6b508f935084bc","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"f4b3c77b11a42b43","out":"1: yes\n2: yes\n3: yes\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"0658697245181eff","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"8faa86d7c296bdf1","out":"1: yes\n2: no\n3: yes\n4: yes\nVERDICT: fail"}
+{"key":"85f31834de24a6df","out":"1: yes\n2: yes\n3: yes\n4: yes\nVERDICT: pass"}
+{"key":"a3b5206ac95a03b3","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"52d5e4eab7dc5474","out":"1: no\n2: no\n3: no\n4: yes\n5: no\nVERDICT: fail"}
+{"key":"8c15b5f701eec615","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"a4bcc45a38a10a63","out":"1: no\n2: no\n3: no\n4: yes\nVERDICT: fail"}
+{"key":"138a62e32b70e3db","out":"1: no\n2: yes\n3: yes\n4: yes\nVERDICT: fail"}

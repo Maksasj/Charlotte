@@ -316,11 +316,34 @@ impl Agent {
         // in the steps and the needs ("Boil the water in the saucepan").
         let subs = self.substitutions(&m, &task);
         let swap = |t: &str| subs.iter().fold(t.to_string(), |acc, (x, sub)| swap_word(&acc, &words(x), &words(sub)));
-        for (i, s) in steps.iter().enumerate() {
+        // A step that acts on the replaced item with a tool nothing else needs
+        // ("hammer the nail" with the hammer) no longer applies; nor does its tool.
+        let tools_of = |st: &String| values(&m, "uses", st, 1);
+        let mut dropped_tools: Vec<String> = Vec::new();
+        let kept: Vec<&String> = steps
+            .iter()
+            .filter(|st| {
+                let on_replaced = values(&m, "object_of", st, 1).iter().any(|o| subs.iter().any(|(x, _)| x == o));
+                // The action is the tool itself ("hammer" with the hammer), and no other step needs it.
+                let action = values(&m, "action", st, 1).into_iter().next().unwrap_or_default();
+                let only_here: Vec<String> = tools_of(st)
+                    .into_iter()
+                    .filter(|t| t.split('_').next() == Some(action.as_str()))
+                    .filter(|t| !subs.iter().any(|(x, _)| x == t) && steps.iter().filter(|o| o != st).all(|o| !tools_of(o).contains(t)))
+                    .collect();
+                if on_replaced && !only_here.is_empty() {
+                    dropped_tools.extend(only_here);
+                    return false;
+                }
+                true
+            })
+            .collect();
+        let numbered = kept.len() > 3;
+        for (i, s) in kept.iter().enumerate() {
             let (text, c) = self.step_text(&m, s);
             let text = swap(&text);
             claims.extend(c);
-            lines.push(if steps.len() > 3 { format!("{}. {text}", i + 1) } else { text });
+            lines.push(if numbered { format!("{}. {text}", i + 1) } else { text });
         }
         // What the task needs comes first.
         let needs = values(&m, "needs", &task, 1);
@@ -330,10 +353,18 @@ impl Agent {
             for x in &needs {
                 claims.push(g("needs", &[&task, x]));
             }
-            format!("{lead} You need {}.", list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>()))
+            let named: Vec<String> = needs
+                .iter()
+                .filter(|x| !dropped_tools.contains(x))
+                .map(|x| match subs.iter().find(|(y, _)| y == x) {
+                    Some((_, sub)) => format!("{} (instead of {})", with_article(sub), with_article(x)),
+                    None => with_article(x),
+                })
+                .collect();
+            format!("{lead} You need {}.", list(&named))
         };
-        let mut text = format!("{lead} {}", lines.join(if steps.len() > 3 { "\n" } else { " " }));
-        if steps.len() > 3 {
+        let mut text = format!("{lead} {}", lines.join(if numbered { "\n" } else { " " }));
+        if numbered {
             text = format!("{lead}\n{}", lines.join("\n"));
         }
         // A stated duration wins over the sum of the steps.
@@ -348,7 +379,7 @@ impl Agent {
         }
         // Not what is replaced or known to be lacking: the notes below say those.
         let lacking_now: Vec<String> = self.session_facts.iter().filter(|f| f.pred == "-available").filter_map(|f| f.args.first()?.as_sym().map(String::from)).collect();
-        let missing: Vec<String> = missing.into_iter().filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x)).collect();
+        let missing: Vec<String> = missing.into_iter().filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x) && !dropped_tools.contains(x)).collect();
         if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
             text.push_str(&format!(" You still need {}.", list(&missing.iter().map(|x| words(x)).collect::<Vec<_>>())));
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
