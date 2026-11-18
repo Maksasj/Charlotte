@@ -358,20 +358,60 @@ impl Agent {
     /// (item the user lacks, its substitute) for the items `task` needs or its
     /// steps use; a substitute the user has is preferred.
     pub(crate) fn substitutions(&self, m: &Model, task: &str) -> Vec<(String, String)> {
+        self.substitutions_why(m, task).into_iter().map(|(x, sub, _)| (x, sub)).collect()
+    }
+
+    /// Like `substitutions`, with how each was found: `None` for a taught
+    /// substitute, `Some(other_task)` for a guess by analogy: another known
+    /// procedure does the same action (on the same object, if it can) with an
+    /// item the user has ("boil water in a pot" when boiling an egg, for a kettle).
+    pub(crate) fn substitutions_why(&self, m: &Model, task: &str) -> Vec<(String, String, Option<String>)> {
+        let sym = |a: &GroundAtom, i: usize| a.args.get(i).and_then(|v| v.as_sym()).map(String::from);
+        let steps = self.ordered_steps(m, task);
         let used: Vec<String> = m
             .facts_of("needs")
             .into_iter()
             .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task))
-            .filter_map(|a| a.args.get(1)?.as_sym().map(String::from))
-            .chain(self.ordered_steps(m, task).iter().flat_map(|st| values(m, "uses", st, 1)))
+            .filter_map(|a| sym(&a, 1))
+            .chain(steps.iter().flat_map(|st| values(m, "uses", st, 1)))
             .collect();
-        let have: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "available").filter_map(|a| a.args.first()?.as_sym().map(String::from)).collect();
-        let lack: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "-available").filter_map(|a| a.args.first()?.as_sym().map(String::from)).collect();
+        let have: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "available").filter_map(|a| sym(a, 0)).collect();
+        let lack: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "-available").filter_map(|a| sym(a, 0)).collect();
         let mut out = Vec::new();
         for x in lack.iter().filter(|x| used.contains(x)) {
-            let subs: Vec<String> = m.facts_of("substitute").into_iter().filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())).filter_map(|a| a.args.get(1)?.as_sym().map(String::from)).collect();
+            let subs: Vec<String> = m.facts_of("substitute").into_iter().filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())).filter_map(|a| sym(&a, 1)).collect();
             if let Some(sub) = subs.iter().find(|s| have.contains(s)).or(subs.first()) {
-                out.push((x.clone(), sub.clone()));
+                out.push((x.clone(), sub.clone(), None));
+                continue;
+            }
+            // Analogy: the steps of this task that use `x`, and their action and object.
+            let mine: Vec<(Option<String>, Option<String>)> = steps
+                .iter()
+                .filter(|st| values(m, "uses", st, 1).contains(x) || values(m, "object_of", st, 1).contains(x))
+                .map(|st| (values(m, "action", st, 1).into_iter().next(), values(m, "object_of", st, 1).into_iter().next().filter(|o| o != x)))
+                .collect();
+            let mut best: Option<(u8, String, String)> = None;
+            for stp in m.facts_of("step") {
+                let (Some(other), Some(st2)) = (sym(&stp, 0), sym(&stp, 1)) else { continue };
+                if other == task {
+                    continue;
+                }
+                let act2 = values(m, "action", &st2, 1).into_iter().next();
+                let obj2 = values(m, "object_of", &st2, 1).into_iter().next();
+                for (act, obj) in &mine {
+                    if act.is_none() || act != &act2 {
+                        continue;
+                    }
+                    let score = if obj.is_some() && obj == &obj2 { 2 } else { 1 };
+                    for y in values(m, "uses", &st2, 1) {
+                        if &y != x && have.contains(&y) && best.as_ref().map_or(true, |b| b.0 < score) {
+                            best = Some((score, y.clone(), other.clone()));
+                        }
+                    }
+                }
+            }
+            if let Some((_, y, other)) = best {
+                out.push((x.clone(), y, Some(other)));
             }
         }
         out
@@ -460,7 +500,18 @@ impl Agent {
                 }
             }
         }
+        // Guesses by analogy (nothing taught): say where the idea comes from.
+        let mut guessed: Vec<String> = Vec::new();
+        for (x, y, why) in self.substitutions_why(m, task) {
+            if let Some(other) = why {
+                out.push_str(&format!(" I haven't been taught this, but you could probably use {} instead of the {}: I use {} like that when I {}.", with_article(&y), words(&x), with_article(&y), self.task_phrase_m(&other)));
+                guessed.push(x);
+            }
+        }
         for x in &lacking_all {
+            if guessed.contains(x) {
+                continue;
+            }
             let subs: Vec<String> = m
                 .facts_of("substitute")
                 .into_iter()
@@ -473,10 +524,15 @@ impl Agent {
                 out.push_str(&format!(" You can use {} instead of the {}.", with_article(sub), words(x)));
             }
         }
-        lacking.retain(|x| !m.facts_of("substitute").iter().any(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())));
+        lacking.retain(|x| !guessed.contains(x) && !m.facts_of("substitute").iter().any(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())));
         if !lacking.is_empty() {
             let l = list(&lacking.iter().map(|x| words(x)).collect::<Vec<_>>());
-            out.push_str(&format!(" You don't have {l}, and I don't know what can replace it yet."));
+            if self.session_facts.iter().any(|f| f.pred == "available") {
+                out.push_str(&format!(" You don't have {l}, and I don't know what can replace it yet."));
+            } else {
+                // Ask what they have: an answer lets me look for something that does the same job.
+                out.push_str(&format!(" You don't have {l}: what do you have that could do the job?"));
+            }
         }
         out
     }
@@ -592,4 +648,17 @@ pub(crate) fn swap_word(text: &str, from: &str, to: &str) -> String {
         out = res;
     }
     out
+}
+
+impl Agent {
+    /// "boil an egg" / "make garlic tomato pasta" without a locked brain at hand.
+    pub(crate) fn task_phrase_m(&self, task: &str) -> String {
+        let first = task.split('_').next().unwrap_or("");
+        let verb = self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "bake" | "boil" | "plan" | "change" | "pack" | "write" | "clean" | "wash" | "fix" | "do");
+        match (verb, task.split_once('_')) {
+            (true, Some((v, rest))) => format!("{v} {}", with_article(rest)),
+            (true, None) => words(task),
+            (false, _) => format!("make {}", words(task)),
+        }
+    }
 }

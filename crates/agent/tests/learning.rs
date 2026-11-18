@@ -428,3 +428,36 @@ fn steps_use_the_substitute_for_a_lacking_item() {
     assert!(r.contains("You can use a shallot instead of the garlic"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Transfer by analogy: no substitute was taught, but another procedure boils
+/// water in a pot; the agent asks what the user has and adapts the steps.
+#[test]
+fn transfer_by_analogy_after_asking() {
+    let dir = temp("analogy");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To make tea you need a kettle, a mug, a tea bag and water.", &["tell: task(make_tea); needs(make_tea, kettle); needs(make_tea, mug); needs(make_tea, tea_bag); needs(make_tea, water)"]),
+        ("Step 1 of making tea: boil the water in the kettle.", &["tell: step(make_tea, make_tea_s1); action(make_tea_s1, boil); object_of(make_tea_s1, water); uses(make_tea_s1, kettle)"]),
+        ("Step 2 of making tea: pour the water into the mug.", &["tell: step(make_tea, make_tea_s2); action(make_tea_s2, pour); object_of(make_tea_s2, water); uses(make_tea_s2, mug)"]),
+        ("To boil an egg you need an egg, water and a pot.", &["tell: task(boil_egg); needs(boil_egg, egg); needs(boil_egg, water); needs(boil_egg, pot)"]),
+        ("Step 1 of boiling an egg: boil the water in the pot.", &["tell: step(boil_egg, boil_egg_s1); action(boil_egg_s1, boil); object_of(boil_egg_s1, water); uses(boil_egg_s1, pot)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("My kettle broke. How do I make tea?", &["inform: -available(kettle)", "ask_how: make_tea"]),
+        ("I have a small pot, a mug, tea bags and water.", &["inform: available(pot); available(mug); available(tea_bag); available(water)"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.trim_end().ends_with('?') && r.contains("what do you have"), "asks: {r}");
+    let r = talk(&mut a, gold[1].0);
+    assert!(r.contains("Boil the water in the pot") && r.contains("probably use a pot instead of the kettle") && r.contains("boil an egg"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}

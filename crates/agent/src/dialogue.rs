@@ -141,6 +141,17 @@ impl Agent {
             self.trace_move("answer");
             return r;
         }
+        // "I have a small pot" after "what do you have that could do the job?":
+        // the task again, now with what they have (a guess by analogy, if any).
+        if informed && requested.is_none() {
+            if let Some(task) = self.active_task.clone() {
+                let m = b.model_with(now, &self.session_facts.clone());
+                if self.substitutions_why(&m, &task).iter().any(|(_, _, why)| why.is_some()) {
+                    self.trace_move("adapt");
+                    return self.task_help(b, &task);
+                }
+            }
+        }
         // The policy decides.
         let mut facts = self.session_facts.clone();
         facts.extend(self.moment(&base, &heard, &requested));
