@@ -127,6 +127,11 @@ const CONTAINERS: &[&str] = &[
 /// uses, each with its own preposition.
 pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
     let into = matches!(action, "pour" | "add" | "put" | "place" | "load" | "transfer" | "drop" | "lower" | "tip");
+    // You pour from a jug, a watering can or a kettle, not into it.
+    const POUR_FROM: &[&str] = &["watering_can", "jug", "kettle", "saucepan", "bottle", "pitcher", "can"];
+    let from: Vec<&String> = if action == "pour" { uses.iter().filter(|u| POUR_FROM.contains(&u.as_str())).collect() } else { Vec::new() };
+    let uses: Vec<String> = uses.iter().filter(|u| !from.contains(u)).cloned().collect();
+    let uses = &uses;
     let (cont, tools): (Vec<&String>, Vec<&String>) = uses.iter().partition(|u| CONTAINERS.contains(&u.as_str()));
     let the = |u: &String| if sla_nlg::MASS.contains(&u.as_str()) { words(u) } else { format!("the {}", words(u)) };
     let mut out = String::new();
@@ -135,6 +140,9 @@ pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
     }
     if !tools.is_empty() {
         out.push_str(&format!(" with {}", list(&tools.iter().map(|u| the(u)).collect::<Vec<_>>())));
+    }
+    if !from.is_empty() {
+        out.push_str(&format!(" from {}", list(&from.iter().map(|u| the(u)).collect::<Vec<_>>())));
     }
     out
 }

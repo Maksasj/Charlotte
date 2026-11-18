@@ -760,6 +760,7 @@ impl Translator {
         for part in out.iter_mut() {
             lack_cues(part, ctx);
         }
+        implied_request(&mut out, message, ctx);
         Translation { parts: out, model_calls: self.calls - calls_before }
     }
 
@@ -832,12 +833,14 @@ fn lack_cues(part: &mut Part, ctx: &TContext) {
             let near = forms.iter().filter(|f| !f.is_empty()).any(|f| {
                 let item = format!(" {f} ");
                 let Some(at) = joined.find(&item) else { return false };
-                let before: Vec<&str> = joined[..at].split_whitespace().rev().take(4).collect::<Vec<_>>().into_iter().rev().collect();
+                let before: Vec<&str> = joined[..at].split_whitespace().rev().take(8).collect::<Vec<_>>().into_iter().rev().collect();
                 let after: Vec<&str> = joined[at + item.len()..].split_whitespace().take(3).collect();
                 let b = before.join(" ");
-                let cue_before = BEFORE.iter().any(|c| {
-                    b.ends_with(c) || before.len() >= 2 && before[..before.len() - 1].join(" ").ends_with(c) || before.len() >= 3 && before[..before.len() - 2].join(" ").ends_with(c)
+                let cue_before = (0..before.len().min(5)).any(|k| {
+                    let head = before[..before.len() - k].join(" ");
+                    BEFORE.iter().any(|c| head.ends_with(c))
                 });
+                let _ = &b;
                 let a = after.join(" ");
                 let cue_after = AFTER.iter().any(|c| a.starts_with(c) || a.split_whitespace().skip(1).collect::<Vec<_>>().join(" ").starts_with(c));
                 cue_before || cue_after
@@ -866,6 +869,41 @@ fn lack_cues(part: &mut Part, ctx: &TContext) {
         part.acts.retain(|a| !matches!(a, Intent::Inform(f) if f.is_empty()));
         part.acts.push(Intent::Inform(vec![neg]));
         part.ok = true;
+    }
+}
+
+
+/// "I don't have a squeegee. Will it still work?": a stated lack and no request
+/// means the user wants the task done without it, when exactly one known task
+/// fits (its name is in the message, or it is the only task using the item).
+fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
+    let asks = parts.iter().flat_map(|p| p.acts.iter()).any(|a| matches!(a, Intent::Request(_) | Intent::AskHow(_) | Intent::AskNeed(_) | Intent::AskDuration(_)));
+    if asks {
+        return;
+    }
+    let lacking: Vec<String> = parts
+        .iter()
+        .flat_map(|p| p.acts.iter())
+        .filter_map(|a| if let Intent::Inform(f) = a { Some(f) } else { None })
+        .flatten()
+        .filter(|f| f.pred == "-available")
+        .filter_map(|f| if let Some(sla_core::Term::Val(sla_core::Value::Sym(s))) = f.args.first() { Some(s.clone()) } else { None })
+        .collect();
+    if lacking.is_empty() {
+        return;
+    }
+    let low = message.to_lowercase();
+    let owners: Vec<&String> = ctx.task_hints.iter().filter(|(_, h)| h.iter().any(|x| lacking.contains(x))).map(|(t, _)| t).collect();
+    let named: Vec<&&String> = owners.iter().filter(|t| t.split('_').filter(|w| w.len() > 3).any(|w| low.contains(w))).collect();
+    let task = match (named.as_slice(), owners.as_slice()) {
+        ([t], _) => (**t).clone(),
+        (_, [t]) => (*t).clone(),
+        _ => return,
+    };
+    if let Some(p) = parts.iter_mut().find(|p| p.acts.iter().any(|a| matches!(a, Intent::Inform(f) if f.iter().any(|x| x.pred == "-available")))) {
+        p.acts.retain(|a| !matches!(a, Intent::Unknown | Intent::AskNext | Intent::Ask { .. }));
+        p.acts.push(Intent::AskHow(task));
+        p.ok = true;
     }
 }
 
@@ -962,6 +1000,19 @@ mod substitute_tests {
         let mut p = Part { text: "I have a kettle and tea bags.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
         lack_cues(&mut p, &ctx);
         assert!(p.acts.is_empty(), "no cue, nothing added");
+    }
+
+    #[test]
+    fn lack_without_request_asks_how() {
+        let ctx = TContext { known_tasks: vec!["clean_window".into(), "make_salad".into(), "make_lemonade".into()], task_hints: vec![("clean_window".into(), vec!["squeegee".into(), "sponge".into()]), ("make_salad".into(), vec!["lemon".into(), "lettuce".into()]), ("make_lemonade".into(), vec!["lemon".into()])], ..Default::default() };
+        let mut parts = vec![Part { text: "I want to clean my windows but I don't have one of those rubber squeegee things.".into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false }];
+        lack_cues(&mut parts[0], &ctx);
+        implied_request(&mut parts, "I want to clean my windows but I don't have one of those rubber squeegee things.", &ctx);
+        assert_eq!(parts[0].acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(squeegee)", "ask_how: clean_window"]);
+        let mut parts = vec![Part { text: "I'm making a salad but I don't have any lemons for the dressing.".into(), acts: vec![Intent::AskNext], tier: Tier::Model, ok: true, problems: vec![], retried: false }];
+        lack_cues(&mut parts[0], &ctx);
+        implied_request(&mut parts, "I'm making a salad but I don't have any lemons for the dressing.", &ctx);
+        assert_eq!(parts[0].acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(lemon)", "ask_how: make_salad"]);
     }
 
     #[test]
