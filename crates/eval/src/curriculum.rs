@@ -386,6 +386,7 @@ impl CurriculumConfig {
         // is wrong: a step lost or stored with another action, or needs missing,
         // gets its teach line once more.
         let fixes = fix_lines(brain, s, &t.session_id);
+        clear_steps_for(brain, &fixes, &t.session_id);
         for line in &fixes {
             live(0, "teach_block", &s.id, "teacher", &format!("(fix) {line}"));
             let rr = t.respond(line);
@@ -472,6 +473,36 @@ impl sla_agent::curiosity::Teacher for GroundTruthTeacher {
     }
 }
 
+
+/// Before a step's line is taught again, the teacher removes what this session
+/// stored for that step (its action, object, tools, time, until), so a wrong fact
+/// does not stay beside the right one.
+fn clear_steps_for(brain: &SharedBrain, lines: &[String], session: &str) {
+    let ks: Vec<u32> = lines
+        .iter()
+        .filter_map(|l| l.to_lowercase().strip_prefix("step ").and_then(|r| r.split_whitespace().next()).and_then(|n| n.parse().ok()))
+        .collect();
+    if ks.is_empty() {
+        return;
+    }
+    let mut b = sla_agent::brain::lock(brain);
+    let stems: Vec<String> = b.kb.vault.procedures.iter().filter(|(_, pf)| pf.facts().iter().any(|f| f.conv.as_deref() == Some(session))).map(|(k, _)| k.clone()).collect();
+    for stem in stems {
+        let Some(pf) = b.kb.vault.procedures.get_mut(&stem) else { continue };
+        let num = |st: &str| st.rsplit_once("_s").and_then(|(_, n)| n.parse::<u32>().ok());
+        let removed = pf.doc.remove_items(|it| match it {
+            sla_core::doc::Item::Fact(f) => {
+                let about = f.atom.args.first().and_then(|v| v.as_sym()).and_then(num);
+                f.conv.as_deref() == Some(session) && matches!(f.atom.pred.as_str(), "action" | "object_of" | "uses" | "until" | "takes_time") && about.map_or(false, |k| ks.contains(&k))
+            }
+            _ => false,
+        });
+        if removed > 0 {
+            b.kb.vault.mark_procedure_dirty(sla_core::ProcedureKind::Procedure, &stem);
+        }
+    }
+}
+
 /// The teach lines to send again: for each step of the ground truth whose
 /// action is missing or different in what this teaching session stored, its
 /// "Step K of ..." line; and the needs line if a need is missing.
@@ -502,9 +533,16 @@ pub fn fix_lines(brain: &SharedBrain, s: &Scenario, session: &str) -> Vec<String
     };
     let have = action_by_num(&stored);
     let want = action_by_num(&s.truth.iter().filter(|g| g.pred != "action" || sym(g, 0).starts_with(&s.task)).cloned().collect::<Vec<_>>());
+    // The object too: "add the milk" stored where "add the strawberries" was taught.
+    let object_by_num = |set: &[GroundAtom]| -> std::collections::BTreeMap<u32, String> {
+        set.iter().filter(|g| g.pred == "object_of").filter_map(|g| Some((num(&sym(g, 0))?, sym(g, 1)))).collect()
+    };
+    let have_obj = object_by_num(&stored);
+    let want_obj = object_by_num(&s.truth);
     let mut out = Vec::new();
     for (k, a) in &want {
-        if have.get(k) != Some(a) {
+        let object_wrong = matches!((have_obj.get(k), want_obj.get(k)), (Some(h), Some(w)) if h != w);
+        if have.get(k) != Some(a) || object_wrong {
             let key = format!("step {k} of");
             if let Some(line) = s.teach.iter().find(|l| l.to_lowercase().contains(&key)) {
                 out.push(line.clone());
