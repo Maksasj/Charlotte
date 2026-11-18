@@ -497,6 +497,11 @@ impl Agent {
                 texts.insert(at, r.text);
             }
         }
+        // With a task answered, side answers that only say "I don't know whether ..."
+        // are dropped: they bury the answer and any question at its end.
+        if self.dialogue_ran && texts.len() > 1 {
+            texts.retain(|t| !(t.starts_with("I don't know whether") || t.starts_with("I'm not sure whether") || t.starts_with("I have no idea whether")));
+        }
         // A social reply to the opening greeting is dropped when content follows.
         if texts.len() > 1 && matches!(texts[0].as_str(), "Hello!" | "Hi there!" | "Hello, nice to talk to you.") {
             texts.remove(0);

@@ -388,7 +388,15 @@ impl Agent {
         }
         // Not what is replaced or known to be lacking: the notes below say those.
         let lacking_now: Vec<String> = self.session_facts.iter().filter(|f| f.pred == "-available").filter_map(|f| f.args.first()?.as_sym().map(String::from)).collect();
-        let missing: Vec<String> = missing.into_iter().filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x) && !dropped_tools.contains(x)).collect();
+        // Only the task's own needs, and not what the user has in some form ("tap water").
+        let have_now: Vec<String> = self.session_facts.iter().filter(|f| f.pred == "available").filter_map(|f| f.args.first()?.as_sym().map(String::from)).collect();
+        let needs_now = values(&m, "needs", &task, 1);
+        let missing: Vec<String> = missing
+            .into_iter()
+            .filter(|x| needs_now.contains(x))
+            .filter(|x| !have_now.iter().any(|h| h.split('_').any(|w| w == x.as_str())))
+            .filter(|x| !subs.iter().any(|(y, _)| y == x) && !lacking_now.contains(x) && !dropped_tools.contains(x))
+            .collect();
         if !missing.is_empty() && self.session_facts.iter().any(|f| f.pred == "available") {
             text.push_str(&format!(" You still need {}.", list(&missing.iter().map(|x| words(x)).collect::<Vec<_>>())));
             claims.extend(missing.iter().map(|x| g("missing", &[&task, x])));
