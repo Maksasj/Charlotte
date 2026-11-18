@@ -508,8 +508,12 @@ impl Agent {
                 let r = self.say(Act::NotUnderstood);
                 return r;
             }
-            texts.push(format!("I didn't understand \"{}\": what do you mean?", shown.trim_end_matches(['.', '!', '?'])));
-            intent = "clarify";
+            // A stray phrase next to a request already answered ("so I can't make
+            // holes") is context, not a question to ask back.
+            if !self.dialogue_ran {
+                texts.push(format!("I didn't understand \"{}\": what do you mean?", shown.trim_end_matches(['.', '!', '?'])));
+                intent = "clarify";
+            }
         }
         if texts.is_empty() {
             return self.say(Act::NotUnderstood);
