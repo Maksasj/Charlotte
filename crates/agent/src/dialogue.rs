@@ -85,6 +85,16 @@ impl Agent {
         let mut requested: Option<String> = None;
         let mut direct: Option<Reply> = None;
         let mut informed = false;
+        // The situation first ("my kettle broke"), then the questions about it.
+        let mut acts = acts;
+        acts.sort_by_key(|a| if matches!(a, Intent::Inform(_) | Intent::Lack(_)) { 0 } else { 1 });
+        let lacks: Vec<String> = acts
+            .iter()
+            .filter_map(|a| if let Intent::Inform(f) = a { Some(f) } else { None })
+            .flatten()
+            .filter(|f| f.pred == "-available")
+            .filter_map(|f| f.to_ground().and_then(|g| g.args.first().and_then(|v| v.as_sym()).map(String::from)))
+            .collect();
         for a in &acts {
             heard.push(a.name());
             match a {
@@ -128,6 +138,8 @@ impl Agent {
                         None => requested = Some(t.clone()),
                     },
                 },
+                // "Can I still make one?" with something missing: the whole adapted help.
+                Intent::AskNeed(t) if !lacks.is_empty() => direct = Some(self.task_help(b, t)),
                 Intent::AskNeed(t) => direct = Some(self.task_needs(b, t)),
                 // "How long ... and what are the steps?": the duration alone
                 // is half an answer; give the whole help (it ends with the time).
