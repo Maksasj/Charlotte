@@ -3,3 +3,4 @@ target/
 # per-conversation traces live beside the code, with their own snapshots.
 /vault/
 /sessions/
+data/training/lab3/token

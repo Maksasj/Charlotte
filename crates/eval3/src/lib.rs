@@ -96,6 +96,8 @@ pub struct RunOpts {
     /// teach variants after a failed variant encounter (dialogue correction)
     pub teach_variants: bool,
     pub seeds: bool,
+    /// start from a saved vault (e.g. after the C1 curriculum)
+    pub vault: Option<PathBuf>,
 }
 
 pub struct Runner {
@@ -118,6 +120,9 @@ impl Runner {
                 fs.extend(sc.aliases.iter().filter(|f| f.pred == "task_alias").cloned());
                 agent.seed(&fs);
             }
+        }
+        if let Some(v) = &opts.vault {
+            agent.vault = kb3::Vault::load(v).expect("vault");
         }
         Runner { agent, log: lab::Log::open(&opts.name), encounters: Vec::new(), hidden: false }
     }
@@ -225,6 +230,40 @@ pub fn curriculum(r: &mut Runner, scs: &[Scenario], teach_variants: bool) {
             r.score(sc, "retention", None, q, None);
         }
     }
+}
+
+/// H3 tier S: one first encounter per case on a known task (no teaching before it).
+pub fn tier_s(r: &mut Runner, scs: &[Scenario]) {
+    for sc in scs {
+        if let Some(v) = sc.variants.first().cloned() {
+            let req = if v.request.is_empty() { sc.requests.first().cloned().unwrap_or_default() } else { v.request.clone() };
+            r.score(sc, "S_first", Some(0), &req, Some(&v.situation_text));
+        }
+    }
+}
+
+/// H3 tiers T and G: the task is taught once, then measured as in the curriculum.
+pub fn tier_taught(r: &mut Runner, scs: &[Scenario], tier: &str, teach_variants: bool) -> Vec<kb3::CheckResult> {
+    let mut stored = Vec::new();
+    for sc in scs {
+        stored.push(r.teach(sc));
+        if let Some(q) = sc.requests.get(1) {
+            r.score(sc, &format!("{tier}_second"), None, q, sc.situation.first().map(String::as_str));
+        }
+        for k in 0..sc.variants.len() {
+            let v = sc.variants[k].clone();
+            let e = r.score(sc, &format!("{tier}_variant"), Some(k), &v.request, Some(&v.situation_text));
+            if !e.strict_pass && teach_variants && r.teach_variant(sc, k) {
+                r.score(sc, &format!("{tier}_variant_repeat"), Some(k), &v.request, Some(&v.situation_text));
+            }
+        }
+    }
+    for sc in scs {
+        if let Some(q) = sc.requests.get(2) {
+            r.score(sc, &format!("{tier}_retention"), None, q, None);
+        }
+    }
+    stored
 }
 
 /// Summary by encounter kind: passes, n, Wilson 95% interval.
