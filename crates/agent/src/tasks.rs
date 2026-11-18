@@ -355,7 +355,12 @@ impl Agent {
         let mut claims = vec![g("task", &[&task])];
         let mut lines = Vec::new();
         let missing = values(&m, "missing", &task, 1);
-        let lead = if task == t || self.is_verb_phrase(b, &task) { format!("Here is how to {}:", self.task_phrase(b, &task)) } else { format!("You could make {}:", words(&task)) };
+        let lead = if task == t || self.is_verb_phrase(b, &task) {
+            let (how, place, purpose) = self.request_framing(&m, &task);
+            format!("Here is {how} {}{place}{purpose}:", self.task_phrase(b, &task))
+        } else {
+            format!("You could make {}:", words(&task))
+        };
         // Transfer: an item the user lacks, with a known substitute, is replaced
         // in the steps and the needs ("Boil the water in the saucepan").
         let subs = self.substitutions(&m, &task);
@@ -470,6 +475,57 @@ impl Agent {
         }
         self.last_step = steps.first().cloned();
         Reply { text, intent: "answer", claims }
+    }
+
+    /// The request's own framing, said back: "the right way to", "in a pot",
+    /// "without ruining them", "so you don't drown it".
+    fn request_framing(&self, m: &Model, task: &str) -> (&'static str, String, String) {
+        let last = self.heard_text.rsplit('\n').next().unwrap_or("");
+        let ws: Vec<&str> = last.split(|c: char| !c.is_alphanumeric() && c != '\'').filter(|w| !w.is_empty()).collect();
+        let how = if ["the right way", "properly", "the proper way", "correctly", "get it right", "the best way"].iter().any(|k| last.contains(k)) { "the right way to" } else { "how to" };
+        // Items of the task, as words.
+        let items: Vec<String> = values(m, "needs", task, 1)
+            .into_iter()
+            .chain(values(m, "step", task, 1).iter().flat_map(|s| values(m, "uses", s, 1)))
+            .flat_map(|x| x.split('_').map(String::from).collect::<Vec<_>>())
+            .collect();
+        let mut place = String::new();
+        for i in 0..ws.len().saturating_sub(2) {
+            if ws[i] == "in" && matches!(ws[i + 1], "a" | "the" | "my") {
+                // "in the washing machine": the item may be two words.
+                let one = ws[i + 2].trim_end_matches('s');
+                let two = ws.get(i + 3).map(|w| format!("{} {}", ws[i + 2], w));
+                let det = if ws[i + 1] == "my" { "your" } else { ws[i + 1] };
+                if let Some(two) = two.filter(|tw| items.iter().any(|x| tw.ends_with(x.as_str())) && ws.get(i + 3).map_or(false, |w| items.iter().any(|x| x == w))) {
+                    if items.iter().any(|x| x == ws[i + 2]) || values(m, "needs", task, 1).iter().any(|n| n.replace('_', " ") == two) {
+                        place = format!(" in {det} {two}");
+                        break;
+                    }
+                }
+                if items.iter().any(|x| x == one) {
+                    place = format!(" in {det} {}", ws[i + 2]);
+                    break;
+                }
+            }
+        }
+        let mut purpose = String::new();
+        const HARM: &[&str] = &["ruining", "burning", "breaking", "damaging", "drowning", "killing", "shrinking", "wrinkling", "scratching", "overcooking"];
+        if let Some(i) = ws.iter().position(|w| *w == "without") {
+            if let (Some(v), Some(o)) = (ws.get(i + 1), ws.get(i + 2)) {
+                if HARM.contains(v) && matches!(*o, "it" | "them") {
+                    purpose = format!(" without {v} {o}");
+                }
+            }
+        }
+        if purpose.is_empty() {
+            for i in 0..ws.len().saturating_sub(4) {
+                if ws[i] == "so" && ws[i + 1] == "i" && matches!(ws[i + 2], "don't" | "dont") && matches!(ws.get(i + 4).copied(), Some("it") | Some("them")) {
+                    purpose = format!(" so you don't {} {}", ws[i + 3], ws[i + 4]);
+                    break;
+                }
+            }
+        }
+        (how, place, purpose)
     }
 
     /// "a cheese omelette": an item the user names with the dish that the task

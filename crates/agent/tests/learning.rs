@@ -619,3 +619,33 @@ fn steps_keep_their_taught_wording() {
     assert!(r.contains("onto the soil with the jug until it drains"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// The help opens with the request's own framing.
+#[test]
+fn help_says_back_the_request_framing() {
+    let dir = temp("framing");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To cook rice you need rice, water and a pot.", &["tell: task(cook_rice); needs(cook_rice, rice); needs(cook_rice, water); needs(cook_rice, pot)"]),
+        ("Step 1 of cooking rice: simmer the rice in the pot.", &["tell: step(cook_rice, cook_rice_s1); action(cook_rice_s1, simmer); object_of(cook_rice_s1, rice); uses(cook_rice_s1, pot)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    for (msg, want) in [
+        ("My rice always ends up mushy. What's the right way to make it in a pot?", "Here is the right way to cook rice in a pot:"),
+        ("How do I cook rice so I don't burn it?", "Here is how to cook rice so you don't burn it:"),
+        ("How do I cook rice in a hurry?", "Here is how to cook rice:"),
+    ] {
+        let gold: Vec<(&str, &[&str])> = vec![(msg, &["ask_how: cook_rice"])];
+        let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+        a.ask_in_chat = false;
+        a.set_parser(Box::new(oracle(&gold)));
+        let r = talk(&mut a, msg);
+        assert!(r.starts_with(want), "{r}");
+    }
+    let _ = std::fs::remove_dir_all(&dir);
+}
