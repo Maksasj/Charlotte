@@ -1,0 +1,2 @@
+{"pred":"fly_abroad","arity":2,"definition":"user13 flies abroad for a week, leaving on Friday","source":"user","facts":["fly_abroad(user13, friday)"],"status":"pending","frame":null}
+{"pred":"flies_abroad","arity":2,"definition":"user68 flies abroad for a week, starting on Friday","source":"user","facts":["flies_abroad(user68, week)"],"status":"pending","frame":null}

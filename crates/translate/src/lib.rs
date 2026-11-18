@@ -894,7 +894,18 @@ fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
     }
     let low = message.to_lowercase();
     let owners: Vec<&String> = ctx.task_hints.iter().filter(|(_, h)| h.iter().any(|x| lacking.contains(x))).map(|(t, _)| t).collect();
-    let named: Vec<&&String> = owners.iter().filter(|t| t.split('_').filter(|w| w.len() > 3).any(|w| low.contains(w))).collect();
+    // Content words of the task name ("pancake" in make_pancake), whole words, singular or plural.
+    const VERBS: &[&str] = &["make", "cook", "do", "bake", "boil", "wash", "clean", "fix", "plan", "pack", "write", "take", "get", "have", "put", "set"];
+    let msg: Vec<String> = low.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).map(|w| w.trim_end_matches('s').to_string()).collect();
+    let named: Vec<&&String> = owners
+        .iter()
+        .filter(|t| {
+            t.split('_')
+                .filter(|w| w.len() > 2 && !VERBS.contains(w))
+                .filter(|w| !lacking.iter().any(|l| l.split('_').any(|lw| lw.trim_end_matches('s') == w.trim_end_matches('s'))))
+                .any(|w| msg.iter().any(|m| m == w.trim_end_matches('s')))
+        })
+        .collect();
     let task = match (named.as_slice(), owners.as_slice()) {
         ([t], _) => (**t).clone(),
         (_, [t]) => (*t).clone(),
@@ -1009,6 +1020,12 @@ mod substitute_tests {
         lack_cues(&mut parts[0], &ctx);
         implied_request(&mut parts, "I want to clean my windows but I don't have one of those rubber squeegee things.", &ctx);
         assert_eq!(parts[0].acts.iter().map(|a| a.canonical()).collect::<Vec<_>>(), vec!["inform: -available(squeegee)", "ask_how: clean_window"]);
+        let ctx2 = TContext { task_hints: vec![("make_pancake".into(), vec!["egg".into()]), ("scrambled_eggs".into(), vec!["egg".into()]), ("make_omelette".into(), vec!["egg".into()])], ..Default::default() };
+        let msg = "I want to make pancakes but I just realised we're out of eggs.";
+        let mut parts = vec![Part { text: msg.into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false }];
+        lack_cues(&mut parts[0], &ctx2);
+        implied_request(&mut parts, msg, &ctx2);
+        assert!(parts[0].acts.contains(&Intent::AskHow("make_pancake".into())), "{:?}", parts[0].acts);
         let mut parts = vec![Part { text: "I'm making a salad but I don't have any lemons for the dressing.".into(), acts: vec![Intent::AskNext], tier: Tier::Model, ok: true, problems: vec![], retried: false }];
         lack_cues(&mut parts[0], &ctx);
         implied_request(&mut parts, "I'm making a salad but I don't have any lemons for the dressing.", &ctx);
