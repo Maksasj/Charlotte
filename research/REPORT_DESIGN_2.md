@@ -2,7 +2,7 @@
 
 *Report date: 2026-11-18. It covers the Design 2.0 build from the design commit (`fe7b901`, 2026-11-17 10:04) to the v2.0.0 tag (`fe21084`, 2026-11-18 14:00). The design is `research/Symbolic Learning Agent – Design 2.0.md`. The first build's report is `research/REPORT_DESIGN_1.md`. The build log is `PROGRESS.md`. Every number in this report comes from files in this repository: `eval/`, `data/`, `PROGRESS.md` and the git history.*
 
-This report has two jobs. It records what Design 2.0 built, measured and learned. It also collects what Design 3.0 should start from. It follows the outline of the v1 report, so the two can be read side by side.
+This report has two jobs. It records what Design 2.0 built, measured and learned. It also collects what Design 3.0 should start from. It follows the outline of the v1 report, so the two can be read side by side, and adds sections for what 2.0 introduced (sections 5 to 8, 10 and 11).
 
 ## Contents
 
@@ -10,12 +10,18 @@ This report has two jobs. It records what Design 2.0 built, measured and learned
 2. Synthesis: what we know now
 3. How the work went: timeline, decisions and incidents
 4. Architecture: what was built
-5. Results and data analysis
-6. What still fails, and why
-7. Code-level weaknesses and technical debt
-8. Knowledge gained: lessons for the research question
-9. Inputs for Design 3.0
-10. Appendix: glossary, artefacts, how to reproduce
+5. Component catalogue (new in this report)
+6. Knowledge model and dialogue policy (new)
+7. Measurement and evaluation infrastructure (new)
+8. Training system and dashboard: designed against built (new)
+9. Results and data analysis
+10. Every v1 failure: status after 2.0 (new)
+11. The v1 report's recommendations: status (new)
+12. What still fails, and why
+13. Code-level weaknesses and technical debt
+14. Knowledge gained: lessons for the research question
+15. Inputs for Design 3.0
+16. Appendix: glossary, artefacts, data, tests, decisions, how to reproduce
 
 ---
 
@@ -64,7 +70,7 @@ The second half of the work showed that the remaining gap is mostly **what was t
 - **Transfer:** once item swaps were handled, the variants that still fail are exactly the ones that need knowledge no teacher gave, such as a soft-boiled egg's time or brown rice's simmer time.
 - **Judge score:** it rose from 3.6 to 5.4 by changing the wording alone. The reasons the judge gives for the rest are tips, sample wording and safety warnings that nothing taught.
 
-**The big caveat.** In the afternoon of 2026-11-18, the held-out transcripts were read to find failures, and the fixes were tested on the same held-out set. The fixes are general mechanisms, not scenario patches: lack cues, proposals, extra ingredients, wording. Still, **the held-out set is no longer truly held out.** The 40% transfer and 85-90% second encounter should be confirmed on a fresh, independently written set (section 9, R1).
+**The big caveat.** In the afternoon of 2026-11-18, the held-out transcripts were read to find failures, and the fixes were tested on the same held-out set. The fixes are general mechanisms, not scenario patches: lack cues, proposals, extra ingredients, wording. Still, **the held-out set is no longer truly held out.** The 40% transfer and 85-90% second encounter should be confirmed on a fresh, independently written set (section 15, R1).
 
 ---
 
@@ -212,7 +218,180 @@ The training stage uses 55 scenarios. The held-out stage uses 20, after training
 
 ---
 
-## 5. Results and data analysis
+## 5. Component catalogue
+
+Each module, and the job it does in 2.0. New modules are marked **new**.
+
+| Crate / module | Role |
+|---|---|
+| `core/term.rs`, `syntax.rs` | Atoms, values (`Int`, `Dec` as fixed-point with six decimals, `Sym`), fact lines with `@from @until @conf @source @id @conv` |
+| `core/doc.rs` | Markdown documents with fenced `datalog` blocks; lossless round trip; Text segments kept as written (used for "Taught wording") |
+| `core/vault.rs` | Vault files: facts, rules, procedures, task schemas, lexicon, core, queue, stats; dirty tracking; file stems |
+| `core/kb.rs` | Knowledge base: assert, close, close by id, transactions, the journal, the change log, reasoning facts (stored + procedures + core) |
+| `core/time.rs` | Timestamps without external crates |
+| `reasoner` | Stratified Datalog with negation as failure, strong negation, arithmetic, aggregates, proofs, quarantine, past moments, dependency restriction |
+| **`lexicon`** | The predicate registry: 74 predicates with argument types, definitions, frames, synonyms and flags; units; function, number and glue words; `Registry::check` and `entity_problem` |
+| `parser/lib.rs`, `words.rs`, `lexicon.rs` | v1's pattern parser, now tier 1 of the translator |
+| `parser/llm.rs`, `claude.rs` | The canonical intent language (`from_canonical`, `canonical`), Claude CLI calls, thread and global mocks |
+| **`parser/oracle.rs`** | Gold acts by message text, for testing a stage without the translator |
+| **`translate/segment.rs`** | Stage 1-2: lines, list items, sentences, then clauses on failure |
+| **`translate/lib.rs`** | Three tiers, context (`TContext`: speaker, active task, next step, last reply, recent entities, known tasks ranked by fit, task hints), one model call per message, a retry with problems, clause splitting, `sentence_rules`, `lack_cues`, `implied_request` |
+| **`translate/validate.rs`** | Six checks: shape, vocabulary, types, grounding, act type, round trip |
+| **`translate/learned.rs`** | Learned input patterns: model translations that passed are generalised into templates with slots |
+| **`agent/brain.rs`** | One brain per vault (the single writer), model cache by generation, shared across sessions |
+| `agent/lib.rs` | The session (`Agent`): prepare (translate outside the lock), handle acts, assemble the reply, write the trace |
+| **`agent/dialogue.rs`** | Session facts, frames, slot filling, policy moves from `core/policy.md`, direct answers, the adapt path |
+| **`agent/tasks.rs`** | Task help: resolving tasks, ordered steps, step text, substitutes (`substitutions_why`: taught, analogy, user proposal), constraint notes, needs, duration, framing, extra ingredient |
+| **`agent/learning.rs`** | Procedures from teaching, renaming to a known task, numbered-step ordering, taught wording |
+| `agent/curiosity.rs` | Curiosity scores; **goals from failed turns** in `vault/queue/failures.jsonl` |
+| **`agent/queue.rs`** | The review queue for new words (`new_pred` with a definition and source sentence) |
+| **`agent/hygiene.rs`** | Duplicate entities linked with `same(a, b)` and queued as merges; numbers to watch |
+| **`agent/consolidate.rs`** | Offline pass: full rule search, hygiene, shared-step candidates, substitute migration |
+| **`agent/trace.rs`**, **`events.rs`** | Turn traces and the event stream, each line one `write_all` |
+| `agent/router.rs` | Which domain module a predicate belongs to |
+| `learner` | Pattern-counting learner: a per-message pass and a full consolidation pass; gradual corrections |
+| `nlg` | Planner, aggregation, pronouns, frames, confirm, why-from-proof, mass nouns, plurals |
+| **`eval/outcome.rs`** | Outcome labels and the cached label judge |
+| **`eval/regression.rs`** | The 296-turn regression set and `sla_eval outcomes` |
+| **`eval/gold.rs`** | Translator gold sets (F1, act accuracy, long messages) |
+| **`eval/wording.rs`** | Pairwise wording judge and the ceiling run |
+| **`eval/patterns.rs`** | Learned-pattern coverage and agreement |
+| **`eval/ops.rs`** | `bench` and `stress` |
+| **`eval/curriculum.rs`** | Scenarios, encounters, teachers, the fix pass, judges, calibration, judge score, pairwise |
+| **`eval/archive.rs`** | Every model call and conversation appended to `data/training/` and never deleted |
+| **`eval/trainer.rs`** + `dashboard/` | The training server and UI |
+
+### Tools (`tools/`)
+
+| Tool | Job |
+|---|---|
+| `make_registry.py` | Writes the seed predicate registry |
+| `extract_regression.py` | Extracts the 296 v1 turns from committed v1 artefacts |
+| `m12_baseline.py` | Replies of the milestone 12 build, for pairwise |
+| `make_hand_labels.py` | A hand-label sheet for judge calibration |
+| `curriculum_live.py`, `curriculum_progress.py` | Follow a running curriculum |
+| `promote_vault.py` | Makes a trained vault the repository's `vault/` (with a backup) |
+| `curriculum_gen/` | Scenario generation helpers |
+
+---
+
+## 6. Knowledge model and dialogue policy
+
+### Layers (`crates/core/assets/core/`)
+
+- **Ontology** (`ontology.md`), as in v1.
+- **Procedural** (`procedural.md`), with these predicates:
+  - `task`, `step`, `action`, `object_of`, `uses`, `until`, `overlaps`, `before`;
+  - `needs`, `takes_time(X, Low, High, Unit)`, `substitute(A, B)`;
+  - derived: `needs_all`, `missing`, `feasible`, `option_for`, `next_step`, `minutes`, `total_minutes`, `step_count`, `knows_task`.
+- **Choice and session:** `available`, `-available`, `time_available`, `wants`, `done`, `chosen`.
+- **Lexical and self:** words, frames, `agent_can`, `agent_cannot`.
+- **Policy** (`policy.md`): the dialogue moves, below.
+
+### A procedure file (`vault/procedures/<task>.md`)
+
+````markdown
+---
+id: water_plant
+status: hypothesis        # hypothesis, confirmed or rejected; believed at 0.6 on trial
+source: teacher:curriculum
+uses: 0
+successes: 0
+---
+# water plant
+Learned in conversation.
+```datalog
+task(water_plant). @conf 1 @source ""
+needs(water_plant, watering_can). @conf 1 @source teacher:curriculum @conv s1794...
+step(water_plant, water_plant_s3). ...
+action(water_plant_s3, pour). ...
+uses(water_plant_s3, watering_can). ...
+until(water_plant_s3, drain). ...
+takes_time(water_plant_s3, 1, 2, minute). ...
+before(water_plant_s2, water_plant_s3). ...
+```
+
+## Taught wording
+
+- task: water a plant
+- water_plant_s3: pour the water slowly onto the soil with the watering can until it drains out of the bottom
+````
+
+### Dialogue moves (`policy.md`; the lowest priority number wins, and the proof says why)
+
+| Move | Priority | When |
+|---|---|---|
+| `close` | 1 | the user accepts and a frame is open |
+| `next_step` / `task_finished` | 1 | "what's next" or "done" with a procedure under way |
+| `recommend` | 2 | a frame is filled and a good option exists |
+| `other_option` | 2 | the user rejects the offer |
+| `steps` | 2 | a request names a known task |
+| `closest` | 3 | no option fits fully; offer the closest |
+| `ask_slots` | 4 | required slots missing |
+| `teach_me` | 5 | the request is for an unknown goal |
+| `ask_task` | 6 | "what's next" with nothing under way |
+
+Code paths around them: a direct answer for needs, duration and "how" questions; **adapt** (new situation facts with a task under way give the adapted help); a taught procedure by name wins over a same-named schema.
+
+### How the agent adapts to a missing item (`substitutions_why`)
+
+1. A **taught substitute** (`substitute(kettle, saucepan)`), preferring one the user has.
+2. **Analogy:** another procedure does the same action with an item the user has ("I use a pot like that when I boil an egg"). Same object scores higher; never an item the task already uses.
+3. **The user's proposal:** after "what do you have that could do the job?", or named together with the lack. Exactly one offered item the task does not use; among several, the one sharing a stem with the missing item.
+4. Then the reply:
+   - swaps the item into the steps and needs ("a jug (instead of a watering can)");
+   - drops a step whose action is a tool only the missing item needed ("hammer the nails");
+   - says why ("Since you have a jug, use it instead of the watering can").
+
+---
+
+## 7. Measurement and evaluation infrastructure
+
+| Instrument | Command | What it measures | Model calls |
+|---|---|---|---|
+| Outcome mix | `sla_eval outcomes` | Labels per turn (helpful, partial, clarify, teach_me, not_understood, wrong_move, wrong_content, echo, unjudged) with Wilson 95% intervals; a row in `eval/outcomes.csv` | label judge, cached |
+| Regression set | (inside outcomes) | 296 real v1 turns, a fresh vault per conversation, fixed clock | |
+| Bench | `sla_eval bench --vault DIR` | The agent's own work per turn, median and p95 | none |
+| Stress | `sla_eval stress --teachers 16 --minutes 10` | The real trainer on mocks; every log, event, trace and cache line checked | none |
+| Gold sets | `sla_eval gold` | Translator F1 and act accuracy (200 messages), long messages (50) | Haiku, cached |
+| Wording | `sla_eval wording` | Pairwise preference, old against new wording, on 200 plans; the ceiling run | Haiku, cached |
+| Learned patterns | `sla_eval patterns` | Coverage and agreement after the teaching turns | Haiku, cached |
+| Curriculum | `sla_eval curriculum [--train] [--teachers N] [--vault DIR] [--no-seeds]` | The encounters; checklist judge plus ground-truth check; contradicting facts; meta requests; duplicates | about 100-2,000 |
+| Calibration | `sla_eval calibrate` | Re-grades recorded runs with the symbolic ground-truth check | none |
+| Judge score | `sla_eval rate` | 1-10 over 40 conversations | about 40 |
+| Pairwise | `sla_eval pairwise` | This build against the milestone 12 build's replies | about 20 |
+
+All judges cache by exact prompt (`eval/*_cache.jsonl`), so the same commit run twice gives identical numbers (`measurement.rs::replay_is_repeatable`).
+
+---
+
+## 8. Training system and dashboard: designed against built
+
+| Design 2.0 element | Built? | Notes |
+|---|---|---|
+| Teacher protocol (two channels, fixed frames) | yes | Teach lines in fixed frames; a checker keeps only lines in the frames; meta-request filter |
+| Four encounters | yes, plus more | teach, teach retry, repeat, transfer (+ retry), spaced repeat, retention, curiosity |
+| Teacher fixes what was stored wrong | yes (11-17; extended 11-18) | Compares actions, objects, `until`; clears that session's wrong facts |
+| Variant teacher | yes | Haiku writes up to three teach lines for a failed variant (training only) |
+| Spaced queue | yes | |
+| Curiosity goals from failures | yes | Asked only of teachers; scored by failures fixed |
+| Hygiene pass | yes | 0 duplicate pairs after the pass |
+| 30 seed procedures | yes | `data/curriculum/seed/` |
+| Live conversations panel | yes | "Teachers (each one's current conversation)", "Conversations (newest first)" |
+| Scenario grid | yes | |
+| Learning feed | yes | |
+| Knowledge health + teacher quality | yes | one panel |
+| Plan limits and cost | yes | from `/usage`, without spending tokens; automatic stop at 95% session / 70% week |
+| Question stream, teach log with diffs, translator health, speed panel, turn drill-down | no | events exist in the stream; panels not built |
+| Configurable layouts, compare runs, step mode, alert thresholds | no | |
+| Live push | no | the UI polls every 2 s and the API re-reads files (3.0 item) |
+| Security: token and origin check | yes | tested |
+
+API: `/api/state`, `/api/events?after=N`, `/api/start`, `/api/stop`, `/api/curriculum`, `/api/curriculum/start` (`{"teachers":16}`), `/api/curriculum/stop`.
+
+---
+
+## 9. Results and data analysis
 
 ### Milestone acceptance
 
@@ -323,7 +502,7 @@ The training-stage transfer stayed at 0 because of two bugs, both fixed after th
 - the pattern tier stored "B can replace A" as a verb;
 - the variant teacher taught step lines into the base procedure.
 
-No training run was repeated after the 11-18 fixes; see section 9, R2.
+No training run was repeated after the 11-18 fixes; see section 15, R2.
 
 ### Vault
 
@@ -331,13 +510,88 @@ The promoted `vault/` (from the 05-11-26 training run, consolidated) holds 110 p
 
 ---
 
-## 6. What still fails, and why
+## 10. Every v1 failure: status after 2.0
+
+The design named one fix and one test for each v1 failure. Status by evidence in this repository. "Not separately measured" means the fix is built but no number was recorded for its own test.
+
+**In conversation**
+
+| v1 failure | Fix | Status |
+|---|---|---|
+| F1 Request dropped | `request` act, frames, move priority | Fixed on taught tasks (helpful + clarify 74-80%); the v1 replay measure (24.6%) is out of scope |
+| F2 No procedures | Procedural layer | Fixed: dinner dialogue passes; second encounter 75-90% |
+| F3 Long messages not understood (44%) | Segmenter, per-part translation | Fixed: 97% of parts recovered; not understood 0.4-1.3% |
+| F4 Echo | Session memory | Fixed: echo 1.5% on the replay |
+| F5 "Glad I could help" instead of content | Social lines never replace content | Built; check-back and side lines are now also dropped beside task help; not separately measured |
+| F6 Repeated self-description | Self layer, no repeats | Fixed: no identical reply in 12 turns |
+| F7 "Not quite" read as a correction | `feedback` act | Built; not separately measured |
+| F8 Garbled facts, predicate soup | Registry, types, grounding | Fixed: 0 ungrounded facts on long messages; contradicting facts ≤1% |
+| F9 Facts leaking between conversations | Session memory | Fixed: sessions kept apart in the dinner test |
+| F10 Stiff wording | Lexicon, frames, realizer | Improved: new wording preferred in 70.3%; judge score 5.1-5.4 |
+| F11 Teacher meta requests | Teacher protocol | Fixed: 0 meta requests |
+| F12 Off-topic curiosity in chat | Curiosity only with teachers | Fixed by design |
+
+**In learning and knowledge**
+
+| v1 failure | Status |
+|---|---|
+| Taught four times, 0 stored, 0 help | Fixed: taught once, answered later in new words |
+| Guessed rules never used | Fixed: tentative layer; 6 of 6 guesses settled |
+| One correction rewrites a rule | Fixed: exception first, rule change after two shared counterexamples |
+| No learning of words or grammar | Partly: word queue and learned patterns built; coverage 3.3% |
+| Confidence ignored | Built: guessed rules answer "I'm not sure, but I'd guess so" |
+| Duplicates (`knive`, `clothe`) | Fixed: 0 duplicate pairs after hygiene |
+| Over 200 predicates | Fixed: 74 registered predicates; new ones only through the queue |
+| Personal facts left in the vault | Fixed: session memory |
+| Reviewer closed others' facts | Fixed: fact ids; closing by id |
+
+**In engineering and measurement**
+
+| v1 failure | Status |
+|---|---|
+| Tests stayed perfect while chat was poor | Fixed: outcome labels, curriculum encounters |
+| Judge noise | Fixed: cached judges, pairwise, intervals |
+| 3-5 evaluations per message | Fixed: one model per state; p95 63-71 ms |
+| History mixed times | Fixed: moments; test |
+| One bad rule removed all rules | Fixed: quarantine |
+| Partial reverts | Fixed: transactions |
+| Over-retraction ("likes coffee" deleted "likes tea") | Fixed: single-valued only |
+| Open question lost | Fixed: question stack; resume test |
+| Fragile parallel training | Fixed: single writer; 0 corrupted lines in stress |
+| Translation 5.2 s | Not met: 4.1 s (out of scope) |
+| Trainer API open | Fixed: token and origin |
+| No tests for trainer and model calls | Fixed: mocks; 208 tests |
+| Runtime vault in git | Fixed: `vault/` gitignored |
+
+---
+
+## 11. The v1 report's recommendations: status
+
+| v1 recommendation | Status in 2.0 |
+|---|---|
+| R1 Request, inform, accept and feedback acts plus task frames | Done (milestones 14-15) |
+| R2 Procedural and recommendation knowledge | Done (milestone 13) |
+| R3 Dialogue state with session facts | Done (milestone 15) |
+| R4 Option selection and ranking | Done: `feasible`, `option_for`, recommend/closest moves |
+| R5 NLG for helpful replies | Done (milestone 16), plus taught wording and framing |
+| R6 Translator: context, few-shot, validation, caching, effort | Done except speed: context, retrieved examples, validation with retry, grounding and caches are built; 4.1 s per turn |
+| R7 Teaching protocol | Done, with the fix pass and a checker |
+| R8 Curriculum and repetition | Done: the main result of 2.0 |
+| R9 Outcome classification | Done (milestone 12) |
+| R10 Knowledge hygiene | Done: hygiene and consolidation passes |
+| R11 Small talk and self-model | Partly: the self layer and no-repeat rule; small talk was not a 2.0 focus and has no measure |
+| R12 Gate curiosity, partial understanding | Done: curiosity only with teachers; partial replies |
+| R13 Training-loop plumbing | Done: traces, event stream, dashboard panels, automatic stop |
+
+---
+
+## 12. What still fails, and why
 
 A taxonomy of the failures left in the last runs:
 
 | Class | Examples | Cause | Fixable in the agent? |
 |---|---|---|---|
-| **Untaught knowledge** | soft-boil time, brown rice, tumble time, surprise party, tips, sample wording | Not in any teach line | No: needs teaching, or outside knowledge (section 9) |
+| **Untaught knowledge** | soft-boil time, brown rice, tumble time, surprise party, tips, sample wording | Not in any teach line | No: needs teaching, or outside knowledge (section 15) |
 | **Translation variance** | the same pancake answer adapted in one run and said "Okay." in another; "I never get it right" read as a complaint | Model output differs per call; the cache only helps on exact repeats | Partly: more post-validation rules, or learned patterns once seen |
 | **Synonyms between task names** | "hang a painting" vs `hang_picture`; "picnic with friends" once matched `invite_friends_to_dinner` | Task matching is by words; no synonym knowledge | Yes: lexical synonyms in the registry and lexicon |
 | **Situation phrasing without the item word** | "nowhere to hang them" (no drying rack) | Lack cues need the item named | Partly: map "nowhere to {action}" to that step's tool |
@@ -347,7 +601,7 @@ A taxonomy of the failures left in the last runs:
 
 ---
 
-## 7. Code-level weaknesses and technical debt
+## 13. Code-level weaknesses and technical debt
 
 1. **Heuristics in Rust code, not in the vault.** The afternoon fixes added many word lists in code:
    - lack cues and HOW cues;
@@ -372,7 +626,7 @@ A taxonomy of the failures left in the last runs:
 
 ---
 
-## 8. Knowledge gained: lessons for the research question
+## 14. Knowledge gained: lessons for the research question
 
 The research question is whether a fully symbolic agent, taught in conversation, can become helpful. 2.0 gives these answers:
 
@@ -394,7 +648,7 @@ The research question is whether a fully symbolic agent, taught in conversation,
 
 ---
 
-## 9. Inputs for Design 3.0
+## 15. Inputs for Design 3.0
 
 These are recommendations to think about, not a design. They are ordered by priority: P0 means needed first.
 
@@ -404,7 +658,7 @@ The 20 held-out scenarios were inspected on 11-18. Write a new held-out set of 3
 
 #### R2. A teacher protocol that teaches richer knowledge (P0)
 
-The ceiling is the teaching (section 8.4). Teach lines should include:
+The ceiling is the teaching (section 14.4). Teach lines should include:
 
 - tips and warnings: `warns(step, standing_water)`;
 - reasons: `because(step, …)`;
@@ -414,11 +668,11 @@ The variant teacher should teach situational changes, not only substitutes. Then
 
 #### R3. Move word lists from code to the lexicon (P0)
 
-Tools, surfaces, waiting actions, lack cues, how-cues, state verbs, mass nouns and prepositions by action belong in `vault/lexicon/`, as typed predicates the agent can learn and a teacher can correct (section 7.1). This restores "knowledge is data" and opens these to learning.
+Tools, surfaces, waiting actions, lack cues, how-cues, state verbs, mass nouns and prepositions by action belong in `vault/lexicon/`, as typed predicates the agent can learn and a teacher can correct (section 13.1). This restores "knowledge is data" and opens these to learning.
 
 #### R4. Task identity as knowledge (P1)
 
-Synonyms and paraphrases of task names (`same_task(hang_painting, hang_picture)`), learned when a teacher confirms them. Task matching then becomes a rule with a proof, not a word-overlap score. Implied requests become dialogue moves (section 7.3).
+Synonyms and paraphrases of task names (`same_task(hang_painting, hang_picture)`), learned when a teacher confirms them. Task matching then becomes a rule with a proof, not a word-overlap score. Implied requests become dialogue moves (section 13.3).
 
 #### R5. Situational adaptation beyond item swaps (P1)
 
@@ -451,7 +705,7 @@ Act accuracy and speed stay out of scope unless the CLI decision changes.
 
 #### R9. Split `task_help` into stages (P2)
 
-Content plan (steps, swaps, drops, extras, notes), then wording (taught wording, framing, times), each with its own tests (section 7.5).
+Content plan (steps, swaps, drops, extras, notes), then wording (taught wording, framing, times), each with its own tests (section 13.5).
 
 #### R10. Housekeeping (P2)
 
@@ -468,7 +722,7 @@ Content plan (steps, swaps, drops, extras, notes), then wording (taught wording,
 
 ---
 
-## 10. Appendix
+## 16. Appendix
 
 ### Glossary
 
@@ -496,6 +750,55 @@ Content plan (steps, swaps, drops, extras, notes), then wording (taught wording,
 | Caches | `eval/translate_cache.jsonl`, `eval/label_cache.jsonl`, `eval/curriculum_judge_cache.jsonl` |
 | Trained vault copy | `data/training/curriculum/vaults/2026-11-18T05-11-26/` |
 | Regression set | `data/regression/turns.jsonl` (296 turns), `labels_v1_trainer.tsv` |
+
+### Data inventory
+
+| Data | Size | Use |
+|---|---|---|
+| `data/curriculum/scenarios/` | 20 held-out scenarios (15 with a variant) | Milestone 18 measure |
+| `data/curriculum/training/` | 55 training scenarios | Training stage |
+| `data/curriculum/seed/` | 30 seed procedures | Seeded into every fresh vault |
+| `data/gold/translator_gold.jsonl` | 200 messages | Translator F1 and act accuracy |
+| `data/gold/long_messages.jsonl` | 50 messages | Part recovery, grounding |
+| `data/translator_examples.jsonl` | 47 seed examples | Built into the translator's model tier as examples |
+| `data/regression/turns.jsonl` | 296 v1 turns | Outcome mix, bench |
+| `data/regression/labels_v1_trainer.tsv` | 68 hand labels | Label-judge agreement (79%) |
+| `data/synthetic/` | v1 parser sets, teaching dialogues, corrections | v1 tests, learned-pattern measure |
+| `data/scenarios/dinner/` | the dinner dialogue | Milestone 15 test |
+| `data/training/calls/` | 12,626 model calls | Archive of every call (never deleted) |
+| `data/training/curriculum/` | run records, live transcripts, held-out outputs, vault copies | Archive of every run |
+| `data/training/{trainer,translator,wording,patterns,curriculum_training}/` | conversations and judgements | Archive |
+
+### Tests (208, none call a model)
+
+| Crate | Tests | Main test files |
+|---|---|---|
+| reasoner | 56 | `knowledge_model.rs` (44 cases with proofs), `suite.rs`, `time_conf.rs` |
+| agent | 47 | `learning.rs` (18: procedures, substitutes, analogy, proposals, wording, framing, extra ingredient), `dialogue.rs` (8), `safe_ground.rs` (5), `session.rs`, `curiosity.rs`, `hygiene.rs`, `knowledge_model.rs` |
+| core | 31 | `procedures.rs`, `roundtrip.rs`, unit tests |
+| eval | 23 | `curriculum.rs` (8), `measurement.rs` (4), `one_command.rs` (3), trainer tests |
+| translate | 21 | unit tests: validator, segmenter, learned patterns, lack cues, implied requests, substitutes |
+| parser | 12 | `dev_set.rs` and unit tests |
+| nlg | 7 | `plans.rs` (200 plans), `replies.rs` |
+| learner | 6 | `corrections.rs`, `mornings.rs` |
+| lexicon | 5 | `v1_facts.rs` (20 rejected, 20 accepted) |
+
+### User decisions during 2.0
+
+| Date | Decision |
+|---|---|
+| 11-17 | Design 2.0's six open decisions confirmed as written (fresh vault, vault out of git, "probably" only in training, Claude CLI, no bulk import, retire `sla_pretrain`) |
+| 11-17 | The Haiku checklist judge is the judge of record; hand-label calibration not needed |
+| 11-17 | The teacher is Haiku, held to the ground truth |
+| 11-17 | Training runs start only on the user's go-ahead |
+| 11-17 | Model calls stay on the Claude CLI; translation speed and act accuracy out of scope |
+| 11-17 | Learned-pattern coverage re-measured after training, not tuned |
+| 11-17 | Keep all training data in `data/training/`; never delete it |
+| 11-17 | Design 3.0 gets a real-time training lab dashboard, only after 2.0 |
+| 11-18 | Continue 2.0 autonomously, without asking for input (`/goal`) |
+| 11-18 | Judge score out of scope: the remaining gap is the teacher's |
+| 11-18 | Milestone 15 help-turn replay out of scope |
+| 11-18 | Design 2.0 finished and tagged v2.0.0; the user adds the remote and pushes |
 
 ### How to reproduce the headline numbers
 
