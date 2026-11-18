@@ -96,3 +96,31 @@ Agreement with the Haiku judge:
 - **This supports D5.** 3.0's answers are relation lines, the facts themselves, so the check compares facts with facts and no reading step can add error.
 - The 2.0 results cannot be re-scored exactly. Any 2.0 number in the final PDF is labelled "read back by the X1 parser", or the v2.0.0 replay baseline (D13) is used instead.
 - **Outcome for the check rules:** align steps by (action, object) with ground-truth aliases; strict pass on core facts; graded recall and precision reported beside it (schema section 6).
+
+## X8. Algorithmic split
+
+`tools/design3/x8_split.py`
+
+**Method.**
+- Atoms are actions and items. Compounds are (action, object) and (action, tool) pairs.
+- Divergence is the Chernoff coefficient, with α = 0.5 for atoms and 0.1 for compounds (Keysers et al. 2020).
+- A greedy search over 4,000 swaps looks for a 19-task test split with the highest compound divergence, while keeping atom divergence low.
+- Three splits are compared: the hand dev split, a random split and the maximum-compound-divergence split.
+- Difficulty is the X1 parser's exact rate, trained on the remaining tasks without the needs-line feature.
+
+**Results (v2, 71 curriculum tasks, gardening excluded).**
+
+| Split | Atom divergence | Compound divergence | Parser exact |
+|---|---|---|---|
+| Hand dev (19 tasks) | 0.576 | 0.913 | 55.7% (97 lines) |
+| Random (19) | 0.588 | 0.909 | 37.8% (90) |
+| Max compound divergence (19) | 0.447 | 0.906 | 39.8% (93) |
+
+**Reading.**
+- **Every split already has compound divergence of about 0.91.** With about 70 tasks, almost every (action, object) pair occurs in one task only, so maximum-compound-divergence search has nothing to push. The data is too sparse for MCD to separate "new combinations" from "new everything".
+- **The hand dev split is easier than random splits** (56% against 38%). The 20 development scenarios were the first ones written, and they are more typical than the 55 training scenarios added later. Numbers on the hand dev split alone overstate generality.
+
+**Outcome for D9 (both kinds of held-out).**
+- The algorithmic tier is **repeated random task splits**: 5 seeds, reported as a mean and range. This replaces a single MCD split.
+- Atom-held-out tests add the cases MCD cannot make here: one item or one action never seen in training.
+- MCD is re-run on the larger generated dataset, where compounds repeat.
