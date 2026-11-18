@@ -517,7 +517,7 @@ fn replaced_item_drops_its_tool_step() {
     a.set_parser(Box::new(oracle(gold)));
     talk(&mut a, gold[0].0);
     let r = talk(&mut a, gold[1].0);
-    assert!(!r.to_lowercase().contains("hammer") && r.contains("an adhesive strip (instead of a nail)") && r.contains("Hang the picture with the adhesive strip"), "{r}");
+    assert!(!r.to_lowercase().contains("hammer") && r.contains("an adhesive strip (instead of a nail)") && (r.contains("Hang the picture with the adhesive strip") || r.contains("Hang the picture on the adhesive strip")), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
 
@@ -579,5 +579,43 @@ fn proposal_with_lack_and_property_adapts() {
     assert!(r.contains("what do you have"), "{r}");
     let r = talk(&mut a, gold[1].0);
     assert!(r.contains("use it instead of the egg"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// A step is said the way it was taught, with its stored time and substitutes.
+#[test]
+fn steps_keep_their_taught_wording() {
+    let dir = temp("wording");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let teach: &[(&str, &[&str])] = &[
+        ("To water a plant you need a watering can and water.", &["tell: task(water_plant); needs(water_plant, watering_can); needs(water_plant, water)"]),
+        ("Step 1 of watering a plant: check the soil with your finger to see if it is dry.", &["tell: step(water_plant, water_plant_s1); action(water_plant_s1, check); object_of(water_plant_s1, soil)"]),
+        ("Step 2 of watering a plant: pour the water slowly onto the soil with the watering can until it drains out of the bottom, for 1 to 2 minutes.", &["tell: step(water_plant, water_plant_s2); action(water_plant_s2, pour); object_of(water_plant_s2, water); uses(water_plant_s2, watering_can); takes_time(water_plant_s2, 1, 2, minute); before(water_plant_s1, water_plant_s2)"]),
+    ];
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[
+        ("How do I water a plant?", &["ask_how: water_plant"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("Check the soil with your finger to see if it is dry."), "{r}");
+    assert!(r.contains("Pour the water slowly onto the soil with the watering can until it drains out of the bottom (1 to 2 minutes)."), "{r}");
+    let gold2: &[(&str, &[&str])] = &[
+        ("I don't own a watering can. How do I water my plant?", &["inform: -available(watering_can)", "ask_how: water_plant"]),
+        ("I have a kitchen jug.", &["inform: available(jug)"]),
+    ];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold2)));
+    talk(&mut a, gold2[0].0);
+    let r = talk(&mut a, gold2[1].0);
+    assert!(r.contains("onto the soil with the jug until it drains"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }

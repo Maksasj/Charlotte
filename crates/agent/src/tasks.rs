@@ -386,9 +386,27 @@ impl Agent {
         let extra = self.extra_ingredient(&m, &task, &kept);
         let numbered = kept.len() + extra.is_some() as usize > 3;
         let mut texts: Vec<String> = Vec::new();
+        let taught = b.kb.vault.procedures.get(&sla_core::vault::file_stem(&task)).map(|pf| crate::learning::wordings(&pf.doc)).unwrap_or_default();
         for s in kept.iter() {
             let (text, c) = self.step_text(&m, s);
             claims.extend(c);
+            // The way it was taught, while it still says the stored action
+            // (and the step does not run alongside another).
+            let action = values(&m, "action", s, 1).into_iter().next().unwrap_or_default();
+            let text = match taught.get(s.as_str()) {
+                Some(w) if !action.is_empty() && w.starts_with(&action[..action.len().min(4)]) && values(&m, "overlaps", s, 1).is_empty() => {
+                    let mut c = w.chars();
+                    let mut line = c.next().map(|f| f.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default();
+                    if let Some(a) = m.facts_of("takes_time").into_iter().find(|a| a.args.first().and_then(|v| v.as_sym()) == Some(s.as_str())) {
+                        if let Some(unit) = a.args[3].as_sym() {
+                            line.push_str(&format!(" ({})", range(&a.args[1], &a.args[2], unit)));
+                        }
+                    }
+                    line.push('.');
+                    line
+                }
+                _ => text,
+            };
             texts.push(swap(&text));
         }
         if let Some(line) = &extra {

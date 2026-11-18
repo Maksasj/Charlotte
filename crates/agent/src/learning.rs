@@ -125,6 +125,86 @@ impl Agent {
             }
             b.kb.vault.mark_procedure_dirty(ProcedureKind::Procedure, &stem);
         }
+        self.keep_wording(b, &learned);
         (learned, rest)
     }
+
+    /// "Step 3 of watering a plant: pour the water slowly onto the soil ...":
+    /// the taught wording of a step, kept in the procedure's notes so the
+    /// help can say it the way it was taught (the facts still carry the claims).
+    fn keep_wording(&mut self, b: &mut Brain, learned: &[GroundAtom]) {
+        let last = self.heard_text.rsplit('\n').next().unwrap_or("").to_string();
+        for g in learned.iter().filter(|g| g.pred == "action") {
+            let (Some(st), Some(action)) = (g.args[0].as_sym(), g.args.get(1).and_then(|v| v.as_sym())) else { continue };
+            let Some((task, n)) = st.rsplit_once("_s") else { continue };
+            if n.is_empty() || !n.chars().all(|c| c.is_ascii_digit()) {
+                continue;
+            }
+            let Some(text) = step_wording(&last, n, action) else { continue };
+            let stem = sla_core::vault::file_stem(task);
+            let Some(pf) = b.kb.vault.procedures.get_mut(&stem) else { continue };
+            set_wording(&mut pf.doc, st, &text);
+            b.kb.vault.mark_procedure_dirty(ProcedureKind::Procedure, &stem);
+        }
+    }
+}
+
+const WORDING_HEAD: &str = "## Taught wording";
+
+/// The instruction after "step N of ...:" in a message, without its duration,
+/// when it starts with (a form of) the step's action.
+pub(crate) fn step_wording(message: &str, n: &str, action: &str) -> Option<String> {
+    let key = format!("step {n} of ");
+    let at = message.find(&key)?;
+    let rest = &message[at..];
+    let colon = rest.find(':')?;
+    let body = rest[colon + 1..].trim();
+    let body = body.split(". ").next().unwrap_or(body).trim().trim_end_matches('.');
+    // Without the duration ("for 3 to 5 minutes", ", for 1 minute").
+    let mut text = body.to_string();
+    if let Some(i) = text.rfind(" for ") {
+        let tail = &text[i + 5..];
+        if tail.split_whitespace().next().map_or(false, |w| w.chars().all(|c| c.is_ascii_digit()) || matches!(w, "a" | "an" | "about" | "around" | "one" | "two" | "three" | "five" | "ten")) {
+            text.truncate(i);
+        }
+    }
+    let text = text.trim().trim_end_matches(',').trim().to_string();
+    let first = text.split_whitespace().next()?;
+    (first.starts_with(&action[..action.len().min(4)]) && text.split_whitespace().count() >= 2).then_some(text)
+}
+
+/// Store (or replace) a step's wording in the document's notes.
+pub(crate) fn set_wording(doc: &mut sla_core::doc::Document, step: &str, text: &str) {
+    use sla_core::doc::Segment;
+    let line = format!("- {step}: {text}");
+    let prefix = format!("- {step}: ");
+    for seg in doc.segments.iter_mut() {
+        if let Segment::Text(t) = seg {
+            if t.trim_start().starts_with(WORDING_HEAD) {
+                let mut lines: Vec<String> = t.lines().filter(|l| !l.starts_with(&prefix)).map(String::from).collect();
+                lines.push(line);
+                *t = lines.join("\n");
+                return;
+            }
+        }
+    }
+    doc.segments.push(Segment::Text(format!("\n{WORDING_HEAD}\n\n{line}")));
+}
+
+/// The taught wording of each step of a procedure document.
+pub(crate) fn wordings(doc: &sla_core::doc::Document) -> std::collections::HashMap<String, String> {
+    use sla_core::doc::Segment;
+    let mut out = std::collections::HashMap::new();
+    for seg in &doc.segments {
+        if let Segment::Text(t) = seg {
+            if t.trim_start().starts_with(WORDING_HEAD) {
+                for l in t.lines() {
+                    if let Some((st, text)) = l.strip_prefix("- ").and_then(|r| r.split_once(": ")) {
+                        out.insert(st.to_string(), text.to_string());
+                    }
+                }
+            }
+        }
+    }
+    out
 }
