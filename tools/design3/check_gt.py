@@ -204,6 +204,16 @@ def check(path):
     for l in teach:
         for m in re.finditer(r"\bstep (\d+)\b", l.lower()):
             nums.add(int(m.group(1)))
+    if teach and head.get("source") != "seed":
+        for k in range(1, len(steps) + 1):
+            if k not in nums:
+                E(0, f"step {k} is never taught (no 'step {k}' in the teach lines)")
+        for k in nums:
+            if k > len(steps):
+                E(0, f"teach line names step {k} but the ground truth has {len(steps)} steps")
+    for args, n in by["setting"]:
+        if args[3] == "none":
+            E(n, "non-numeric setting: use the unit level, not none")
     # variants
     vsit = [b for b in blocks if b[0] == "variant" and b[1] == "situation"]
     vdif = [b for b in blocks if b[0] == "variant" and b[1] == "difference"]
@@ -224,7 +234,7 @@ def check(path):
                 if len(args) != DIFF[p]:
                     E(n, f"{p} needs {DIFF[p]} args")
                     continue
-                if p in ("swap", "drop", "change") and args[0] not in sset:
+                if p in ("swap", "drop") and args[0] not in sset or p == "change" and args[0] not in sset | {task}:
                     E(n, f"{p} refers to unknown step {args[0]}")
                 if p == "add_step":
                     if args[1] != "start" and args[1] not in sset | newsteps:

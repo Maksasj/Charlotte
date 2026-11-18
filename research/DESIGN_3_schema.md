@@ -67,7 +67,7 @@ Every `uses` item gets a `role` fact. `role` is what makes substitution by funct
 
 A non-numeric setting uses the unit `level`: `setting(scrambled_eggs_s3, heat, low, level)`.
 
-Units are singular symbols: `minute`, `hour`, `second`, `day`, `week`, `gram`, `millilitre`, `litre`, `cup`, `tablespoon`, `teaspoon`, `celsius`, `piece`, `pinch`, `level`.
+Units are singular symbols: `minute`, `hour`, `second`, `day`, `week`, `gram`, `millilitre`, `litre`, `cup`, `tablespoon`, `teaspoon`, `celsius`, `piece`, `pinch`, `squirt`, `level`.
 
 ### 3.4 Order
 
@@ -114,7 +114,7 @@ The change a situation causes to the base procedure is written in difference fac
 | `swap(S, Old, New)` | in S use New instead of Old | `swap(make_omelette_s2, whisk, fork)` |
 | `drop(S)` | leave step S out | `drop(make_salad_s3)` |
 | `add_step(S_new, After)` | a new step after step After (`start` for the first); its content is given with the normal step facts on S_new | `add_step(make_omelette_s9, make_omelette_s3)` |
-| `change(S, Pred, Old, New)` | one fact of S changes | `change(bake_potato_s5, takes_time, 50_60, 5_8)` |
+| `change(S, Pred, Old, New)` | one fact of S changes; S may be the task itself for task-level facts (`change(boil_egg, takes_time, 10_13, 8_10)`) | `change(bake_potato_s5, takes_time, 50_60, 5_8)` |
 | `extra_need(I)` / `no_need(I)` | the needs list grows or shrinks | `extra_need(cheese)` |
 | `cannot(Reason)` | the request cannot be met; the answer must say so | `cannot(no_heat_source)` |
 
