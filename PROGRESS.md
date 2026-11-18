@@ -3,7 +3,7 @@
 Build log for the Symbolic Learning Agent. The current design is
 `research/Symbolic Learning Agent – Design 2.0.md` (milestones 12 to 18);
 v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
-`research/REPORT_DESIGN_1.md`.
+`research/REPORT_DESIGN_1.md`; 2.0's findings are in `research/REPORT_DESIGN_2.md`.
 
 ## Current milestone
 
@@ -61,7 +61,7 @@ From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 | 15 | Dialogue manager | done; dinner dialogue passes; help-turn replay out of scope (user decision 2026-11-18) | `crates/agent/tests/dialogue.rs` |
 | 16 | Generation | done | `crates/nlg/tests/plans.rs`, `crates/agent/tests/dialogue.rs::no_reply_twice_in_twelve_turns`, `sla_eval wording` |
 | 17 | Learning | built; learned-pattern coverage below target | `crates/agent/tests/learning.rs`, `crates/learner/tests/corrections.rs`, `sla_eval patterns` |
-| 18 | Curriculum training and hygiene | built and measured; met: pairwise 20 of 20, not understood, helpful + clarify, contradicting facts, meta requests, duplicates; second encounter 65-70% (target 70%, borderline); **not met: transfer 0 of 15 (target 40%), judge score 3.58 (target 6.0)** | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
+| 18 | Curriculum training and hygiene | done; second encounter 75-90%, transfer 6 of 15 (40%), pairwise 20 of 20, not understood, helpful + clarify, contradicting facts, meta requests, duplicates all met; judge score 5.1-5.4 out of scope (user decision 2026-11-18) | `crates/eval/tests/curriculum.rs`, `crates/agent/tests/hygiene.rs`, `sla_eval curriculum` |
 
 ### Milestone 12 acceptance
 
