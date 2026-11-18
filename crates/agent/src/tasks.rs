@@ -273,7 +273,14 @@ impl Agent {
         if let Some(u) = values(m, "until", s, 1).into_iter().next().filter(|u| Some(u) != action.as_ref()) {
             claims.push(g("until", &[s, &u]));
             let they = object.as_deref().map_or(false, count);
-            text.push_str(&format!(" until {} {}", if they { "they are" } else { "it is" }, words(&u)));
+            // An end state that is a verb reads as one ("until it drains"), others as a state.
+            const STATE_VERBS: &[&str] = &["drain", "boil", "melt", "simmer", "dry", "bubble", "foam", "thicken", "set", "rise", "stop", "run", "fizz", "drip"];
+            if STATE_VERBS.contains(&u.as_str()) && u != "dry" && u != "set" {
+                let v = if they { u.clone() } else if u.ends_with('h') || u.ends_with('s') || u.ends_with('z') { format!("{u}es") } else { format!("{u}s") };
+                text.push_str(&format!(" until {} {}", if they { "they" } else { "it" }, v));
+            } else {
+                text.push_str(&format!(" until {} {}", if they { "they are" } else { "it is" }, words(&u)));
+            }
         }
         // A step that runs during another: "While you boil the pasta, fry the garlic."
         if let Some(r) = values(m, "overlaps", s, 1).into_iter().next() {
@@ -349,11 +356,19 @@ impl Agent {
                 true
             })
             .collect();
-        let numbered = kept.len() > 3;
-        for (i, s) in kept.iter().enumerate() {
+        let extra = self.extra_ingredient(&m, &task, &kept);
+        let numbered = kept.len() + extra.is_some() as usize > 3;
+        let mut texts: Vec<String> = Vec::new();
+        for s in kept.iter() {
             let (text, c) = self.step_text(&m, s);
-            let text = swap(&text);
             claims.extend(c);
+            texts.push(swap(&text));
+        }
+        if let Some(line) = &extra {
+            let at = texts.len().saturating_sub(1);
+            texts.insert(at, line.clone());
+        }
+        for (i, text) in texts.into_iter().enumerate() {
             lines.push(if numbered { format!("{}. {text}", i + 1) } else { text });
         }
         // What the task needs comes first.
@@ -406,6 +421,37 @@ impl Agent {
         text.push_str(&self.constraint_notes(&m, &task));
         self.last_step = steps.first().cloned();
         Reply { text, intent: "answer", claims }
+    }
+
+    /// "a cheese omelette": an item the user names with the dish that the task
+    /// does not use goes in just before the last step, over what the step
+    /// before cooked ("Sprinkle the cheese over the eggs once they are almost
+    /// set, before you fold the omelette").
+    fn extra_ingredient(&self, m: &Model, task: &str, kept: &[&String]) -> Option<String> {
+        let dish = task.rsplit('_').next()?;
+        let last = self.heard_text.rsplit('\n').next().unwrap_or("");
+        let ws: Vec<&str> = last.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect();
+        let pos = ws.iter().position(|w| *w == dish || w.trim_end_matches('s') == dish || *w == format!("{dish}es"))?;
+        let x = ws.get(pos.checked_sub(1)?)?.to_string();
+        // A thing, not a manner ("perfect", "quick", "soft"): an item some procedure
+        // uses or a mass noun, and not one this task already uses.
+        let known: Vec<String> = ["uses", "needs", "object_of"].iter().flat_map(|p| m.facts_of(p)).filter_map(|a| a.args.get(1).and_then(|v| v.as_sym()).map(String::from)).collect();
+        if !(known.contains(&x) || sla_nlg::MASS.contains(&x.as_str())) {
+            return None;
+        }
+        let own: Vec<String> = values(m, "needs", task, 1).into_iter().chain(kept.iter().flat_map(|s| ["uses", "object_of"].iter().flat_map(|p| values(m, p, s, 1)).collect::<Vec<_>>())).collect();
+        if own.iter().any(|o| o == &x || o.split('_').any(|w| w == x)) || kept.len() < 2 {
+            return None;
+        }
+        let fin = kept.last()?;
+        let prev = kept.get(kept.len() - 2)?;
+        let fin_action = values(m, "action", fin, 1).into_iter().next()?;
+        let fin_obj = values(m, "object_of", fin, 1).into_iter().next().map(|o| format!(" the {}", words(&o))).unwrap_or_default();
+        let prev_obj = values(m, "object_of", prev, 1).into_iter().next()?;
+        let they = !sla_nlg::MASS.contains(&prev_obj.as_str());
+        let po = if they { sla_nlg::plural(&words(&prev_obj)) } else { words(&prev_obj) };
+        let once = values(m, "until", prev, 1).into_iter().next().map(|u| format!(" once {} almost {}", if they { "they are" } else { "it is" }, words(&u))).unwrap_or_default();
+        Some(format!("Sprinkle the {} over the {po}{once}, before you {fin_action}{fin_obj}.", words(&x)))
     }
 
     /// (item the user lacks, its substitute) for the items `task` needs or its

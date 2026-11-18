@@ -520,3 +520,34 @@ fn replaced_item_drops_its_tool_step() {
     assert!(!r.to_lowercase().contains("hammer") && r.contains("an adhesive strip (instead of a nail)") && r.contains("Hang the picture with the adhesive strip"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// "a cheese omelette": an item named with the dish goes in before the last step.
+#[test]
+fn named_extra_ingredient_goes_before_the_last_step() {
+    let dir = temp("extra_ingredient");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    let teach: &[(&str, &[&str])] = &[
+        ("To make an omelette you need eggs and a pan.", &["tell: task(make_omelette); needs(make_omelette, egg); needs(make_omelette, pan)"]),
+        ("Step 1 of making an omelette: cook the eggs in the pan until set.", &["tell: step(make_omelette, make_omelette_s1); action(make_omelette_s1, cook); object_of(make_omelette_s1, egg); uses(make_omelette_s1, pan); until(make_omelette_s1, set)"]),
+        ("Step 2 of making an omelette: fold the omelette.", &["tell: step(make_omelette, make_omelette_s2); action(make_omelette_s2, fold); object_of(make_omelette_s2, omelette); before(make_omelette_s1, make_omelette_s2)"]),
+    ];
+    t.set_parser(Box::new(oracle(teach)));
+    for (m, _) in teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[("Can you tell me how to make a cheese omelette?", &["ask_how: make_omelette"])];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("Sprinkle the cheese over the eggs once they are almost set, before you fold the omelette."), "{r}");
+    let gold2: &[(&str, &[&str])] = &[("How do I make a perfect omelette?", &["ask_how: make_omelette"])];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold2)));
+    let r = talk(&mut a, gold2[0].0);
+    assert!(!r.contains("Sprinkle"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}
