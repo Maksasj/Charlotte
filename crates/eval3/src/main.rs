@@ -66,6 +66,20 @@ fn main() {
             std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
             println!("{}", serde_json::to_string_pretty(&s).unwrap());
         }
+        Some("b2") => {
+            // baseline B2 on H3 (a sealed reading counts as part of the reading it is run with)
+            let t = teach3::Teacher::open(args.iter().any(|a| a == "--live"));
+            let calls0 = teach3::Teacher::live_calls();
+            let es = eval3::b2_h3(&t);
+            let name = arg(&args, "--name").unwrap_or_else(|| "b2_h3".into());
+            let dir = root().join("data/training/runs3").join(&name);
+            let _ = std::fs::create_dir_all(&dir);
+            let body: String = es.iter().map(|e| serde_json::to_string(e).unwrap() + "\n").collect();
+            std::fs::write(dir.join("encounters.jsonl"), body).unwrap();
+            let s = json!({"name": name, "live_calls": teach3::Teacher::live_calls() - calls0, "by_kind": summary(&es)});
+            std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
+            println!("{}", serde_json::to_string_pretty(&s).unwrap());
+        }
         Some("lab") => {
             let port = arg(&args, "--port").and_then(|p| p.parse().ok()).unwrap_or(8733);
             eval3::lab::serve(port).expect("lab server");

@@ -15,6 +15,7 @@ members = [
     "crates/teach3",
     "crates/agent3",
     "crates/eval3",
+    "crates/replay2",
 ]
 
 [workspace.package]

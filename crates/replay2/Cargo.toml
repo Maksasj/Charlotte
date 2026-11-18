@@ -1,0 +1,21 @@
+[package]
+name = "replay2"
+version.workspace = true
+edition.workspace = true
+
+# Baseline B3 (decision D13): the unchanged v2.0.0 agent on the H3 tiers, its replies read back
+# into facts by the 3.0 learned parser and scored with the 3.0 check. A lower bound (X6).
+
+[[bin]]
+name = "sla_replay2"
+path = "src/main.rs"
+
+[dependencies]
+sla_agent = { path = "../agent" }
+sla_eval = { path = "../eval" }
+sla_parser = { path = "../parser" }
+kb3 = { path = "../kb3" }
+parse3 = { path = "../parse3" }
+teach3 = { path = "../teach3" }
+eval3 = { path = "../eval3" }
+serde_json = "1"

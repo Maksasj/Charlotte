@@ -284,3 +284,49 @@ pub fn summary(encs: &[Encounter]) -> serde_json::Value {
     }
     serde_json::Value::Object(out)
 }
+
+// ---------------------------------------------------------------------------- baselines (D13)
+
+pub const B2_SYSTEM: &str = "You help with household tasks. You are given how the task was taught, and a request. \
+Answer with relation lines only, one fact per line, no prose: \
+'task <task_id>', 'need <item>', 'step <n> do <action> <object>', 'step <n> uses <item> <role>', 'step <n> into|onto|from <item>', \
+'step <n> until <state>', 'step <n> time <min> <max> <unit>', 'step <n> overlaps <m>', 'before <m> <n>'. \
+Symbols are lower case with underscores, singular nouns, base-form verbs. Adapt the steps to the user's situation \
+(replace, drop or add steps) and list only the items the adapted task needs.";
+
+/// B2: Haiku with the teaching in its prompt, answering in relation lines (one cached call).
+pub fn baseline_haiku(teacher: &Teacher, sc: &Scenario, kind: &str, variant: Option<usize>, request: &str, situation: Option<&str>) -> Option<Encounter> {
+    let prompt = format!("Task id: {}\nHow it was taught:\n{}\n\nRequest: {request}\n{}", sc.task, sc.teach.join("\n"),
+        situation.map(|s| format!("Situation: {s}\n")).unwrap_or_default());
+    let ans = teacher.ask(B2_SYSTEM, &prompt, "baseline_b2").ok()?;
+    let mut p = lines::parse(&ans).procedure;
+    p.task = sc.task.clone();
+    let g = gold(sc, variant);
+    let lacks = variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default();
+    let r = check(&p, &g, &Aliases::from_facts(&sc.aliases), &lacks);
+    Some(Encounter { scenario: sc.id.clone(), kind: kind.into(), variant, request: request.into(), identified: Some(sc.task.clone()), identity_ok: true,
+        strict_pass: r.strict_pass, core_recall: r.core_recall(), recall: r.recall(), precision: r.precision(), wrong: r.wrong.clone(), gaps: 0, asked: false, answer: ans })
+}
+
+/// B2 over the H3 tiers (the same encounters as the agent: S first, T/G second and variants).
+pub fn b2_h3(teacher: &Teacher) -> Vec<Encounter> {
+    let mut out = Vec::new();
+    for sc in load("data/heldout3/S") {
+        if let Some(v) = sc.variants.first() {
+            out.extend(baseline_haiku(teacher, &sc, "S_first", Some(0), &v.request, Some(&v.situation_text)));
+        }
+    }
+    let mut g = load("data/heldout3/G");
+    g.extend(load("data/curriculum3/heldout_domain").into_iter().filter(|s| !s.teach.is_empty()));
+    for (tier, scs) in [("T", load("data/heldout3/T")), ("G", g)] {
+        for sc in &scs {
+            if let Some(q) = sc.requests.get(1) {
+                out.extend(baseline_haiku(teacher, sc, &format!("{tier}_second"), None, q, sc.situation.first().map(String::as_str)));
+            }
+            for (k, v) in sc.variants.iter().enumerate() {
+                out.extend(baseline_haiku(teacher, sc, &format!("{tier}_variant"), Some(k), &v.request, Some(&v.situation_text)));
+            }
+        }
+    }
+    out
+}

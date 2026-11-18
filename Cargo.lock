@@ -73,6 +73,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "replay2"
+version = "0.1.0"
+dependencies = [
+ "eval3",
+ "kb3",
+ "parse3",
+ "serde_json",
+ "sla_agent",
+ "sla_eval",
+ "sla_parser",
+ "teach3",
+]
+
+[[package]]
 name = "serde"
 version = "1.0.229"
 source = "registry+https://github.com/rust-lang/crates.io-index"
