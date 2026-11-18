@@ -10,6 +10,7 @@ members = [
     "crates/translate",
     "crates/agent",
     "crates/eval",
+    "crates/kb3",
 ]
 
 [workspace.package]

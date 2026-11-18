@@ -148,15 +148,15 @@ task bake_potato
 need potato
 need olive_oil
 time 60 70 minute
-step 1 heat oven
+step 1 do heat oven
 step 1 setting temperature 200 celsius
 step 1 time 10 minute
-step 2 wash potato
+step 2 do wash potato
 step 2 overlaps 1
-step 3 prick potato
+step 3 do prick potato
 step 3 uses fork pierce
 step 3 purpose steam_escapes
-step 5 bake potato
+step 5 do bake potato
 step 5 until soft
 before 4 5
 ```
