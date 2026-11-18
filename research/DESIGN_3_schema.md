@@ -26,7 +26,7 @@ What 2.0 could not express:
 |---|---|
 | `task(T)` | T is a task (a procedure that can be asked for) |
 | `step(T, S)` | S is a step of T |
-| `goal(T, G)` | T is a way to reach goal G (`goal(make_tea, warm_drink)`); replaces `solves` |
+| `goal(T, G)` | T is a way to reach goal G (`goal(make_tea, warm_drink)`); replaces `solves`. A task may have several goals (`goal(make_toast, toast)`, `goal(make_toast, plan_meal)`) |
 | `domain(T, D)` | T's domain: `cooking`, `cleaning`, `repair`, `planning`, `errands`, `personal_care`, `gardening`, `travel`, `crafts`. Used to build the held-out split; not shown in answers |
 
 Items are not declared; any symbol in an item position is an item.
@@ -65,7 +65,9 @@ Every `uses` item gets a `role` fact. `role` is what makes substitution by funct
 | `until(S, State)` | do S until State holds | `until(bake_potato_s5, soft)` |
 | `repeat(S, N)` | do S N times | `repeat(make_bed_s3, 2)` |
 
-Units are singular symbols: `minute`, `hour`, `second`, `day`, `week`, `gram`, `millilitre`, `litre`, `cup`, `tablespoon`, `teaspoon`, `celsius`, `piece`, `pinch`.
+A non-numeric setting uses the unit `level`: `setting(scrambled_eggs_s3, heat, low, level)`.
+
+Units are singular symbols: `minute`, `hour`, `second`, `day`, `week`, `gram`, `millilitre`, `litre`, `cup`, `tablespoon`, `teaspoon`, `celsius`, `piece`, `pinch`, `level`.
 
 ### 3.4 Order
 
