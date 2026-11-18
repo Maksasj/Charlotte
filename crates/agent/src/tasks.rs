@@ -312,8 +312,13 @@ impl Agent {
         let mut lines = Vec::new();
         let missing = values(&m, "missing", &task, 1);
         let lead = if task == t || self.is_verb_phrase(b, &task) { format!("Here is how to {}:", self.task_phrase(b, &task)) } else { format!("You could make {}:", words(&task)) };
+        // Transfer: an item the user lacks, with a known substitute, is replaced
+        // in the steps and the needs ("Boil the water in the saucepan").
+        let subs = self.substitutions(&m, &task);
+        let swap = |t: &str| subs.iter().fold(t.to_string(), |acc, (x, sub)| swap_word(&acc, &words(x), &words(sub)));
         for (i, s) in steps.iter().enumerate() {
             let (text, c) = self.step_text(&m, s);
+            let text = swap(&text);
             claims.extend(c);
             lines.push(if steps.len() > 3 { format!("{}. {text}", i + 1) } else { text });
         }
@@ -325,7 +330,7 @@ impl Agent {
             for x in &needs {
                 claims.push(g("needs", &[&task, x]));
             }
-            format!("{lead} You need {}.", list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>()))
+            format!("{lead} You need {}.", swap(&list(&needs.iter().map(|x| with_article(x)).collect::<Vec<_>>())))
         };
         let mut text = format!("{lead} {}", lines.join(if steps.len() > 3 { "\n" } else { " " }));
         if steps.len() > 3 {
@@ -350,16 +355,34 @@ impl Agent {
         Reply { text, intent: "answer", claims }
     }
 
-    /// Does a task name start with a verb (`boil_egg`), or name a thing (`garlic_tomato_pasta`)?
-    pub(crate) fn is_verb_phrase(&self, b: &Brain, task: &str) -> bool {
-        // A dish (`garlic_tomato_pasta`, `scrambled_eggs`) is made; any other
-        // task name of two or more words is a verb phrase (`change_bike_tire`).
-        let first = task.split('_').next().unwrap_or("");
-        if self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "bake" | "boil") {
-            return true;
+    /// (item the user lacks, its substitute) for the items `task` needs or its
+    /// steps use; a substitute the user has is preferred.
+    pub(crate) fn substitutions(&self, m: &Model, task: &str) -> Vec<(String, String)> {
+        let used: Vec<String> = m
+            .facts_of("needs")
+            .into_iter()
+            .filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(task))
+            .filter_map(|a| a.args.get(1)?.as_sym().map(String::from))
+            .chain(self.ordered_steps(m, task).iter().flat_map(|st| values(m, "uses", st, 1)))
+            .collect();
+        let have: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "available").filter_map(|a| a.args.first()?.as_sym().map(String::from)).collect();
+        let lack: Vec<String> = self.session_facts.iter().filter(|a| a.pred == "-available").filter_map(|a| a.args.first()?.as_sym().map(String::from)).collect();
+        let mut out = Vec::new();
+        for x in lack.iter().filter(|x| used.contains(x)) {
+            let subs: Vec<String> = m.facts_of("substitute").into_iter().filter(|a| a.args.first().and_then(|v| v.as_sym()) == Some(x.as_str())).filter_map(|a| a.args.get(1)?.as_sym().map(String::from)).collect();
+            if let Some(sub) = subs.iter().find(|s| have.contains(s)).or(subs.first()) {
+                out.push((x.clone(), sub.clone()));
+            }
         }
-        let dish = b.kb.vault.procedures.get(task).map_or(false, |p| p.facts().iter().any(|f| f.atom.pred == "solves" && f.atom.args.get(1).and_then(|v| v.as_sym()) == Some("plan_meal")));
-        !dish && task.contains('_')
+        out
+    }
+
+    /// Does a task name start with a verb (`boil_egg`), or name a thing (`garlic_tomato_pasta`)?
+    pub(crate) fn is_verb_phrase(&self, _b: &Brain, task: &str) -> bool {
+        // `boil_egg`, `change_bike_tire`: the first word is a verb. A name that
+        // starts with a thing (`garlic_tomato_pasta`) is made.
+        let first = task.split('_').next().unwrap_or("");
+        self.translator.registry.preds.get(first).map_or(false, |p| p.verb) || matches!(first, "make" | "cook" | "bake" | "boil" | "plan" | "change" | "pack" | "write" | "clean" | "wash" | "fix" | "do")
     }
 
     /// "boil egg" for a verb phrase, "make garlic tomato pasta" for a thing.
@@ -547,4 +570,26 @@ mod similar_tests {
         assert_eq!(f("fry_egg"), None, "a different verb is a different task");
         assert_eq!(f("wash_car"), None);
     }
+}
+
+/// Replace a whole word or phrase (and its plural), fixing "a"/"an" before it.
+pub(crate) fn swap_word(text: &str, from: &str, to: &str) -> String {
+    let mut out = text.to_string();
+    for (f, t) in [(sla_nlg::plural(from), sla_nlg::plural(to)), (from.to_string(), to.to_string())] {
+        let an = |w: &str| if w.starts_with(|c: char| "aeiou".contains(c)) { "an" } else { "a" };
+        out = out.replace(&format!(" {} {f}", an(&f)), &format!(" {} {t}", an(&t)));
+        let mut res = String::new();
+        let mut rest = out.as_str();
+        while let Some(i) = rest.find(&f) {
+            let before_ok = i == 0 || !rest[..i].ends_with(|c: char| c.is_alphanumeric());
+            let after = &rest[i + f.len()..];
+            let after_ok = !after.starts_with(|c: char| c.is_alphanumeric());
+            res.push_str(&rest[..i]);
+            res.push_str(if before_ok && after_ok { &t } else { &f });
+            rest = after;
+        }
+        res.push_str(rest);
+        out = res;
+    }
+    out
 }

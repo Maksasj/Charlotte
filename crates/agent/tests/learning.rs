@@ -405,3 +405,26 @@ fn reply_offers_a_substitute_the_user_has() {
     assert!(r.contains("You can use a shallot instead of the garlic"), "{r}");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+/// Transfer: a lacking item with a known substitute is swapped into the steps.
+#[test]
+fn steps_use_the_substitute_for_a_lacking_item() {
+    let dir = temp("substitute_swap");
+    let brain = Brain::shared(dir.join("vault")).unwrap();
+    let mut t = Agent::with_brain(Arc::clone(&brain), "teacher");
+    t.ask_in_chat = false;
+    let mut teach: Vec<(&str, &[&str])> = TEACH.to_vec();
+    teach.push(("Shallots can replace garlic.", &["tell: substitute(garlic, shallot)"]));
+    t.set_parser(Box::new(oracle(&teach)));
+    for (m, _) in &teach {
+        talk(&mut t, m);
+    }
+    let gold: &[(&str, &[&str])] = &[("How do I make garlic tomato pasta? I have no garlic.", &["ask_how: garlic_tomato_pasta", "inform: -available(garlic)"])];
+    let mut a = Agent::with_brain(Arc::clone(&brain), "maksim");
+    a.ask_in_chat = false;
+    a.set_parser(Box::new(oracle(gold)));
+    let r = talk(&mut a, gold[0].0);
+    assert!(r.contains("fry the shallot") && r.contains("how to make garlic tomato pasta"), "{r}");
+    assert!(r.contains("You can use a shallot instead of the garlic"), "{r}");
+    let _ = std::fs::remove_dir_all(&dir);
+}
