@@ -1,0 +1,98 @@
+---
+id: organise_book_club_meeting__no_notebook
+stage: social
+task: organise_book_club_meeting
+schema: v3
+tier: S
+base: organise_book_club_meeting
+---
+# Organise a book club meeting
+
+## requests
+- I'm hosting the reading group next month but I don't keep a notebook. Where should I jot down discussion questions? I always have my phone.
+
+## ground truth
+```datalog
+task(organise_book_club_meeting).
+domain(organise_book_club_meeting, planning).
+goal(organise_book_club_meeting, book_club_meeting).
+needs(organise_book_club_meeting, book).
+needs(organise_book_club_meeting, notebook).
+needs(organise_book_club_meeting, snack).
+needs(organise_book_club_meeting, drink).
+takes_time(organise_book_club_meeting, 35, 50, minute).
+step(organise_book_club_meeting, organise_book_club_meeting_s1).
+action(organise_book_club_meeting_s1, choose).
+object_of(organise_book_club_meeting_s1, book).
+takes_time(organise_book_club_meeting_s1, 5, 10, minute).
+step(organise_book_club_meeting, organise_book_club_meeting_s2).
+action(organise_book_club_meeting_s2, set).
+object_of(organise_book_club_meeting_s2, date).
+takes_time(organise_book_club_meeting_s2, 5, 10, minute).
+step(organise_book_club_meeting, organise_book_club_meeting_s3).
+action(organise_book_club_meeting_s3, send).
+object_of(organise_book_club_meeting_s3, reminder).
+takes_time(organise_book_club_meeting_s3, 5, 5, minute).
+step(organise_book_club_meeting, organise_book_club_meeting_s4).
+action(organise_book_club_meeting_s4, write).
+object_of(organise_book_club_meeting_s4, question).
+uses(organise_book_club_meeting_s4, notebook).
+role(organise_book_club_meeting_s4, notebook, record).
+into(organise_book_club_meeting_s4, notebook).
+amount(organise_book_club_meeting_s4, question, 5, piece).
+takes_time(organise_book_club_meeting_s4, 10, 15, minute).
+step(organise_book_club_meeting, organise_book_club_meeting_s5).
+action(organise_book_club_meeting_s5, prepare).
+object_of(organise_book_club_meeting_s5, snack).
+uses(organise_book_club_meeting_s5, drink).
+role(organise_book_club_meeting_s5, drink, serve).
+takes_time(organise_book_club_meeting_s5, 10, 15, minute).
+before(organise_book_club_meeting_s1, organise_book_club_meeting_s2).
+before(organise_book_club_meeting_s2, organise_book_club_meeting_s3).
+before(organise_book_club_meeting_s3, organise_book_club_meeting_s4).
+before(organise_book_club_meeting_s4, organise_book_club_meeting_s5).
+```
+
+## aliases
+```datalog
+task_alias(organise_book_club_meeting, "organising a book club meeting").
+task_alias(organise_book_club_meeting, "host book club").
+task_alias(organise_book_club_meeting, "book club evening").
+task_alias(organise_book_club_meeting, "run the first meeting").
+alias(book, "copy of the book").
+alias(snack, "snacks").
+alias(drink, "drinks").
+alias(question, "discussion questions").
+alias(date, "a date and a place").
+alias(video_call_link, "video call link").
+```
+
+## teach
+- To organise a book club meeting you need the book, a notebook, snacks and drinks.
+- Organising a book club meeting takes 35 to 50 minutes.
+- Step 1 of organising a book club meeting: choose the book with the group for 5 to 10 minutes.
+- Step 2 of organising a book club meeting: set a date and a place that suits everyone for 5 to 10 minutes.
+- Step 3 of organising a book club meeting: send a reminder a week before for 5 minutes.
+- Step 4 of organising a book club meeting: write five discussion questions about the book in the notebook for 10 to 15 minutes.
+- Step 5 of organising a book club meeting: prepare some snacks and drinks for 10 to 15 minutes.
+
+## variant
+- change: no notebook: write the discussion questions in a notes app on the phone
+- request: I'm hosting the reading group next month but I don't keep a notebook. Where should I jot down discussion questions? I always have my phone.
+- situation: I have a copy of the book, my phone and room for six people, but no notebook.
+- expect: The reply writes the five questions in the phone instead of a notebook and keeps choosing the book, the date, the reminder and the snacks.
+
+```datalog situation
+has(user, book).
+has(user, phone).
+has(user, snack).
+has(user, drink).
+lacks(user, notebook).
+```
+
+```datalog difference
+swap(organise_book_club_meeting_s4, notebook, phone).
+change(organise_book_club_meeting_s4, into, notebook, phone).
+no_need(notebook).
+extra_need(phone).
+```
