@@ -138,8 +138,28 @@ pub(crate) fn uses_phrase(action: &str, uses: &[String]) -> String {
     if !cont.is_empty() {
         out.push_str(&format!(" {} {}", if into { "into" } else { "in" }, list(&cont.iter().map(|u| the(u)).collect::<Vec<_>>())));
     }
-    if !tools.is_empty() {
-        out.push_str(&format!(" with {}", list(&tools.iter().map(|u| the(u)).collect::<Vec<_>>())));
+    // The preposition the tool takes with this action: you remove a wheel from
+    // the bike, put a dish on the rack, add detergent to the drawer.
+    const SURFACES: &[&str] = &["drying_rack", "rack", "ironing_board", "board", "tray", "baking_tray", "shelf", "table", "plate", "hanger", "line", "washing_line", "wall", "counter", "blanket"];
+    let prep = |u: &String| -> &'static str {
+        let surface = SURFACES.contains(&u.as_str()) || u.ends_with("_rack") || u.ends_with("_board");
+        match action {
+            "remove" | "take" | "lift" | "unscrew" | "detach" => "from",
+            "put" | "place" | "hang" | "lay" | "set" | "leave" | "stand" | "spread" | "dry" if surface => "on",
+            "add" | "attach" | "stick" | "fix" | "pin" | "tape" | "send" | "give" | "deliver" | "post" => "to",
+            _ => "with",
+        }
+    };
+    let mut groups: Vec<(&str, Vec<String>)> = Vec::new();
+    for u in &tools {
+        let p = prep(u);
+        match groups.iter_mut().find(|(q, _)| *q == p) {
+            Some((_, v)) => v.push(the(u)),
+            None => groups.push((p, vec![the(u)])),
+        }
+    }
+    for (p, v) in groups {
+        out.push_str(&format!(" {p} {}", list(&v)));
     }
     if !from.is_empty() {
         out.push_str(&format!(" from {}", list(&from.iter().map(|u| the(u)).collect::<Vec<_>>())));

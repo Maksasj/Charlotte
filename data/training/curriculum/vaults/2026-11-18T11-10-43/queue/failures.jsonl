@@ -1,0 +1,20 @@
+{"key":"hang_print","kind":"unknown_task","message":"I bought a framed print and want to put it up in the hallway. How do I hang it?","source":"user"}
+{"key":"make_salad","kind":"unknown_task","message":"I want a fresh green salad as a side tonight. How should I put it together?","source":"user"}
+{"key":"make_smoothie","kind":"unknown_task","message":"I want a fruit smoothie for breakfast. How do I make one?","source":"user"}
+{"key":"clean_window","kind":"unknown_task","message":"My windows are covered in streaks and dust. How do I get them properly clean?","source":"user"}
+{"key":"make_tea","kind":"unknown_task","message":"I could really use a cup of tea right now. How do I make one properly?","source":"user"}
+{"key":"cook_rice","kind":"unknown_task","message":"I need to cook some white rice to go with dinner. How do I do it on the stove?","source":"user"}
+{"key":"plan_party","kind":"unknown_task","message":"My daughter turns eight next month and I want to throw her a party at home. How do I plan it?","source":"user"}
+{"key":"plan_picnic","kind":"unknown_task","message":"I'd like to take a few friends on a picnic this Saturday. How should I plan it?","source":"user"}
+{"key":"make_omelette","kind":"unknown_task","message":"I want to make an omelette for lunch. Can you tell me how?","source":"user"}
+{"key":"Step 2 of making a smoothie: break the banana into pieces into the blender.","kind":"not_understood","message":"Step 2 of making a smoothie: break the banana into pieces into the blender.","source":"teacher:curriculum"}
+{"key":"iron_shirt","kind":"unknown_task","message":"I have a job interview tomorrow and my shirt is all creased. How do I iron it?","source":"user"}
+{"key":"make_baked_potato","kind":"unknown_task","message":"I'd like a baked potato with crispy skin for dinner. How do I make one in the oven?","source":"user"}
+{"key":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","kind":"not_understood","message":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","source":"teacher:curriculum"}
+{"key":"make_pancake","kind":"unknown_task","message":"The kids want pancakes this morning. How do I make them from scratch?","source":"user"}
+{"key":"do_laundry","kind":"unknown_task","message":"I just moved out and have never done my own laundry. How does it work?","source":"user"}
+{"key":"wash_plate","kind":"unknown_task","message":"My dishwasher broke and there's a pile of dirty plates. How do I wash them by hand?","source":"user"}
+{"key":"I have a washing machine, laundry detergent, a drying rack and a full basket of clothes.","kind":"not_understood","message":"I have a washing machine, laundry detergent, a drying rack and a full basket of clothes.","source":"user"}
+{"key":"hang_painting","kind":"unknown_task","message":"I've got a small painting to put up above my desk. What's the best way to do it?","source":"user"}
+{"key":"change_bulb","kind":"unknown_task","message":"The ceiling light in my kitchen just went out. How do I change the bulb safely?","source":"user"}
+{"key":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","kind":"not_understood","message":"Step 2 of watering a plant: fill the watering can with water for 1 minute.","source":"teacher:curriculum"}

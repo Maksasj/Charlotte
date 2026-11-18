@@ -906,11 +906,18 @@ fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
         .filter(|f| f.pred == "-available")
         .filter_map(|f| if let Some(sla_core::Term::Val(sla_core::Value::Sym(s))) = f.args.first() { Some(s.clone()) } else { None })
         .collect();
-    if lacking.is_empty() {
+    let low = message.to_lowercase();
+    // "I want a picnic. Where do I start?": a how-question about a task named by its words.
+    const HOW: &[&str] = &["where do i start", "where should i start", "what are the steps", "what do i do", "how do i", "how should i", "how can i", "walk me through", "talk me through", "show me how", "what's the best way", "what is the best way", "the right way", "how to "];
+    let how = lacking.is_empty() && HOW.iter().any(|c| low.contains(c));
+    if lacking.is_empty() && !how {
         return;
     }
-    let low = message.to_lowercase();
-    let owners: Vec<&String> = ctx.task_hints.iter().filter(|(_, h)| h.iter().any(|x| lacking.contains(x))).map(|(t, _)| t).collect();
+    let owners: Vec<&String> = if how {
+        ctx.task_hints.iter().map(|(t, _)| t).collect()
+    } else {
+        ctx.task_hints.iter().filter(|(_, h)| h.iter().any(|x| lacking.contains(x))).map(|(t, _)| t).collect()
+    };
     // Content words of the task name ("pancake" in make_pancake), whole words, singular or plural.
     const VERBS: &[&str] = &["make", "cook", "do", "bake", "boil", "wash", "clean", "fix", "plan", "pack", "write", "take", "get", "have", "put", "set"];
     let msg: Vec<String> = low.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).map(|w| w.trim_end_matches('s').to_string()).collect();
@@ -934,12 +941,37 @@ fn implied_request(parts: &mut [Part], message: &str, ctx: &TContext) {
         [(a, t)] if *a >= 1 => Some((*t).clone()),
         _ => None,
     };
+    // Several named: the one whose verb is said too ("boil an egg for an
+    // omelette"), else the one named last ("got eggs and fancy an omelette").
+    let tie = if named.len() > 1 {
+        let words_of = |t: &str| t.split('_').map(|w| w.trim_end_matches('s').to_string()).collect::<Vec<_>>();
+        let with_verb: Vec<&&String> = named.iter().copied().filter(|t| t.split('_').next().map_or(false, |v| VERBS.contains(&v) && msg.iter().any(|m| m == v.trim_end_matches('s')))).collect();
+        if let [t] = with_verb.as_slice() {
+            Some((**t).clone())
+        } else {
+            named.iter().max_by_key(|t| words_of(t).iter().filter_map(|w| msg.iter().rposition(|m| m == w)).max().unwrap_or(0)).map(|t| (**t).clone())
+        }
+    } else {
+        None
+    };
     let task = match (named.as_slice(), owners.as_slice(), by_items) {
         ([t], _, _) => (**t).clone(),
+        _ if tie.is_some() && how => tie.unwrap(),
+        _ if how => return,
         (_, [t], _) => (*t).clone(),
         (_, _, Some(t)) => t,
         _ => return,
     };
+    if how {
+        // The question part (or the last part) becomes the request.
+        let at = parts.iter().rposition(|p| p.acts.iter().any(|a| matches!(a, Intent::Unknown | Intent::AskNext | Intent::Ask { .. })) || !p.ok).unwrap_or(parts.len().saturating_sub(1));
+        if let Some(p) = parts.get_mut(at) {
+            p.acts.retain(|a| !matches!(a, Intent::Unknown | Intent::AskNext | Intent::Ask { .. }));
+            p.acts.push(Intent::AskHow(task));
+            p.ok = true;
+        }
+        return;
+    }
     if let Some(p) = parts.iter_mut().find(|p| p.acts.iter().any(|a| matches!(a, Intent::Inform(f) if f.iter().any(|x| x.pred == "-available")))) {
         p.acts.retain(|a| !matches!(a, Intent::Unknown | Intent::AskNext | Intent::Ask { .. }));
         p.acts.push(Intent::AskHow(task));
@@ -1040,6 +1072,27 @@ mod substitute_tests {
         let mut p = Part { text: "I have a kettle and tea bags.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false };
         lack_cues(&mut p, &ctx);
         assert!(p.acts.is_empty(), "no cue, nothing added");
+    }
+
+    #[test]
+    fn how_question_naming_a_task_asks_how() {
+        let ctx = TContext { task_hints: vec![("plan_picnic".into(), vec!["blanket".into()]), ("make_omelette".into(), vec!["egg".into()]), ("boil_egg".into(), vec!["egg".into()])], ..Default::default() };
+        let msg = "The weather's getting nice and I want to have a picnic with friends. Where do I start?";
+        let mut parts = vec![
+            Part { text: "The weather's getting nice and I want to have a picnic with friends.".into(), acts: vec![], tier: Tier::Model, ok: true, problems: vec![], retried: false },
+            Part { text: "Where do I start?".into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false },
+        ];
+        implied_request(&mut parts, msg, &ctx);
+        assert_eq!(parts[1].acts, vec![Intent::AskHow("plan_picnic".into())]);
+        let msg = "I've got some eggs and fancy an omelette. What are the steps?";
+        let mut parts = vec![Part { text: msg.into(), acts: vec![Intent::Inform(vec![])], tier: Tier::Model, ok: true, problems: vec![], retried: false }];
+        implied_request(&mut parts, msg, &ctx);
+        assert!(parts[0].acts.contains(&Intent::AskHow("make_omelette".into())), "{:?}", parts[0].acts);
+        // Two tasks named: the one whose verb is said.
+        let msg = "How do I boil an egg for an omelette?";
+        let mut parts = vec![Part { text: msg.into(), acts: vec![Intent::Unknown], tier: Tier::Model, ok: false, problems: vec![], retried: false }];
+        implied_request(&mut parts, msg, &ctx);
+        assert_eq!(parts[0].acts, vec![Intent::AskHow("boil_egg".into())]);
     }
 
     #[test]
