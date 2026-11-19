@@ -14,6 +14,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "agent4"
+version = "0.1.0"
+dependencies = [
+ "reason4",
+ "serde",
+ "serde_json",
+ "sla_core",
+ "sla_reasoner",
+]
+
+[[package]]
 name = "eval3"
 version = "0.1.0"
 dependencies = [

@@ -7,7 +7,7 @@
 
 use std::path::Path;
 
-const CRATES: &[&str] = &["kb3", "parse3", "teach3", "agent3"];
+const CRATES: &[&str] = &["kb3", "parse3", "teach3", "agent3", "reason4", "agent4", "eval4"];
 
 fn formal() -> Vec<String> {
     let mut v: Vec<String> = kb3::fact::SCHEMA.iter().map(|(p, _)| p.to_string()).collect();
@@ -17,6 +17,16 @@ fn formal() -> Vec<String> {
     }
     // technical names: CLI flags and JSON record keys of the call archive (not language)
     for w in ["key", "answer", "model", "output", "format", "json", "system", "prompt", "tools", "session", "persistence", "strict", "mcp", "config", "result", "unix", "tag", "seconds", "line", "facts", "error"] {
+        v.push(w.into());
+    }
+    // Design 4.0 formal vocabulary: relations and sorts (schema v4, section 4.1-4.2), internal
+    // predicates of the core program, protocol keywords (section 6.1) and record keys
+    for w in ["item", "place", "material", "property", "function", "state", "agent", "same", "any", "relation",
+              "is_a", "same_as", "has_part", "made_of", "has_property", "can_do", "can_do_on", "used_for", "can_go_in",
+              "effect", "precondition", "demands", "state_of", "holds", "holdsn", "lholds", "lholdsn", "pos", "neg",
+              "isa", "part", "stand_in", "ask_fit", "ask_conflict", "not", "new", "query", "retract", "yes", "no",
+              "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
+              "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming"] {
         v.push(w.into());
     }
     v

@@ -19,7 +19,7 @@ pub fn core_rules() -> BTreeMap<String, Vec<RuleInput>> {
     let mut out: BTreeMap<String, Vec<RuleInput>> = BTreeMap::new();
     let mut sec = String::new();
     let mut buf = String::new();
-    let mut flush = |sec: &str, buf: &mut String, out: &mut BTreeMap<String, Vec<RuleInput>>| {
+    let flush = |sec: &str, buf: &mut String, out: &mut BTreeMap<String, Vec<RuleInput>>| {
         if sec.is_empty() || buf.trim().is_empty() {
             buf.clear();
             return;
