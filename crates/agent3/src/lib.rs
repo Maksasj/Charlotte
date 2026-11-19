@@ -47,10 +47,17 @@ pub fn merge(learned: &[Fact], teacher: Vec<Fact>, kind: LineKind) -> Vec<Fact> 
     }
     let have: std::collections::BTreeSet<(String, String)> = learned.iter().map(|f| (f.pred.clone(), f.arg(0).to_string())).collect();
     let mut out = learned.to_vec();
+    let al = kb3::Aliases::default();
     for f in teacher {
         let key = (f.pred.clone(), f.arg(0).to_string());
-        // single-valued slots the learner already filled are kept; multi-valued ones (uses,
-        // needs) take the teacher's extra items only when the learner found none
+        if f.pred == "needs" {
+            // a list: the teacher's items join the learner's unless one already names the same item
+            if !out.iter().any(|g| g.pred == "needs" && (al.same_item(g.arg(1), f.arg(1)) || al.same_item(f.arg(1), g.arg(1)))) {
+                out.push(f);
+            }
+            continue;
+        }
+        // single-valued slots the learner already filled are kept
         if !have.contains(&key) {
             out.push(f);
         }
