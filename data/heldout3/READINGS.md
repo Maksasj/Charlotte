@@ -5,3 +5,4 @@ H3 is read 3 times (Design 3.0 section 6.1): a baseline after milestone 24, a ch
 | # | Date | Commit | What |
 |---|---|---|---|
 | 1 | 2026-11-19 | c5fc5be | Baseline after milestone 24: C1-trained vault (c1_both_r8), arm function, fallback on, no variant teaching (budget); tiers S, T, G |
+| 2 | 2026-11-19 | dcf1d8e | Checkpoint after milestone 26: C2 (dialogue + 98-task dataset), vault c2_both_r1, arm function, fallback on, no variant teaching |
