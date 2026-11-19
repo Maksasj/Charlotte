@@ -151,3 +151,15 @@ fn applying_the_potato_variant_adds_the_microwave_step() {
     let bake = g.steps.iter().position(|s| s.action == "bake").unwrap();
     assert!(mw < bake);
 }
+
+#[test]
+fn a_state_named_as_a_clause_matches_its_word() {
+    let sc = potato();
+    let g = gold(&sc, None);
+    let mut a = answer_of(&g);
+    let k = a.steps.iter().position(|s| s.until.is_some()).unwrap();
+    a.steps[k].until = Some("it_is_soft_inside".into());
+    assert!(check(&a, &g, &Aliases::from_facts(&sc.aliases), &[]).strict_pass);
+    a.steps[k].until = Some("burnt".into());
+    assert!(!check(&a, &g, &Aliases::from_facts(&sc.aliases), &[]).strict_pass);
+}

@@ -112,6 +112,20 @@ fn step_details(s: &Step) -> Vec<(String, String)> {
     v
 }
 
+/// Slots whose value names a state or effect (`set`, `the_cheese_bubbles`): the ground truth
+/// itself names them sometimes as a word, sometimes as a clause, so they match when they share
+/// a content word of the gold symbol.
+fn state_key(key: &str) -> bool {
+    matches!(key, "until" | "purpose" | "achieves" | "requires_state" | "condition" | "warning" | "check")
+}
+
+fn state_match(a: &str, g: &str) -> bool {
+    let ws = |s: &str| -> Vec<String> { s.split('_').filter(|w| w.len() > 2).map(|w| w.chars().take(5).collect()).collect() };
+    let gw = ws(g);
+    let aw = ws(a);
+    !gw.is_empty() && gw.iter().any(|w| aw.contains(w))
+}
+
 /// Slots that take one value: a different value is a wrong claim, not just a miss.
 fn functional(key: &str) -> bool {
     key == "time" || key == "until" || key.starts_with("setting ") || key.starts_with("amount ")
@@ -186,7 +200,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
         let ad = a.map(step_details).unwrap_or_default();
         for (k, v) in step_details(g) {
             r.all_total += 1;
-            if ad.iter().any(|(ak, av)| *ak == k && (av == &v || aliases.same(av, &v))) {
+            if ad.iter().any(|(ak, av)| *ak == k && (av == &v || aliases.same(av, &v) || (state_key(&k) && state_match(av, &v)))) {
                 r.all_found += 1;
             } else if functional(&k) && ad.iter().any(|(ak, _)| *ak == k) {
                 r.wrong.push(format!("{} {k}: answer differs from {v}", g.id));
@@ -203,7 +217,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
         for (k, v) in step_details(s) {
             r.answer_facts += 1;
             if let Some(gi) = map.get(&ai) {
-                if gold_details[gi].iter().any(|(gk, gv)| *gk == k && (gv == &v || aliases.same(gv, &v))) {
+                if gold_details[gi].iter().any(|(gk, gv)| *gk == k && (gv == &v || aliases.same(gv, &v) || (state_key(&k) && state_match(&v, gv)))) {
                     r.answer_matched += 1;
                 }
             }
