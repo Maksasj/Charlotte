@@ -30,6 +30,18 @@ def read_json(p):
     return json.load(open(p))
 
 
+DIGITS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
+
+
+def tag_of(name):
+    """A LaTeX-safe macro part: words title-cased, digits spelled out (r2 -> RTwo)."""
+    out = ""
+    for part in re.split(r"[^A-Za-z0-9]+", name):
+        for ch in re.findall(r"[A-Za-z]+|[0-9]", part):
+            out += DIGITS[int(ch)] if ch.isdigit() else ch[0].upper() + ch[1:].lower()
+    return out
+
+
 def put(name, value, src, how):
     assert re.match(r"^[A-Za-z]+$", name), name
     if isinstance(value, float):
@@ -68,9 +80,9 @@ def v2():
 def runs():
     for p in sorted(glob.glob(os.path.join(ROOT, "data/training/runs3/*/summary.json"))):
         s = read_json(p)
-        tag = re.sub(r"[^A-Za-z]", "", s["name"].title())
+        tag = tag_of(s["name"])
         for kind, v in s.get("by_kind", {}).items():
-            k = re.sub(r"[^A-Za-z]", "", kind.title())
+            k = tag_of(kind)
             put(f"run{tag}{k}Pass", v["pass"], rel(p), f"by_kind.{kind}.pass")
             put(f"run{tag}{k}N", v["n"], rel(p), f"by_kind.{kind}.n")
             put(f"run{tag}{k}Rate", 100 * v["rate"], rel(p), f"100 * by_kind.{kind}.rate")
