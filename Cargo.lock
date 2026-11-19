@@ -37,6 +37,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "eval4"
+version = "0.1.0"
+dependencies = [
+ "agent4",
+ "reason4",
+ "serde",
+ "serde_json",
+ "sla_core",
+ "sla_reasoner",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
