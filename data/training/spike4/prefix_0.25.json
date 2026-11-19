@@ -1,0 +1,4595 @@
+{
+  "raw": [
+    {
+      "channel": "fixture",
+      "id": "spike.0",
+      "schema": "v4",
+      "text": "topic baking/vocabulary.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.1",
+      "schema": "v4",
+      "text": "new(bakeware, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.2",
+      "schema": "v4",
+      "text": "new(kitchen_item, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.3",
+      "schema": "v4",
+      "text": "new(container, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.4",
+      "schema": "v4",
+      "text": "new(kitchen_utensil, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.5",
+      "schema": "v4",
+      "text": "new(baking_tin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.6",
+      "schema": "v4",
+      "text": "new(loaf_tin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.7",
+      "schema": "v4",
+      "text": "new(muffin_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.8",
+      "schema": "v4",
+      "text": "new(cake_tin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.9",
+      "schema": "v4",
+      "text": "new(springform_tin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.10",
+      "schema": "v4",
+      "text": "new(sandwich_tin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.11",
+      "schema": "v4",
+      "text": "new(silicone_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.12",
+      "schema": "v4",
+      "text": "new(silicone_mould, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.13",
+      "schema": "v4",
+      "text": "new(baking_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.14",
+      "schema": "v4",
+      "text": "new(pie_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.15",
+      "schema": "v4",
+      "text": "new(baking_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.16",
+      "schema": "v4",
+      "text": "new(whisk, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.17",
+      "schema": "v4",
+      "text": "new(balloon_whisk, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.18",
+      "schema": "v4",
+      "text": "new(spatula, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.19",
+      "schema": "v4",
+      "text": "new(rolling_pin, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.20",
+      "schema": "v4",
+      "text": "new(pizza_wheel, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.21",
+      "schema": "v4",
+      "text": "new(jug, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.22",
+      "schema": "v4",
+      "text": "new(measuring_jug, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.23",
+      "schema": "v4",
+      "text": "new(plastic_jug, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.24",
+      "schema": "v4",
+      "text": "new(pyrex_jug, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.25",
+      "schema": "v4",
+      "text": "new(flour, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.26",
+      "schema": "v4",
+      "text": "new(baking_ingredient, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.27",
+      "schema": "v4",
+      "text": "new(rice_flour, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.28",
+      "schema": "v4",
+      "text": "new(brown_rice_flour, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.29",
+      "schema": "v4",
+      "text": "new(self_raising_flour, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.30",
+      "schema": "v4",
+      "text": "new(raising_agent, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.31",
+      "schema": "v4",
+      "text": "new(baking_soda, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.32",
+      "schema": "v4",
+      "text": "new(baking_powder, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.33",
+      "schema": "v4",
+      "text": "new(bread_board, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.34",
+      "schema": "v4",
+      "text": "new(board, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.35",
+      "schema": "v4",
+      "text": "new(bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.36",
+      "schema": "v4",
+      "text": "new(steel_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.37",
+      "schema": "v4",
+      "text": "new(jar, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.38",
+      "schema": "v4",
+      "text": "new(glass_jar, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.39",
+      "schema": "v4",
+      "text": "new(soft_fruit, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.40",
+      "schema": "v4",
+      "text": "new(fruit, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.41",
+      "schema": "v4",
+      "text": "new(banana, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.42",
+      "schema": "v4",
+      "text": "new(mixing_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.43",
+      "schema": "v4",
+      "text": "new(sieve, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.44",
+      "schema": "v4",
+      "text": "new(cooling_rack, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.45",
+      "schema": "v4",
+      "text": "new(pastry_brush, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.46",
+      "schema": "v4",
+      "text": "new(rubber, material).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.47",
+      "schema": "v4",
+      "text": "new(metal, material).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.48",
+      "schema": "v4",
+      "text": "new(plastic, material).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.49",
+      "schema": "v4",
+      "text": "new(glass, material).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.50",
+      "schema": "v4",
+      "text": "new(wood, material).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.51",
+      "schema": "v4",
+      "text": "new(beat, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.52",
+      "schema": "v4",
+      "text": "new(beat, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.53",
+      "schema": "v4",
+      "text": "new(heat_resistant, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.54",
+      "schema": "v4",
+      "text": "new(contains_gluten, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.55",
+      "schema": "v4",
+      "text": "new(sharp, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.56",
+      "schema": "v4",
+      "text": "new(alkaline, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.57",
+      "schema": "v4",
+      "text": "new(acidic, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.58",
+      "schema": "v4",
+      "text": "new(watertight, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.59",
+      "schema": "v4",
+      "text": "new(flexible, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.60",
+      "schema": "v4",
+      "text": "new(contain, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.61",
+      "schema": "v4",
+      "text": "new(batter, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.62",
+      "schema": "v4",
+      "text": "new(egg_whisk, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.63",
+      "schema": "v4",
+      "text": "new(whisk_attachment, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.64",
+      "schema": "v4",
+      "text": "new(scrape, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.65",
+      "schema": "v4",
+      "text": "new(roll, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.66",
+      "schema": "v4",
+      "text": "new(measure, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.67",
+      "schema": "v4",
+      "text": "new(pour, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.68",
+      "schema": "v4",
+      "text": "new(pour, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.69",
+      "schema": "v4",
+      "text": "new(raise, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.70",
+      "schema": "v4",
+      "text": "new(sift, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.71",
+      "schema": "v4",
+      "text": "new(sift, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.72",
+      "schema": "v4",
+      "text": "new(cool, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.73",
+      "schema": "v4",
+      "text": "new(cool, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.74",
+      "schema": "v4",
+      "text": "new(glaze, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.75",
+      "schema": "v4",
+      "text": "new(hold, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.76",
+      "schema": "v4",
+      "text": "new(dough, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.77",
+      "schema": "v4",
+      "text": "new(oven, place).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.78",
+      "schema": "v4",
+      "text": "new(stand_mixer, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.79",
+      "schema": "v4",
+      "text": "new(removable_base, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.80",
+      "schema": "v4",
+      "text": "new(oven_rack, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.81",
+      "schema": "v4",
+      "text": "new(whip, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.82",
+      "schema": "v4",
+      "text": "new(fold, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.83",
+      "schema": "v4",
+      "text": "new(mix, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.84",
+      "schema": "v4",
+      "text": "new(mix, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.85",
+      "schema": "v4",
+      "text": "new(blend, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.86",
+      "schema": "v4",
+      "text": "new(mashed, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.87",
+      "schema": "v4",
+      "text": "new(lump_free, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.88",
+      "schema": "v4",
+      "text": "new(melt, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.89",
+      "schema": "v4",
+      "text": "new(butter, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.90",
+      "schema": "v4",
+      "text": "new(melted, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.91",
+      "schema": "v4",
+      "text": "new(egg_white, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.92",
+      "schema": "v4",
+      "text": "new(separated, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.93",
+      "schema": "v4",
+      "text": "new(bicarbonate_of_soda, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.94",
+      "schema": "v4",
+      "text": "topic baking/kinds.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.95",
+      "schema": "v4",
+      "text": "is_a(bakeware, kitchen_item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.96",
+      "schema": "v4",
+      "text": "is_a(container, kitchen_item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.97",
+      "schema": "v4",
+      "text": "is_a(kitchen_utensil, kitchen_item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.98",
+      "schema": "v4",
+      "text": "is_a(baking_tin, bakeware).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.99",
+      "schema": "v4",
+      "text": "is_a(baking_tin, container).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.100",
+      "schema": "v4",
+      "text": "is_a(loaf_tin, baking_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.101",
+      "schema": "v4",
+      "text": "is_a(muffin_tray, baking_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.102",
+      "schema": "v4",
+      "text": "is_a(cake_tin, baking_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.103",
+      "schema": "v4",
+      "text": "is_a(springform_tin, cake_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.104",
+      "schema": "v4",
+      "text": "is_a(sandwich_tin, cake_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.105",
+      "schema": "v4",
+      "text": "is_a(silicone_tray, baking_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.106",
+      "schema": "v4",
+      "text": "is_a(silicone_mould, cake_tin).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.107",
+      "schema": "v4",
+      "text": "is_a(baking_dish, bakeware).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.108",
+      "schema": "v4",
+      "text": "is_a(pie_dish, baking_dish).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.109",
+      "schema": "v4",
+      "text": "is_a(baking_tray, bakeware).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.110",
+      "schema": "v4",
+      "text": "is_a(whisk, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.111",
+      "schema": "v4",
+      "text": "is_a(balloon_whisk, whisk).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.112",
+      "schema": "v4",
+      "text": "is_a(spatula, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.113",
+      "schema": "v4",
+      "text": "is_a(rolling_pin, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.114",
+      "schema": "v4",
+      "text": "is_a(pizza_wheel, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.115",
+      "schema": "v4",
+      "text": "is_a(jug, container).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.116",
+      "schema": "v4",
+      "text": "is_a(measuring_jug, jug).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.117",
+      "schema": "v4",
+      "text": "is_a(plastic_jug, measuring_jug).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.118",
+      "schema": "v4",
+      "text": "is_a(pyrex_jug, measuring_jug).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.119",
+      "schema": "v4",
+      "text": "is_a(flour, baking_ingredient).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.120",
+      "schema": "v4",
+      "text": "is_a(rice_flour, flour).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.121",
+      "schema": "v4",
+      "text": "is_a(brown_rice_flour, rice_flour).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.122",
+      "schema": "v4",
+      "text": "is_a(self_raising_flour, flour).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.123",
+      "schema": "v4",
+      "text": "is_a(raising_agent, baking_ingredient).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.124",
+      "schema": "v4",
+      "text": "is_a(baking_soda, raising_agent).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.125",
+      "schema": "v4",
+      "text": "is_a(baking_powder, raising_agent).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.126",
+      "schema": "v4",
+      "text": "is_a(bread_board, board).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.127",
+      "schema": "v4",
+      "text": "is_a(bowl, container).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.128",
+      "schema": "v4",
+      "text": "is_a(steel_bowl, bowl).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.129",
+      "schema": "v4",
+      "text": "is_a(jar, container).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.130",
+      "schema": "v4",
+      "text": "is_a(glass_jar, jar).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.131",
+      "schema": "v4",
+      "text": "is_a(soft_fruit, fruit).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.132",
+      "schema": "v4",
+      "text": "is_a(banana, soft_fruit).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.133",
+      "schema": "v4",
+      "text": "is_a(mixing_bowl, bowl).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.134",
+      "schema": "v4",
+      "text": "is_a(sieve, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.135",
+      "schema": "v4",
+      "text": "is_a(cooling_rack, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.136",
+      "schema": "v4",
+      "text": "is_a(pastry_brush, kitchen_utensil).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.137",
+      "schema": "v4",
+      "text": "topic baking/materials.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.138",
+      "schema": "v4",
+      "text": "made_of(silicone_tray, rubber).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.139",
+      "schema": "v4",
+      "text": "made_of(silicone_mould, rubber).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.140",
+      "schema": "v4",
+      "text": "made_of(whisk, metal).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.141",
+      "schema": "v4",
+      "text": "made_of(plastic_jug, plastic).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.142",
+      "schema": "v4",
+      "text": "made_of(pyrex_jug, glass).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.143",
+      "schema": "v4",
+      "text": "made_of(rolling_pin, wood).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.144",
+      "schema": "v4",
+      "text": "made_of(bread_board, wood).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.145",
+      "schema": "v4",
+      "text": "made_of(whisk, beat).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.146",
+      "schema": "v4",
+      "text": "has_property(bakeware, heat_resistant).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.147",
+      "schema": "v4",
+      "text": "has_property(flour, contains_gluten).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.148",
+      "schema": "v4",
+      "text": "not has_property(rice_flour, contains_gluten).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.149",
+      "schema": "v4",
+      "text": "ask 0: conflict: not has_property(rice_flour, contains_gluten) vs inherited contrary. exception?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.150",
+      "schema": "v4",
+      "text": "answer 0: exception.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.151",
+      "schema": "v4",
+      "text": "has_property(pizza_wheel, sharp).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.152",
+      "schema": "v4",
+      "text": "has_property(baking_soda, alkaline).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.153",
+      "schema": "v4",
+      "text": "not has_property(baking_soda, acidic).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.154",
+      "schema": "v4",
+      "text": "has_property(bowl, watertight).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.155",
+      "schema": "v4",
+      "text": "made_of(glass_jar, glass).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.156",
+      "schema": "v4",
+      "text": "has_property(silicone_tray, flexible).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.157",
+      "schema": "v4",
+      "text": "has_property(silicone_mould, flexible).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.158",
+      "schema": "v4",
+      "text": "topic baking/functions.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.159",
+      "schema": "v4",
+      "text": "can_do_on(baking_tin, contain, batter).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.160",
+      "schema": "v4",
+      "text": "can_do(container, contain).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.161",
+      "schema": "v4",
+      "text": "can_do(baking_dish, contain).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.162",
+      "schema": "v4",
+      "text": "used_for(whisk, beat).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.163",
+      "schema": "v4",
+      "text": "can_do(egg_whisk, beat).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.164",
+      "schema": "v4",
+      "text": "ask 1: same_as(egg_whisk, whisk)? or is_a(egg_whisk, whisk)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.165",
+      "schema": "v4",
+      "text": "answer 1: same_as(egg_whisk, whisk).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.166",
+      "schema": "v4",
+      "text": "can_do(whisk_attachment, beat).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.167",
+      "schema": "v4",
+      "text": "ask 2: same_as(whisk_attachment, whisk)? or is_a(whisk_attachment, whisk)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.168",
+      "schema": "v4",
+      "text": "answer 2: not same_as(whisk_attachment, whisk).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.169",
+      "schema": "v4",
+      "text": "used_for(spatula, scrape).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.170",
+      "schema": "v4",
+      "text": "used_for(rolling_pin, roll).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.171",
+      "schema": "v4",
+      "text": "used_for(measuring_jug, measure).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.172",
+      "schema": "v4",
+      "text": "can_do(jug, pour).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.173",
+      "schema": "v4",
+      "text": "used_for(raising_agent, raise).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.174",
+      "schema": "v4",
+      "text": "used_for(sieve, sift).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.175",
+      "schema": "v4",
+      "text": "used_for(cooling_rack, cool).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.176",
+      "schema": "v4",
+      "text": "used_for(pastry_brush, glaze).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.177",
+      "schema": "v4",
+      "text": "can_do_on(baking_tray, hold, dough).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.178",
+      "text": "ask 3: ask: can_do(bakeware, contain)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.179",
+      "text": "answer 3: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.180",
+      "text": "ask 4: ask: can_do(baking_dish, pour)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.181",
+      "text": "answer 4: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.182",
+      "text": "ask 5: ask: has_property(bowl, heat_resistant)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.183",
+      "text": "answer 5: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.184",
+      "text": "ask 6: ask: has_property(baking_dish, watertight)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.185",
+      "text": "answer 6: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.186",
+      "text": "ask 7: ask: used_for(baking_dish, measure)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.187",
+      "text": "answer 7: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.188",
+      "text": "ask 8: ask: used_for(jug, measure)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.189",
+      "text": "answer 8: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.190",
+      "schema": "v4",
+      "text": "topic baking/oven.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.191",
+      "schema": "v4",
+      "text": "can_go_in(baking_tin, oven).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.192",
+      "schema": "v4",
+      "text": "can_go_in(baking_dish, oven).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.193",
+      "schema": "v4",
+      "text": "can_go_in(baking_tray, oven).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.194",
+      "schema": "v4",
+      "text": "can_go_in(pyrex_jug, oven).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.195",
+      "schema": "v4",
+      "text": "not can_go_in(plastic_jug, oven).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.196",
+      "text": "ask 9: ask: can_do(baking_tray, contain)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.197",
+      "text": "answer 9: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.198",
+      "text": "ask 10: ask: can_go_in(bakeware, oven)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.199",
+      "text": "answer 10: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.200",
+      "text": "ask 11: ask: has_property(pyrex_jug, heat_resistant)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.201",
+      "text": "answer 11: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.202",
+      "text": "ask 12: ask: used_for(jug, measure)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.203",
+      "text": "answer 12: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.204",
+      "schema": "v4",
+      "text": "topic baking/parts.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.205",
+      "schema": "v4",
+      "text": "has_part(stand_mixer, whisk_attachment).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.206",
+      "schema": "v4",
+      "text": "has_part(stand_mixer, mixing_bowl).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.207",
+      "schema": "v4",
+      "text": "has_part(springform_tin, removable_base).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.208",
+      "schema": "v4",
+      "text": "has_part(oven, oven_rack).",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.209",
+      "text": "ask 13: ask: can_do(baking_tray, contain)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.210",
+      "text": "answer 13: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "question",
+      "id": "spike.211",
+      "text": "ask 14: ask: has_property(pyrex_jug, heat_resistant)?",
+      "who": "agent"
+    },
+    {
+      "channel": "answer",
+      "id": "spike.212",
+      "text": "answer 14: unknown.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.213",
+      "schema": "v4",
+      "text": "topic baking/actions.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.214",
+      "schema": "v4",
+      "text": "is_a(whip, beat).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.215",
+      "schema": "v4",
+      "text": "is_a(fold, mix).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.216",
+      "schema": "v4",
+      "text": "effect(blend, banana, mashed).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.217",
+      "schema": "v4",
+      "text": "effect(sift, flour, lump_free).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.218",
+      "schema": "v4",
+      "text": "effect(melt, butter, melted).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.219",
+      "schema": "v4",
+      "text": "precondition(whip, egg_white, separated).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.220",
+      "schema": "v4",
+      "text": "topic baking/names.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.221",
+      "schema": "v4",
+      "text": "same_as(bicarbonate_of_soda, baking_soda).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.222",
+      "schema": "v4",
+      "text": "topic cooking/vocabulary.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.223",
+      "schema": "v4",
+      "text": "new(cookware, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.224",
+      "schema": "v4",
+      "text": "new(pan, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.225",
+      "schema": "v4",
+      "text": "new(frying_pan, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.226",
+      "schema": "v4",
+      "text": "new(saucepan, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.227",
+      "schema": "v4",
+      "text": "new(wok, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.228",
+      "schema": "v4",
+      "text": "new(pot, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.229",
+      "schema": "v4",
+      "text": "new(cast_iron_pan, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.230",
+      "schema": "v4",
+      "text": "new(cast_iron_skillet, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.231",
+      "schema": "v4",
+      "text": "new(camp_skillet, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.232",
+      "schema": "v4",
+      "text": "new(dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.233",
+      "schema": "v4",
+      "text": "new(glass_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.234",
+      "schema": "v4",
+      "text": "new(casserole_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.235",
+      "schema": "v4",
+      "text": "new(ceramic_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.236",
+      "schema": "v4",
+      "text": "new(enamel_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.237",
+      "schema": "v4",
+      "text": "new(metal_container, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.238",
+      "schema": "v4",
+      "text": "new(plastic_dish, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.239",
+      "schema": "v4",
+      "text": "new(takeaway_box, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.240",
+      "schema": "v4",
+      "text": "new(plastic_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.241",
+      "schema": "v4",
+      "text": "new(plastic_serving_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.242",
+      "schema": "v4",
+      "text": "new(kids_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.243",
+      "schema": "v4",
+      "text": "new(ovenproof_plastic_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.244",
+      "schema": "v4",
+      "text": "new(ready_meal_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.245",
+      "schema": "v4",
+      "text": "new(lasagne_tray, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.246",
+      "schema": "v4",
+      "text": "new(food_container, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.247",
+      "schema": "v4",
+      "text": "new(plastic_tub, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.248",
+      "schema": "v4",
+      "text": "new(food_bag, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.249",
+      "schema": "v4",
+      "text": "new(cutlery, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.250",
+      "schema": "v4",
+      "text": "new(fork, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.251",
+      "schema": "v4",
+      "text": "new(spoon, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.252",
+      "schema": "v4",
+      "text": "new(knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.253",
+      "schema": "v4",
+      "text": "new(kitchen_knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.254",
+      "schema": "v4",
+      "text": "new(bread_knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.255",
+      "schema": "v4",
+      "text": "new(chef_knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.256",
+      "schema": "v4",
+      "text": "new(santoku_knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.257",
+      "schema": "v4",
+      "text": "new(butter_knife, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.258",
+      "schema": "v4",
+      "text": "new(scissors, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.259",
+      "schema": "v4",
+      "text": "new(cutting_tool, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.260",
+      "schema": "v4",
+      "text": "new(kitchen_scissors, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.261",
+      "schema": "v4",
+      "text": "new(colander, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.262",
+      "schema": "v4",
+      "text": "new(strainer, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.263",
+      "schema": "v4",
+      "text": "new(metal_colander, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.264",
+      "schema": "v4",
+      "text": "new(grater, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.265",
+      "schema": "v4",
+      "text": "new(wooden_spoon, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.266",
+      "schema": "v4",
+      "text": "new(ladle, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.267",
+      "schema": "v4",
+      "text": "new(chopsticks, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.268",
+      "schema": "v4",
+      "text": "new(chopping_board, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.269",
+      "schema": "v4",
+      "text": "new(tea_towel, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.270",
+      "schema": "v4",
+      "text": "new(cloth, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.271",
+      "schema": "v4",
+      "text": "new(citrus_fruit, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.272",
+      "schema": "v4",
+      "text": "new(lemon, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.273",
+      "schema": "v4",
+      "text": "new(lime, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.274",
+      "schema": "v4",
+      "text": "new(citrus_juice, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.275",
+      "schema": "v4",
+      "text": "new(acid, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.276",
+      "schema": "v4",
+      "text": "new(lemon_juice, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.277",
+      "schema": "v4",
+      "text": "new(vinegar, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.278",
+      "schema": "v4",
+      "text": "new(white_vinegar, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.279",
+      "schema": "v4",
+      "text": "new(cola, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.280",
+      "schema": "v4",
+      "text": "new(soft_drink, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.281",
+      "schema": "v4",
+      "text": "new(water, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.282",
+      "schema": "v4",
+      "text": "new(liquid, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.283",
+      "schema": "v4",
+      "text": "new(potato_masher, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.284",
+      "schema": "v4",
+      "text": "new(soup_ladle, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.285",
+      "schema": "v4",
+      "text": "new(absorbent, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.286",
+      "schema": "v4",
+      "text": "new(flat, property).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.287",
+      "schema": "v4",
+      "text": "new(cut, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.288",
+      "schema": "v4",
+      "text": "new(cut, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.289",
+      "schema": "v4",
+      "text": "new(pierce, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.290",
+      "schema": "v4",
+      "text": "new(scoop, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.291",
+      "schema": "v4",
+      "text": "new(heat, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.292",
+      "schema": "v4",
+      "text": "new(heat, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.293",
+      "schema": "v4",
+      "text": "new(drain, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.294",
+      "schema": "v4",
+      "text": "new(grate, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.295",
+      "schema": "v4",
+      "text": "new(dry, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.296",
+      "schema": "v4",
+      "text": "new(dry, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.297",
+      "schema": "v4",
+      "text": "new(soak_up, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.298",
+      "schema": "v4",
+      "text": "new(dissolve_limescale, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.299",
+      "schema": "v4",
+      "text": "new(cutting_board, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.300",
+      "schema": "v4",
+      "text": "new(chop, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.301",
+      "schema": "v4",
+      "text": "new(chop, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.302",
+      "schema": "v4",
+      "text": "new(press, function).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.303",
+      "schema": "v4",
+      "text": "new(microwave, place).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.304",
+      "schema": "v4",
+      "text": "new(dishwasher, place).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.305",
+      "schema": "v4",
+      "text": "new(hob, place).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.306",
+      "schema": "v4",
+      "text": "new(stove_top, place).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.307",
+      "schema": "v4",
+      "text": "new(pan_handle, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.308",
+      "schema": "v4",
+      "text": "new(lid, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.309",
+      "schema": "v4",
+      "text": "new(food_processor, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.310",
+      "schema": "v4",
+      "text": "new(blade, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.311",
+      "schema": "v4",
+      "text": "new(food_processor_bowl, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.312",
+      "schema": "v4",
+      "text": "new(slice, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.313",
+      "schema": "v4",
+      "text": "new(shake, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.314",
+      "schema": "v4",
+      "text": "new(egg, item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.315",
+      "schema": "v4",
+      "text": "new(beaten, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.316",
+      "schema": "v4",
+      "text": "new(boil, action).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.317",
+      "schema": "v4",
+      "text": "new(cooked, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.318",
+      "schema": "v4",
+      "text": "new(cracked, state).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.319",
+      "schema": "v4",
+      "text": "topic cooking/kinds.",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.320",
+      "schema": "v4",
+      "text": "is_a(cookware, kitchen_item).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.321",
+      "schema": "v4",
+      "text": "is_a(pan, cookware).",
+      "who": "teacher"
+    },
+    {
+      "channel": "fixture",
+      "id": "spike.322",
+      "schema": "v4",
+      "text": "is_a(frying_pan, pan).",
+      "who": "teacher"
+    },
+    {
+      "channel": "query",
+      "id": "spike.323",
+      "schema": "v4",
+      "text": "query: can_go_in(muffin_tray, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.324",
+      "schema": "v4",
+      "text": "query: can_do_on(loaf_tin, contain, batter).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.325",
+      "schema": "v4",
+      "text": "query: can_go_in(silicone_tray, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.326",
+      "schema": "v4",
+      "text": "query: has_property(steel_bowl, watertight).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.327",
+      "schema": "v4",
+      "text": "query: has_property(kitchen_scissors, sharp).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.328",
+      "schema": "v4",
+      "text": "query: can_do(microfibre_cloth, clean).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.329",
+      "schema": "v4",
+      "text": "query: has_part(mixer_tap, cartridge).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.330",
+      "schema": "v4",
+      "text": "query: has_property(electricians_pliers, conductive).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.331",
+      "schema": "v4",
+      "text": "query: can_go_in(silicone_mould, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.332",
+      "schema": "v4",
+      "text": "query: can_go_in(springform_tin, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.333",
+      "schema": "v4",
+      "text": "query: is_a(springform_tin, bakeware).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.334",
+      "schema": "v4",
+      "text": "query: can_do(bread_knife, cut).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.335",
+      "schema": "v4",
+      "text": "query: has_property(lemon_juice, acidic).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.336",
+      "schema": "v4",
+      "text": "query: can_do(white_vinegar, dissolve_limescale).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.337",
+      "schema": "v4",
+      "text": "query: can_do(microfibre_cloth, wipe).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.338",
+      "schema": "v4",
+      "text": "query: has_part(mixer_tap, o_ring).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.339",
+      "schema": "v4",
+      "text": "query: can_go_in(claw_hammer, toolbox).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.340",
+      "schema": "v4",
+      "text": "query: can_do(stubby_screwdriver, loosen).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.341",
+      "schema": "v4",
+      "text": "query: has_property(springform_tin, heat_resistant).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.342",
+      "schema": "v4",
+      "text": "query: can_do(camp_skillet, heat).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.343",
+      "schema": "v4",
+      "text": "query: can_do(car_chamois, wipe).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.344",
+      "schema": "v4",
+      "text": "query: can_do(glass_hob_scourer, scrub).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.345",
+      "schema": "v4",
+      "text": "query: has_part(kitchen_mixer_tap, o_ring).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.346",
+      "schema": "v4",
+      "text": "query: is_a(stubby_screwdriver, tool).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.347",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, pan). has(user, pot).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.348",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, fork). has(user, potato_masher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.349",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, cloth). has(user, paper_towel).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.350",
+      "schema": "v4",
+      "text": "query: stand_in(fix_dripping_tap_s2, screwdriver, X). given: lacks(user, screwdriver). has(user, coin).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.351",
+      "schema": "v4",
+      "text": "request(make_apple_crumble). lacks(user, baking_dish). has(user, casserole_dish).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.352",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, bowl). has(user, casserole_dish).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.353",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, fork). has(user, balloon_whisk).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.354",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, bowl). has(user, glass_dish).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.355",
+      "schema": "v4",
+      "text": "request(boil_egg). lacks(user, spoon). has(user, soup_ladle).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.356",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, sponge). has(user, microfibre_cloth).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.357",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, cloth). has(user, tea_towel).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.358",
+      "schema": "v4",
+      "text": "request(clean_microwave). lacks(user, cloth). has(user, cotton_rag).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.359",
+      "schema": "v4",
+      "text": "query: stand_in(fix_dripping_tap_s6, screwdriver, X). given: lacks(user, screwdriver). has(user, phillips_screwdriver).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.360",
+      "schema": "v4",
+      "text": "request(replace_door_handle). lacks(user, screwdriver). has(user, phillips_screwdriver). has(user, flathead_screwdriver).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.361",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, loaf_tin). has(user, muffin_tray). has(user, plastic_tub).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.362",
+      "schema": "v4",
+      "text": "request(make_apple_crumble). lacks(user, baking_dish). has(user, pie_dish).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.363",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, bowl). has(user, mixing_bowl).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.364",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, pan). has(user, frying_pan).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.365",
+      "schema": "v4",
+      "text": "request(clean_microwave). lacks(user, lemon). has(user, white_vinegar). has(user, dish_soap).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.366",
+      "schema": "v4",
+      "text": "request(fix_dripping_tap). lacks(user, screwdriver). has(user, stubby_screwdriver).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.367",
+      "schema": "v4",
+      "text": "query: stand_in(prune_rose_s2, secateurs, X). given: step(prune_rose, prune_rose_s2). action(prune_rose_s2, cut). object_of(prune_rose_s2, stem). uses(prune_rose_s2, secateurs). role(prune_rose_s2, secateurs, cut). lacks(user, secateurs). has(user, kitchen_scissors).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.368",
+      "schema": "v4",
+      "text": "query: stand_in(repot_plant_s2, trowel, X). given: step(repot_plant, repot_plant_s2). action(repot_plant_s2, scoop). object_of(repot_plant_s2, compost). uses(repot_plant_s2, trowel). role(repot_plant_s2, trowel, scoop). lacks(user, trowel). has(user, soup_ladle).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.369",
+      "schema": "v4",
+      "text": "query: stand_in(water_garden_s1, watering_can, X). given: step(water_garden, water_garden_s1). action(water_garden_s1, fill). object_of(water_garden_s1, water). uses(water_garden_s1, watering_can). role(water_garden_s1, watering_can, contain). demands(water_garden_s1, contain, has_property, watertight). lacks(user, watering_can). has(user, bowl).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.370",
+      "schema": "v4",
+      "text": "query: stand_in(rake_leaves_s3, garden_sack, X). given: step(rake_leaves, rake_leaves_s3). action(rake_leaves_s3, bag). object_of(rake_leaves_s3, leaves). uses(rake_leaves_s3, garden_sack). role(rake_leaves_s3, garden_sack, contain). lacks(user, garden_sack). has(user, bucket).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.371",
+      "schema": "v4",
+      "text": "query: stand_in(mow_lawn_s1, gardening_gloves, X). given: step(mow_lawn, mow_lawn_s1). action(mow_lawn_s1, wear). object_of(mow_lawn_s1, gardening_gloves). uses(mow_lawn_s1, gardening_gloves). role(mow_lawn_s1, gardening_gloves, protect_hands). lacks(user, gardening_gloves). has(user, rubber_glove).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.372",
+      "schema": "v4",
+      "text": "query: stand_in(stake_tomato_s1, mallet, X). given: step(stake_tomato, stake_tomato_s1). action(stake_tomato_s1, drive). object_of(stake_tomato_s1, cane). uses(stake_tomato_s1, mallet). role(stake_tomato_s1, mallet, strike). lacks(user, mallet). has(user, claw_hammer).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.373",
+      "schema": "v4",
+      "text": "query: stand_in(repot_plant_s3, secateurs, X). given: step(repot_plant, repot_plant_s3). action(repot_plant_s3, cut). object_of(repot_plant_s3, root). uses(repot_plant_s3, secateurs). role(repot_plant_s3, secateurs, cut). demands(repot_plant_s3, cut, has_property, sharp). lacks(user, secateurs). has(user, kitchen_knife).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.374",
+      "schema": "v4",
+      "text": "query: stand_in(prune_rose_s3, pruning_saw, X). given: step(prune_rose, prune_rose_s3). action(prune_rose_s3, cut). object_of(prune_rose_s3, branch). uses(prune_rose_s3, pruning_saw). role(prune_rose_s3, pruning_saw, cut). demands(prune_rose_s3, cut, has_property, sharp). lacks(user, pruning_saw). has(user, hacksaw).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.375",
+      "schema": "v4",
+      "text": "query: stand_in(mow_lawn_s3, rag, X). given: step(mow_lawn, mow_lawn_s3). action(mow_lawn_s3, wipe). object_of(mow_lawn_s3, mower_blade). uses(mow_lawn_s3, rag). role(mow_lawn_s3, rag, wipe). lacks(user, rag). has(user, dish_cloth).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.376",
+      "schema": "v4",
+      "text": "query: stand_in(water_plant_s2, watering_can, X). given: step(water_plant, water_plant_s2). action(water_plant_s2, pour). object_of(water_plant_s2, water). uses(water_plant_s2, watering_can). role(water_plant_s2, watering_can, pour). lacks(user, watering_can). has(user, pyrex_jug).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.377",
+      "schema": "v4",
+      "text": "query: can_go_in(takeaway_box, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.378",
+      "schema": "v4",
+      "text": "query: has_property(brown_rice_flour, contains_gluten).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.379",
+      "schema": "v4",
+      "text": "query: made_of(tile_mallet, metal).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.380",
+      "schema": "v4",
+      "text": "query: can_go_in(car_chamois, washing_machine).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.381",
+      "schema": "v4",
+      "text": "query: can_go_in(camp_skillet, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.382",
+      "schema": "v4",
+      "text": "query: can_go_in(santoku_knife, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.383",
+      "schema": "v4",
+      "text": "query: has_property(glass_hob_scourer, abrasive).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.384",
+      "schema": "v4",
+      "text": "query: can_go_in(lasagne_tray, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.385",
+      "schema": "v4",
+      "text": "query: can_go_in(kids_bowl, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.386",
+      "schema": "v4",
+      "text": "query: has_property(antique_hinge_screw, magnetic).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.387",
+      "schema": "v4",
+      "text": "query: replace_step(make_omelette_s2, A). given: lacks(user, fork).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.388",
+      "schema": "v4",
+      "text": "query: replace_step(bake_banana_bread_s2, A). given: lacks(user, fork).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.389",
+      "schema": "v4",
+      "text": "query: replace_step(clean_window_s2, A). given: lacks(user, sponge).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.390",
+      "schema": "v4",
+      "text": "query: replace_step(fix_dripping_tap_s2, A). given: lacks(user, screwdriver).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.391",
+      "schema": "v4",
+      "text": "query: has_property(cutting_board, flat).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.392",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, fork). has(user, egg_whisk).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.393",
+      "schema": "v4",
+      "text": "query: stand_in(fix_dripping_tap_s3, spanner, X). given: lacks(user, spanner). has(user, adjustable_spanner).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.394",
+      "schema": "v4",
+      "text": "request(make_omelette). lacks(user, pan). has(user, wok).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.395",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, bicarbonate_of_soda). has(user, baking_powder).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.396",
+      "schema": "v4",
+      "text": "query: is_a(washing_up_liquid, cleaning_item).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.397",
+      "schema": "v4",
+      "text": "query: can_go_in(food_bag, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.398",
+      "schema": "v4",
+      "text": "query: can_do(lemon, dissolve_limescale).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.399",
+      "schema": "v4",
+      "text": "query: can_do(pizza_wheel, cut).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.400",
+      "schema": "v4",
+      "text": "query: can_do(sawdust, soak_up).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.401",
+      "schema": "v4",
+      "text": "query: can_go_in(whisk, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.402",
+      "schema": "v4",
+      "text": "query: can_go_in(grater, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.403",
+      "schema": "v4",
+      "text": "query: can_go_in(rubber_plug, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.404",
+      "schema": "v4",
+      "text": "query: can_go_in(glass_jar, oven).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.405",
+      "schema": "v4",
+      "text": "query: can_go_in(rolling_pin, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.406",
+      "schema": "v4",
+      "text": "query: can_go_in(bread_board, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.407",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, squeegee). has(user, tea_towel).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.408",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, squeegee). has(user, newspaper). has(user, sponge).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.409",
+      "schema": "v4",
+      "text": "request(bake_banana_bread). lacks(user, loaf_tin). has(user, glass_jar).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.410",
+      "schema": "v4",
+      "text": "request(make_apple_crumble). lacks(user, knife). has(user, pizza_wheel).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.411",
+      "schema": "v4",
+      "text": "request(clean_microwave). lacks(user, lemon). has(user, lime).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.412",
+      "schema": "v4",
+      "text": "request(replace_door_handle). lacks(user, screwdriver). has(user, butter_knife).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.413",
+      "schema": "v4",
+      "text": "query: can_go_in(wool_duster, washing_machine).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.414",
+      "schema": "v4",
+      "text": "query: can_go_in(muffin_tray, dishwasher).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.415",
+      "schema": "v4",
+      "text": "request(clean_window). lacks(user, bucket). has(user, plastic_tub).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.416",
+      "schema": "v4",
+      "text": "query: stand_in(fix_dripping_tap_s3, spanner, X). given: lacks(user, spanner). has(user, pliers).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.417",
+      "schema": "v4",
+      "text": "query: stand_in(water_garden_s2, hose, X). given: step(water_garden, water_garden_s2). action(water_garden_s2, spray). object_of(water_garden_s2, lawn). uses(water_garden_s2, hose). role(water_garden_s2, hose, spray). lacks(user, hose). has(user, watering_can).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.418",
+      "schema": "v4",
+      "text": "query: has_part(door, spindle).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.419",
+      "schema": "v4",
+      "text": "query: can_do(baking_soda, dissolve_limescale).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.420",
+      "schema": "v4",
+      "text": "query: made_of(springform_tin, metal).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.421",
+      "schema": "v4",
+      "text": "query: can_do(squeegee, wipe).",
+      "who": "user"
+    },
+    {
+      "channel": "query",
+      "id": "spike.422",
+      "schema": "v4",
+      "text": "query: has_property(rubber_glove, heat_resistant).",
+      "who": "user"
+    }
+  ],
+  "run": {
+    "answer_ms": 377,
+    "delivered": 293,
+    "delivered_leaks": [],
+    "k": 3,
+    "learn": true,
+    "learn_lines": [
+      "hypothesis: can_do(X, contain) :- has_property(X, heat_resistant) support [baking_dish, baking_tin, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.91.",
+      "hypothesis: can_do(X, pour) :- can_do(X, contain) support [jug, measuring_jug, plastic_jug, pyrex_jug] counter [] conf 0.80.",
+      "hypothesis: has_property(X, heat_resistant) :- can_do(X, contain) support [baking_dish, baking_tin, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.91.",
+      "hypothesis: has_property(X, watertight) :- can_do(X, contain) support [bowl, mixing_bowl, steel_bowl] counter [] conf 0.75.",
+      "hypothesis: used_for(X, measure) :- can_do(X, contain) support [measuring_jug, plastic_jug, pyrex_jug] counter [] conf 0.75.",
+      "hypothesis: used_for(X, measure) :- can_do(X, pour) support [measuring_jug, plastic_jug, pyrex_jug] counter [] conf 0.75.",
+      "hypothesis: can_do(X, contain) :- can_go_in(X, oven) support [baking_dish, baking_tin, cake_tin, loaf_tin, muffin_tray, pie_dish, pyrex_jug, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.92.",
+      "hypothesis: can_go_in(X, oven) :- has_property(X, heat_resistant) support [baking_dish, baking_tin, baking_tray, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.92.",
+      "hypothesis: has_property(X, heat_resistant) :- can_go_in(X, oven) support [baking_dish, baking_tin, baking_tray, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.92.",
+      "hypothesis: used_for(X, measure) :- can_do(X, contain), can_do(X, pour) support [measuring_jug, plastic_jug, pyrex_jug] counter [] conf 0.75.",
+      "hypothesis: can_do(X, contain) :- can_go_in(X, oven), has_property(X, heat_resistant) support [baking_dish, baking_tin, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.91.",
+      "hypothesis: has_property(X, heat_resistant) :- can_do(X, contain), can_go_in(X, oven) support [baking_dish, baking_tin, cake_tin, loaf_tin, muffin_tray, pie_dish, sandwich_tin, silicone_mould, silicone_tray, springform_tin] counter [] conf 0.91."
+    ],
+    "learned_rules": [
+      {
+        "built_from": [],
+        "conf": 0.9090909090909091,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L1/1",
+        "layer": 1,
+        "predictions": 2,
+        "rule": "can_do(X, contain) :- has_property(X, heat_resistant)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1"
+        ],
+        "conf": 0.8,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L2/2",
+        "layer": 2,
+        "predictions": 16,
+        "rule": "can_do(X, pour) :- can_do(X, contain)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "jug",
+          "measuring_jug",
+          "plastic_jug",
+          "pyrex_jug"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1"
+        ],
+        "conf": 0.9090909090909091,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L2/3",
+        "layer": 2,
+        "predictions": 10,
+        "rule": "has_property(X, heat_resistant) :- can_do(X, contain)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1"
+        ],
+        "conf": 0.75,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L2/4",
+        "layer": 2,
+        "predictions": 17,
+        "rule": "has_property(X, watertight) :- can_do(X, contain)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "bowl",
+          "mixing_bowl",
+          "steel_bowl"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1"
+        ],
+        "conf": 0.75,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L2/5",
+        "layer": 2,
+        "predictions": 17,
+        "rule": "used_for(X, measure) :- can_do(X, contain)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "measuring_jug",
+          "plastic_jug",
+          "pyrex_jug"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L2/2"
+        ],
+        "conf": 0.75,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L3/6",
+        "layer": 3,
+        "predictions": 1,
+        "rule": "used_for(X, measure) :- can_do(X, pour)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "measuring_jug",
+          "plastic_jug",
+          "pyrex_jug"
+        ]
+      },
+      {
+        "built_from": [],
+        "conf": 0.9166666666666666,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L1/7",
+        "layer": 1,
+        "predictions": 1,
+        "rule": "can_do(X, contain) :- can_go_in(X, oven)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "pyrex_jug",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L2/3"
+        ],
+        "conf": 0.9166666666666666,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L3/8",
+        "layer": 3,
+        "predictions": 1,
+        "rule": "can_go_in(X, oven) :- has_property(X, heat_resistant)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "baking_tray",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L3/8"
+        ],
+        "conf": 0.9166666666666666,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L4/9",
+        "layer": 4,
+        "predictions": 1,
+        "rule": "has_property(X, heat_resistant) :- can_go_in(X, oven)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "baking_tray",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1",
+          "learn/L2/2",
+          "learn/L1/7"
+        ],
+        "conf": 0.75,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L3/10",
+        "layer": 3,
+        "predictions": 1,
+        "rule": "used_for(X, measure) :- can_do(X, contain), can_do(X, pour)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "measuring_jug",
+          "plastic_jug",
+          "pyrex_jug"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L2/3",
+          "learn/L3/8",
+          "learn/L4/9"
+        ],
+        "conf": 0.9090909090909091,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L5/11",
+        "layer": 5,
+        "predictions": 1,
+        "rule": "can_do(X, contain) :- can_go_in(X, oven), has_property(X, heat_resistant)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      },
+      {
+        "built_from": [
+          "learn/L1/1",
+          "learn/L1/7",
+          "learn/L3/8",
+          "learn/L5/11"
+        ],
+        "conf": 0.9090909090909091,
+        "confirmed": false,
+        "counter": [],
+        "id": "learn/L6/12",
+        "layer": 6,
+        "predictions": 1,
+        "rule": "has_property(X, heat_resistant) :- can_do(X, contain), can_go_in(X, oven)",
+        "specialised_from": null,
+        "status": "hypothesis",
+        "support": [
+          "baking_dish",
+          "baking_tin",
+          "cake_tin",
+          "loaf_tin",
+          "muffin_tray",
+          "pie_dish",
+          "sandwich_tin",
+          "silicone_mould",
+          "silicone_tray",
+          "springform_tin"
+        ]
+      }
+    ],
+    "model_facts": 744,
+    "name": "prefix_0.25",
+    "naming": true,
+    "off": [],
+    "order_seed": null,
+    "prefix": 0.25,
+    "questions_asked": 15,
+    "stats": {
+      "accepted": 92,
+      "conflict_questions": 1,
+      "messages": 293,
+      "naming_questions": 2,
+      "pending": 0,
+      "rejected": 1,
+      "unknown_answers": 0
+    },
+    "summary": {
+      "all_proofs_valid": true,
+      "asks": 0,
+      "by_hops_answerable": {
+        "1": {
+          "correct": 4,
+          "gap": 16
+        },
+        "2": {
+          "correct": 4,
+          "gap": 32
+        },
+        "3": {
+          "correct": 2,
+          "gap": 16
+        }
+      },
+      "by_type": {
+        "EXC": {
+          "gap": 10
+        },
+        "GAP": {
+          "correct": 16
+        },
+        "IND": {
+          "correct": 5,
+          "gap": 4,
+          "wrong": 1
+        },
+        "K": {
+          "correct": 8,
+          "gap": 16
+        },
+        "NAME": {
+          "gap": 6
+        },
+        "STEP": {
+          "gap": 4
+        },
+        "SUB": {
+          "gap": 20
+        },
+        "X": {
+          "correct": 2,
+          "gap": 8
+        }
+      },
+      "classes": {
+        "correct": 31,
+        "gap": 68,
+        "wrong": 1
+      },
+      "g1_two_hop": {
+        "ci95": [
+          0.044,
+          0.253
+        ],
+        "correct": 4,
+        "n": 36,
+        "rate": 0.111
+      },
+      "gap_correct": 21,
+      "ind_correct": 5,
+      "invented": 0,
+      "n": 100,
+      "wrong": 1
+    },
+    "teach_ms": 194,
+    "unexpected_questions": 12,
+    "valid_run": true,
+    "withheld": 0
+  },
+  "scored": [
+    {
+      "asks": 0,
+      "claims": [
+        "can_go_in(muffin_tray,oven)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q001",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "can_do_on(loaf_tin,contain,batter)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q002",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "can_go_in(silicone_tray,oven)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q003",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "has_property(steel_bowl,watertight)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q004",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q005",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q006",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q007",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q008",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "can_go_in(silicone_mould,oven)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q009",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "can_go_in(springform_tin,oven)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q010",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "is_a(springform_tin,bakeware)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q011",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q012",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q013",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q014",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q015",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q016",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q017",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q018",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "has_property(springform_tin,heat_resistant)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q019",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q020",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q021",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q022",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q023",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q024",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "K"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q025",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q026",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q027",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q028",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q029",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q030",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q031",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q032",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q033",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q034",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q035",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q036",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q037",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q038",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q039",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q040",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q041",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q042",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q043",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q044",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "SUB"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q045",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q046",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "stand_in(water_garden_s1,watering_can,bowl)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q047",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q048",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q049",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q050",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q051",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q052",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q053",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "stand_in(water_plant_s2,watering_can,pyrex_jug)"
+      ],
+      "class": "correct",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q054",
+      "kinds": [
+        "deduced"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "X"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q055",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q056",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q057",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q058",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q059",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q060",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q061",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q062",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q063",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 3,
+      "id": "q064",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "EXC"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q065",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "STEP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q066",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "STEP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q067",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "STEP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q068",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "STEP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q069",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 1,
+      "id": "q070",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q071",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q072",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q073",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "answer",
+      "hops": 2,
+      "id": "q074",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "NAME"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "hyp",
+      "hops": null,
+      "id": "q075",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "hyp",
+      "hops": null,
+      "id": "q076",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "hyp",
+      "hops": null,
+      "id": "q077",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "gap",
+      "gold_kind": "hyp",
+      "hops": null,
+      "id": "q078",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q079",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q080",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q081",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [
+        "can_go_in(glass_jar,oven)"
+      ],
+      "class": "wrong",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q082",
+      "kinds": [
+        "hypothesis"
+      ],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q083",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q084",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "IND"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q085",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q086",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q087",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q088",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q089",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q090",
+      "kinds": [],
+      "near_miss": true,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q091",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q092",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q093",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q094",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q095",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q096",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q097",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q098",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q099",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    },
+    {
+      "asks": 0,
+      "claims": [],
+      "class": "correct",
+      "gold_kind": "gap",
+      "hops": null,
+      "id": "q100",
+      "kinds": [],
+      "near_miss": false,
+      "proof_ok": true,
+      "qtype": "GAP"
+    }
+  ],
+  "unexpected": [
+    "ask: can_do(bakeware, contain)?",
+    "ask: can_do(baking_dish, pour)?",
+    "ask: has_property(bowl, heat_resistant)?",
+    "ask: has_property(baking_dish, watertight)?",
+    "ask: used_for(baking_dish, measure)?",
+    "ask: used_for(jug, measure)?",
+    "ask: can_do(baking_tray, contain)?",
+    "ask: can_go_in(bakeware, oven)?",
+    "ask: has_property(pyrex_jug, heat_resistant)?",
+    "ask: used_for(jug, measure)?",
+    "ask: can_do(baking_tray, contain)?",
+    "ask: has_property(pyrex_jug, heat_resistant)?"
+  ]
+}

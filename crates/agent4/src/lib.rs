@@ -61,6 +61,9 @@ pub struct Agent {
     pub learned: Vec<learn::Rule>,
     pub off: Vec<String>,
     pub learning: bool,
+    /// bulk replay (size stress): skip per-message derivation display and consistency
+    /// questions; the model is rebuilt once when next needed
+    pub bulk: bool,
     /// taught cases (situation + difference) from `*/case_*` batches
     pub cases: Vec<(String, Vec<(GroundAtom, bool)>, Vec<GroundAtom>)>,
     case_open: Option<String>,
@@ -81,7 +84,7 @@ impl Agent {
         Agent {
             session: session.into(), sorts: BTreeMap::new(), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
             canon: BTreeMap::new(), not_same: BTreeSet::new(), questions: Vec::new(), learned: Vec::new(), off: Vec::new(),
-            learning: true, naming: true, stats: Stats::default(), model: None, cases: Vec::new(), case_open: None,
+            learning: true, naming: true, bulk: false, stats: Stats::default(), model: None, cases: Vec::new(), case_open: None,
         }
     }
 
@@ -337,6 +340,10 @@ impl Agent {
                 let mut out = Vec::new();
                 // consistency: a contrary conclusion already holds
                 let inheritable = reason4::INHERITABLE.contains(&a.pred.as_str()) || reason4::INHERITABLE3.contains(&a.pred.as_str());
+                if self.bulk {
+                    self.store(a, negated, id, if channel == "fixture" { 1.0 } else { 0.9 });
+                    return vec!["ok.".into()];
+                }
                 let contrary_deduced = inheritable && self.holds_now(&a, !negated);
                 let contrary_learned = inheritable && !contrary_deduced && a.args.len() == 2 && self.learned_contrary(&a, negated);
                 if contrary_deduced || contrary_learned {

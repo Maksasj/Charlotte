@@ -175,6 +175,7 @@ pub struct Opts {
     pub prefix: f64,
     pub order_seed: Option<u64>,
     pub min_support: usize,
+    pub bulk: bool,
 }
 
 pub struct Delivery {
@@ -209,6 +210,7 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
     agent.off = o.off.clone();
     agent.learning = o.learn;
     agent.naming = o.naming;
+    agent.bulk = o.bulk;
     let mut oracle = Oracle { answers: &fx.answers, deny: &fx.deny, unexpected: vec![], withheld: 0 };
     // topic blocks: a block starts at each `topic` line
     let mut blocks: Vec<Vec<Line>> = Vec::new();

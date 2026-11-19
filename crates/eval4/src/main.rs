@@ -29,6 +29,7 @@ fn main() {
                 prefix: arg(&args, "--prefix").and_then(|v| v.parse().ok()).unwrap_or(1.0),
                 order_seed: arg(&args, "--order").and_then(|v| v.parse().ok()),
                 min_support: arg(&args, "--k").and_then(|v| v.parse().ok()).unwrap_or(3),
+                bulk: false,
             };
             let name = arg(&args, "--name").unwrap_or_else(|| "spike".into());
             let t0 = Instant::now();

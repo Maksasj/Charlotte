@@ -1,7 +1,8 @@
 //! Size stress (milestone 32): the fixture copied N times with item, place, task and step
 //! symbols renamed per copy (functions, materials, properties and states stay shared, so the
 //! copies are cross-linked through them), plus an is_a link from every 20th item to its
-//! original. Measures full-closure time, model size and proof depth.
+//! original. Measures full-closure time, model size and proof depth. Delivery is in bulk mode
+//! (same path and entry checks, one model rebuild at the end), so both sizes are compared alike.
 
 use crate::{deliver, Fixture, Opts};
 use serde_json::{json, Value as J};
@@ -54,7 +55,7 @@ pub fn stress(fx: &Fixture, copies: usize) -> J {
     }
     let big = Fixture { teach, answers: fx.answers.clone(), questions: vec![], deny: fx.deny.clone() };
     let t0 = Instant::now();
-    let mut d = deliver(&big, &Opts { learn: false, naming: false, prefix: 1.0, min_support: 3, ..Default::default() });
+    let mut d = deliver(&big, &Opts { learn: false, naming: false, prefix: 1.0, min_support: 3, bulk: true, ..Default::default() });
     let teach_ms = t0.elapsed().as_millis();
     let facts = d.agent.engine_facts(&[]).len();
     d.agent.reset_model();
@@ -65,7 +66,7 @@ pub fn stress(fx: &Fixture, copies: usize) -> J {
     // answer the original questions on the big knowledge base: do the answers stay the same?
     let mut same = 0;
     let mut n = 0;
-    let mut small = deliver(fx, &Opts { learn: false, naming: false, prefix: 1.0, min_support: 3, ..Default::default() });
+    let mut small = deliver(fx, &Opts { learn: false, naming: false, prefix: 1.0, min_support: 3, bulk: true, ..Default::default() });
     let t2 = Instant::now();
     for q in &fx.questions {
         let a = small.agent.respond(&q.query);
