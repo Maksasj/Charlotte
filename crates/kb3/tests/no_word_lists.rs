@@ -28,7 +28,7 @@ fn formal() -> Vec<String> {
               "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
               "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary",
               // kb4 record fields and conversation events (Design 4.0 section 8.2)
-              "batch", "batch_end", "built_from", "end", "finish", "jsonl", "lang", "layer", "live", "msg_id", "prov", "raw", "rec", "rule", "schema", "speaker", "turn"] {
+              "batch", "batch_end", "built_from", "end", "finish", "jsonl", "lang", "layer", "live", "msg_id", "pass", "prov", "raw", "rec", "rule", "schema", "speaker", "turn"] {
         v.push(w.into());
     }
     v
