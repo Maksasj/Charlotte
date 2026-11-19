@@ -88,13 +88,29 @@ pub fn rank(vault: &Vault, request: &str) -> Vec<(String, f64)> {
             *df.entry(w.as_str()).or_insert(0.0) += 1.0;
         }
     }
+    // how specific each request word is, learned from the requests the agent has seen: a word
+    // in many requests (chatter) weighs little, a word in few weighs fully
+    let reqs: Vec<BTreeSet<String>> = vault
+        .facts
+        .iter()
+        .filter(|(f, p)| p.retracted_by.is_none() && f.pred == "task_alias" && p.parser == "request")
+        .map(|(f, _)| words(unquote(f.arg(1))).into_iter().collect())
+        .collect();
+    let r = reqs.len() as f64;
+    let spec = |w: &str| -> f64 {
+        if r < 5.0 {
+            return 1.0;
+        }
+        let d = reqs.iter().filter(|s| s.contains(w)).count() as f64;
+        (((r + 1.0) / (d + 0.5)).ln() / (r + 1.0).ln() / 0.9).clamp(0.0, 1.0).powi(2)
+    };
     let rw: BTreeSet<String> = words(request).into_iter().collect();
     let mut out: Vec<(String, f64)> = k
         .iter()
         .map(|(t, ws)| {
             let s: f64 = rw
                 .iter()
-                .filter_map(|w| ws.get(w).map(|c| ((n + 1.0) / (df[w.as_str()] + 0.5)).ln() * c.min(3.0)))
+                .filter_map(|w| ws.get(w).map(|c| ((n + 1.0) / (df[w.as_str()] + 0.5)).ln() * c.min(3.0) * spec(w)))
                 .sum();
             (t.clone(), s)
         })

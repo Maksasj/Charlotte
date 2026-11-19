@@ -127,7 +127,8 @@ impl Agent {
             }
         }
         if let Some(r) = request {
-            self.add(Fact::new("task_alias", &[task, &format!("\"{}\"", identity::clean(r))]), self.prov(source, "learned", 1.0), &mut st);
+            // provenance "request": identity learns from these which words are request chatter
+            self.add(Fact::new("task_alias", &[task, &format!("\"{}\"", identity::clean(r))]), self.prov(source, "request", 1.0), &mut st);
         }
         self.derive_roles(task, &mut st);
         self.stats.lines += st.lines;

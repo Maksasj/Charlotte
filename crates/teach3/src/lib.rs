@@ -192,8 +192,10 @@ fn append(path: &std::path::Path, line: &str) {
 pub fn facts_in(answer: &str) -> Vec<Fact> {
     answer
         .lines()
-        .map(|l| l.trim().trim_start_matches("- ").trim_matches('`'))
-        .filter_map(|l| Fact::parse(l).ok())
+        .map(|l| l.trim().trim_start_matches("- ").trim_matches('`').trim())
+        .filter(|l| l.ends_with(')') || l.ends_with(").") || l.ends_with(");"))
+        .map(|l| format!("{}.", l.trim_end_matches(['.', ';'])))
+        .filter_map(|l| Fact::parse(&l).ok())
         .filter(|f| f.valid().is_ok())
         .collect()
 }

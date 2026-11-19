@@ -70,7 +70,7 @@ pub fn calibrate(models: &Models, dev: &[Scenario]) -> (f64, f64, usize) {
     (theta, cover as f64 / rows.len().max(1) as f64, rows.len())
 }
 
-#[derive(Debug, Clone, Serialize, Default)]
+#[derive(Debug, Clone, Serialize, serde::Deserialize, Default)]
 pub struct Encounter {
     pub scenario: String,
     pub kind: String,
@@ -210,7 +210,17 @@ impl Runner {
         let facts = target.to_facts();
         let q = format!("How do I {} in this situation: {} {}? Teach me every step, one line per step.", sc.task.replace('_', " "), v.request, v.situation_text);
         let Ok(answer) = self.agent.teacher.answer(&facts, &v.situation, &q) else { return false };
-        let taught_lines: Vec<String> = answer.lines().map(|l| l.trim().trim_start_matches("- ").to_string()).filter(|l| !l.is_empty()).collect();
+        // numbered answer lines become teach lines in the teaching channel's frame
+        let phrase = sc.task.replace('_', " ");
+        let taught_lines: Vec<String> = answer
+            .lines()
+            .map(|l| l.trim().trim_start_matches("- ").to_string())
+            .filter(|l| !l.is_empty())
+            .map(|l| match l.split_once(". ") {
+                Some((n, body)) if n.parse::<usize>().is_ok() => format!("Step {n} of {phrase}: {body}"),
+                _ => l,
+            })
+            .collect();
         let taught = self.agent.parse_procedure(&sc.task, &taught_lines);
         let sit = agent3::adapt::link_situation(&self.agent.vault, &self.agent.known_procedure(&sc.task), v.situation.clone());
         self.agent.learn_variant(&sc.task, &sit, &taught, Source::Teach);

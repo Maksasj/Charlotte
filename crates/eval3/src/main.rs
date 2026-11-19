@@ -106,6 +106,51 @@ fn main() {
             std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
             println!("{}", serde_json::to_string_pretty(&s).unwrap());
         }
+        Some("rank") => {
+            let v = kb3::Vault::load(std::path::Path::new(&arg(&args, "--vault").expect("--vault"))).unwrap();
+            let q = arg(&args, "--q").expect("--q");
+            for (t, sc) in agent3::identity::rank(&v, &q).into_iter().take(5) {
+                println!("{sc:8.3} {t}");
+            }
+            let words = agent3::identity::words(&q);
+            println!("request words: {words:?}");
+            for t in ["make_couscous", "bake_banana_bread"] {
+                let a: Vec<String> = v.live().filter(|f| f.pred == "task_alias" && f.arg(0) == t).map(|f| f.arg(1).to_string()).collect();
+                println!("{t}: {a:?}");
+            }
+        }
+        Some("rescore") => {
+            // re-check saved answers with the current check (zero calls)
+            let name = arg(&args, "--name").expect("--name");
+            let dir = root().join("data/training/runs3").join(&name);
+            let mut all = Vec::new();
+            for d in ["data/curriculum3/train", "data/curriculum3/dev", "data/heldout3/S", "data/heldout3/T", "data/heldout3/G", "data/curriculum3/heldout_domain"] {
+                all.extend(load(d));
+            }
+            let by: std::collections::BTreeMap<String, kb3::Scenario> = all.into_iter().map(|s| (s.id.clone(), s)).collect();
+            let text = std::fs::read_to_string(dir.join("encounters.jsonl")).unwrap();
+            let mut es: Vec<eval3::Encounter> = text.lines().map(|l| serde_json::from_str(l).unwrap()).collect();
+            for e in es.iter_mut() {
+                let Some(sc) = by.get(&e.scenario) else { continue };
+                let mut p = kb3::lines::parse(&e.answer).procedure;
+                p.task = sc.task.clone();
+                let g = kb3::gold(sc, e.variant);
+                let lacks = e.variant.map(|k| kb3::lacked(&sc.variants[k])).unwrap_or_default();
+                let r = kb3::check(&p, &g, &kb3::Aliases::from_facts(&sc.aliases), &lacks);
+                e.strict_pass = e.identity_ok && r.strict_pass;
+                e.recall = r.recall();
+                e.core_recall = r.core_recall();
+                e.precision = r.precision();
+                e.wrong = r.wrong.clone();
+            }
+            let body: String = es.iter().map(|e| serde_json::to_string(e).unwrap() + "\n").collect();
+            std::fs::write(dir.join("encounters.jsonl"), body).unwrap();
+            let mut s: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(dir.join("summary.json")).unwrap()).unwrap();
+            s["by_kind"] = summary(&es);
+            s["rescored"] = json!(true);
+            std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
+            println!("{}", serde_json::to_string_pretty(&s["by_kind"]).unwrap());
+        }
         Some("lab") => {
             let port = arg(&args, "--port").and_then(|p| p.parse().ok()).unwrap_or(8733);
             eval3::lab::serve(port).expect("lab server");
