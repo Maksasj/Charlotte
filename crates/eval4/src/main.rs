@@ -72,6 +72,19 @@ fn main() {
                 std::fs::write(format!("{p}.facts"), facts.join("\n")).unwrap();
             }
         }
+        Some("drift") => {
+            let every: usize = arg(&args, "--every").and_then(|v| v.parse().ok()).unwrap_or(7);
+            let (dfx, n) = eval4::drift(&fx, every);
+            let mut out = serde_json::Map::new();
+            for (label, naming) in [("naming_on", true), ("naming_off", false)] {
+                let mut d = deliver(&dfx, &Opts { learn: true, naming, prefix: 1.0, min_support: 3, ..Default::default() });
+                let scored: Vec<_> = dfx.questions.iter().map(|q| score(&mut d.agent, q)).collect();
+                out.insert(label.into(), json!({"summary": summary(&scored), "naming_questions": d.agent.stats.naming_questions, "aliases": d.agent.canon.len()}));
+            }
+            out.insert("rewritten_symbols".into(), json!(n));
+            std::fs::write(out_dir.join(format!("drift_every{every}.json")), serde_json::to_string_pretty(&out).unwrap()).unwrap();
+            println!("{}", serde_json::to_string_pretty(&out).unwrap());
+        }
         Some("scale") => {
             let copies: usize = arg(&args, "--copies").and_then(|v| v.parse().ok()).unwrap_or(10);
             let r = eval4::scale::stress(&fx, copies);

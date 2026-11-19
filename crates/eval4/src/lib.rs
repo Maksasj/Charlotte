@@ -372,3 +372,43 @@ pub fn summary(sc: &[Scored]) -> J {
         "asks": sc.iter().map(|s| s.asks).sum::<usize>(),
     })
 }
+
+/// Naming drift (milestone 32): every n-th item symbol is written as a synonym `alt_<x>` in
+/// its mentions after the first one; the oracle knows `same_as(alt_<x>, <x>)`.
+pub fn drift(fx: &Fixture, every: usize) -> (Fixture, usize) {
+    let base = deliver(fx, &Opts { learn: false, naming: false, prefix: 1.0, min_support: 3, ..Default::default() });
+    let items: Vec<String> = base.agent.sorts.iter().filter(|(_, s)| *s == "item").map(|(k, _)| k.clone()).collect();
+    let chosen: BTreeSet<String> = items.iter().enumerate().filter(|(k, _)| k % every == 0).map(|(_, s)| s.clone()).collect();
+    let mut seen: BTreeSet<String> = BTreeSet::new();
+    let mut teach = Vec::new();
+    let mut answers = fx.answers.clone();
+    for l in &fx.teach {
+        let mut out = String::new();
+        let mut tok = String::new();
+        let mut flush = |tok: &mut String, out: &mut String, seen: &mut BTreeSet<String>| {
+            if !tok.is_empty() {
+                if chosen.contains(tok.as_str()) && seen.contains(tok.as_str()) && !l.text.starts_with("new(") {
+                    out.push_str(&format!("alt_{tok}"));
+                } else {
+                    out.push_str(tok);
+                    seen.insert(tok.clone());
+                }
+                tok.clear();
+            }
+        };
+        for ch in l.text.chars() {
+            if ch.is_ascii_alphanumeric() || ch == '_' {
+                tok.push(ch);
+            } else {
+                flush(&mut tok, &mut out, &mut seen);
+                out.push(ch);
+            }
+        }
+        flush(&mut tok, &mut out, &mut seen);
+        teach.push(Line { text: out, ..l.clone() });
+    }
+    for x in &chosen {
+        answers.insert(norm(&format!("same_as(alt_{x}, {x})? or is_a(alt_{x}, {x})?")), format!("same_as(alt_{x}, {x})"));
+    }
+    (Fixture { teach, answers, questions: fx.questions.clone(), deny: fx.deny.clone() }, chosen.len())
+}

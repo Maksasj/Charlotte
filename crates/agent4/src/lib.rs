@@ -180,6 +180,7 @@ impl Agent {
             let facts = self.facts.clone();
             let known: Option<String> = self.sorts.iter().filter(|(k, s)| **k != n && sorts::compatible(s, &sort)).map(|(k, _)| k.clone())
                 .find(|k| (n.contains('_') && *k == head) || (k.contains('_') && k.rsplit('_').next() == Some(n.as_str()))
+                    || n.ends_with(&format!("_{k}")) || k.ends_with(&format!("_{n}"))
                     || (n.split('_').any(|t| t == k) && shares(k, &facts)));
             if let Some(k) = known {
                 if self.not_same.contains(&(n.clone(), k.clone())) || self.facts.iter().any(|(f, _)| f.pred == "is_a" && f.args.iter().map(sym_of).collect::<Vec<_>>() == [n.clone(), k.clone()]) {
