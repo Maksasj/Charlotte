@@ -1,0 +1,453 @@
+% Design 4.0 spike fixture: PROCEDURES (marked fixture). Test-only (D4.3); channel `fixture`.
+% 8 procedures, 2 per domain, from data/curriculum3 train/dev. Each block copies the v3 ground-truth
+% facts task, step, action, object_of, uses, role, before, requires_state, achieves, needs verbatim
+% (settings, times, purposes, checks, aliases and into/overlaps are left out), then adds `demands` and,
+% where a STEP question needs them, achieves/requires_state/before lines marked `fixture addition`.
+% No archive3 reading was replayed: the fixture uses the ground truth instead (D4.3, Appendix A).
+topic fixture/vocabulary.
+new(bake_banana_bread, task).
+new(sugar, item).
+new(bake_banana_bread_s1, step).
+new(preheat, action).
+new(bake_banana_bread_s2, step).
+new(mash, action).
+new(banana_ripe, state).
+new(bake_banana_bread_s3, step).
+new(flavour, function).
+new(sweeten, function).
+new(bind, function).
+new(butter_melted, state).
+new(bake_banana_bread_s4, step).
+new(tin_greased, state).
+new(bake_banana_bread_s5, step).
+new(bake, action).
+new(banana_bread, item).
+new(make_apple_crumble, task).
+new(apple, item).
+new(make_apple_crumble_s1, step).
+new(make_apple_crumble_s2, step).
+new(peel, action).
+new(make_apple_crumble_s3, step).
+new(make_apple_crumble_s4, step).
+new(rub, action).
+new(make_apple_crumble_s5, step).
+new(spread, action).
+new(make_apple_crumble_s6, step).
+new(scatter, action).
+new(crumble, item).
+new(make_apple_crumble_s7, step).
+new(make_omelette, task).
+new(salt, item).
+new(make_omelette_s1, step).
+new(crack, action).
+new(make_omelette_s2, step).
+new(season, function).
+new(make_omelette_s3, step).
+new(make_omelette_s4, step).
+new(cook, action).
+new(make_omelette_s5, step).
+new(omelette, item).
+new(boil_egg, task).
+new(boil_egg_s1, step).
+new(boil_egg_s2, step).
+new(lower, action).
+new(boil_egg_s3, step).
+new(boil_egg_s4, step).
+new(clean_window, task).
+new(clean_window_s1, step).
+new(clean_window_s2, step).
+new(clean_window_s3, step).
+new(clean_window_s4, step).
+new(frame, item).
+new(clean_microwave, task).
+new(clean_microwave_s1, step).
+new(fill, action).
+new(clean_microwave_s2, step).
+new(clean_microwave_s3, step).
+new(leave, action).
+new(clean_microwave_s4, step).
+new(fix_dripping_tap, task).
+new(fix_dripping_tap_s1, step).
+new(fix_dripping_tap_s2, step).
+new(fix_dripping_tap_s3, step).
+new(fix_dripping_tap_s4, step).
+new(replace, action).
+new(fix_dripping_tap_s5, step).
+new(reassemble, action).
+new(fix_dripping_tap_s6, step).
+new(fix_dripping_tap_s7, step).
+new(open, action).
+new(fix_dripping_tap_s8, step).
+new(check, action).
+new(replace_door_handle, task).
+new(new_handle, item).
+new(replace_door_handle_s1, step).
+new(replace_door_handle_s2, step).
+new(pull, action).
+new(spindle, item).
+new(replace_door_handle_s3, step).
+new(slide, action).
+new(replace_door_handle_s4, step).
+new(screw, action).
+new(replace_door_handle_s5, step).
+new(test, action).
+topic baking/bake_banana_bread.
+% from data/curriculum3/train/bake_banana_bread.md, ## ground truth (core facts)
+task(bake_banana_bread).
+needs(bake_banana_bread, banana).
+needs(bake_banana_bread, flour).
+needs(bake_banana_bread, sugar).
+needs(bake_banana_bread, egg).
+needs(bake_banana_bread, butter).
+needs(bake_banana_bread, baking_soda).
+needs(bake_banana_bread, bowl).
+needs(bake_banana_bread, fork).
+needs(bake_banana_bread, loaf_tin).
+needs(bake_banana_bread, oven).
+step(bake_banana_bread, bake_banana_bread_s1).
+action(bake_banana_bread_s1, preheat).
+object_of(bake_banana_bread_s1, oven).
+step(bake_banana_bread, bake_banana_bread_s2).
+action(bake_banana_bread_s2, mash).
+object_of(bake_banana_bread_s2, banana).
+uses(bake_banana_bread_s2, bowl).
+role(bake_banana_bread_s2, bowl, contain).
+uses(bake_banana_bread_s2, fork).
+role(bake_banana_bread_s2, fork, press).
+requires_state(bake_banana_bread_s2, banana_ripe).
+step(bake_banana_bread, bake_banana_bread_s3).
+action(bake_banana_bread_s3, mix).
+object_of(bake_banana_bread_s3, flour).
+uses(bake_banana_bread_s3, butter).
+role(bake_banana_bread_s3, butter, flavour).
+uses(bake_banana_bread_s3, sugar).
+role(bake_banana_bread_s3, sugar, sweeten).
+uses(bake_banana_bread_s3, egg).
+role(bake_banana_bread_s3, egg, bind).
+uses(bake_banana_bread_s3, baking_soda).
+role(bake_banana_bread_s3, baking_soda, raise).
+requires_state(bake_banana_bread_s3, butter_melted).
+step(bake_banana_bread, bake_banana_bread_s4).
+action(bake_banana_bread_s4, pour).
+object_of(bake_banana_bread_s4, batter).
+uses(bake_banana_bread_s4, loaf_tin).
+role(bake_banana_bread_s4, loaf_tin, contain).
+requires_state(bake_banana_bread_s4, tin_greased).
+step(bake_banana_bread, bake_banana_bread_s5).
+action(bake_banana_bread_s5, bake).
+object_of(bake_banana_bread_s5, banana_bread).
+uses(bake_banana_bread_s5, oven).
+role(bake_banana_bread_s5, oven, heat).
+before(bake_banana_bread_s1, bake_banana_bread_s3).
+before(bake_banana_bread_s2, bake_banana_bread_s3).
+before(bake_banana_bread_s3, bake_banana_bread_s4).
+before(bake_banana_bread_s4, bake_banana_bread_s5).
+% fixture additions (not in the v3 ground truth)
+achieves(bake_banana_bread_s2, mashed).
+requires_state(bake_banana_bread_s3, mashed).
+demands(bake_banana_bread_s4, contain, can_go_in, oven).
+topic baking/make_apple_crumble.
+% from data/curriculum3/train/make_apple_crumble.md, ## ground truth (core facts)
+task(make_apple_crumble).
+needs(make_apple_crumble, apple).
+needs(make_apple_crumble, flour).
+needs(make_apple_crumble, butter).
+needs(make_apple_crumble, sugar).
+needs(make_apple_crumble, knife).
+needs(make_apple_crumble, bowl).
+needs(make_apple_crumble, baking_dish).
+needs(make_apple_crumble, oven).
+step(make_apple_crumble, make_apple_crumble_s1).
+action(make_apple_crumble_s1, preheat).
+object_of(make_apple_crumble_s1, oven).
+step(make_apple_crumble, make_apple_crumble_s2).
+action(make_apple_crumble_s2, peel).
+object_of(make_apple_crumble_s2, apple).
+uses(make_apple_crumble_s2, knife).
+role(make_apple_crumble_s2, knife, cut).
+step(make_apple_crumble, make_apple_crumble_s3).
+action(make_apple_crumble_s3, slice).
+object_of(make_apple_crumble_s3, apple).
+uses(make_apple_crumble_s3, knife).
+role(make_apple_crumble_s3, knife, cut).
+step(make_apple_crumble, make_apple_crumble_s4).
+action(make_apple_crumble_s4, rub).
+object_of(make_apple_crumble_s4, butter).
+uses(make_apple_crumble_s4, flour).
+role(make_apple_crumble_s4, flour, mix).
+uses(make_apple_crumble_s4, sugar).
+role(make_apple_crumble_s4, sugar, sweeten).
+uses(make_apple_crumble_s4, bowl).
+role(make_apple_crumble_s4, bowl, contain).
+step(make_apple_crumble, make_apple_crumble_s5).
+action(make_apple_crumble_s5, spread).
+object_of(make_apple_crumble_s5, apple).
+uses(make_apple_crumble_s5, baking_dish).
+role(make_apple_crumble_s5, baking_dish, contain).
+step(make_apple_crumble, make_apple_crumble_s6).
+action(make_apple_crumble_s6, scatter).
+object_of(make_apple_crumble_s6, crumble).
+step(make_apple_crumble, make_apple_crumble_s7).
+action(make_apple_crumble_s7, bake).
+object_of(make_apple_crumble_s7, crumble).
+uses(make_apple_crumble_s7, oven).
+role(make_apple_crumble_s7, oven, heat).
+before(make_apple_crumble_s2, make_apple_crumble_s3).
+before(make_apple_crumble_s1, make_apple_crumble_s4).
+before(make_apple_crumble_s3, make_apple_crumble_s4).
+before(make_apple_crumble_s4, make_apple_crumble_s5).
+before(make_apple_crumble_s5, make_apple_crumble_s6).
+before(make_apple_crumble_s6, make_apple_crumble_s7).
+% fixture additions (not in the v3 ground truth)
+demands(make_apple_crumble_s5, contain, can_go_in, oven).
+demands(make_apple_crumble_s2, cut, has_property, sharp).
+demands(make_apple_crumble_s3, cut, has_property, sharp).
+topic cooking/make_omelette.
+% from data/curriculum3/dev/make_omelette.md, ## ground truth (core facts)
+task(make_omelette).
+needs(make_omelette, egg).
+needs(make_omelette, butter).
+needs(make_omelette, salt).
+needs(make_omelette, bowl).
+needs(make_omelette, fork).
+needs(make_omelette, pan).
+step(make_omelette, make_omelette_s1).
+action(make_omelette_s1, crack).
+object_of(make_omelette_s1, egg).
+uses(make_omelette_s1, bowl).
+role(make_omelette_s1, bowl, contain).
+step(make_omelette, make_omelette_s2).
+action(make_omelette_s2, beat).
+object_of(make_omelette_s2, egg).
+uses(make_omelette_s2, fork).
+role(make_omelette_s2, fork, beat).
+uses(make_omelette_s2, salt).
+role(make_omelette_s2, salt, season).
+step(make_omelette, make_omelette_s3).
+action(make_omelette_s3, melt).
+object_of(make_omelette_s3, butter).
+uses(make_omelette_s3, pan).
+role(make_omelette_s3, pan, heat).
+step(make_omelette, make_omelette_s4).
+action(make_omelette_s4, cook).
+object_of(make_omelette_s4, egg).
+uses(make_omelette_s4, pan).
+role(make_omelette_s4, pan, heat).
+step(make_omelette, make_omelette_s5).
+action(make_omelette_s5, fold).
+object_of(make_omelette_s5, omelette).
+before(make_omelette_s1, make_omelette_s2).
+before(make_omelette_s2, make_omelette_s3).
+before(make_omelette_s3, make_omelette_s4).
+before(make_omelette_s4, make_omelette_s5).
+% fixture additions (not in the v3 ground truth)
+achieves(make_omelette_s2, beaten).
+requires_state(make_omelette_s4, beaten).
+before(make_omelette_s2, make_omelette_s4).
+demands(make_omelette_s3, heat, can_go_in, hob).
+demands(make_omelette_s4, heat, can_go_in, hob).
+topic cooking/boil_egg.
+% from data/curriculum3/dev/boil_egg.md, ## ground truth (core facts)
+task(boil_egg).
+needs(boil_egg, egg).
+needs(boil_egg, water).
+needs(boil_egg, pot).
+needs(boil_egg, bowl).
+step(boil_egg, boil_egg_s1).
+action(boil_egg_s1, boil).
+object_of(boil_egg_s1, water).
+uses(boil_egg_s1, pot).
+role(boil_egg_s1, pot, heat).
+step(boil_egg, boil_egg_s2).
+action(boil_egg_s2, lower).
+object_of(boil_egg_s2, egg).
+uses(boil_egg_s2, spoon).
+role(boil_egg_s2, spoon, hold).
+step(boil_egg, boil_egg_s3).
+action(boil_egg_s3, boil).
+object_of(boil_egg_s3, egg).
+step(boil_egg, boil_egg_s4).
+action(boil_egg_s4, cool).
+object_of(boil_egg_s4, egg).
+uses(boil_egg_s4, bowl).
+role(boil_egg_s4, bowl, contain).
+uses(boil_egg_s4, water).
+role(boil_egg_s4, water, cool).
+before(boil_egg_s1, boil_egg_s2).
+before(boil_egg_s2, boil_egg_s3).
+before(boil_egg_s3, boil_egg_s4).
+% fixture additions (not in the v3 ground truth)
+demands(boil_egg_s1, heat, can_go_in, hob).
+demands(boil_egg_s4, contain, has_property, watertight).
+topic cleaning/clean_window.
+% from data/curriculum3/dev/clean_window.md, ## ground truth (core facts)
+task(clean_window).
+needs(clean_window, bucket).
+needs(clean_window, water).
+needs(clean_window, dish_soap).
+needs(clean_window, sponge).
+needs(clean_window, squeegee).
+needs(clean_window, cloth).
+step(clean_window, clean_window_s1).
+action(clean_window_s1, mix).
+object_of(clean_window_s1, dish_soap).
+uses(clean_window_s1, water).
+role(clean_window_s1, water, mix).
+uses(clean_window_s1, bucket).
+role(clean_window_s1, bucket, contain).
+step(clean_window, clean_window_s2).
+action(clean_window_s2, wash).
+object_of(clean_window_s2, window).
+uses(clean_window_s2, sponge).
+role(clean_window_s2, sponge, clean).
+step(clean_window, clean_window_s3).
+action(clean_window_s3, dry).
+object_of(clean_window_s3, window).
+uses(clean_window_s3, squeegee).
+role(clean_window_s3, squeegee, dry).
+step(clean_window, clean_window_s4).
+action(clean_window_s4, wipe).
+object_of(clean_window_s4, frame).
+uses(clean_window_s4, cloth).
+role(clean_window_s4, cloth, wipe).
+before(clean_window_s1, clean_window_s2).
+before(clean_window_s2, clean_window_s3).
+before(clean_window_s3, clean_window_s4).
+% fixture additions (not in the v3 ground truth)
+achieves(clean_window_s2, wet).
+requires_state(clean_window_s3, wet).
+demands(clean_window_s1, contain, has_property, watertight).
+demands(clean_window_s3, dry, has_property, lint_free).
+topic cleaning/clean_microwave.
+% from data/curriculum3/train/clean_microwave.md, ## ground truth (core facts)
+task(clean_microwave).
+needs(clean_microwave, bowl).
+needs(clean_microwave, water).
+needs(clean_microwave, lemon).
+needs(clean_microwave, cloth).
+needs(clean_microwave, microwave).
+step(clean_microwave, clean_microwave_s1).
+action(clean_microwave_s1, fill).
+object_of(clean_microwave_s1, bowl).
+uses(clean_microwave_s1, water).
+role(clean_microwave_s1, water, clean).
+uses(clean_microwave_s1, lemon).
+role(clean_microwave_s1, lemon, clean).
+step(clean_microwave, clean_microwave_s2).
+action(clean_microwave_s2, heat).
+object_of(clean_microwave_s2, bowl).
+uses(clean_microwave_s2, microwave).
+role(clean_microwave_s2, microwave, heat).
+step(clean_microwave, clean_microwave_s3).
+action(clean_microwave_s3, leave).
+object_of(clean_microwave_s3, microwave).
+step(clean_microwave, clean_microwave_s4).
+action(clean_microwave_s4, wipe).
+object_of(clean_microwave_s4, microwave).
+uses(clean_microwave_s4, cloth).
+role(clean_microwave_s4, cloth, wipe).
+before(clean_microwave_s1, clean_microwave_s2).
+before(clean_microwave_s2, clean_microwave_s3).
+before(clean_microwave_s3, clean_microwave_s4).
+% fixture additions (not in the v3 ground truth)
+demands(clean_microwave_s1, clean, has_property, acidic).
+topic repair/fix_dripping_tap.
+% from data/curriculum3/train/fix_dripping_tap.md, ## ground truth (core facts)
+task(fix_dripping_tap).
+needs(fix_dripping_tap, spanner).
+needs(fix_dripping_tap, screwdriver).
+needs(fix_dripping_tap, washer).
+step(fix_dripping_tap, fix_dripping_tap_s1).
+action(fix_dripping_tap_s1, shut).
+object_of(fix_dripping_tap_s1, water_supply).
+step(fix_dripping_tap, fix_dripping_tap_s2).
+action(fix_dripping_tap_s2, remove).
+object_of(fix_dripping_tap_s2, handle).
+uses(fix_dripping_tap_s2, screwdriver).
+role(fix_dripping_tap_s2, screwdriver, loosen).
+step(fix_dripping_tap, fix_dripping_tap_s3).
+action(fix_dripping_tap_s3, unscrew).
+object_of(fix_dripping_tap_s3, valve).
+uses(fix_dripping_tap_s3, spanner).
+role(fix_dripping_tap_s3, spanner, loosen).
+step(fix_dripping_tap, fix_dripping_tap_s4).
+action(fix_dripping_tap_s4, replace).
+object_of(fix_dripping_tap_s4, washer).
+step(fix_dripping_tap, fix_dripping_tap_s5).
+action(fix_dripping_tap_s5, reassemble).
+object_of(fix_dripping_tap_s5, tap).
+step(fix_dripping_tap, fix_dripping_tap_s6).
+action(fix_dripping_tap_s6, tighten).
+object_of(fix_dripping_tap_s6, tap).
+uses(fix_dripping_tap_s6, spanner).
+role(fix_dripping_tap_s6, spanner, fasten).
+uses(fix_dripping_tap_s6, screwdriver).
+role(fix_dripping_tap_s6, screwdriver, fasten).
+step(fix_dripping_tap, fix_dripping_tap_s7).
+action(fix_dripping_tap_s7, open).
+object_of(fix_dripping_tap_s7, water_supply).
+step(fix_dripping_tap, fix_dripping_tap_s8).
+action(fix_dripping_tap_s8, check).
+object_of(fix_dripping_tap_s8, tap).
+before(fix_dripping_tap_s1, fix_dripping_tap_s2).
+before(fix_dripping_tap_s2, fix_dripping_tap_s3).
+before(fix_dripping_tap_s3, fix_dripping_tap_s4).
+before(fix_dripping_tap_s4, fix_dripping_tap_s5).
+before(fix_dripping_tap_s5, fix_dripping_tap_s6).
+before(fix_dripping_tap_s6, fix_dripping_tap_s7).
+before(fix_dripping_tap_s7, fix_dripping_tap_s8).
+% fixture additions (not in the v3 ground truth)
+achieves(fix_dripping_tap_s2, removed).
+requires_state(fix_dripping_tap_s3, removed).
+demands(fix_dripping_tap_s3, loosen, can_do, grip).
+topic repair/replace_door_handle.
+% from data/curriculum3/train/replace_door_handle.md, ## ground truth (core facts)
+task(replace_door_handle).
+needs(replace_door_handle, new_handle).
+needs(replace_door_handle, screwdriver).
+step(replace_door_handle, replace_door_handle_s1).
+action(replace_door_handle_s1, unscrew).
+object_of(replace_door_handle_s1, handle).
+uses(replace_door_handle_s1, screwdriver).
+role(replace_door_handle_s1, screwdriver, loosen).
+step(replace_door_handle, replace_door_handle_s2).
+action(replace_door_handle_s2, pull).
+object_of(replace_door_handle_s2, spindle).
+step(replace_door_handle, replace_door_handle_s3).
+action(replace_door_handle_s3, slide).
+object_of(replace_door_handle_s3, spindle).
+uses(replace_door_handle_s3, new_handle).
+role(replace_door_handle_s3, new_handle, fasten).
+step(replace_door_handle, replace_door_handle_s4).
+action(replace_door_handle_s4, screw).
+object_of(replace_door_handle_s4, new_handle).
+uses(replace_door_handle_s4, screwdriver).
+role(replace_door_handle_s4, screwdriver, fasten).
+step(replace_door_handle, replace_door_handle_s5).
+action(replace_door_handle_s5, test).
+object_of(replace_door_handle_s5, new_handle).
+before(replace_door_handle_s1, replace_door_handle_s2).
+before(replace_door_handle_s2, replace_door_handle_s3).
+before(replace_door_handle_s3, replace_door_handle_s4).
+before(replace_door_handle_s4, replace_door_handle_s5).
+% fixture additions (not in the v3 ground truth)
+demands(replace_door_handle_s1, loosen, has_property, cross_tip).
+demands(replace_door_handle_s4, fasten, has_property, cross_tip).
+% Taught swap cases (situation + difference, v3 schema 3.6) for part B (logic 4.3 example B).
+% The lacks/has lines are local to their case topic: they describe that case's situation only.
+topic cooking/case_omelette_fork.
+lacks(user, fork).
+has(user, chopsticks).
+swap(make_omelette_s2, fork, chopsticks).
+topic cooking/case_boil_egg_spoon.
+lacks(user, spoon).
+has(user, ladle).
+swap(boil_egg_s2, spoon, ladle).
+topic cleaning/case_window_sponge.
+lacks(user, sponge).
+has(user, dish_cloth).
+swap(clean_window_s2, sponge, dish_cloth).
+topic repair/case_tap_screwdriver.
+lacks(user, screwdriver).
+has(user, butter_knife).
+swap(fix_dripping_tap_s2, screwdriver, butter_knife).

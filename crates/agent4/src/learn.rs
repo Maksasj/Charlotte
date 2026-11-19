@@ -159,6 +159,7 @@ fn kinds_ok(agent: &Agent, support: &[String]) -> bool {
 /// One induction pass over the current knowledge. Returns the agent's lines.
 pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
     let mut out = retry_suspended(agent, false);
+    out.extend(induce_cases(agent));
     let k = MIN_SUPPORT.load(std::sync::atomic::Ordering::SeqCst);
     let feats = features(agent);
     let mut heads: BTreeSet<Lit> = BTreeSet::new();
@@ -336,4 +337,72 @@ pub fn retry_suspended(agent: &mut Agent, last: bool) -> Vec<String> {
     }
     agent.reset_model();
     out
+}
+
+/// Part B (7.1): an adaptation rule generalised from taught swap cases by least general
+/// generalisation over a pool of schema literals (role, can, uses, demands met). Accepted with
+/// support >= MIN_SUPPORT cases from >= 2 tasks. Active only while B7 is switched off: a learned
+/// rule never shadows a deduction.
+pub fn induce_cases(agent: &mut Agent) -> Vec<String> {
+    let k = MIN_SUPPORT.load(std::sync::atomic::Ordering::SeqCst);
+    if agent.learned.iter().any(|r| r.id.starts_with("learn/B/")) || agent.cases.is_empty() {
+        return vec![];
+    }
+    let off: Vec<&str> = agent.off.iter().map(String::as_str).collect();
+    // literal pool, evaluated per case under the case's own situation
+    let mut shared: Option<BTreeSet<&'static str>> = None;
+    let mut tasks: BTreeSet<String> = BTreeSet::new();
+    let mut n = 0;
+    for (_, sit, diff) in agent.cases.clone() {
+        for d in diff.iter().filter(|d| d.pred == "swap") {
+            let (s, i, j) = (sym_of(&d.args[0]), sym_of(&d.args[1]), sym_of(&d.args[2]));
+            let m = reason4::run(&agent.engine_facts(&sit), &off, &agent.learned_rules()).expect("model");
+            let role_f: Vec<String> = m.facts_of("role").into_iter().filter(|g| sym_of(&g.args[0]) == s && sym_of(&g.args[1]) == i).map(|g| sym_of(&g.args[2])).collect();
+            let mut lits: BTreeSet<&'static str> = BTreeSet::new();
+            if !role_f.is_empty() {
+                lits.insert("role");
+            }
+            if role_f.iter().any(|f| m.contains(&GroundAtom::new("can", vec![Value::Sym(j.clone()), Value::Sym(f.clone())]))) {
+                lits.insert("can");
+            }
+            if m.contains(&GroundAtom::new("uses", vec![Value::Sym(s.clone()), Value::Sym(i.clone())])) {
+                lits.insert("uses");
+            }
+            let demands: Vec<GroundAtom> = m.facts_of("demands").into_iter().filter(|g| sym_of(&g.args[0]) == s).collect();
+            let met = demands.iter().all(|g| m.contains(&reason4::holds_atom(&GroundAtom::new(&sym_of(&g.args[2]), vec![Value::Sym(j.clone()), g.args[3].clone()]), false)));
+            if met {
+                lits.insert("demands_met");
+            }
+            shared = Some(match shared { None => lits, Some(sh) => sh.intersection(&lits).cloned().collect() });
+            tasks.insert(s.rsplit_once("_s").map(|(t, _)| t.to_string()).unwrap_or(s.clone()));
+            n += 1;
+        }
+    }
+    let shared = shared.unwrap_or_default();
+    if n < k || tasks.len() < 2 || !shared.contains("role") || !shared.contains("can") {
+        return vec![format!("no adaptation rule: {n} swap cases from {} tasks share {:?}", tasks.len(), shared)];
+    }
+    let mut body = vec!["lacks(user, I)", "has(user, J)", "role(S, I, F)", "can(J, F)", "J != I"];
+    let mut src = String::new();
+    if shared.contains("demands_met") {
+        src.push_str("lunfit(S, J) :- lacks(user, I), role(S, I, F), has(user, J), demands(S, F, P, Y), holdsn(J, P, Y).\n");
+        src.push_str("lopen(S, J) :- lacks(user, I), role(S, I, F), has(user, J), demands(S, F, P, Y), not holds(J, P, Y), not holdsn(J, P, Y).\n");
+        body.push("not lunfit(S, J)");
+        body.push("not lopen(S, J)");
+    }
+    src.push_str(&format!("stand_in(S, I, J) :- {}.\n", body.join(", ")));
+    let (_, rules) = sla_reasoner::parse_program(&src).expect("part B rule");
+    let active = agent.off.iter().any(|o| o == "B7");
+    for (q, mut r) in rules.into_iter().enumerate() {
+        r.id = format!("learn/B/{}", q + 1);
+        let shown = r.rule.to_string();
+        agent.learned.push(Rule {
+            id: r.id.clone(), layer: 1, head: Lit { rel: "stand_in".into(), val: "-".into(), neg: false }, body: vec![], except: vec![],
+            support: vec![format!("{n} swap cases")], counter: vec![], predictions: vec![], status: if active { "hypothesis".into() } else { "subsumed_by_B7".into() },
+            confirmed_by: None, built_from: vec![], specialised_from: None, conf: n as f64 / (n as f64 + 1.0), input: r,
+        });
+        let _ = shown;
+    }
+    agent.reset_model();
+    vec![format!("hypothesis (adaptation): stand_in(S, I, J) :- {} support {n} cases from {} tasks{}.", body.join(", "), tasks.len(), if active { "" } else { " (subsumed by B7, not active)" })]
 }

@@ -66,7 +66,7 @@ some_stand_in(S, I) :- stand_in(S, I, J).
 needed_state(S1, Z) :- before(S1, S2), requires_state(S2, Z), achieves(S1, Z).
 blocked(S1)         :- uses(S1, I), lacks(user, I), not some_stand_in(S1, I).
 lacks_for(A, O)     :- holds_pre(A, O, Z), not state_of(O, Z).
-replace_step(S1, A2) :- blocked(S1), needed_state(S1, Z), object_of(S1, O), holds_effect(A2, O, Z), not lacks_for(A2, O).
+replace_step(S1, A2) :- blocked(S1), needed_state(S1, Z), object_of(S1, O), holds_effect(A2, O, Z), action(S1, A1), A2 != A1, not lacks_for(A2, O).
 replaced(S1) :- replace_step(S1, A2).
 
 %% B9 gap: a lacked item with no stand-in and no replacement

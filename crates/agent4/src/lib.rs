@@ -61,6 +61,9 @@ pub struct Agent {
     pub learned: Vec<learn::Rule>,
     pub off: Vec<String>,
     pub learning: bool,
+    /// taught cases (situation + difference) from `*/case_*` batches
+    pub cases: Vec<(String, Vec<(GroundAtom, bool)>, Vec<GroundAtom>)>,
+    case_open: Option<String>,
     pub naming: bool,
     pub stats: Stats,
     model: Option<Model>,
@@ -78,7 +81,7 @@ impl Agent {
         Agent {
             session: session.into(), sorts: BTreeMap::new(), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
             canon: BTreeMap::new(), not_same: BTreeSet::new(), questions: Vec::new(), learned: Vec::new(), off: Vec::new(),
-            learning: true, naming: true, stats: Stats::default(), model: None,
+            learning: true, naming: true, stats: Stats::default(), model: None, cases: Vec::new(), case_open: None,
         }
     }
 
@@ -263,14 +266,24 @@ impl Agent {
             }
         };
         match parsed {
-            Msg::Topic(_) | Msg::Answer { .. } | Msg::Query { .. } | Msg::Request { .. } => vec![],
+            Msg::Topic(t) => {
+                // a case batch holds a situation and its difference; it is never global knowledge
+                if t.contains("/case_") {
+                    self.cases.push((t.clone(), vec![], vec![]));
+                    self.case_open = Some(t);
+                } else {
+                    self.case_open = None;
+                }
+                vec![]
+            }
+            Msg::Answer { .. } | Msg::Query { .. } | Msg::Request { .. } => vec![],
             Msg::New { sym, sort } => {
                 if !sorts::SORTS.contains(&sort.as_str()) {
                     self.stats.rejected += 1;
                     return vec![format!("reject: unknown sort {sort}.")];
                 }
                 if let Some(d) = self.sorts.get(&sym) {
-                    if d != &sort {
+                    if d != &sort && !(sorts::compatible(d, &sort) && matches!(sort.as_str(), "action" | "function")) {
                         self.stats.rejected += 1;
                         return vec![format!("reject: {sym} is {d}, not {sort}.")];
                     }
@@ -290,6 +303,21 @@ impl Agent {
                 vec!["ok. retracted.".into()]
             }
             Msg::Fact { atom, negated } => {
+                if self.case_open.is_some() && matches!(atom.pred.as_str(), "has" | "lacks" | "wants" | "excludes" | "state_of" | "swap" | "drop") {
+                    if let Err(e) = self.type_check(&atom) {
+                        self.stats.rejected += 1;
+                        return vec![format!("reject: {e}.")];
+                    }
+                    let a = self.canon_atom(&atom);
+                    let c = self.cases.last_mut().unwrap();
+                    if matches!(a.pred.as_str(), "swap" | "drop") { c.2.push(a.clone()) } else { c.1.push((a.clone(), negated)) }
+                    self.provenance.push(json!({"fact": a.to_string(), "msg": id, "event": "case", "case": c.0}));
+                    return vec!["ok. case.".into()];
+                }
+                if matches!(atom.pred.as_str(), "has" | "lacks" | "wants" | "excludes" | "state_of" | "swap" | "drop") {
+                    self.stats.rejected += 1;
+                    return vec![format!("reject: {} is situation knowledge; it belongs in a case or a query.", atom.pred)];
+                }
                 if let Err(e) = self.type_check(&atom) {
                     self.stats.rejected += 1;
                     return vec![format!("reject: {e}.")];

@@ -1,0 +1,27 @@
+{"q": "same_as(egg_whisk, whisk)? or is_a(egg_whisk, whisk)?", "a": "same_as(egg_whisk, whisk)."}
+{"q": "same_as(whisk_attachment, whisk)? or is_a(whisk_attachment, whisk)?", "a": "not same_as(whisk_attachment, whisk)."}
+{"q": "same_as(cutting_board, chopping_board)? or is_a(cutting_board, chopping_board)?", "a": "same_as(cutting_board, chopping_board)."}
+{"q": "same_as(adjustable_spanner, adjustable_wrench)? or is_a(adjustable_spanner, adjustable_wrench)?", "a": "same_as(adjustable_spanner, adjustable_wrench)."}
+{"q": "same_as(stove_top, hob)? or is_a(stove_top, hob)?", "a": "same_as(hob, stove_top)."}
+{"q": "same_as(bread_board, chopping_board)? or is_a(bread_board, chopping_board)?", "a": "not same_as(bread_board, chopping_board)."}
+{"q": "same_as(balloon_whisk, whisk)? or is_a(balloon_whisk, whisk)?", "a": "not same_as(balloon_whisk, whisk)."}
+{"q": "same_as(white_vinegar, vinegar)? or is_a(white_vinegar, vinegar)?", "a": "not same_as(white_vinegar, vinegar)."}
+{"q": "same_as(plastic_bucket, bucket)? or is_a(plastic_bucket, bucket)?", "a": "not same_as(plastic_bucket, bucket)."}
+{"q": "same_as(kitchen_mixer_tap, mixer_tap)? or is_a(kitchen_mixer_tap, mixer_tap)?", "a": "not same_as(kitchen_mixer_tap, mixer_tap)."}
+{"q": "same_as(adjustable_wrench, spanner)? or is_a(adjustable_wrench, spanner)?", "a": "not same_as(adjustable_wrench, spanner)."}
+{"q": "conflict:has_property(rice_flour, contains_gluten) exception?", "a": "exception"}
+{"q": "conflict:can_go_in(plastic_dish, oven) exception?", "a": "exception"}
+{"q": "conflict:not can_go_in(ovenproof_plastic_tray, oven) exception?", "a": "exception"}
+{"q": "conflict:can_go_in(kitchen_knife, dishwasher) exception?", "a": "exception"}
+{"q": "conflict:can_go_in(cast_iron_pan, dishwasher) exception?", "a": "exception"}
+{"q": "conflict:can_go_in(chamois, washing_machine) exception?", "a": "exception"}
+{"q": "conflict:has_property(non_scratch_scourer, abrasive) exception?", "a": "exception"}
+{"q": "conflict:made_of(rubber_mallet, metal) exception?", "a": "exception"}
+{"q": "conflict:has_property(brass_screw, magnetic) exception?", "a": "exception"}
+{"q": "ask: can_go_in(enamel_dish, microwave)?", "a": "no"}
+{"q": "ask: has_property(insulated_pliers, conductive)?", "a": "no"}
+{"q": "ask: can_go_in(wool_duster, washing_machine)?", "a": "unknown"}
+{"q": "ask: can_go_in(spray_bottle, oven)?", "a": "no"}
+{"q": "ask: can_do(lime, dissolve_limescale)?", "a": "yes"}
+{"q": "ask: can_do(wire_cutter, cut)?", "a": "yes"}
+{"q": "ask: can_do(cotton_rag, soak_up)?", "a": "yes"}

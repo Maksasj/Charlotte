@@ -33,6 +33,11 @@ pub const SIGNATURES: &[(&str, &[&str])] = &[
     ("has", &["agent", "item"]),
     ("lacks", &["agent", "item"]),
     ("state_of", &["item", "state"]),
+    ("wants", &["agent", "item"]),
+    ("excludes", &["agent", "item"]),
+    // differences (only in case batches)
+    ("swap", &["step", "item", "item"]),
+    ("drop", &["step"]),
 ];
 
 pub const SORTS: &[&str] = &["item", "place", "material", "property", "function", "state", "action", "step", "task", "agent", "relation"];
@@ -42,6 +47,12 @@ pub fn signature(pred: &str) -> Option<&'static [&'static str]> {
 }
 
 /// `place` is a subsort of `item`.
+/// `function` and `action` are disjoint sorts that may share a name (`beat`, section 4.2).
 pub fn compatible(declared: &str, wanted: &str) -> bool {
-    declared == wanted || wanted == "any" || (wanted == "item" && declared == "place") || (wanted == "place" && declared == "item")
+    declared == wanted
+        || wanted == "any"
+        || (wanted == "item" && declared == "place")
+        || (wanted == "place" && declared == "item")
+        || (wanted == "function" && declared == "action")
+        || (wanted == "action" && declared == "function")
 }

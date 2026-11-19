@@ -170,6 +170,8 @@ pub struct Delivery {
     pub unexpected: Vec<String>,
     pub leaks: Vec<String>,
     pub learn_lines: Vec<String>,
+    /// (file:line, reply) for every rejected message
+    pub rejects: Vec<(String, String)>,
 }
 
 fn shuffled<T: Clone>(v: &[T], seed: u64) -> Vec<T> {
@@ -210,6 +212,7 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
     let all: Vec<Line> = blocks.into_iter().flatten().filter(|l| !l.text.starts_with("new(") || o.order_seed.is_none()).collect();
     let n = ((all.len() as f64) * o.prefix).round() as usize;
     let mut learn_lines = Vec::new();
+    let mut rejects = Vec::new();
     let mut delivered = 0;
     let mut withheld = 0;
     if o.order_seed.is_some() {
@@ -226,7 +229,11 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
         if l.text.starts_with("topic ") && delivered > 0 {
             learn_lines.extend(agent.end_batch(&mut oracle));
         }
-        agent.hear(&l.text, "fixture", &mut oracle);
+        for r in agent.hear(&l.text, "fixture", &mut oracle) {
+            if r.starts_with("reject:") {
+                rejects.push((format!("{}:{}", l.file, l.no), r));
+            }
+        }
         delivered += 1;
     }
     learn_lines.extend(agent.end_batch(&mut oracle));
@@ -239,7 +246,7 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
         .map(|(a, s)| if s.negated { format!("not {a}") } else { a.to_string() })
         .filter(|f| fx.deny.contains(&norm(f.trim_start_matches("not "))) || fx.deny.contains(&norm(f)))
         .collect();
-    Delivery { withheld: withheld + oracle.withheld, unexpected: oracle.unexpected, agent, delivered, leaks, learn_lines }
+    Delivery { withheld: withheld + oracle.withheld, unexpected: oracle.unexpected, agent, delivered, leaks, learn_lines, rejects }
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -385,7 +392,7 @@ pub fn drift(fx: &Fixture, every: usize) -> (Fixture, usize) {
     for l in &fx.teach {
         let mut out = String::new();
         let mut tok = String::new();
-        let mut flush = |tok: &mut String, out: &mut String, seen: &mut BTreeSet<String>| {
+        let flush = |tok: &mut String, out: &mut String, seen: &mut BTreeSet<String>| {
             if !tok.is_empty() {
                 if chosen.contains(tok.as_str()) && seen.contains(tok.as_str()) && !l.text.starts_with("new(") {
                     out.push_str(&format!("alt_{tok}"));
