@@ -176,6 +176,8 @@ pub struct Opts {
     pub order_seed: Option<u64>,
     pub min_support: usize,
     pub bulk: bool,
+    /// session id of the conversation (raw and provenance carry it)
+    pub session: Option<String>,
 }
 
 pub struct Delivery {
@@ -206,7 +208,7 @@ fn shuffled<T: Clone>(v: &[T], seed: u64) -> Vec<T> {
 /// Teach the fixture (a prefix of it, in curriculum order or a seeded order of topic blocks).
 pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
     agent4::learn::MIN_SUPPORT.store(o.min_support.max(1), std::sync::atomic::Ordering::SeqCst);
-    let mut agent = Agent::new("spike");
+    let mut agent = Agent::new(o.session.as_deref().unwrap_or("spike"));
     agent.off = o.off.clone();
     agent.learning = o.learn;
     agent.naming = o.naming;
@@ -253,7 +255,7 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
         delivered += 1;
     }
     learn_lines.extend(agent.end_batch(&mut oracle));
-    learn_lines.extend(agent4::learn::retry_suspended(&mut agent, true));
+    learn_lines.extend(agent.finish());
     // delivered leak check: no denied atom may be stored
     let leaks: Vec<String> = agent
         .facts

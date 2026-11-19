@@ -26,7 +26,9 @@ fn formal() -> Vec<String> {
               "effect", "precondition", "demands", "state_of", "holds", "holdsn", "lholds", "lholdsn", "pos", "neg",
               "isa", "part", "stand_in", "ask_fit", "ask_conflict", "not", "new", "query", "retract", "yes", "no",
               "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
-              "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary"] {
+              "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary",
+              // kb4 record fields and conversation events (Design 4.0 section 8.2)
+              "batch", "batch_end", "built_from", "end", "finish", "jsonl", "lang", "layer", "live", "msg_id", "prov", "raw", "rec", "rule", "schema", "speaker", "turn"] {
         v.push(w.into());
     }
     v
@@ -99,4 +101,39 @@ fn walk(dir: &Path) -> Vec<std::path::PathBuf> {
         }
     }
     out
+}
+
+/// Rule files (Design 4.0 base rules, data in crates/reason4/core/*.dl): every constant used in
+/// a rule must be formal vocabulary (relation names, `user`); a rule may not name a world thing.
+#[test]
+fn rule_files_name_no_world_things() {
+    let allowed = formal();
+    let dir = kb3::repo_root().join("crates/reason4/core");
+    let mut bad = Vec::new();
+    for e in std::fs::read_dir(&dir).unwrap().flatten() {
+        let src = std::fs::read_to_string(e.path()).unwrap();
+        for (n, line) in src.lines().enumerate() {
+            let code = line.split('%').next().unwrap_or("");
+            // constants: lower-case identifiers inside an argument list
+            let mut depth = 0;
+            let mut tok = String::new();
+            for ch in code.chars().chain(std::iter::once(' ')) {
+                if ch.is_ascii_alphanumeric() || ch == '_' {
+                    tok.push(ch);
+                    continue;
+                }
+                if depth > 0 && !tok.is_empty() && tok.chars().next().unwrap().is_ascii_lowercase() && ch != '(' && !allowed.iter().any(|a| *a == tok) {
+                    bad.push(format!("{}:{}: {tok}", e.path().display(), n + 1));
+                }
+                tok.clear();
+                if ch == '(' {
+                    depth += 1;
+                }
+                if ch == ')' {
+                    depth -= 1;
+                }
+            }
+        }
+    }
+    assert!(bad.is_empty(), "world words in rule files:\n{}", bad.join("\n"));
 }

@@ -1,0 +1,23 @@
+{
+ "tasks_allowed": 71,
+ "sessions": 71,
+ "readings": {
+  "mapped": 1165,
+  "facts_mapped": 5875,
+  "facts_dropped": 11,
+  "reteach": 52,
+  "duplicate": 168,
+  "situation_reteach": 1348,
+  "excluded_h3_or_gardening": 982
+ },
+ "dropped_by_predicate": {
+  "_step": 3,
+  "under": 2,
+  "at": 1,
+  "with": 1,
+  "step": 1,
+  "_action": 1,
+  "matching": 1,
+  "through": 1
+ }
+}

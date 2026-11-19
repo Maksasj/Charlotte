@@ -30,6 +30,7 @@ fn main() {
                 order_seed: arg(&args, "--order").and_then(|v| v.parse().ok()),
                 min_support: arg(&args, "--k").and_then(|v| v.parse().ok()).unwrap_or(3),
                 bulk: false,
+                session: None,
             };
             let name = arg(&args, "--name").unwrap_or_else(|| "spike".into());
             let t0 = Instant::now();
@@ -72,6 +73,34 @@ fn main() {
                 let facts: Vec<String> = d.agent.engine_facts(&[]).iter().map(|f| f.atom.to_string()).collect();
                 std::fs::write(format!("{p}.facts"), facts.join("\n")).unwrap();
             }
+        }
+        Some("live") => {
+            // teach the fixture live, then write its raw session and a build (milestone 33)
+            let name = arg(&args, "--name").unwrap_or_else(|| "live".into());
+            let kbroot = arg(&args, "--kb").map(std::path::PathBuf::from).unwrap_or_else(|| root().join("data/kb4"));
+            let d = deliver(&fx, &Opts { learn: !args.iter().any(|a| a == "--no-learn"), naming: true, prefix: 1.0, min_support: 3, session: Some(name.clone()), ..Default::default() });
+            let agent = d.agent;
+            let raw = agent4::kb::write_raw(&kbroot, &agent, "fixture").unwrap();
+            // lab events on 3.0's stream (data/training/lab3/<run>/events.jsonl, served by sla3 lab)
+            let mut log = eval3::lab::Log::open(&format!("kb4_{name}"));
+            for r in agent4::kb::raw_records(&agent, "fixture") {
+                log.event("teach4", json!({"msg": r["msg_id"], "speaker": r["speaker"], "channel": r["channel"], "pass": r["speaker"] == "teacher"}));
+            }
+            let id = agent4::kb::write_build(&kbroot.join("builds").join(&name), &agent, agent.raw.len()).unwrap();
+            println!("{}", json!({"raw": raw, "build": id, "messages": agent.raw.len()}));
+        }
+        Some("replay") => {
+            // rebuild from raw through the live entry point; answers from raw only
+            let session = arg(&args, "--session").expect("--session");
+            let kbroot = arg(&args, "--kb").map(std::path::PathBuf::from).unwrap_or_else(|| root().join("data/kb4"));
+            let rows = agent4::kb::read_lines(&kbroot.join("raw/sessions").join(format!("{session}.jsonl")));
+            let renames = arg(&args, "--migration").map(|m| agent4::kb::load_migration(std::path::Path::new(&m))).unwrap_or_default();
+            let (agent, unanswered) = agent4::kb::replay(&rows, &session, &renames, &[], !args.iter().any(|a| a == "--no-learn"), true);
+            let out = arg(&args, "--out").unwrap_or_else(|| format!("{session}_replay"));
+            let id = agent4::kb::write_build(&kbroot.join("builds").join(&out), &agent, rows.len()).unwrap();
+            let asked = agent.questions.len();
+            let under = asked > 0 && unanswered.len() * 20 > asked;
+            println!("{}", json!({"build": id, "out": out, "questions": asked, "unanswered": unanswered.len(), "under_answered": under}));
         }
         Some("drift") => {
             let every: usize = arg(&args, "--every").and_then(|v| v.parse().ok()).unwrap_or(7);

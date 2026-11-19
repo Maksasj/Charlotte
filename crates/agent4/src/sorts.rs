@@ -29,6 +29,17 @@ pub const SIGNATURES: &[(&str, &[&str])] = &[
     ("achieves", &["step", "state"]),
     ("into", &["step", "item"]),
     ("onto", &["step", "item"]),
+    ("from", &["step", "item"]),
+    // the rest of the v3 procedure schema (design 4.1: the procedure schema stays as in v3)
+    ("takes_time", &["any", "any", "any", "any"]),
+    ("until", &["step", "state"]),
+    ("purpose", &["step", "state"]),
+    ("condition", &["step", "state"]),
+    ("check", &["step", "state"]),
+    ("warning", &["step", "state"]),
+    ("setting", &["step", "any", "any", "any"]),
+    ("amount", &["step", "item", "any", "any"]),
+    ("optional", &["step"]),
     // situations (only in `given:`)
     ("has", &["agent", "item"]),
     ("lacks", &["agent", "item"]),

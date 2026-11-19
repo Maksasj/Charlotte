@@ -2,6 +2,8 @@
 //! a conversation and goes through parse, type check, naming check, consistency check, store
 //! (raw, facts, provenance), derive, learn and gaps. Nothing is injected.
 
+pub mod deny;
+pub mod kb;
 pub mod learn;
 pub mod msg;
 pub mod sorts;
@@ -449,10 +451,18 @@ impl Agent {
 
     /// End of a teaching batch: an induction pass (7.1) with one confirming question per rule.
     pub fn end_batch(&mut self, teacher: &mut dyn Teacher) -> Vec<String> {
+        // batch boundaries are conversation events, kept in raw so replay learns identically
+        self.log("agent", "batch_end", "batch end");
         if !self.learning {
             return vec![];
         }
         learn::induce(self, teacher)
+    }
+
+    /// End of teaching: suspended rules with nothing to separate their counterexample retract.
+    pub fn finish(&mut self) -> Vec<String> {
+        self.log("agent", "finish", "finish");
+        learn::retry_suspended(self, true)
     }
 
     /// Answer a query or request message (benchmark or user). `given:` facts are used for
