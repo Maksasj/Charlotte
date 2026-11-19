@@ -1,1 +1,34 @@
-% to be written after the final H3 reading
+\section{Discussion}
+
+\paragraph{What 3.0 shows.} An agent with no English word lists in its code can be taught procedures once. It then reuses them in new words, on new tasks and on a domain it never saw, and every answer can be checked fact by fact. Its rates are modest, and the pre-registered targets were not met.
+
+The measurement is the main gain over 2.0:
+\begin{itemize}
+  \item a sealed held-out set written without sight of the code;
+  \item an exact check with negative controls;
+  \item baselines on the same cases.
+\end{itemize}
+Under it, earlier claims (2.0's development-set numbers) would not have held.
+
+\paragraph{What did not work.}
+\begin{enumerate}
+  \item \textbf{Adaptation.} Most new situations need knowledge that no other taught task contains, so neither substitution by learned function nor induced rules moved the new-situation rate measurably. A variant shown once by the teacher was often reused correctly afterwards. Learning from correction works; generalising from other tasks mostly does not, at this scale.
+  \item \textbf{A self-sufficient language layer.} The learned parser was more often exact than the teacher's reading on the lines it was unsure of. But distilling the teacher's readings did not raise its confident coverage: distilling all of them made it worse, and distilling only agreeing ones read more lines exactly but less confidently. The teacher's naming conventions differ from the ground truth's, and that gap is learned too.
+  \item \textbf{The generated dataset.} 98 extra tasks did not help, and they made task identity harder.
+  \item \textbf{Task identity.} Word overlap is the second cause of failure. With about 200 known tasks, similar tasks collide.
+\end{enumerate}
+
+\paragraph{Limits.}
+\begin{itemize}
+  \item All text in the project, including H3, was written by language models. Human-written requests remain untested.
+  \item H3 readings ran without variant teaching, because of the call budget.
+  \item B3 was run on 40 of 60 new-situation cases, and its read-back lowers its score.
+  \item Tier S, T and G samples are small, so differences under about 15 points are within noise.
+\end{itemize}
+
+\paragraph{Next.} Three directions follow from the failures:
+\begin{itemize}
+  \item a structured identity model (goal and item graph) instead of word overlap;
+  \item teaching adaptation knowledge explicitly, as relations about items (what can stand in for what), so that it transfers;
+  \item learning the ground truth's naming conventions from the teacher, rather than replacing one with the other.
+\end{itemize}

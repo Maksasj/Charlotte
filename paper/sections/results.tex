@@ -1,1 +1,75 @@
-% to be written after the final H3 reading
+\section{Results}
+
+All H3 numbers come from the final reading (reading 3) on one frozen build, except C2 (reading 2), and all are counts with Wilson 95\% intervals. H3 runs used no variant teaching, to stay within the call budget. Repeats after one teaching were measured on the training and development sets.
+
+\subsection{Held-out set H3}
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+Encounter & 3.0 agent (C1) & B1 (no adaptation) & B2 (Haiku + teaching) & C2 (+ dataset)\\
+\midrule
+S, new situation & \runHThreeRThreeFunctionSFirstPass/\runHThreeRThreeFunctionSFirstN{} [\runHThreeRThreeFunctionSFirstLo--\runHThreeRThreeFunctionSFirstHi] & \runHThreeRThreeBOneSFirstPass/\runHThreeRThreeBOneSFirstN & \runBTwoHThreeSFirstPass/\runBTwoHThreeSFirstN & \runHThreeRTwoCTwoSFirstPass/\runHThreeRTwoCTwoSFirstN\\
+T, second encounter & \runHThreeRThreeFunctionTSecondPass/\runHThreeRThreeFunctionTSecondN{} [\runHThreeRThreeFunctionTSecondLo--\runHThreeRThreeFunctionTSecondHi] & \runHThreeRThreeBOneTSecondPass/\runHThreeRThreeBOneTSecondN & \runBTwoHThreeTSecondPass/\runBTwoHThreeTSecondN & \runHThreeRTwoCTwoTSecondPass/\runHThreeRTwoCTwoTSecondN\\
+T, retention & \runHThreeRThreeFunctionTRetentionPass/\runHThreeRThreeFunctionTRetentionN & \runHThreeRThreeBOneTRetentionPass/\runHThreeRThreeBOneTRetentionN & -- & \runHThreeRTwoCTwoTRetentionPass/\runHThreeRTwoCTwoTRetentionN\\
+T, variants & \runHThreeRThreeFunctionTVariantPass/\runHThreeRThreeFunctionTVariantN & \runHThreeRThreeBOneTVariantPass/\runHThreeRThreeBOneTVariantN & \runBTwoHThreeTVariantPass/\runBTwoHThreeTVariantN & \runHThreeRTwoCTwoTVariantPass/\runHThreeRTwoCTwoTVariantN\\
+G, second encounter & \runHThreeRThreeFunctionGSecondPass/\runHThreeRThreeFunctionGSecondN{} [\runHThreeRThreeFunctionGSecondLo--\runHThreeRThreeFunctionGSecondHi] & \runHThreeRThreeBOneGSecondPass/\runHThreeRThreeBOneGSecondN & \runBTwoHThreeGSecondPass/\runBTwoHThreeGSecondN & \runHThreeRTwoCTwoGSecondPass/\runHThreeRTwoCTwoGSecondN\\
+G, retention & \runHThreeRThreeFunctionGRetentionPass/\runHThreeRThreeFunctionGRetentionN & \runHThreeRThreeBOneGRetentionPass/\runHThreeRThreeBOneGRetentionN & -- & \runHThreeRTwoCTwoGRetentionPass/\runHThreeRTwoCTwoGRetentionN\\
+G, variants & \runHThreeRThreeFunctionGVariantPass/\runHThreeRThreeFunctionGVariantN & \runHThreeRThreeBOneGVariantPass/\runHThreeRThreeBOneGVariantN & \runBTwoHThreeGVariantPass/\runBTwoHThreeGVariantN & \runHThreeRTwoCTwoGVariantPass/\runHThreeRTwoCTwoGVariantN\\
+\bottomrule
+\end{tabular}
+\caption{Strict passes on the sealed held-out set. The 95\% interval, in per cent, is shown for the agent. S: known task with a new situation; T: new task in a known domain, taught once; G: gardening, never seen in training, taught once.}
+\end{table}
+
+\paragraph{Taught once, reused in new words.}
+\begin{itemize}
+  \item New tasks were stored exactly after one teaching in \runHThreeRThreeFunctionStoredTPass{} of \runHThreeRThreeFunctionStoredTN{} cases, and new-domain tasks in \runHThreeRThreeFunctionStoredGPass{} of \runHThreeRThreeFunctionStoredGN.
+  \item The second encounter passed \runHThreeRThreeFunctionTSecondRate\% on T and \runHThreeRThreeFunctionGSecondRate\% on G.
+  \item On the algorithmic tier (5 random task splits, parser retrained without the test tasks), it passed \splitRSecondPass{} of \splitRSecondN{} (\splitRSecondRate\%).
+  \item The same pipeline reached \runCOneBothREightSecondPass{} of \runCOneBothREightSecondN{} on its own training and development tasks.
+\end{itemize}
+
+\paragraph{Why second encounters fail.} Of \failN{} failed T and G second encounters, the first cause was:
+\begin{itemize}
+  \item a misread step in \failStep;
+  \item the wrong task in \failIdentity;
+  \item a wrong claim in \failWrong;
+  \item a missing item in \failNeed;
+  \item extra steps or items in \failExtra.
+\end{itemize}
+Task identity was right in \finalIdentity{} of \finalIdentityN{} second encounters.
+
+\paragraph{New situations.} The agent passed \runHThreeRThreeFunctionSFirstPass{} of \runHThreeRThreeFunctionSFirstN{} new situations on known tasks. Without adaptation it passed \runHThreeRThreeBOneSFirstPass. In a paired test the difference is \pairFunctionVsBOneOnlyA{} against \pairFunctionVsBOneOnlyB{} (McNemar $p=\pairFunctionVsBOneP$). The rules arm was no better than the function arm (\pairFunctionVsRulesOnlyA{} against \pairFunctionVsRulesOnlyB). On training and development tasks, a variant passed \runCOneBothREightVariantRepeatPass{} of \runCOneBothREightVariantRepeatN{} times when met again after the teacher had shown it once, against \runCOneBothREightVariantPass{} of \runCOneBothREightVariantN{} on the first meeting.
+
+\paragraph{Honesty.} Of the \finalGapCases{} variant encounters the agent did not pass, \finalHonest{} (\finalHonestRate\%) stated a gap or asked the teacher. Over all encounters, \finalWrong{} of \finalN{} (\finalWrongRate\%) carried a false claim.
+
+\paragraph{Baselines.}
+\begin{itemize}
+  \item \textbf{B2.} Haiku, given the same teach lines, matched the agent on new-task second encounters: \pairAgentVsBTwoOnlyA{} passes only for the agent against \pairAgentVsBTwoOnlyB{} only for Haiku, $p=\pairAgentVsBTwoP$. It was better at adapting, with \runBTwoHThreeGVariantPass{} of \runBTwoHThreeGVariantN{} gardening variants, but it made more false claims: \runBTwoHThreeSFirstWrong{} of \runBTwoHThreeSFirstN{} new-situation answers.
+  \item \textbf{B3.} The v2.0.0 agent, read back into facts by the 3.0 parser, passed \runBThreeReplaySFirstPass{} of \runBThreeReplaySFirstN{} new-situation cases, with \runBThreeReplaySFirstWrong{} false claims. On the \pairAgentVsBThreeN{} cases both systems answered, 3.0 passed \pairAgentVsBThreeOnlyA{} that 2.0 did not, and 2.0 passed \pairAgentVsBThreeOnlyB{} that 3.0 did not ($p=\pairAgentVsBThreeP$). Read-back is lossy, so this is a lower bound for 2.0.
+\end{itemize}
+
+\paragraph{Dialogue against dialogue plus dataset (C1 against C2).} Adding \datasetTasks{} generated tasks changed nothing on new-task second encounters (\pairCOneVsCTwoOnlyA{} against \pairCOneVsCTwoOnlyB, $p=\pairCOneVsCTwoP$). It lowered the training-set second encounter to \runCTwoBothROneSecondPass{} of \runCTwoBothROneSecondN, because more known tasks make identity harder.
+
+\paragraph{The teacher's fallback.} Without it, new-task second encounters fell from \runHThreeRThreeFunctionTSecondPass{} to \runHThreeRThreeNofallbackTSecondPass{} (\pairFallbackVsNoneOnlyA{} against \pairFallbackVsNoneOnlyB, $p=\pairFallbackVsNoneP$).
+
+\subsection{Targets}
+\begin{table}[h]
+\centering\small
+\begin{tabularx}{\linewidth}{Xll}
+\toprule
+Target (frozen before the final reading) & Result & Met\\
+\midrule
+S $\ge$ 40\% and $\ge$ B1 + 20 points & \runHThreeRThreeFunctionSFirstRate\% (B1 \runHThreeRThreeBOneSFirstRate\%) & no\\
+T second encounter $\ge$ 60\% & \runHThreeRThreeFunctionTSecondRate\% & no\\
+G second encounter $\ge$ 40\% & \runHThreeRThreeFunctionGSecondRate\% & no\\
+Stored exactly, T $\ge$ 90\% & \runHThreeRThreeFunctionStoredTPass/\runHThreeRThreeFunctionStoredTN & no\\
+Parser coverage at 95\% precision $\ge$ 50\% & \parserCoverage\% & no\\
+Wrong-claim rate $\le$ 5\% & \finalWrongRate\% & no\\
+Honest gaps $\ge$ 80\% & \finalHonestRate\% & no\\
+No word lists in agent code & 0 (test) & yes\\
+\bottomrule
+\end{tabularx}
+\caption{Pre-registered targets (\texttt{research/PREREG\_3.md}), reported as met or not.}
+\end{table}

@@ -1,1 +1,9 @@
-% to be written after the final H3 reading
+\begin{abstract}
+Charlotte is a symbolic agent that is taught household procedures in dialogue and answers help requests with facts it can trace. Across three iterations we built a symbolic core (v1), a procedural agent with an LLM translator (v2.0) and, in 3.0, an agent with these properties:
+\begin{itemize}
+  \item its language layer is learned, with an LLM teacher as fallback;
+  \item its answers are lists of facts and relations;
+  \item its code contains no English word lists.
+\end{itemize}
+On a sealed held-out set written without sight of the code, a new task taught once was answered exactly in \runHThreeRThreeFunctionTSecondRate\% of second encounters. On a never-seen domain the rate was \runHThreeRThreeFunctionGSecondRate\%, and on new situations for known tasks \runHThreeRThreeFunctionSFirstRate\%. An LLM given the same teaching performed comparably on new tasks but made more false claims. Learned adaptation, rule induction, a generated dataset and distillation from the teacher gave no significant gain. We report every pre-registered target as met or not, and discuss why transfer and a self-sufficient language layer remain open.
+\end{abstract}
