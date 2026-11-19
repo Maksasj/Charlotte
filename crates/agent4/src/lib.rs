@@ -174,8 +174,13 @@ impl Agent {
                 continue;
             }
             let head = n.rsplit('_').next().unwrap_or(&n).to_string();
+            // the message's own relation and value, to compare neighbourhoods (E2)
+            let here: Option<(String, String)> = (a.args.len() == 2 && sym_of(&a.args[0]) == n).then(|| (a.pred.clone(), sym_of(&a.args[1])));
+            let shares = |k: &str, facts: &[(GroundAtom, Stored)]| here.as_ref().map(|(p, v)| facts.iter().any(|(f, s)| s.retracted_by.is_none() && f.pred == *p && f.args.len() == 2 && sym_of(&f.args[0]) == k && sym_of(&f.args[1]) == *v)).unwrap_or(false);
+            let facts = self.facts.clone();
             let known: Option<String> = self.sorts.iter().filter(|(k, s)| **k != n && sorts::compatible(s, &sort)).map(|(k, _)| k.clone())
-                .find(|k| (n.contains('_') && *k == head) || (k.contains('_') && k.rsplit('_').next() == Some(n.as_str())));
+                .find(|k| (n.contains('_') && *k == head) || (k.contains('_') && k.rsplit('_').next() == Some(n.as_str()))
+                    || (n.split('_').any(|t| t == k) && shares(k, &facts)));
             if let Some(k) = known {
                 if self.not_same.contains(&(n.clone(), k.clone())) || self.facts.iter().any(|(f, _)| f.pred == "is_a" && f.args.iter().map(sym_of).collect::<Vec<_>>() == [n.clone(), k.clone()]) {
                     continue;
@@ -334,13 +339,49 @@ impl Agent {
                     }
                 }
                 let before: BTreeSet<String> = self.visible();
+                let conflicts_before: BTreeSet<String> = self.model().facts_of("ask_conflict").iter().map(|g| g.to_string()).collect();
                 self.store(a, negated, id, if channel == "fixture" { 1.0 } else { 0.9 });
                 let after = self.visible();
-                let new: Vec<&String> = after.difference(&before).take(3).collect();
+                let new: Vec<String> = after.difference(&before).take(3).cloned().collect();
+                let shown: Vec<String> = new.iter().map(|n| format!("{n} [{}]", self.premises_of(n).join(", "))).collect();
                 if out.is_empty() {
-                    out.push(if new.is_empty() { "ok.".into() } else { format!("ok. derived: {}", new.iter().map(|s| s.as_str()).collect::<Vec<_>>().join("; ")) });
+                    out.push(if shown.is_empty() { "ok.".into() } else { format!("ok. derived: {}", shown.join("; ")) });
+                }
+                // a new diamond: neither kind is more specific, so ask (E3)
+                let conflicts_now: Vec<sla_core::term::GroundAtom> = self.model().facts_of("ask_conflict");
+                for c in conflicts_now {
+                    if conflicts_before.contains(&c.to_string()) || self.facts.iter().any(|(f, s)| s.retracted_by.is_none() && f.args.first() == c.args.first() && f.pred == sym_of(&c.args[1])) {
+                        continue;
+                    }
+                    let atom = GroundAtom::new(&sym_of(&c.args[1]), vec![c.args[0].clone(), c.args[2].clone()]);
+                    self.stats.conflict_questions += 1;
+                    let ans = self.ask(teacher, &format!("ask: {atom}?"));
+                    out.push(format!("conflict: {atom} [diamond]; neither kind is more specific. ask: {atom}?"));
+                    self.take_statement_answer(&ans, &atom, id);
                 }
                 out
+            }
+        }
+    }
+
+    /// Taught leaves of a derived surface line (for "derived: ... [premises]").
+    fn premises_of(&mut self, line: &str) -> Vec<String> {
+        let (neg, s) = match line.strip_prefix("not ") { Some(r) => (true, r), None => (false, line) };
+        let Ok(a) = reason4::parse_atom(s) else { return vec![] };
+        let h = holds_atom(&a, neg);
+        let m = self.model();
+        m.proof(&h).map(|p| p.leaves().iter().filter(|l| l.pred != "inheritable").filter_map(|l| surface(l).map(|(x, n)| if n { format!("not {x}") } else { x.to_string() }).or_else(|| Some(l.to_string()))).collect()).unwrap_or_default()
+    }
+
+    /// An answer that is a statement about `atom` is stored as taught (yes/no included).
+    pub fn take_statement_answer(&mut self, ans: &str, atom: &GroundAtom, id: usize) {
+        let ans = ans.trim().trim_end_matches('.');
+        let (neg, body) = match ans.strip_prefix("not ") { Some(r) => (true, r), None => (false, ans) };
+        let stated = if ans == "yes" { Some((atom.clone(), false)) } else if ans == "no" { Some((atom.clone(), true)) } else { reason4::parse_atom(body).ok().map(|a| (a, neg)) };
+        if let Some((a, n)) = stated {
+            if self.type_check(&a).is_ok() {
+                let a = self.canon_atom(&a);
+                self.store(a, n, id, 0.97);
             }
         }
     }

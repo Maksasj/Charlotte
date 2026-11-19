@@ -89,10 +89,49 @@ pub struct Oracle<'a> {
     pub withheld: usize,
 }
 
+/// The atoms a question mentions, as normalised strings (ignoring `not`).
+fn atoms_in(q: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let b = q.as_bytes();
+    let mut i = 0;
+    while i < b.len() {
+        if b[i].is_ascii_lowercase() {
+            let start = i;
+            while i < b.len() && (b[i].is_ascii_alphanumeric() || b[i] == b'_') {
+                i += 1;
+            }
+            if i < b.len() && b[i] == b'(' {
+                let mut depth = 0;
+                let mut j = i;
+                while j < b.len() {
+                    if b[j] == b'(' { depth += 1 }
+                    if b[j] == b')' { depth -= 1; if depth == 0 { break } }
+                    j += 1;
+                }
+                out.push(norm(&q[start..=j.min(b.len() - 1)]));
+                i = j + 1;
+                continue;
+            }
+        }
+        i += 1;
+    }
+    out
+}
+
+fn qkind(q: &str) -> &'static str {
+    let l = q.to_lowercase();
+    if l.contains("same_as(") && l.contains('?') { "naming" } else if l.starts_with("conflict") || l.contains("exception?") { "conflict" } else { "ask" }
+}
+
 impl Teacher for Oracle<'_> {
     fn answer(&mut self, q: &str) -> String {
         let key = norm(q);
-        match self.answers.get(&key) {
+        let found = self.answers.get(&key).cloned().or_else(|| {
+            // tolerant: same kind of question about the same first atom
+            let (k, a) = (qkind(q), atoms_in(q));
+            self.answers.iter().find(|(kq, _)| qkind(kq) == k && !a.is_empty() && atoms_in(kq).first() == a.first()).map(|(_, v)| v.clone())
+        });
+        match found.as_ref() {
             Some(a) => {
                 if self.deny.contains(&norm(a.trim_start_matches("not "))) || self.deny.contains(&norm(a)) {
                     self.withheld += 1;
@@ -191,6 +230,7 @@ pub fn deliver(fx: &Fixture, o: &Opts) -> Delivery {
         delivered += 1;
     }
     learn_lines.extend(agent.end_batch(&mut oracle));
+    learn_lines.extend(agent4::learn::retry_suspended(&mut agent, true));
     // delivered leak check: no denied atom may be stored
     let leaks: Vec<String> = agent
         .facts

@@ -158,13 +158,13 @@ fn kinds_ok(agent: &Agent, support: &[String]) -> bool {
 
 /// One induction pass over the current knowledge. Returns the agent's lines.
 pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
+    let mut out = retry_suspended(agent, false);
     let k = MIN_SUPPORT.load(std::sync::atomic::Ordering::SeqCst);
     let feats = features(agent);
     let mut heads: BTreeSet<Lit> = BTreeSet::new();
     for f in feats.values() {
         heads.extend(f.iter().filter(|l| INHERITABLE.contains(&l.rel.as_str())).cloned());
     }
-    let mut out = Vec::new();
     let known: BTreeSet<(Lit, Vec<Lit>)> = agent.learned.iter().map(|r| (r.head.clone(), r.body.clone())).collect();
     let mut accepted: Vec<(Lit, Vec<Lit>, Score)> = Vec::new();
     for head in &heads {
@@ -227,7 +227,11 @@ pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
         // one confirming question about its first new prediction
         let x = s.predictions[0].clone();
         let q = format!("ask: {}{}({x}, {})?", if head.neg { "not " } else { "" }, head.rel, head.val);
-        let a = agent_ask(agent, teacher, &q);
+        let raw = agent_ask(agent, teacher, &q);
+        let pred_line = format!("{}{}({x}, {})", if head.neg { "not " } else { "" }, head.rel, head.val);
+        let contra_line = format!("{}{}({x}, {})", if head.neg { "" } else { "not " }, head.rel, head.val);
+        let norm = |t: &str| t.chars().filter(|c| !c.is_whitespace()).collect::<String>().trim_end_matches('.').to_string();
+        let a = if raw == "yes" || norm(&raw) == norm(&pred_line) { "yes".to_string() } else if raw == "no" || norm(&raw) == norm(&contra_line) { "no".to_string() } else { raw };
         if a == "yes" {
             rule.confirmed_by = Some(q.clone());
             rule.support.push(x.clone());
@@ -309,7 +313,27 @@ fn revise(agent: &mut Agent, k: usize, x: &str) -> Vec<String> {
             return vec![line];
         }
     }
-    agent.learned[k].status = "retracted".into();
+    // nothing separates it yet: suspend (conclusions withdrawn) and retry when more is taught
+    agent.learned[k].status = "suspended".into();
     agent.reset_model();
-    vec![format!("retracted: {} (counterexample {x}, nothing separates it)", r.show())]
+    vec![format!("ok. {} meets a counterexample: {x}.", r.id)]
+}
+
+/// Retry suspended rules (a separating feature may have been taught since); with `last`,
+/// whatever is still suspended is retracted.
+pub fn retry_suspended(agent: &mut Agent, last: bool) -> Vec<String> {
+    let mut out = Vec::new();
+    let ks: Vec<usize> = agent.learned.iter().enumerate().filter(|(_, r)| r.status == "suspended").map(|(k, _)| k).collect();
+    for k in ks {
+        let x = agent.learned[k].counter.last().cloned().unwrap_or_default();
+        let lines = revise(agent, k, &x);
+        if agent.learned[k].status == "suspended" && last {
+            agent.learned[k].status = "retracted".into();
+            out.push(format!("retracted: {} (counterexample {x}, nothing separates it)", agent.learned[k].show()));
+        } else if agent.learned[k].status != "suspended" {
+            out.extend(lines);
+        }
+    }
+    agent.reset_model();
+    out
 }

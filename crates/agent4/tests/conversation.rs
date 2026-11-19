@@ -114,9 +114,24 @@ fn a_counterexample_withdraws_and_revises_the_rule() {
     teach(&mut a, &mut t, "is_a(spoon, cutlery).\nmade_of(spoon, plastic).");
     a.end_batch(&mut t);
     assert!(a.learned.iter().any(|r| r.status == "hypothesis"));
-    // the teacher says the silicone-free spoon can go in the oven after all
+    // E6: a counterexample suspends the rule; a feature taught afterwards specialises it
     let out = teach(&mut a, &mut t, "can_go_in(spoon, oven).");
     assert!(out.iter().any(|l| l.starts_with("withdrawn:")), "{out:?}");
-    assert!(out.iter().any(|l| l.starts_with("specialised:") || l.starts_with("retracted:")), "{out:?}");
-    let _ = learn::MIN_SUPPORT.load(std::sync::atomic::Ordering::SeqCst);
+    assert!(out.iter().any(|l| l.contains("meets a counterexample: spoon")), "{out:?}");
+    teach(&mut a, &mut t, "new(heat_resistant, property).\nhas_property(spoon, heat_resistant).\nhas_property(tub, flimsy).\nhas_property(jug, flimsy).\nhas_property(bowl, flimsy).");
+    let out = learn::retry_suspended(&mut a, true);
+    assert!(out.iter().any(|l| l.starts_with("specialised:")), "{out:?}");
+    assert!(a.learned.iter().any(|r| r.status == "hypothesis" && r.specialised_from.is_some()));
+}
+
+#[test]
+fn a_rule_with_nothing_to_separate_its_counterexample_is_retracted_at_the_end() {
+    let mut a = Agent::new("t");
+    let mut t = oracle(&[]);
+    teach(&mut a, &mut t, PLASTIC);
+    teach(&mut a, &mut t, "is_a(spoon, cutlery).\nmade_of(spoon, plastic).");
+    a.end_batch(&mut t);
+    teach(&mut a, &mut t, "can_go_in(spoon, oven).");
+    let out = learn::retry_suspended(&mut a, true);
+    assert!(out.iter().any(|l| l.starts_with("retracted:")), "{out:?}");
 }
