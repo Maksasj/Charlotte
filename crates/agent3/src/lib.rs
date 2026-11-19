@@ -37,6 +37,27 @@ pub struct Reply {
     pub identity_margin: f64,
 }
 
+/// Combine a learned parse with the teacher's reading of the same line (phase B finding: on
+/// unsure lines the learned parse is more often exact on action and object, 196 of 217 against
+/// 176). The learned facts stay; the teacher adds only predicates the learned parse lacks for
+/// a step. A line the parser could not read as a step or list takes the teacher's reading.
+pub fn merge(learned: &[Fact], teacher: Vec<Fact>, kind: LineKind) -> Vec<Fact> {
+    if kind == LineKind::Other || learned.is_empty() {
+        return teacher;
+    }
+    let have: std::collections::BTreeSet<(String, String)> = learned.iter().map(|f| (f.pred.clone(), f.arg(0).to_string())).collect();
+    let mut out = learned.to_vec();
+    for f in teacher {
+        let key = (f.pred.clone(), f.arg(0).to_string());
+        // single-valued slots the learner already filled are kept; multi-valued ones (uses,
+        // needs) take the teacher's extra items only when the learner found none
+        if !have.contains(&key) {
+            out.push(f);
+        }
+    }
+    out
+}
+
 pub struct Agent {
     pub vault: Vault,
     pub models: Models,
@@ -112,7 +133,7 @@ impl Agent {
             if needs_fb[k] {
                 match fb[k].take().unwrap_or_else(|| Err("none".into())) {
                     Ok(fs) => {
-                        facts = fs;
+                        facts = merge(&p.facts, fs, p.kind);
                         parser = "fallback";
                     }
                     Err(_) => st.fallback_failed += 1,

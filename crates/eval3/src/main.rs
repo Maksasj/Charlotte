@@ -121,6 +121,40 @@ fn main() {
                 println!("{t}: {a:?}");
             }
         }
+        Some("compare-fallback") => {
+            // zero calls: on lines whose fallback answer is cached, which reading is exact?
+            let m = Models::load(&Models::default_path()).unwrap();
+            let t = teach3::Teacher::open(false);
+            let (mut both, mut learned_only, mut fb_only, mut neither, mut n) = (0, 0, 0, 0, 0);
+            for set in ["data/curriculum3/train", "data/curriculum3/dev"] {
+                for sc in load(set) {
+                    let needs = sc.teach.iter().find(|l| m.parse_teach(&sc.task, l, &Default::default()).kind == parse3::LineKind::Needs);
+                    let known = needs.map(|l| m.known_words(l)).unwrap_or_default();
+                    let items: Vec<String> = known.iter().cloned().collect();
+                    let g = kb3::gold(&sc, None);
+                    let al = kb3::Aliases::from_facts(&sc.aliases);
+                    for line in &sc.teach {
+                        let p = m.parse_teach(&sc.task, line, &known);
+                        if p.kind != parse3::LineKind::Step { continue }
+                        let Ok(fb) = t.parse_line(&sc.task, line, &items) else { continue };
+                        let sid = p.facts.iter().find(|f| f.pred == "step").map(|f| f.arg(1).to_string()).unwrap_or_default();
+                        let Some(gs) = g.step(&sid) else { continue };
+                        let exact = |facts: &[kb3::Fact]| {
+                            let pr = kb3::Procedure::from_facts(&sc.task, &[vec![kb3::Fact::new("step", &[&sc.task, &sid])], facts.to_vec()].concat());
+                            pr.step(&sid).map(|s| al.same(&s.action, &gs.action) && match (&s.object, &gs.object) { (Some(a), Some(b)) => al.same_item(a, b), (None, None) => true, _ => false }).unwrap_or(false)
+                        };
+                        n += 1;
+                        match (exact(&p.facts), exact(&fb)) {
+                            (true, true) => both += 1,
+                            (true, false) => learned_only += 1,
+                            (false, true) => fb_only += 1,
+                            _ => neither += 1,
+                        }
+                    }
+                }
+            }
+            println!("{}", json!({"lines": n, "both_right": both, "learned_only": learned_only, "fallback_only": fb_only, "neither": neither, "measure": "action and object of the step"}));
+        }
         Some("situation") => {
             let m = Models::load(&Models::default_path()).unwrap();
             let (f, c) = m.parse_situation(&arg(&args, "--q").expect("--q"));
