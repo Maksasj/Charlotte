@@ -1,0 +1,66 @@
+{
+  "by_kind": {
+    "G_second": {
+      "ci95": [
+        0.168,
+        0.462
+      ],
+      "identity": 34,
+      "mean_recall": 0.632,
+      "n": 34,
+      "pass": 10,
+      "rate": 0.294,
+      "with_wrong_claim": 2
+    },
+    "G_variant": {
+      "ci95": [
+        0.186,
+        0.401
+      ],
+      "identity": 64,
+      "mean_recall": 0.659,
+      "n": 64,
+      "pass": 18,
+      "rate": 0.281,
+      "with_wrong_claim": 9
+    },
+    "S_first": {
+      "ci95": [
+        0.093,
+        0.28
+      ],
+      "identity": 60,
+      "mean_recall": 0.663,
+      "n": 60,
+      "pass": 10,
+      "rate": 0.167,
+      "with_wrong_claim": 18
+    },
+    "T_second": {
+      "ci95": [
+        0.199,
+        0.425
+      ],
+      "identity": 60,
+      "mean_recall": 0.701,
+      "n": 60,
+      "pass": 18,
+      "rate": 0.3,
+      "with_wrong_claim": 8
+    },
+    "T_variant": {
+      "ci95": [
+        0.058,
+        0.167
+      ],
+      "identity": 120,
+      "mean_recall": 0.611,
+      "n": 120,
+      "pass": 12,
+      "rate": 0.1,
+      "with_wrong_claim": 19
+    }
+  },
+  "live_calls": 951,
+  "name": "b2_h3"
+}

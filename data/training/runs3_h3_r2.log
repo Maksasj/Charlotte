@@ -1,0 +1,110 @@
+C2: 98 dataset tasks ingested
+{
+  "arm": "Function",
+  "by_kind": {
+    "G_retention": {
+      "ci95": [
+        0.103,
+        0.368
+      ],
+      "identity": 27,
+      "mean_recall": 0.604,
+      "n": 34,
+      "pass": 7,
+      "rate": 0.206,
+      "with_wrong_claim": 3
+    },
+    "G_second": {
+      "ci95": [
+        0.064,
+        0.301
+      ],
+      "identity": 29,
+      "mean_recall": 0.634,
+      "n": 34,
+      "pass": 5,
+      "rate": 0.147,
+      "with_wrong_claim": 6
+    },
+    "G_variant": {
+      "ci95": [
+        0.0,
+        0.057
+      ],
+      "identity": 54,
+      "mean_recall": 0.571,
+      "n": 64,
+      "pass": 0,
+      "rate": 0.0,
+      "with_wrong_claim": 18
+    },
+    "S_first": {
+      "ci95": [
+        0.047,
+        0.201
+      ],
+      "identity": 53,
+      "mean_recall": 0.705,
+      "n": 60,
+      "pass": 6,
+      "rate": 0.1,
+      "with_wrong_claim": 9
+    },
+    "T_retention": {
+      "ci95": [
+        0.058,
+        0.222
+      ],
+      "identity": 33,
+      "mean_recall": 0.43,
+      "n": 60,
+      "pass": 7,
+      "rate": 0.117,
+      "with_wrong_claim": 3
+    },
+    "T_second": {
+      "ci95": [
+        0.158,
+        0.372
+      ],
+      "identity": 43,
+      "mean_recall": 0.57,
+      "n": 60,
+      "pass": 15,
+      "rate": 0.25,
+      "with_wrong_claim": 2
+    },
+    "T_variant": {
+      "ci95": [
+        0.023,
+        0.105
+      ],
+      "identity": 106,
+      "mean_recall": 0.625,
+      "n": 120,
+      "pass": 6,
+      "rate": 0.05,
+      "with_wrong_claim": 18
+    }
+  },
+  "ingest": {
+    "fallback": 635,
+    "fallback_failed": 16,
+    "learned": 68,
+    "lines": 703
+  },
+  "live_calls": 806,
+  "name": "h3_r2_c2",
+  "reading": "2",
+  "stored_G": {
+    "mean_core_recall": 0.821,
+    "n": 34,
+    "pass": 7
+  },
+  "stored_T": {
+    "mean_core_recall": 0.859,
+    "n": 60,
+    "pass": 19
+  },
+  "theta": 22.63791190029026
+}

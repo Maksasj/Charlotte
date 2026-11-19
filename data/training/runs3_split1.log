@@ -1,0 +1,56 @@
+{
+  "by_kind": {
+    "R_retention": {
+      "ci95": [
+        0.076,
+        0.476
+      ],
+      "identity": 11,
+      "mean_recall": 0.563,
+      "n": 14,
+      "pass": 3,
+      "rate": 0.214,
+      "with_wrong_claim": 2
+    },
+    "R_second": {
+      "ci95": [
+        0.163,
+        0.612
+      ],
+      "identity": 14,
+      "mean_recall": 0.76,
+      "n": 14,
+      "pass": 5,
+      "rate": 0.357,
+      "with_wrong_claim": 1
+    },
+    "R_variant": {
+      "ci95": [
+        0.0,
+        0.278
+      ],
+      "identity": 9,
+      "mean_recall": 0.629,
+      "n": 10,
+      "pass": 0,
+      "rate": 0.0,
+      "with_wrong_claim": 2
+    },
+    "R_variant_repeat": {
+      "ci95": [
+        0.018,
+        0.404
+      ],
+      "identity": 9,
+      "mean_recall": 0.655,
+      "n": 10,
+      "pass": 1,
+      "rate": 0.1,
+      "with_wrong_claim": 3
+    }
+  },
+  "live_calls": 1,
+  "name": "split1",
+  "stored_pass": 5,
+  "test_tasks": 14
+}
