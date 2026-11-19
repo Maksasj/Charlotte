@@ -133,6 +133,7 @@ fn main() {
             let only: Option<Vec<String>> = arg(&args, "--only").map(|v| v.split(',').map(String::from).collect());
             let mut queue = eval4::teach::Queue::default();
             queue.deny = agent4::deny::Deny::load(&root().join("data/bench4/deny.txt"));
+            queue.deny.add_hashed(&root().join("data/bench4/deny_sealed.sha256"));
             // the H3 task names are denied at name level (design 9.2)
             let calls0 = teach3::Teacher::live_calls_at(&root().join("data/training/calls4"));
             let mut log = Vec::new();

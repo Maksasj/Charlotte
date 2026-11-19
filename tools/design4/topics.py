@@ -15,7 +15,9 @@ import sys
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SIZE_DOMAINS = {"S": ["cooking", "cleaning", "repair"]}
+SIZE_DOMAINS = {"S": ["cooking", "cleaning", "repair"],
+                # M adds the other non-gardening 3.0 domains (design 9.2); units here are M's own
+                "M": ["planning", "errands", "travel", "crafts", "personal_care"]}
 GROUP = 40
 ATOM = re.compile(r"^([a-z_]+)\(([^()]*)\)\.")
 

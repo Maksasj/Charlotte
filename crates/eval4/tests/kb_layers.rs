@@ -95,3 +95,14 @@ fn the_deny_filter_catches_planted_leaks_at_every_point() {
     let delivered = ["is_a(muffin_tray, baking_tin)", "can_go_in(muffin_tray, oven)"];
     assert_eq!(delivered.iter().filter(|d| !deny.hits(d).is_empty()).count(), 1);
 }
+
+#[test]
+fn sealed_deny_entries_match_by_hash_only() {
+    let d = std::env::temp_dir().join(format!("deny_sealed_{}", std::process::id()));
+    std::fs::write(&d, format!("sha256:{}\n", teach3::sha256::hex(b"can_go_in(muffin_tray,oven)"))).unwrap();
+    let mut deny = Deny::default();
+    deny.add_hashed(&d);
+    assert!(!deny.hits("can_go_in(muffin_tray, oven).").is_empty());
+    assert!(!deny.hits("not can_go_in(muffin_tray, oven).").is_empty());
+    assert!(deny.hits("can_go_in(loaf_tin, oven).").is_empty());
+}
