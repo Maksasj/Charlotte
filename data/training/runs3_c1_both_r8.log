@@ -1,0 +1,65 @@
+{
+  "arm": "Function",
+  "by_kind": {
+    "retention": {
+      "ci95": [
+        0.315,
+        0.538
+      ],
+      "identity": 58,
+      "mean_recall": 0.709,
+      "n": 71,
+      "pass": 30,
+      "rate": 0.423,
+      "with_wrong_claim": 5
+    },
+    "second": {
+      "ci95": [
+        0.393,
+        0.62
+      ],
+      "identity": 68,
+      "mean_recall": 0.835,
+      "n": 71,
+      "pass": 36,
+      "rate": 0.507,
+      "with_wrong_claim": 6
+    },
+    "variant": {
+      "ci95": [
+        0.004,
+        0.109
+      ],
+      "identity": 38,
+      "mean_recall": 0.583,
+      "n": 48,
+      "pass": 1,
+      "rate": 0.021,
+      "with_wrong_claim": 11
+    },
+    "variant_repeat": {
+      "ci95": [
+        0.089,
+        0.301
+      ],
+      "identity": 37,
+      "mean_recall": 0.641,
+      "n": 47,
+      "pass": 8,
+      "rate": 0.17,
+      "with_wrong_claim": 21
+    }
+  },
+  "ingest": {
+    "fallback": 497,
+    "fallback_failed": 7,
+    "learned": 38,
+    "lines": 535,
+    "rejected": 4,
+    "situation_fallback": 308
+  },
+  "live_calls": 229,
+  "name": "c1_both_r8",
+  "set": "both",
+  "theta": 22.63791190029026
+}
