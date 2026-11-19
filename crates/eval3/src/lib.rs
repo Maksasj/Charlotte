@@ -70,6 +70,31 @@ pub fn calibrate(models: &Models, dev: &[Scenario]) -> (f64, f64, usize) {
     (theta, cover as f64 / rows.len().max(1) as f64, rows.len())
 }
 
+/// θ for the situation reader: on dev variant texts, the lowest margin at which readings of
+/// lacks/wants/excludes are at least 95% exact (infinite if none: always ask the teacher).
+pub fn calibrate_situation(models: &Models, dev: &[Scenario]) -> (f64, f64, usize) {
+    let key = |fs: &[kb3::Fact]| -> BTreeSet<(String, String)> {
+        fs.iter().filter(|f| matches!(f.pred.as_str(), "lacks" | "wants" | "excludes")).map(|f| (f.pred.clone(), f.arg(1).to_string())).collect()
+    };
+    let mut rows = Vec::new();
+    for sc in dev {
+        for v in &sc.variants {
+            let (f, m) = models.parse_situation(&format!("{} {}", v.request, v.situation_text));
+            rows.push((m, key(&f) == key(&v.situation)));
+        }
+    }
+    rows.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
+    let (mut theta, mut cover, mut ok) = (f64::INFINITY, 0, 0);
+    for (k, (m, o)) in rows.iter().enumerate() {
+        ok += *o as usize;
+        if ok as f64 / (k + 1) as f64 >= 0.95 {
+            theta = *m;
+            cover = k + 1;
+        }
+    }
+    (theta, cover as f64 / rows.len().max(1) as f64, rows.len())
+}
+
 #[derive(Debug, Clone, Serialize, serde::Deserialize, Default)]
 pub struct Encounter {
     pub scenario: String,
@@ -120,6 +145,7 @@ pub fn ingest_dataset(agent: &mut Agent) -> usize {
 
 pub struct Runner {
     pub agent: Agent,
+    pub last_situation: Vec<kb3::Fact>,
     pub log: lab::Log,
     pub encounters: Vec<Encounter>,
     pub hidden: bool,
@@ -130,6 +156,11 @@ impl Runner {
         let models = Models::load(&Models::default_path()).expect("models: run tools/design3/train_parser.py");
         let teacher = Teacher::open(opts.live);
         let mut agent = Agent::new(models, teacher, &opts.name, theta);
+        agent.theta_situation = std::fs::read_to_string(root().join("data/training/parser3/models/theta.json"))
+            .ok()
+            .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
+            .and_then(|v| v["theta_situation"].as_f64())
+            .unwrap_or(f64::INFINITY);
         agent.arm = opts.arm;
         agent.use_fallback = opts.use_fallback;
         if opts.seeds {
@@ -147,11 +178,12 @@ impl Runner {
         if let Some(v) = &opts.vault {
             agent.vault = kb3::Vault::load(v).expect("vault");
         }
-        Runner { agent, log: lab::Log::open(&opts.name), encounters: Vec::new(), hidden: false }
+        Runner { agent, last_situation: Vec::new(), log: lab::Log::open(&opts.name), encounters: Vec::new(), hidden: false }
     }
 
     pub fn score(&mut self, sc: &Scenario, kind: &str, variant: Option<usize>, request: &str, situation: Option<&str>) -> Encounter {
         let reply = self.agent.answer(request, situation);
+        self.last_situation = reply.situation.clone();
         let g = gold(sc, variant);
         let al = Aliases::from_facts(&sc.aliases);
         let lacks = variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default();
@@ -225,7 +257,8 @@ impl Runner {
             })
             .collect();
         let taught = self.agent.parse_procedure(&sc.task, &taught_lines);
-        let sit = agent3::adapt::link_situation(&self.agent.vault, &self.agent.known_procedure(&sc.task), v.situation.clone());
+        // the case holds the situation as the agent read it, never the scenario's own facts
+        let sit = self.last_situation.clone();
         self.agent.learn_variant(&sc.task, &sit, &taught, Source::Teach);
         self.log.event("teach_variant", json!({"scenario": if self.hidden { "-" } else { sc.id.as_str() }, "variant": k, "lines": taught_lines.len()}));
         true

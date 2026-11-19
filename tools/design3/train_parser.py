@@ -439,6 +439,24 @@ def build(seed=1, exclude=(), include_dev=False, dataset=False):
     kind_items = [(bow_feats(e["toks"]), e["kind"]) for e in teach]
     kinds = {k: train_binary([(f, int(y == k)) for f, y in kind_items]) for k in ("step", "needs", "time")}
     sit = [e for sc in train for e in situation_examples(sc)]
+    # distillation: the teacher's situation readings (D16) are labelled pairs too
+    sp = os.path.join(ROOT, "data", "training", "parser3", "situation_pairs.jsonl")
+    if os.path.exists(sp) and not exclude:
+        for line in open(sp, encoding="utf-8"):
+            try:
+                d = json.loads(line)
+            except ValueError:
+                continue
+            facts = []
+            for f in d["facts"]:
+                if f[0] in SIT_ROLE and len(f) == 3:
+                    facts.append((SIT_ROLE[f[0]], f[2]))
+                elif f[0] == "time_limit" and len(f) == 4:
+                    facts.append(("TIME", f[2]))
+            toks = tokenize(d["text"])
+            present = [x for x in facts if find_span(toks, str(x[1]), set(), {}) is not None]
+            labels, _ = label(toks, present, {})
+            sit.append({"toks": toks, "labels": labels, "known": []})
     sit_tagger = train_tagger(sit, seed) if sit else Tagger()
     det_items = []
     for sc in train:

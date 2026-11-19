@@ -27,7 +27,9 @@ fn main() {
         Some("calibrate") => {
             let m = Models::load(&Models::default_path()).unwrap();
             let (t, cover, n) = calibrate(&m, &load("data/curriculum3/dev"));
-            let v = json!({"theta": if t.is_finite() { t } else { 1e9 }, "coverage_at_95": cover, "dev_step_lines": n});
+            let (ts, scover, sn) = eval3::calibrate_situation(&m, &load("data/curriculum3/dev"));
+            let v = json!({"theta": if t.is_finite() { t } else { 1e9 }, "coverage_at_95": cover, "dev_step_lines": n,
+                "theta_situation": if ts.is_finite() { ts } else { 1e9 }, "situation_coverage_at_95": scover, "dev_variants": sn});
             std::fs::write(root().join("data/training/parser3/models/theta.json"), v.to_string()).unwrap();
             println!("{v}");
         }
@@ -62,7 +64,7 @@ fn main() {
             r.save(&dir);
             let st = &r.agent.stats;
             let s = json!({"name": opts.name, "set": set, "arm": format!("{:?}", opts.arm), "theta": theta(),
-                "ingest": {"lines": st.lines, "learned": st.learned, "fallback": st.fallback, "fallback_failed": st.fallback_failed, "rejected": st.rejected},
+                "ingest": {"lines": st.lines, "learned": st.learned, "fallback": st.fallback, "fallback_failed": st.fallback_failed, "rejected": st.rejected, "situation_fallback": st.situation_fallback},
                 "live_calls": teach3::Teacher::live_calls() - calls0, "by_kind": summary(&r.encounters)});
             std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
             println!("{}", serde_json::to_string_pretty(&s).unwrap());
@@ -118,6 +120,11 @@ fn main() {
                 let a: Vec<String> = v.live().filter(|f| f.pred == "task_alias" && f.arg(0) == t).map(|f| f.arg(1).to_string()).collect();
                 println!("{t}: {a:?}");
             }
+        }
+        Some("situation") => {
+            let m = Models::load(&Models::default_path()).unwrap();
+            let (f, c) = m.parse_situation(&arg(&args, "--q").expect("--q"));
+            println!("{c:.2} {}", f.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(" "));
         }
         Some("rescore") => {
             // re-check saved answers with the current check (zero calls)

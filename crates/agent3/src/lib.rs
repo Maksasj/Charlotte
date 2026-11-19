@@ -22,6 +22,7 @@ pub struct IngestStats {
     pub fallback_failed: usize,
     pub facts_added: usize,
     pub rejected: usize,
+    pub situation_fallback: usize,
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
@@ -44,6 +45,8 @@ pub struct Agent {
     pub turn: u32,
     /// lines whose confidence is below this go to the Haiku fallback
     pub theta: f64,
+    /// situation readings below this margin go to the teacher
+    pub theta_situation: f64,
     pub use_fallback: bool,
     pub arm: Arm,
     pub stats: IngestStats,
@@ -51,7 +54,7 @@ pub struct Agent {
 
 impl Agent {
     pub fn new(models: Models, teacher: Teacher, session: &str, theta: f64) -> Agent {
-        Agent { vault: Vault::default(), models, teacher, session: session.into(), turn: 0, theta, use_fallback: true, arm: Arm::Function, stats: IngestStats::default() }
+        Agent { vault: Vault::default(), models, teacher, session: session.into(), turn: 0, theta, theta_situation: f64::INFINITY, use_fallback: true, arm: Arm::Function, stats: IngestStats::default() }
     }
 
     fn prov(&self, source: Source, parser: &str, conf: f64) -> Provenance {
@@ -227,7 +230,14 @@ impl Agent {
             text.push(' ');
             text.push_str(s);
         }
-        let (sit, _) = self.models.parse_situation(&text);
+        let (mut sit, margin) = self.models.parse_situation(&text);
+        if self.use_fallback && margin < self.theta_situation {
+            let items: Vec<String> = base.needs.iter().cloned().collect();
+            if let Ok(fs) = self.teacher.parse_situation(&text, &items) {
+                sit = fs;
+                self.stats.situation_fallback += 1;
+            }
+        }
         let sit = adapt::link_situation(&self.vault, &base, sit);
         let out = adapt::adapt(self.arm, &self.vault, &base, &sit);
         let proc = base.apply(&out.difference);

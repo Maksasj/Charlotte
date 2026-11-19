@@ -168,6 +168,18 @@ impl Teacher {
         Ok(facts)
     }
 
+    /// Read the situation in a request with Haiku (the situation tagger's fallback). The pair is
+    /// stored as training data for the tagger.
+    pub fn parse_situation(&self, text: &str, known_items: &[String]) -> Result<Vec<Fact>, String> {
+        let prompt = format!("Items the task uses: {}\nMessage: {text}\n", if known_items.is_empty() { "-".to_string() } else { known_items.join(", ") });
+        let answer = self.ask(SITUATION_SYSTEM, &prompt, "situation_fallback")?;
+        let facts: Vec<Fact> = facts_in(&answer).into_iter().filter(|f| matches!(f.pred.as_str(), "has" | "lacks" | "wants" | "excludes" | "time_limit" | "count")).collect();
+        let path = kb3::repo_root().join("data/training/parser3/situation_pairs.jsonl");
+        let fs: Vec<Vec<String>> = facts.iter().map(|f| std::iter::once(f.pred.clone()).chain(f.args.iter().cloned()).collect()).collect();
+        append(&path, &json!({"text": text, "facts": fs}).to_string());
+        Ok(facts)
+    }
+
     /// The teacher answers a question about a task from the task's own facts (gap questions).
     pub fn answer(&self, task_facts: &[Fact], situation: &[Fact], question: &str) -> Result<String, String> {
         let facts: Vec<String> = task_facts.iter().chain(situation.iter()).map(|f| f.to_string()).collect();
@@ -214,6 +226,11 @@ overlaps(Step, OtherStep). setting(Step, Attribute, Value, Unit). amount(Step, I
 condition(Step, Condition). warning(Step, Hazard). check(Step, State). optional(Step). \
 Symbols are lower case with underscores, singular nouns, base-form verbs; numbers as digits; units singular (minute, hour, celsius, gram). \
 One action per step. For an item list line, give needs facts; for a total time line, give takes_time on the task.";
+
+pub const SITUATION_SYSTEM: &str = "You read a person's message about a household task and write what it says about their situation, as facts only, one per line, no prose: \
+has(user, Item). lacks(user, Item). wants(user, Thing). excludes(user, Thing). time_limit(user, Number, Unit). count(user, Thing, Number). \
+lacks is for something they do not have or that is broken; wants for an extra they ask for; excludes for something to leave out (diet, allergy). \
+Use the given item names when the message means the same item; otherwise lower case with underscores, singular. If the message says nothing about the situation, reply with: none.";
 
 pub const TEACHER_SYSTEM: &str = "You are a patient teacher of household tasks. Answer the learner's question in plain short sentences, \
 using only the facts you are given. If the facts do not answer it, say what you would do instead in one or two steps, \

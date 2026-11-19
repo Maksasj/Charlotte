@@ -129,6 +129,20 @@ pub fn adapt(arm: Arm, vault: &Vault, base: &Procedure, sit: &[Fact]) -> Out {
     let wanted: BTreeSet<String> = sit_items(sit, "wants").into_iter().filter(|w| !base.needs.contains(w)).collect();
     let has = sit_items(sit, "has");
     let relevant_lacks: BTreeSet<String> = lacked.iter().filter(|l| !uses_of(base, l).is_empty() || base.needs.contains(*l)).cloned().collect();
+    // a taught case of this task whose situation overlaps this one is reused as taught
+    if arm != Arm::None {
+        let key = |s: &[Fact]| -> BTreeSet<(String, String)> {
+            s.iter().filter(|f| f.pred != "has" || !base.needs.contains(f.arg(1))).map(|f| (f.pred.clone(), f.args[1..].join("_"))).collect()
+        };
+        let mine = key(sit);
+        if let Some((j, c)) = vault.cases.iter().filter(|c| c.task == base.task).map(|c| (jaccard(&key(&c.situation), &mine), c)).max_by(|a, b| a.0.partial_cmp(&b.0).unwrap()) {
+            if j >= 0.5 {
+                let mut out = Out::default();
+                out.difference = c.difference.clone();
+                return out;
+            }
+        }
+    }
     // a time limit matters only when it is shorter than the procedure's own time; a count
     // (guests, portions) only through stored cases (the base gives no amounts to scale)
     let minutes = |n: &str, u: &str| n.parse::<f64>().ok().map(|x| if u.starts_with("hour") { x * 60.0 } else if u.starts_with("day") { x * 1440.0 } else { x });
