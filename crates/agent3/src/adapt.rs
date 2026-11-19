@@ -325,11 +325,13 @@ pub fn difference(base: &Procedure, taught: &Procedure) -> Vec<Fact> {
     }
     let mut n = 9;
     let mut prev = "start".to_string();
-    for ts in taught.steps.iter() {
+    for (ti, ts) in taught.steps.iter().enumerate() {
         if let Some(b) = base.steps.iter().find(|b| same(ts, b)) {
             prev = b.id.clone();
             continue;
         }
+        // the next taught step that is a base step: the new step comes before it
+        let next = taught.steps[ti + 1..].iter().find_map(|t| base.steps.iter().find(|b| same(t, b)).map(|b| b.id.clone()));
         let id = format!("{}_s{n}", base.task);
         n += 1;
         diff.push(Fact::new("add_step", &[&id, &prev]));
@@ -346,6 +348,12 @@ pub fn difference(base: &Procedure, taught: &Procedure) -> Vec<Fact> {
         }
         if let Some((lo, hi, u)) = &ts.time {
             diff.push(Fact::new("takes_time", &[&id, lo, hi, u]));
+        }
+        if prev != "start" {
+            diff.push(Fact::new("before", &[&prev, &id]));
+        }
+        if let Some(nx) = next {
+            diff.push(Fact::new("before", &[&id, &nx]));
         }
         prev = id;
     }

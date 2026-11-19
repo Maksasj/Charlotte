@@ -186,7 +186,9 @@ impl Runner {
         self.last_situation = reply.situation.clone();
         let g = gold(sc, variant);
         let al = Aliases::from_facts(&sc.aliases);
-        let lacks = variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default();
+        // an item the answer itself names as a gap is an honest gap, not a false claim
+        let gapped: Vec<&String> = reply.gaps.iter().map(|g| &g.1).collect();
+        let lacks: Vec<String> = variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default().into_iter().filter(|l| !gapped.contains(&l)).collect();
         let parsed = lines::parse(&reply.lines);
         let mut proc = parsed.procedure.clone();
         proc.task = sc.task.clone();
@@ -243,7 +245,8 @@ impl Runner {
         let v = &sc.variants[k];
         let target = gold(sc, Some(k));
         let facts = target.to_facts();
-        let q = format!("How do I {} in this situation: {} {}? Teach me every step, one line per step.", sc.task.replace('_', " "), v.request, v.situation_text);
+        let q = format!("How do I {} in this situation: {} {}? Teach me in exactly this form and nothing else: one line 'To {} you need <items>.', then one line per step 'Step N of {}: <instruction>.'",
+            sc.task.replace('_', " "), v.request, v.situation_text, sc.task.replace('_', " "), sc.task.replace('_', " "));
         let Ok(answer) = self.agent.teacher.answer(&facts, &v.situation, &q) else { return false };
         // numbered answer lines become teach lines in the teaching channel's frame
         let phrase = sc.task.replace('_', " ");
@@ -255,6 +258,8 @@ impl Runner {
                 Some((n, body)) if n.parse::<usize>().is_ok() => format!("Step {n} of {phrase}: {body}"),
                 _ => l,
             })
+            // only lines the learned line-kind model reads as teaching (steps or a needs list)
+            .filter(|l| matches!(self.agent.models.line_kind(l), parse3::LineKind::Step | parse3::LineKind::Needs) && (l.contains(':') || self.agent.models.line_kind(l) == parse3::LineKind::Needs))
             .collect();
         let taught = self.agent.parse_procedure(&sc.task, &taught_lines);
         // the case holds the situation as the agent read it, never the scenario's own facts
