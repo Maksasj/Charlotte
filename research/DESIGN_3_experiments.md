@@ -217,3 +217,15 @@ Each finding comes from a C1 run on train and dev. Runs are in `data/training/ru
 5. **The learned parser beats the teacher's reading on the lines it is unsure of.** On the 217 such lines with a cached fallback, the learned parse has the right action and object on 196, against 176 for Haiku: both right 165, learned only 31, fallback only 11, neither 10. The parser learned the ground truth's own naming conventions. Consequence: the agent keeps the learned facts and takes from the teacher only the predicates the learned parse lacks.
 6. **The situation tagger is weak.** It has only 34 training variants, and "I don't own a loaf tin" became `has(tin)`. It never reaches 95% on dev, so every situation reading currently goes to the teacher, and each answer becomes a training pair for the tagger.
 7. **Cases had been stored with the scenario's own situation facts.** That was a quiet leak, fixed: a case now holds the situation the agent read. Same-task case reuse matches by situation overlap.
+8. **Distillation from the teacher (D16), three ways** (dev, 101 step lines). The two distilled versions were measured with dev-task pairs left out.
+
+   | Parser | Exact lines | Coverage at ≥ 95% |
+   |---|---|---|
+   | Base (training lines only) | 62 | 33.7% |
+   | All 3,023 fallback pairs | 49 of 91 | 7.7% |
+   | Pairs that agree with the parser on action and object | **66** | 10.9% |
+
+   - **Distilling all the teacher's readings makes the parser worse,** because the teacher's naming differs from the ground truth's.
+   - **Distilling only agreeing readings ("self-training on agreement") reads 4 more lines exactly,** but compresses margins, so less of the language layer is self-sufficient at 95%.
+   - **Adopted:** the agreement-distilled parser, trained on all non-H3 pairs. θ comes from the fair calibration (dev pairs excluded), 22.6.
+   - **The coverage curve D16 hoped for does not rise with this distillation.** The final PDF reports this as a negative result.

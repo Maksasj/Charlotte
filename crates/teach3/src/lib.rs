@@ -171,7 +171,8 @@ impl Teacher {
     /// Read the situation in a request with Haiku (the situation tagger's fallback). The pair is
     /// stored as training data for the tagger.
     pub fn parse_situation(&self, text: &str, known_items: &[String]) -> Result<Vec<Fact>, String> {
-        let prompt = format!("Items the task uses: {}\nMessage: {text}\n", if known_items.is_empty() { "-".to_string() } else { known_items.join(", ") });
+        let items = if known_items.is_empty() { "-".to_string() } else { known_items.join(", ") };
+        let prompt = format!("Items the task uses: {items}\nMessage: {text}\n");
         let answer = self.ask(SITUATION_SYSTEM, &prompt, "situation_fallback")?;
         let facts: Vec<Fact> = facts_in(&answer).into_iter().filter(|f| matches!(f.pred.as_str(), "has" | "lacks" | "wants" | "excludes" | "time_limit" | "count")).collect();
         let path = kb3::repo_root().join("data/training/parser3/situation_pairs.jsonl");

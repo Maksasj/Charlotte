@@ -25,7 +25,25 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
         Some("calibrate") => {
-            let m = Models::load(&Models::default_path()).unwrap();
+            let mp = arg(&args, "--models").map(std::path::PathBuf::from).unwrap_or_else(Models::default_path);
+            let m = Models::load(&mp).unwrap();
+            if args.iter().any(|a| a == "--dry") {
+                let (t, cover, n) = calibrate(&m, &load("data/curriculum3/dev"));
+                let mut ex = 0;
+                let mut tot = 0;
+                for sc in load("data/curriculum3/dev") {
+                    let needs = sc.teach.iter().find(|l| m.parse_teach(&sc.task, l, &Default::default()).kind == parse3::LineKind::Needs);
+                    let known = needs.map(|l| m.known_words(l)).unwrap_or_default();
+                    for l in &sc.teach {
+                        if let Some((ok, _)) = eval3::line_exact(&m, &sc, l, &known) {
+                            tot += 1;
+                            ex += ok as usize;
+                        }
+                    }
+                }
+                println!("{}", json!({"models": mp.display().to_string(), "theta": t, "coverage_at_95": cover, "dev_step_lines": n, "exact": ex, "of": tot}));
+                return;
+            }
             let (t, cover, n) = calibrate(&m, &load("data/curriculum3/dev"));
             let (ts, scover, sn) = eval3::calibrate_situation(&m, &load("data/curriculum3/dev"));
             let v = json!({"theta": if t.is_finite() { t } else { 1e9 }, "coverage_at_95": cover, "dev_step_lines": n,
@@ -154,6 +172,26 @@ fn main() {
                 }
             }
             println!("{}", json!({"lines": n, "both_right": both, "learned_only": learned_only, "fallback_only": fb_only, "neither": neither, "measure": "action and object of the step"}));
+        }
+        Some("stored") => {
+            // what the vault of a run holds wrong, task by task (zero calls)
+            let name = arg(&args, "--name").expect("--name");
+            let v = kb3::Vault::load(&root().join("data/training/runs3").join(&name).join("vault.json")).unwrap();
+            let mut kinds: std::collections::BTreeMap<String, usize> = Default::default();
+            for set in ["data/curriculum3/train", "data/curriculum3/dev"] {
+                for sc in load(set) {
+                    let r = kb3::check(&v.procedure(&sc.task), &kb3::gold(&sc, None), &kb3::Aliases::from_facts(&sc.aliases), &[]);
+                    for m in r.missing.iter().chain(r.wrong.iter()) {
+                        let k = m.split(' ').next().unwrap_or("").to_string();
+                        let k = if k.contains("_s") { m.split(' ').nth(1).unwrap_or("").to_string() } else { k };
+                        *kinds.entry(k).or_insert(0) += 1;
+                    }
+                    if !r.strict_pass && args.iter().any(|a| a == "--show") {
+                        println!("{}: missing {:?} wrong {:?} extra_steps {} extra_needs {}", sc.task, &r.missing[..r.missing.len().min(4)], r.wrong, r.extra_steps, r.extra_needs);
+                    }
+                }
+            }
+            println!("{kinds:?}");
         }
         Some("situation") => {
             let m = Models::load(&Models::default_path()).unwrap();

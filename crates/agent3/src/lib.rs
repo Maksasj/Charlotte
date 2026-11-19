@@ -194,6 +194,14 @@ impl Agent {
     /// forms (plural to singular), and items linked to the task's taught items that share their
     /// head word (`bananas` -> `ripe_banana` when that is what the needs line taught).
     fn canonical(&self, task: &str, mut f: Fact) -> Fact {
+        if f.pred == "action" && f.arg(1).contains('_') {
+            // a teacher's multi-word action becomes the word the agent knows as an action
+            let known: std::collections::BTreeSet<String> = self.vault.live().filter(|g| g.pred == "action" && !g.arg(1).contains('_')).map(|g| g.arg(1).to_string()).collect();
+            let words: Vec<&str> = f.args[1].split('_').collect();
+            let pick = words.iter().find(|w| known.contains(**w)).or(words.first()).map(|w| w.to_string()).unwrap_or_default();
+            f.args[1] = pick;
+            return f;
+        }
         let item_slot = match f.pred.as_str() {
             "needs" | "object_of" | "uses" | "into" | "onto" | "from" => Some(1),
             "role" => Some(1),

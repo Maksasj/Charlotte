@@ -60,11 +60,15 @@ impl Aliases {
         if self.same(answer, gold) {
             return true;
         }
-        let stem = |w: &str| -> String { w.chars().take(4).collect() };
-        let head = |s: &str| s.rsplit('_').find(|w| w.len() > 2).map(stem);
-        let aw: Vec<String> = answer.split('_').filter(|w| w.len() > 2).map(stem).collect();
-        let gw: Vec<String> = gold.split('_').filter(|w| w.len() > 2).map(stem).collect();
-        matches!(head(gold), Some(h) if aw.contains(&h)) || matches!(head(answer), Some(h) if gw.contains(&h) && aw.len() == 1)
+        // words compared as prefixes of at least 3 letters, up to 4 (`box` ~ `boxe`, `shelf` ~ `shelve`)
+        let eq = |a: &str, b: &str| {
+            let n = a.len().min(b.len()).min(4);
+            n >= 3 && a[..n] == b[..n]
+        };
+        let head = |s: &str| s.rsplit('_').find(|w| w.len() > 2).map(String::from);
+        let aw: Vec<&str> = answer.split('_').filter(|w| w.len() > 2).collect();
+        let gw: Vec<&str> = gold.split('_').filter(|w| w.len() > 2).collect();
+        matches!(head(gold), Some(h) if aw.iter().any(|w| eq(w, &h))) || matches!(head(answer), Some(h) if aw.len() == 1 && gw.iter().any(|w| eq(w, &h)))
     }
 }
 

@@ -1,1 +1,1 @@
-{"coverage_at_95":0.33663366336633666,"dev_step_lines":101,"dev_variants":14,"situation_coverage_at_95":0.0,"theta":13.511115544206827,"theta_situation":1000000000.0}
+{"coverage_at_95": 0.10891089108910891, "dev_step_lines": 101, "dev_variants": 14, "situation_coverage_at_95": 0.0, "theta": 22.63791190029026, "theta_situation": 1000000000.0, "source": "agree_nodev calibration (dev pairs excluded); model = agree.json (agreement-distilled, all non-H3 pairs)"}

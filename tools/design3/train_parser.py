@@ -26,6 +26,8 @@ from gt3 import ROOT, load_corpus, tokenize  # noqa: E402
 
 PAIRS = os.path.join(ROOT, "data", "training", "parser3", "pairs.jsonl")
 EPOCHS = 20
+AGREE = False
+NO_DEV_PAIRS = False
 
 
 # ------------------------------------------------------------------ alignment
@@ -426,7 +428,34 @@ def build(seed=1, exclude=(), include_dev=False, dataset=False):
     for sc in train:
         sc["time"] = next((a[1:] for p, a in sc["atoms"] if p == "takes_time" and a[0] == sc["task"]), None)
     base = {sc["task"]: sc for sc in train}
-    pscs = pair_scenarios(load_pairs(), base)
+    pairs_in = load_pairs()
+    if AGREE:
+        # self-training on agreement: keep a teacher reading only where a parser trained
+        # without pairs gives the same action and object for that step
+        plain = train_tagger([e for sc in train for e in teach_examples(sc) if e["kind"] == "step"], seed)
+        kept = []
+        seen = set()
+        for p in pairs_in:
+            key = (p["task"], p["line"])
+            if key in seen:
+                continue
+            seen.add(key)
+            acts = {f[1]: f[2] for f in p["facts"] if f[0] == "action" and len(f) == 3}
+            objs = {f[1]: f[2] for f in p["facts"] if f[0] == "object_of" and len(f) == 3}
+            toks = tokenize(p["line"])
+            tags = plain.tag(toks, [])
+            spans = defaultdict(list)
+            for t, g in zip(toks, tags):
+                if g.endswith("ACT") or g.endswith("OBJ"):
+                    spans[g[2:]].append(t)
+            la, lo = "_".join(spans.get("ACT", [])), "_".join(spans.get("OBJ", []))
+            if any(a == la and (objs.get(s, "")[:4] == lo[:4]) for s, a in acts.items()):
+                kept.append(p)
+        pairs_in = kept
+    if NO_DEV_PAIRS:
+        dev_tasks = {sc["task"] for sc in c["dev"]}
+        pairs_in = [p for p in pairs_in if p["task"] not in dev_tasks]
+    pscs = pair_scenarios(pairs_in, base)
     teach = []
     pairs = []
     for sc in train + pscs:
@@ -479,9 +508,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "training", "parser3", "models", "current.json"))
     ap.add_argument("--parity", default=os.path.join(ROOT, "data", "training", "parser3", "parity.jsonl"))
+    ap.add_argument("--agree", action="store_true", help="distil only teacher readings that agree with the parser")
+    ap.add_argument("--no-pairs", action="store_true", help="train without fallback pairs")
+    ap.add_argument("--no-dev-pairs", action="store_true", help="leave out pairs of dev tasks (fair dev measurement)")
     ap.add_argument("--dataset", action="store_true", help="C2: also train on data/dataset3 (out: models/c2.json)")
     ap.add_argument("--split", type=int, help="algorithmic tier: random split k of train+dev (20%% test)")
     a = ap.parse_args()
+    global AGREE, PAIRS, NO_DEV_PAIRS
+    AGREE = a.agree
+    NO_DEV_PAIRS = a.no_dev_pairs
+    if a.no_pairs:
+        PAIRS = os.devnull
     exclude = ()
     if a.split is not None:
         c0 = load_corpus("v3")
