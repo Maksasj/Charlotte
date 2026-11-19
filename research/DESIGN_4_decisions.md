@@ -15,3 +15,4 @@ These decisions come from the 4.0 pre-planning (P1-P16, in `research/DESIGN_4_pr
 | D4.9 | 2026-11-19 | Benchmark size | 900 questions: 300 dev, 600 sealed; at most 3 sealed readings. The spike has its own 100 questions | DESIGN_4_eval_data.md power analysis |
 | D4.10 | 2026-11-19 | Knowledge-base sizes | S about 1,500 facts, M about 4,000; L about 10,000 only if coverage rises from S to M (the scaling gate). Gardening is never taught | |
 | D4.11 | 2026-11-19 | Spike gate | Phase B goes ahead if the spike reaches at least 60% correct on 2-hop questions, 0 inventions, 100% valid proofs, and learned rules add correct answers without adding wrong ones. The user decides go or no-go on the spike report | |
+| D4.12 | 2026-11-19 | Spike fixture review (D4.3) | Approved by the user, unchanged | The sealed `data/spike4/MANIFEST.sha256` is the reviewed fixture |
