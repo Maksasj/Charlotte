@@ -8,6 +8,7 @@ generated/numbers.tex: FORCE
 main.pdf: main.tex sections/*.tex generated/numbers.tex
 	@if command -v latexmk >/dev/null; then latexmk -pdf -interaction=nonstopmode main.tex; \
 	elif command -v tectonic >/dev/null; then tectonic main.tex; \
+	elif command -v pdflatex >/dev/null; then pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null && pdflatex -interaction=nonstopmode -halt-on-error main.tex | tail -2; \
 	else echo "no TeX toolchain: install texlive (latexmk) or tectonic"; exit 1; fi
 
 check:
