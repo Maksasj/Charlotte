@@ -16,6 +16,13 @@ use std::process::{Command, Stdio};
 use std::sync::Mutex;
 
 pub const BUDGET: usize = 5000;
+
+/// Set when the CLI reports a plan usage limit: later calls fail fast instead of being sent.
+pub static LIMIT_HIT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+pub fn limit_hit() -> bool {
+    LIMIT_HIT.load(std::sync::atomic::Ordering::SeqCst)
+}
 pub const MODEL: &str = "haiku";
 
 /// Python's `json.dumps` of a list of strings (ASCII-escaped, ", " separators).
@@ -81,8 +88,11 @@ impl Teacher {
         Teacher { cache: Mutex::new(cache), live }
     }
 
+    /// Successful live calls (refusals such as plan-limit errors cost no model work).
     pub fn live_calls() -> usize {
-        std::fs::read_to_string(dir().join("ledger.jsonl")).map(|t| t.lines().count()).unwrap_or(0)
+        std::fs::read_to_string(dir().join("ledger.jsonl"))
+            .map(|t| t.lines().filter(|l| serde_json::from_str::<Value>(l).ok().and_then(|v| v["ok"].as_bool()) == Some(true)).count())
+            .unwrap_or(0)
     }
 
     pub fn cached(&self, system: &str, prompt: &str) -> Option<String> {
@@ -96,6 +106,9 @@ impl Teacher {
         }
         if !self.live {
             return Err("not cached and live calls are off".into());
+        }
+        if LIMIT_HIT.load(std::sync::atomic::Ordering::SeqCst) {
+            return Err("plan usage limit reached earlier in this run".into());
         }
         if Self::live_calls() >= BUDGET {
             return Err(format!("{BUDGET} live Haiku calls used; ask the user before going past it"));
@@ -132,6 +145,9 @@ impl Teacher {
             self.cache.lock().unwrap().insert(k, answer.clone());
             Ok(answer)
         } else {
+            if answer.contains("limit") {
+                LIMIT_HIT.store(true, std::sync::atomic::Ordering::SeqCst);
+            }
             Err(answer)
         }
     }
@@ -160,9 +176,15 @@ impl Teacher {
     }
 }
 
+static APPEND: Mutex<()> = Mutex::new(());
+
+/// One append per record, in a single write (O_APPEND), serialised within the process.
 fn append(path: &std::path::Path, line: &str) {
+    let _g = APPEND.lock().unwrap_or_else(|e| e.into_inner());
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
-        let _ = writeln!(f, "{line}");
+        let mut buf = line.as_bytes().to_vec();
+        buf.push(b'\n');
+        let _ = f.write_all(&buf);
     }
 }
 

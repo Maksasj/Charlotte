@@ -46,6 +46,7 @@ fn main() {
                 teach_variants: !args.iter().any(|a| a == "--no-teach-variants"),
                 seeds: !args.iter().any(|a| a == "--no-seeds"),
                 vault: arg(&args, "--vault").map(Into::into),
+                c2: args.iter().any(|a| a == "--c2"),
             };
             let mut scs = Vec::new();
             if set == "train" || set == "both" {
@@ -80,6 +81,31 @@ fn main() {
             std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
             println!("{}", serde_json::to_string_pretty(&s).unwrap());
         }
+        Some("split") => {
+            // algorithmic tier: parser trained without the split's test tasks; teach the rest,
+            // then teach and measure the test tasks (as tier T)
+            let k = arg(&args, "--split").expect("--split K");
+            let sp = root().join("data/training/parser3/splits");
+            let info: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(sp.join(format!("split{k}.json"))).unwrap()).unwrap();
+            let test: std::collections::BTreeSet<String> = info["test"].as_array().unwrap().iter().map(|v| v.as_str().unwrap().to_string()).collect();
+            let name = format!("split{k}");
+            let opts = RunOpts { name: name.clone(), arm: Arm::Function, live: args.iter().any(|a| a == "--live"), use_fallback: true, teach_variants: true, seeds: true, vault: None, c2: false };
+            let mut r = Runner::new(&opts, theta());
+            r.agent.models = Models::load(&sp.join(format!("split{k}_models.json"))).unwrap();
+            let mut all = load("data/curriculum3/train");
+            all.extend(load("data/curriculum3/dev"));
+            let (te, tr): (Vec<_>, Vec<_>) = all.into_iter().partition(|s| test.contains(&s.task));
+            let calls0 = teach3::Teacher::live_calls();
+            curriculum(&mut r, &tr, true);
+            r.encounters.clear();
+            let stored = eval3::tier_taught(&mut r, &te, "R", true);
+            let dir = root().join("data/training/runs3").join(&name);
+            r.save(&dir);
+            let s = json!({"name": name, "test_tasks": te.len(), "stored_pass": stored.iter().filter(|c| c.strict_pass).count(),
+                "live_calls": teach3::Teacher::live_calls() - calls0, "by_kind": summary(&r.encounters)});
+            std::fs::write(dir.join("summary.json"), serde_json::to_string_pretty(&s).unwrap()).unwrap();
+            println!("{}", serde_json::to_string_pretty(&s).unwrap());
+        }
         Some("lab") => {
             let port = arg(&args, "--port").and_then(|p| p.parse().ok()).unwrap_or(8733);
             eval3::lab::serve(port).expect("lab server");
@@ -94,7 +120,7 @@ fn main() {
             };
             let name = arg(&args, "--name").unwrap_or_else(|| format!("h3_r{reading}"));
             let opts = RunOpts { name: name.clone(), arm, live: args.iter().any(|a| a == "--live"), use_fallback: !args.iter().any(|a| a == "--no-fallback"),
-                teach_variants: !args.iter().any(|a| a == "--no-teach-variants"), seeds: true, vault: arg(&args, "--vault").map(Into::into) };
+                teach_variants: !args.iter().any(|a| a == "--no-teach-variants"), seeds: true, vault: arg(&args, "--vault").map(Into::into), c2: args.iter().any(|a| a == "--c2") };
             let mut r = Runner::new(&opts, theta());
             r.hidden = true;
             let calls0 = teach3::Teacher::live_calls();

@@ -405,9 +405,18 @@ def pair_scenarios(pairs, base):
     return out
 
 
-def build(seed=1):
+def load_dataset():
+    from gt3 import scenario
+    d = os.path.join(ROOT, "data", "dataset3")
+    if not os.path.isdir(d):
+        return []
+    return [scenario(os.path.join(d, f)) for f in sorted(os.listdir(d)) if f.endswith(".md")]
+
+
+def build(seed=1, exclude=(), include_dev=False, dataset=False):
     c = load_corpus("v3")
-    train = c["train"]
+    train = c["train"] + (c["dev"] if include_dev else []) + (load_dataset() if dataset else [])
+    train = [sc for sc in train if sc["task"] not in set(exclude)]
     for sc in train:
         for sid, g in sc["steps"].items():
             g["places"] = set()
@@ -452,8 +461,25 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "training", "parser3", "models", "current.json"))
     ap.add_argument("--parity", default=os.path.join(ROOT, "data", "training", "parser3", "parity.jsonl"))
+    ap.add_argument("--dataset", action="store_true", help="C2: also train on data/dataset3 (out: models/c2.json)")
+    ap.add_argument("--split", type=int, help="algorithmic tier: random split k of train+dev (20%% test)")
     a = ap.parse_args()
-    model, c, _ = build()
+    exclude = ()
+    if a.split is not None:
+        c0 = load_corpus("v3")
+        tasks = sorted(sc["task"] for sc in c0["train"] + c0["dev"])
+        rnd = random.Random(1000 + a.split)
+        exclude = sorted(rnd.sample(tasks, len(tasks) // 5))
+        split_dir = os.path.join(ROOT, "data", "training", "parser3", "splits")
+        os.makedirs(split_dir, exist_ok=True)
+        with open(os.path.join(split_dir, f"split{a.split}.json"), "w") as f:
+            json.dump({"split": a.split, "test": exclude}, f)
+        a.out = os.path.join(split_dir, f"split{a.split}_models.json")
+        a.parity = os.devnull
+    if a.dataset:
+        a.out = os.path.join(ROOT, "data", "training", "parser3", "models", "c2.json")
+        a.parity = os.devnull
+    model, c, _ = build(exclude=exclude, include_dev=a.split is not None, dataset=a.dataset)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, "w") as f:
         json.dump(model, f, sort_keys=True)

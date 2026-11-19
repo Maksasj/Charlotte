@@ -98,6 +98,22 @@ pub struct RunOpts {
     pub seeds: bool,
     /// start from a saved vault (e.g. after the C1 curriculum)
     pub vault: Option<PathBuf>,
+    /// C2: ingest the generated dataset and use the parser trained with it
+    pub c2: bool,
+}
+
+/// C2: dataset tasks become facts (source `dataset`) and their variants stored cases.
+pub fn ingest_dataset(agent: &mut Agent) -> usize {
+    let scs = load("data/dataset3");
+    for sc in &scs {
+        for f in sc.facts.iter().chain(sc.aliases.iter().filter(|f| f.pred == "task_alias")) {
+            let _ = agent.vault.add(f.clone(), kb3::Provenance::new(Source::Dataset, "dataset3", 0, "dataset", 1.0));
+        }
+        for v in &sc.variants {
+            agent.vault.add_case(kb3::vault::Case { task: sc.task.clone(), situation: v.situation.clone(), difference: v.difference.clone(), source: Source::Dataset, session: "dataset3".into() });
+        }
+    }
+    scs.len()
 }
 
 pub struct Runner {
@@ -120,6 +136,11 @@ impl Runner {
                 fs.extend(sc.aliases.iter().filter(|f| f.pred == "task_alias").cloned());
                 agent.seed(&fs);
             }
+        }
+        if opts.c2 {
+            agent.models = Models::load(&root().join("data/training/parser3/models/c2.json")).expect("C2 models: train_parser.py --dataset");
+            let n = ingest_dataset(&mut agent);
+            eprintln!("C2: {n} dataset tasks ingested");
         }
         if let Some(v) = &opts.vault {
             agent.vault = kb3::Vault::load(v).expect("vault");

@@ -51,9 +51,28 @@ def _load():
 
 
 def live_calls():
+    """Successful live calls (refusals such as plan-limit errors cost no model work)."""
     if not os.path.exists(LEDGER):
         return 0
-    return sum(1 for _ in open(LEDGER, encoding="utf-8"))
+    n = 0
+    for line in open(LEDGER, encoding="utf-8"):
+        try:
+            n += bool(json.loads(line).get("ok"))
+        except ValueError:
+            pass
+    return n
+
+
+def _append(path, line):
+    """One atomic, locked append (several processes and threads share the archive)."""
+    import fcntl
+    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        os.write(fd, (line + "\n").encode("utf-8"))
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
 
 
 def ask(system, prompt, tag, model=MODEL, timeout=180):
@@ -77,10 +96,10 @@ def ask(system, prompt, tag, model=MODEL, timeout=180):
         answer, ok = f"error: {e}", False
     rec = {"key": k, "unix": int(t0), "tag": tag, "model": model, "system": system, "prompt": prompt,
            "answer": answer, "ok": ok, "seconds": round(time.time() - t0, 2)}
-    with open(CACHE, "a", encoding="utf-8") as f:
-        f.write(json.dumps(rec) + "\n")
-    with open(LEDGER, "a", encoding="utf-8") as f:
-        f.write(json.dumps({"unix": int(t0), "tag": tag, "ok": ok}) + "\n")
+    _append(CACHE, json.dumps(rec))
+    _append(LEDGER, json.dumps({"unix": int(t0), "tag": tag, "ok": ok}))
+    if not ok and "limit" in answer:
+        raise BudgetExceeded("plan usage limit reached: " + answer[:120])
     if ok:
         c[k] = answer
         return answer

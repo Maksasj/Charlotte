@@ -129,7 +129,15 @@ pub fn adapt(arm: Arm, vault: &Vault, base: &Procedure, sit: &[Fact]) -> Out {
     let wanted: BTreeSet<String> = sit_items(sit, "wants").into_iter().filter(|w| !base.needs.contains(w)).collect();
     let has = sit_items(sit, "has");
     let relevant_lacks: BTreeSet<String> = lacked.iter().filter(|l| !uses_of(base, l).is_empty() || base.needs.contains(*l)).cloned().collect();
-    let constrained = sit.iter().any(|f| f.pred == "time_limit" || f.pred == "count");
+    // a time limit matters only when it is shorter than the procedure's own time; a count
+    // (guests, portions) only through stored cases (the base gives no amounts to scale)
+    let minutes = |n: &str, u: &str| n.parse::<f64>().ok().map(|x| if u.starts_with("hour") { x * 60.0 } else if u.starts_with("day") { x * 1440.0 } else { x });
+    let base_max = base.time.as_ref().and_then(|(_, hi, u)| minutes(hi, u));
+    let tight = sit.iter().filter(|f| f.pred == "time_limit").any(|f| match (minutes(f.arg(1), f.arg(2)), base_max) {
+        (Some(l), Some(b)) => l < b,
+        _ => false,
+    });
+    let constrained = tight;
     if relevant_lacks.is_empty() && wanted.is_empty() && !constrained {
         return out;
     }
@@ -159,7 +167,7 @@ pub fn adapt(arm: Arm, vault: &Vault, base: &Procedure, sit: &[Fact]) -> Out {
         }
     }
     if constrained && out.difference.is_empty() {
-        for f in sit.iter().filter(|f| f.pred == "time_limit" || f.pred == "count") {
+        for f in sit.iter().filter(|f| f.pred == "time_limit") {
             out.gaps.push((f.pred.clone(), f.args[1..].join("_"), "-".into()));
         }
         out.asks.push("constraint".into());

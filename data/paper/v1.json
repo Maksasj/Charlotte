@@ -1,0 +1,13 @@
+{
+  "_source": "research/REPORT_DESIGN_1.md section 1 (executive summary); v1 kept no machine-readable run records for these measures",
+  "knowledge_tests_heldout_pct": 97.8,
+  "parser_exact_heldout_pct": 98,
+  "judge_score_low": 2.4,
+  "judge_score_high": 4.3,
+  "real_answers": 1,
+  "real_answers_of": 68,
+  "understanding_single_pct": 97,
+  "understanding_help_pct": 56,
+  "translator_share_of_time_pct": 96,
+  "distinct_predicates_invented": 278
+}

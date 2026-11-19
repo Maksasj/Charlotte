@@ -103,7 +103,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--per-domain", type=int, default=40)
     ap.add_argument("--max", type=int, default=300)
+    ap.add_argument("--shard", default="0/1", help="i/n: this worker writes every n-th task from i")
     a = ap.parse_args()
+    si, sn = (int(x) for x in a.shard.split("/"))
     avoid = known_names()
     names = []
     for d in DOMAINS:
@@ -123,7 +125,11 @@ def main():
     sigs = h3_signatures()
     sysp = system_prompt()
     ok = bad = leak = 0
-    for t, d in names:
+    for idx, (t, d) in enumerate(names):
+        if idx % sn != si:
+            continue
+        if any(os.path.exists(os.path.join(OUT, t + ext)) for ext in (".md.rejected", ".md.leak")):
+            continue
         if os.path.exists(os.path.join(OUT, t + ".md")):
             ok += 1
             continue

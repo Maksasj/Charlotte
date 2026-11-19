@@ -87,13 +87,27 @@ impl Agent {
         let needs_line = teach_lines.iter().find(|l| self.models.parse_teach(task, l, &BTreeSet::new()).kind == LineKind::Needs);
         let known = needs_line.map(|l| self.models.known_words(l)).unwrap_or_default();
         let known_items: Vec<String> = known.iter().cloned().collect();
-        for line in teach_lines {
+        let parsed: Vec<_> = teach_lines.iter().map(|l| self.models.parse_teach(task, l, &known)).collect();
+        let needs_fb: Vec<bool> = parsed.iter().map(|p| self.use_fallback && (p.confidence < self.theta || p.kind == LineKind::Other)).collect();
+        // fallback calls for this task's unsure lines run in parallel (each is cached)
+        let mut fb: Vec<Option<Result<Vec<Fact>, String>>> = vec![None; teach_lines.len()];
+        std::thread::scope(|sc| {
+            let hs: Vec<_> = teach_lines.iter().enumerate().filter(|(k, _)| needs_fb[*k]).map(|(k, line)| {
+                let t = &self.teacher;
+                let items = &known_items;
+                (k, sc.spawn(move || t.parse_line(task, line, items)))
+            }).collect();
+            for (k, h) in hs {
+                fb[k] = Some(h.join().unwrap_or_else(|_| Err("panic".into())));
+            }
+        });
+        for (k, line) in teach_lines.iter().enumerate() {
             st.lines += 1;
-            let p = self.models.parse_teach(task, line, &known);
+            let p = parsed[k].clone();
             let mut facts = p.facts.clone();
             let mut parser = "learned";
-            if self.use_fallback && (p.confidence < self.theta || p.kind == LineKind::Other) {
-                match self.teacher.parse_line(task, line, &known_items) {
+            if needs_fb[k] {
+                match fb[k].take().unwrap_or_else(|| Err("none".into())) {
                     Ok(fs) => {
                         facts = fs;
                         parser = "fallback";
