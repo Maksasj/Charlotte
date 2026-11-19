@@ -26,6 +26,30 @@ Results on the sealed held-out set H3 (final reading; counts in `data/training/r
 - **No significant gain** (exact McNemar) from adaptation, the rules arm, the C2 dataset, or distillation from the teacher.
 - **Haiku budget:** 4,486 of 5,000 live calls, all cached and archived in `data/training/calls3/`, plus 2.0's translator cache for B3.
 
+### Milestone acceptance tests (Design 3.0 section 7), on dev, final C1 run `c1_both_r8`
+
+| Milestone | Acceptance test | Result | Pass |
+|---|---|---|---|
+| 22 kb3, check | Gold answers score 100%; negative controls fail; round-trip; no word lists | 12 + 2 tests pass | yes |
+| 23 learned models | Rust equals Python on every dev line; θ set; fallback pairs written | parity test passes on 101 lines; θ 22.6; 3,000+ pairs | yes |
+| 24 teaching and answering | M3 (stored exactly) ≥ 90% | 10/19 strict (core recall 0.923) | **no** |
+| 24 | Second encounter ≥ 80% | 9/19 (47%) | **no** |
+| 24 | Identity ≥ 95% | 33/38 (87%) | **no** |
+| 25 situations and adaptation | Wrong claims ≤ 5% of dev variant answers | 6/28 (21%) | **no** |
+| 25 | Every gap case asks | 10/25 unsolved variants asked or named a gap | **no** |
+| 25 | A taught variant is reused on its repeat | 3/14 repeats pass | partly |
+| 26 dataset | 0 leakage hits; every file valid; C2 run complete | 1 leak rejected, 98 valid, C2 done | yes |
+| 27 baselines | B1, B2, B3 run on H3 | all three run (B3 on 40 tier-S cases, budget) | yes, B3 reduced |
+| 28 final measurement | Every target reported with intervals; 3 readings in the ledger | done | yes |
+| 29 research PDF | Builds from a clean checkout; numbers check; every number generated | 8 pages, 882 numbers match | yes |
+
+**Milestones 24 and 25 did not pass their acceptance tests.** Their thresholds were set in the design before any build. The agent reached about half of them, and the remaining gap is the same one the held-out results show:
+- one misread step per task;
+- task identity;
+- adaptation that rarely has knowledge to draw on.
+
+The thresholds were not lowered. Phase B is therefore complete as built and measured, but not as accepted.
+
 3.0 is one iteration, not the last (decision D1). The paper's discussion lists what a next one would address: task identity, teaching adaptation knowledge about items, and learning the ground truth's naming from the teacher.
 
 ## How to run 3.0
