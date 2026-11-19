@@ -117,6 +117,9 @@ impl Agent {
             }
             if parser == "fallback" { st.fallback += 1 } else { st.learned += 1 }
             let conf = if parser == "fallback" { 1.0 } else { p.confidence };
+            if parser == "fallback" {
+                facts = facts.into_iter().map(|f| self.canonical(task, f)).collect();
+            }
             // a fallback answer may restate the task line
             for f in facts {
                 self.add(f, self.prov(source, parser, conf), &mut st);
@@ -161,6 +164,30 @@ impl Agent {
         if self.vault.add(f, p) {
             st.facts_added += 1;
         }
+    }
+
+    /// Teacher-written symbols in the agent's own vocabulary: words through the learned symbol
+    /// forms (plural to singular), and items linked to the task's taught items that share their
+    /// head word (`bananas` -> `ripe_banana` when that is what the needs line taught).
+    fn canonical(&self, task: &str, mut f: Fact) -> Fact {
+        let item_slot = match f.pred.as_str() {
+            "needs" | "object_of" | "uses" | "into" | "onto" | "from" => Some(1),
+            "role" => Some(1),
+            _ => None,
+        };
+        let Some(k) = item_slot else { return f };
+        let toks: Vec<String> = f.args[k].split('_').map(String::from).collect();
+        let sym = self.models.forms.symbol(&toks);
+        let needs: Vec<String> = self.vault.live().filter(|g| g.pred == "needs" && g.arg(0) == task).map(|g| g.arg(1).to_string()).collect();
+        let stem = |w: &str| -> String { w.chars().take(4).collect() };
+        let sw: Vec<String> = sym.split('_').filter(|w| w.len() > 2).map(stem).collect();
+        let linked = if f.pred == "needs" {
+            None
+        } else {
+            needs.iter().find(|n| n.rsplit('_').next().map(stem).map(|h| sw.contains(&h)).unwrap_or(false)).cloned()
+        };
+        f.args[k] = linked.unwrap_or(sym);
+        f
     }
 
     /// A used item without a taught function plays the step's action (derived, not taught).

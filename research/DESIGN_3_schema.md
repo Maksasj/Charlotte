@@ -168,7 +168,9 @@ There is no English realiser. A short telegraphic gloss may be printed after the
 Given the answer's facts A and the ground truth facts G for the request (base procedure plus the variant's difference facts applied):
 
 1. **Align steps.** Map answer step numbers to ground-truth step ids by best match on (action, object), in order. Unmatched answer steps are extra; unmatched ground-truth steps are missing.
-2. **Match facts.** A fact matches if its predicate and aligned arguments are equal, or equal through a ground-truth `alias` of the same symbol.
+2. **Match facts.** A fact matches if its predicate and aligned arguments are equal, or equal through a ground-truth `alias` of the same symbol. Two more rules exist because the ground truth's own naming varies (added in phase B, on the C1 r4 run):
+   - **Items and objects** match when the answer's symbol contains the gold symbol's head word, compared by 4-letter stems: `ripe_banana` matches `banana`, and `shelve_and_drawer` matches `shelf`. Actions never use this rule.
+   - **State values** (`until`, `purpose`, `check`, ...) match when they share a content word of the gold symbol: `they_are_set` matches `set`.
 3. **Score.** Recall = matched G facts / |G|. Precision = matched A facts / |A|. A **wrong claim** is an answer fact that contradicts G: a different value for a functional slot (action, object, time, setting, amount), an order fact reversed, or a swap to an item the situation says the user lacks.
 4. **Pass** for a request = recall of the core facts (needs, step actions and objects, order, adaptation differences) is 1.0 and there are no wrong claims. Graded recall over all facts and the precision are reported beside it, so dumping every fact is visible as low precision.
 

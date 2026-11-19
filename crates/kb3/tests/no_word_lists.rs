@@ -12,7 +12,7 @@ const CRATES: &[&str] = &["kb3", "parse3", "teach3", "agent3"];
 fn formal() -> Vec<String> {
     let mut v: Vec<String> = kb3::fact::SCHEMA.iter().map(|(p, _)| p.to_string()).collect();
     // relation-line keywords and procedure slots (schema section 5)
-    for w in ["do", "need", "time", "gap", "ask", "uses", "user", "start", "level", "teach", "dataset", "derived", "seed", "learned", "fallback", "core", "none", "object", "constraint", "replace"] {
+    for w in ["do", "need", "time", "gap", "ask", "uses", "user", "start", "level", "teach", "dataset", "derived", "seed", "learned", "fallback", "core", "none", "object", "constraint", "replace", "request"] {
         v.push(w.into());
     }
     // technical names: CLI flags and JSON record keys of the call archive (not language)

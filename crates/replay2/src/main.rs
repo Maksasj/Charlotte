@@ -90,7 +90,7 @@ fn main() {
         let p = read_back(&models, &sc.task, reply);
         let r = check(&p, &gold(sc, variant), &Aliases::from_facts(&sc.aliases), &variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default());
         out.push(eval3::Encounter { scenario: sc.id.clone(), kind: kind.into(), variant, request: request.into(), identified: None, identity_ok: true,
-            strict_pass: r.strict_pass, core_recall: r.core_recall(), recall: r.recall(), precision: r.precision(), wrong: r.wrong.clone(), gaps: 0, asked: false, answer: reply.into() });
+            strict_pass: r.strict_pass, core_recall: r.core_recall(), recall: r.recall(), precision: r.precision(), wrong: r.wrong.clone(), gaps: 0, asked: false, answer: reply.into(), missing: r.missing.clone() });
     };
     for tier in tiers.split(',') {
         let scs = Scenario::load_dir(&root.join("data/heldout3").join(tier)).unwrap_or_default();

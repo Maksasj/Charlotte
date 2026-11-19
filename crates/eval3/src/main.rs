@@ -142,6 +142,7 @@ fn main() {
                 e.core_recall = r.core_recall();
                 e.precision = r.precision();
                 e.wrong = r.wrong.clone();
+                e.missing = r.missing.clone();
             }
             let body: String = es.iter().map(|e| serde_json::to_string(e).unwrap() + "\n").collect();
             std::fs::write(dir.join("encounters.jsonl"), body).unwrap();

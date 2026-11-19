@@ -48,9 +48,23 @@ impl Aliases {
     fn same_opt(&self, a: &Option<String>, b: &Option<String>) -> bool {
         match (a, b) {
             (None, None) => true,
-            (Some(x), Some(y)) => self.same(x, y),
+            (Some(x), Some(y)) => self.same_item(x, y),
             _ => false,
         }
+    }
+
+    /// Items and objects: the same symbol through aliases, or the answer's symbol contains the
+    /// gold symbol's head word (`ripe_banana` ~ `banana`, `shelve_and_drawer` ~ `shelf`,
+    /// `warm_water` ~ `water`). Compared by 4-letter stems; actions never use this rule.
+    pub fn same_item(&self, answer: &str, gold: &str) -> bool {
+        if self.same(answer, gold) {
+            return true;
+        }
+        let stem = |w: &str| -> String { w.chars().take(4).collect() };
+        let head = |s: &str| s.rsplit('_').find(|w| w.len() > 2).map(stem);
+        let aw: Vec<String> = answer.split('_').filter(|w| w.len() > 2).map(stem).collect();
+        let gw: Vec<String> = gold.split('_').filter(|w| w.len() > 2).map(stem).collect();
+        matches!(head(gold), Some(h) if aw.contains(&h)) || matches!(head(answer), Some(h) if gw.contains(&h) && aw.len() == 1)
     }
 }
 
@@ -115,6 +129,10 @@ fn step_details(s: &Step) -> Vec<(String, String)> {
 /// Slots whose value names a state or effect (`set`, `the_cheese_bubbles`): the ground truth
 /// itself names them sometimes as a word, sometimes as a clause, so they match when they share
 /// a content word of the gold symbol.
+fn item_key(key: &str) -> bool {
+    matches!(key, "uses" | "into" | "onto" | "from")
+}
+
 fn state_key(key: &str) -> bool {
     matches!(key, "until" | "purpose" | "achieves" | "requires_state" | "condition" | "warning" | "check")
 }
@@ -156,7 +174,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
     for n in &gold.needs {
         r.core_total += 1;
         r.all_total += 1;
-        if answer.needs.iter().any(|a| aliases.same(a, n)) {
+        if answer.needs.iter().any(|a| aliases.same_item(a, n)) {
             r.core_found += 1;
             r.all_found += 1;
         } else {
@@ -166,7 +184,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
     r.extra_needs = answer
         .needs
         .iter()
-        .filter(|a| !gold.needs.iter().chain(gold.optional_needs.iter()).any(|n| aliases.same(a, n)))
+        .filter(|a| !gold.needs.iter().chain(gold.optional_needs.iter()).any(|n| aliases.same_item(a, n)))
         .count();
     // core: steps
     for (gi, g) in gold.steps.iter().enumerate() {
@@ -200,7 +218,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
         let ad = a.map(step_details).unwrap_or_default();
         for (k, v) in step_details(g) {
             r.all_total += 1;
-            if ad.iter().any(|(ak, av)| *ak == k && (av == &v || aliases.same(av, &v) || (state_key(&k) && state_match(av, &v)))) {
+            if ad.iter().any(|(ak, av)| *ak == k && (av == &v || item_key(&k) && aliases.same_item(av, &v) || aliases.same(av, &v) || (state_key(&k) && state_match(av, &v)))) {
                 r.all_found += 1;
             } else if functional(&k) && ad.iter().any(|(ak, _)| *ak == k) {
                 r.wrong.push(format!("{} {k}: answer differs from {v}", g.id));
@@ -217,7 +235,7 @@ pub fn check(answer: &Procedure, gold: &Procedure, aliases: &Aliases, lacks: &[S
         for (k, v) in step_details(s) {
             r.answer_facts += 1;
             if let Some(gi) = map.get(&ai) {
-                if gold_details[gi].iter().any(|(gk, gv)| *gk == k && (gv == &v || aliases.same(gv, &v) || (state_key(&k) && state_match(&v, gv)))) {
+                if gold_details[gi].iter().any(|(gk, gv)| *gk == k && (gv == &v || item_key(&k) && aliases.same_item(&v, gv) || aliases.same(gv, &v) || (state_key(&k) && state_match(&v, gv)))) {
                     r.answer_matched += 1;
                 }
             }

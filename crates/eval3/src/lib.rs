@@ -86,6 +86,8 @@ pub struct Encounter {
     pub gaps: usize,
     pub asked: bool,
     pub answer: String,
+    #[serde(default)]
+    pub missing: Vec<String>,
 }
 
 pub struct RunOpts {
@@ -173,6 +175,7 @@ impl Runner {
             gaps: reply.gaps.len(),
             asked: !reply.asks.is_empty(),
             answer: reply.lines.clone(),
+            missing: r.missing.clone(),
         };
         let payload = if self.hidden {
             json!({"scenario": "-", "kind": kind, "pass": e.strict_pass})
@@ -336,7 +339,7 @@ pub fn baseline_haiku(teacher: &Teacher, sc: &Scenario, kind: &str, variant: Opt
     let lacks = variant.map(|k| lacked(&sc.variants[k])).unwrap_or_default();
     let r = check(&p, &g, &Aliases::from_facts(&sc.aliases), &lacks);
     Some(Encounter { scenario: sc.id.clone(), kind: kind.into(), variant, request: request.into(), identified: Some(sc.task.clone()), identity_ok: true,
-        strict_pass: r.strict_pass, core_recall: r.core_recall(), recall: r.recall(), precision: r.precision(), wrong: r.wrong.clone(), gaps: 0, asked: false, answer: ans })
+        strict_pass: r.strict_pass, core_recall: r.core_recall(), recall: r.recall(), precision: r.precision(), wrong: r.wrong.clone(), gaps: 0, asked: false, answer: ans, missing: r.missing.clone() })
 }
 
 /// B2 over the H3 tiers (the same encounters as the agent: S first, T/G second and variants).
