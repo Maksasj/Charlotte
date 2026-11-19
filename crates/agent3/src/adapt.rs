@@ -297,12 +297,20 @@ fn rules_arm(vault: &Vault, base: &Procedure, sit: &[Fact], lacked: &BTreeSet<St
 
 /// Difference facts that turn `base` into `taught` (steps matched by action and object).
 pub fn difference(base: &Procedure, taught: &Procedure) -> Vec<Fact> {
-    let key = |s: &kb3::Step| (s.action.clone(), s.object.clone());
+    // the teacher restates the procedure in its own words: steps match by action and by the
+    // object's head word, as the check does
+    let al = kb3::Aliases::default();
+    let same = |a: &kb3::Step, b: &kb3::Step| {
+        a.action == b.action
+            && match (&a.object, &b.object) {
+                (Some(x), Some(y)) => al.same_item(x, y) || al.same_item(y, x),
+                (None, None) => true,
+                _ => false,
+            }
+    };
     let mut diff = Vec::new();
-    let tkeys: Vec<_> = taught.steps.iter().map(key).collect();
-    let bkeys: Vec<_> = base.steps.iter().map(key).collect();
-    for (bs, k) in base.steps.iter().zip(&bkeys) {
-        match taught.steps.iter().find(|t| key(t) == *k) {
+    for bs in base.steps.iter() {
+        match taught.steps.iter().find(|t| same(t, bs)) {
             None => diff.push(Fact::new("drop", &[&bs.id])),
             Some(ts) => {
                 let old: BTreeSet<&String> = bs.uses.keys().collect();
@@ -317,8 +325,8 @@ pub fn difference(base: &Procedure, taught: &Procedure) -> Vec<Fact> {
     }
     let mut n = 9;
     let mut prev = "start".to_string();
-    for (ts, k) in taught.steps.iter().zip(&tkeys) {
-        if let Some(b) = base.steps.iter().find(|b| key(b) == *k) {
+    for ts in taught.steps.iter() {
+        if let Some(b) = base.steps.iter().find(|b| same(ts, b)) {
             prev = b.id.clone();
             continue;
         }
@@ -341,11 +349,37 @@ pub fn difference(base: &Procedure, taught: &Procedure) -> Vec<Fact> {
         }
         prev = id;
     }
-    for n in taught.needs.difference(&base.needs) {
-        diff.push(Fact::new("extra_need", &[n]));
+    // needs: new items used by new or swapped steps; dropped needs only if the teacher listed them
+    let mut used: BTreeSet<String> = BTreeSet::new();
+    for d in &diff {
+        match d.pred.as_str() {
+            "uses" | "object_of" if d.arg(0).contains("_s") => {
+                used.insert(d.arg(1).to_string());
+            }
+            "swap" => {
+                used.insert(d.arg(2).to_string());
+            }
+            _ => {}
+        }
     }
-    for n in base.needs.difference(&taught.needs) {
-        diff.push(Fact::new("no_need", &[n]));
+    let tools_of_new: BTreeSet<String> = diff.iter().filter(|d| d.pred == "uses").map(|d| d.arg(1).to_string()).collect();
+    let swapped_in: BTreeSet<String> = diff.iter().filter(|d| d.pred == "swap").map(|d| d.arg(2).to_string()).collect();
+    let new_items: Vec<String> = tools_of_new.union(&swapped_in).cloned().collect();
+    let _ = used;
+    for n in new_items {
+        if !base.needs.contains(&n) && !diff.iter().any(|d| d.pred == "extra_need" && d.arg(0) == n) {
+            diff.push(Fact::new("extra_need", &[&n]));
+        }
+    }
+    if !taught.needs.is_empty() {
+        for n in taught.needs.difference(&base.needs) {
+            if !diff.iter().any(|d| d.pred == "extra_need" && d.arg(0) == n) {
+                diff.push(Fact::new("extra_need", &[n]));
+            }
+        }
+        for n in base.needs.difference(&taught.needs) {
+            diff.push(Fact::new("no_need", &[n]));
+        }
     }
     diff
 }
