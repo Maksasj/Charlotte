@@ -73,6 +73,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "reason4"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sla_core",
+ "sla_reasoner",
+]
+
+[[package]]
 name = "replay2"
 version = "0.1.0"
 dependencies = [
