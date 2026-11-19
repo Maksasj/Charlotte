@@ -77,7 +77,8 @@ fn main() {
         Some("live") => {
             // teach the fixture live, then write its raw session and a build (milestone 33)
             let name = arg(&args, "--name").unwrap_or_else(|| "live".into());
-            let kbroot = arg(&args, "--kb").map(std::path::PathBuf::from).unwrap_or_else(|| root().join("data/kb4"));
+            // the fixture keeps its own raw layer; it is never merged into data/kb4 (design 8.1)
+            let kbroot = arg(&args, "--kb").map(std::path::PathBuf::from).unwrap_or_else(|| root().join("data/spike4/kb4"));
             let d = deliver(&fx, &Opts { learn: !args.iter().any(|a| a == "--no-learn"), naming: true, prefix: 1.0, min_support: 3, session: Some(name.clone()), ..Default::default() });
             let agent = d.agent;
             let raw = agent4::kb::write_raw(&kbroot, &agent, "fixture").unwrap();

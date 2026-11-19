@@ -1,0 +1,719 @@
+{"conf":1.0,"event":"stored","fact":"is_a(bakeware, kitchen_item)","msg":96,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(container, kitchen_item)","msg":97,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kitchen_utensil, kitchen_item)","msg":98,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_tin, bakeware)","msg":99,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_tin, container)","msg":100,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(loaf_tin, baking_tin)","msg":101,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(muffin_tray, baking_tin)","msg":102,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cake_tin, baking_tin)","msg":103,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(springform_tin, cake_tin)","msg":104,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(sandwich_tin, cake_tin)","msg":105,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(silicone_tray, baking_tin)","msg":106,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(silicone_mould, cake_tin)","msg":107,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_dish, bakeware)","msg":108,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pie_dish, baking_dish)","msg":109,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_tray, bakeware)","msg":110,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(whisk, kitchen_utensil)","msg":111,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(balloon_whisk, whisk)","msg":112,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(spatula, kitchen_utensil)","msg":113,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rolling_pin, kitchen_utensil)","msg":114,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pizza_wheel, kitchen_utensil)","msg":115,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(jug, container)","msg":116,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(measuring_jug, jug)","msg":117,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_jug, measuring_jug)","msg":118,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pyrex_jug, measuring_jug)","msg":119,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(flour, baking_ingredient)","msg":120,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rice_flour, flour)","msg":121,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(brown_rice_flour, rice_flour)","msg":122,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(self_raising_flour, flour)","msg":123,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(raising_agent, baking_ingredient)","msg":124,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_soda, raising_agent)","msg":125,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(baking_powder, raising_agent)","msg":126,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(bread_board, board)","msg":127,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(bowl, container)","msg":128,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(steel_bowl, bowl)","msg":129,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(jar, container)","msg":130,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(glass_jar, jar)","msg":131,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(soft_fruit, fruit)","msg":132,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(banana, soft_fruit)","msg":133,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(mixing_bowl, bowl)","msg":134,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(sieve, kitchen_utensil)","msg":135,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cooling_rack, kitchen_utensil)","msg":136,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pastry_brush, kitchen_utensil)","msg":137,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(silicone_tray, rubber)","msg":140,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(silicone_mould, rubber)","msg":141,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(whisk, metal)","msg":142,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(plastic_jug, plastic)","msg":143,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(pyrex_jug, glass)","msg":144,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rolling_pin, wood)","msg":145,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(bread_board, wood)","msg":146,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(bakeware, heat_resistant)","msg":148,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(flour, contains_gluten)","msg":149,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(rice_flour, contains_gluten)","msg":150,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(pizza_wheel, sharp)","msg":153,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(baking_soda, alkaline)","msg":154,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(baking_soda, acidic)","msg":155,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(bowl, watertight)","msg":156,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(glass_jar, glass)","msg":157,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(silicone_tray, flexible)","msg":158,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(silicone_mould, flexible)","msg":159,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do_on(baking_tin, contain, batter)","msg":162,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(container, contain)","msg":163,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(baking_dish, contain)","msg":164,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(whisk, beat)","msg":165,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(whisk, beat)","msg":166,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(whisk_attachment, beat)","msg":169,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(spatula, scrape)","msg":172,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(rolling_pin, roll)","msg":173,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(measuring_jug, measure)","msg":174,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(jug, pour)","msg":175,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(raising_agent, raise)","msg":176,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(sieve, sift)","msg":177,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(cooling_rack, cool)","msg":178,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(pastry_brush, glaze)","msg":179,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do_on(baking_tray, hold, dough)","msg":180,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(baking_tin, oven)","msg":183,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(baking_dish, oven)","msg":184,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(baking_tray, oven)","msg":185,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(pyrex_jug, oven)","msg":186,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(plastic_jug, oven)","msg":187,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(stand_mixer, whisk_attachment)","msg":192,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(stand_mixer, mixing_bowl)","msg":193,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(springform_tin, removable_base)","msg":194,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(oven, oven_rack)","msg":195,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(whip, beat)","msg":198,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(fold, mix)","msg":199,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(blend, banana, mashed)","msg":200,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(sift, flour, lump_free)","msg":201,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(melt, butter, melted)","msg":202,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"precondition(whip, egg_white, separated)","msg":203,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cookware, kitchen_item)","msg":307,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pan, cookware)","msg":308,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(frying_pan, pan)","msg":309,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(saucepan, pan)","msg":310,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wok, pan)","msg":311,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pot, cookware)","msg":312,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cast_iron_pan, pan)","msg":313,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cast_iron_skillet, cast_iron_pan)","msg":314,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(camp_skillet, cast_iron_skillet)","msg":315,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(dish, container)","msg":316,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(glass_dish, dish)","msg":317,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(casserole_dish, dish)","msg":318,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(ceramic_dish, dish)","msg":319,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(enamel_dish, ceramic_dish)","msg":320,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(metal_container, container)","msg":321,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(enamel_dish, metal_container)","msg":322,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_dish, dish)","msg":323,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(takeaway_box, plastic_dish)","msg":324,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(takeaway_box, dish)","msg":325,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_bowl, plastic_dish)","msg":326,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_serving_bowl, plastic_bowl)","msg":327,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kids_bowl, plastic_serving_bowl)","msg":328,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(ovenproof_plastic_tray, plastic_dish)","msg":329,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(ready_meal_tray, ovenproof_plastic_tray)","msg":330,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(lasagne_tray, ready_meal_tray)","msg":331,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(food_container, container)","msg":332,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_tub, food_container)","msg":333,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(food_bag, food_container)","msg":334,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cutlery, kitchen_item)","msg":335,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(fork, cutlery)","msg":336,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(spoon, cutlery)","msg":337,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(knife, cutlery)","msg":338,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kitchen_knife, knife)","msg":339,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(bread_knife, kitchen_knife)","msg":340,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(chef_knife, kitchen_knife)","msg":341,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(santoku_knife, chef_knife)","msg":342,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(butter_knife, knife)","msg":343,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(scissors, cutting_tool)","msg":344,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kitchen_scissors, scissors)","msg":345,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(colander, strainer)","msg":346,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(metal_colander, colander)","msg":347,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(grater, kitchen_utensil)","msg":348,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wooden_spoon, kitchen_utensil)","msg":349,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(ladle, kitchen_utensil)","msg":350,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(chopsticks, kitchen_utensil)","msg":351,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(chopping_board, board)","msg":352,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(tea_towel, cloth)","msg":353,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(citrus_fruit, fruit)","msg":354,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(lemon, citrus_fruit)","msg":355,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(lime, citrus_fruit)","msg":356,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(citrus_juice, acid)","msg":357,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(lemon_juice, citrus_juice)","msg":358,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(vinegar, acid)","msg":359,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(white_vinegar, vinegar)","msg":360,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cola, soft_drink)","msg":361,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(water, liquid)","msg":362,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(potato_masher, kitchen_utensil)","msg":363,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(soup_ladle, ladle)","msg":364,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(plastic_tub, plastic)","msg":367,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(food_bag, plastic)","msg":368,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(fork, metal)","msg":369,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(spoon, metal)","msg":370,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(knife, metal)","msg":371,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(metal_colander, metal)","msg":372,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(grater, metal)","msg":373,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(cast_iron_pan, metal)","msg":374,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(glass_dish, glass)","msg":375,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(wooden_spoon, wood)","msg":376,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(chopping_board, wood)","msg":377,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(knife, sharp)","msg":378,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(scissors, sharp)","msg":379,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(citrus_fruit, acidic)","msg":380,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(acid, acidic)","msg":381,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(cola, acidic)","msg":382,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(tea_towel, absorbent)","msg":383,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(board, flat)","msg":384,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(knife, cut)","msg":391,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(scissors, cut)","msg":392,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(fork, beat)","msg":393,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(fork, pierce)","msg":394,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(chopsticks, beat)","msg":395,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(ladle, hold)","msg":396,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(ladle, scoop)","msg":397,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(dish, contain)","msg":398,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(pan, heat)","msg":399,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(pot, heat)","msg":400,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(strainer, drain)","msg":401,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(grater, grate)","msg":402,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(tea_towel, dry)","msg":403,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(tea_towel, soak_up)","msg":404,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(cola, dissolve_limescale)","msg":405,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(cutting_board, chop)","msg":406,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(potato_masher, press)","msg":409,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(dish, oven)","msg":412,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(plastic_dish, oven)","msg":413,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(ovenproof_plastic_tray, oven)","msg":416,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(plastic_tub, oven)","msg":419,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(ceramic_dish, microwave)","msg":420,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(metal_container, microwave)","msg":421,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":0.97,"event":"stored","fact":"can_go_in(enamel_dish, microwave)","msg":421,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(cutlery, dishwasher)","msg":424,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(kitchen_knife, dishwasher)","msg":425,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(pan, dishwasher)","msg":428,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(cast_iron_pan, dishwasher)","msg":429,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(metal_colander, dishwasher)","msg":432,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(wooden_spoon, dishwasher)","msg":433,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(chopping_board, dishwasher)","msg":434,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(pan, hob)","msg":435,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(pot, hob)","msg":436,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(wok, stove_top)","msg":437,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(casserole_dish, oven)","msg":438,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(frying_pan, pan_handle)","msg":443,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(pot, lid)","msg":444,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(food_processor, blade)","msg":445,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(food_processor, food_processor_bowl)","msg":446,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(slice, cut)","msg":451,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(chop, cut)","msg":452,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(shake, egg, beaten)","msg":453,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(boil, egg, cooked)","msg":454,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"precondition(beat, egg, cracked)","msg":455,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cleaning_tool, cleaning_item)","msg":531,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cleaning_product, cleaning_item)","msg":532,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cleaning_cloth, cloth)","msg":533,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(microfibre_cloth, cleaning_cloth)","msg":534,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(dish_cloth, cleaning_cloth)","msg":535,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(chamois, cleaning_cloth)","msg":536,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(car_chamois, chamois)","msg":537,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cotton_rag, cloth)","msg":538,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(duster, cleaning_tool)","msg":539,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(feather_duster, duster)","msg":540,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wool_duster, duster)","msg":541,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wool_duster, wool_item)","msg":542,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(cleaning_pad, cleaning_tool)","msg":543,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(scourer, cleaning_pad)","msg":544,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(non_scratch_scourer, scourer)","msg":545,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(hob_scourer, non_scratch_scourer)","msg":546,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(glass_hob_scourer, hob_scourer)","msg":547,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(steel_wool_pad, scourer)","msg":548,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(sponge, cleaning_pad)","msg":549,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(squeegee, cleaning_tool)","msg":550,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(bucket, container)","msg":551,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(plastic_bucket, bucket)","msg":552,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(spray_bottle, container)","msg":553,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rubber_glove, glove)","msg":554,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rubber_plug, plug)","msg":555,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(citric_acid, acid)","msg":556,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(detergent, cleaning_product)","msg":557,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(dish_soap, detergent)","msg":558,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(descaler, cleaning_product)","msg":559,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(paper_product, cleaning_item)","msg":560,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(paper_towel, paper_product)","msg":561,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(newspaper, paper_product)","msg":562,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(window, glass_surface)","msg":563,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(mirror, glass_surface)","msg":564,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kettle, appliance)","msg":565,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(plastic_bucket, plastic)","msg":568,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(spray_bottle, plastic)","msg":569,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rubber_glove, rubber)","msg":570,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rubber_plug, rubber)","msg":571,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(cotton_rag, cotton)","msg":572,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(scourer, abrasive)","msg":573,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(non_scratch_scourer, abrasive)","msg":574,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(sponge, absorbent)","msg":578,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(paper_towel, absorbent)","msg":579,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(cotton_rag, absorbent)","msg":580,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(microfibre_cloth, lint_free)","msg":581,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(paper_towel, lint_free)","msg":582,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(bucket, watertight)","msg":583,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(wool_item, delicate)","msg":584,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(dish_soap, acidic)","msg":585,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(cloth, wipe)","msg":588,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(cleaning_cloth, clean)","msg":589,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(cleaning_cloth, dry)","msg":590,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(sponge, soak_up)","msg":591,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(paper_towel, soak_up)","msg":592,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(acid, dissolve_limescale)","msg":593,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(descaler, dissolve_limescale)","msg":594,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(squeegee, dry)","msg":595,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(scourer, scrub)","msg":596,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(spray_bottle, spray)","msg":597,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(duster, dust)","msg":598,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(glove, protect_hands)","msg":599,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(dish_soap, degrease)","msg":600,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(dish_soap, clean)","msg":601,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(paper_towel, wipe)","msg":602,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(white_vinegar, clean)","msg":603,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(cleaning_cloth, washing_machine)","msg":608,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(chamois, washing_machine)","msg":609,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(duster, washing_machine)","msg":612,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(wool_item, washing_machine)","msg":613,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(plastic_bucket, oven)","msg":616,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(rubber_glove, oven)","msg":617,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(kettle, heating_element)","msg":622,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(spray_bottle, trigger)","msg":623,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(trigger, nozzle)","msg":624,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(mop, mop_head)","msg":625,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(scrub, wash)","msg":630,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wipe, wash)","msg":631,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(spray, glass_surface, wet)","msg":632,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(descale, kettle, limescale_free)","msg":633,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"precondition(descale, kettle, unplugged)","msg":634,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(rinse, cloth, wet)","msg":635,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(hand_tool, tool)","msg":720,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(metal_tool, tool)","msg":721,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(insulated_tool, tool)","msg":722,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(screwdriver, hand_tool)","msg":723,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(phillips_screwdriver, screwdriver)","msg":724,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(stubby_screwdriver, phillips_screwdriver)","msg":725,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(flathead_screwdriver, screwdriver)","msg":726,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(spanner, hand_tool)","msg":727,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(adjustable_wrench, spanner)","msg":728,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(combination_spanner, spanner)","msg":729,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(hammer, hand_tool)","msg":730,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(claw_hammer, hammer)","msg":731,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rubber_mallet, hammer)","msg":732,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(tile_mallet, rubber_mallet)","msg":733,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(pliers, metal_tool)","msg":734,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(insulated_pliers, pliers)","msg":735,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(insulated_pliers, insulated_tool)","msg":736,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(electricians_pliers, insulated_pliers)","msg":737,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(saw, cutting_tool)","msg":738,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(hacksaw, saw)","msg":739,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(junior_hacksaw, hacksaw)","msg":740,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(wire_cutter, cutting_tool)","msg":741,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(screw_fixing, fixing)","msg":742,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(brass_screw, screw_fixing)","msg":743,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(brass_wood_screw, brass_screw)","msg":744,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(brass_hinge_screw, brass_wood_screw)","msg":745,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(antique_hinge_screw, brass_hinge_screw)","msg":746,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(seal, fixing)","msg":747,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(washer, seal)","msg":748,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(rubber_seal, seal)","msg":749,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(mixer_tap, tap)","msg":750,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(kitchen_mixer_tap, mixer_tap)","msg":751,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(handle, fitting)","msg":752,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(sawdust, wood_waste)","msg":753,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(hammer, metal)","msg":756,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rubber_mallet, metal)","msg":757,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rubber_mallet, rubber)","msg":760,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"made_of(rubber_seal, rubber)","msg":761,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(metal_tool, conductive)","msg":762,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(insulated_tool, conductive)","msg":763,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":0.97,"event":"stored","fact":"has_property(insulated_pliers, conductive)","msg":763,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(screw_fixing, magnetic)","msg":768,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(brass_screw, magnetic)","msg":769,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(phillips_screwdriver, cross_tip)","msg":772,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(flathead_screwdriver, cross_tip)","msg":773,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(saw, sharp)","msg":774,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(wire_cutter, sharp)","msg":775,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(sawdust, absorbent)","msg":776,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_property(adjustable_wrench, adjustable)","msg":777,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":0.97,"event":"stored","fact":"can_do(cotton_rag, soak_up)","msg":780,"negated":false,"rec":"prov","schema":"prov4/1","via":"confirming question"}
+{"conf":1.0,"event":"stored","fact":"used_for(screwdriver, loosen)","msg":782,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(screwdriver, fasten)","msg":783,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(spanner, loosen)","msg":784,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(spanner, fasten)","msg":785,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(saw, cut)","msg":786,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(hammer, strike)","msg":787,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(pliers, grip)","msg":788,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(adjustable_spanner, grip)","msg":789,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(butter_knife, loosen)","msg":792,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"used_for(seal, stop_leak)","msg":793,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do_on(rubber_mallet, strike, tile)","msg":794,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_do(coin, loosen)","msg":795,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(rubber_mallet, oven)","msg":802,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(rubber_seal, oven)","msg":803,"negated":true,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"can_go_in(hand_tool, toolbox)","msg":804,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(mixer_tap, valve)","msg":809,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(valve, cartridge)","msg":812,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(cartridge, o_ring)","msg":813,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(valve, washer)","msg":814,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(tap, handle)","msg":815,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(tap, spout)","msg":816,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(door, latch)","msg":817,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(latch, latch_bolt)","msg":818,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(hammer, hammer_head)","msg":819,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(claw_hammer, claw)","msg":820,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(screwdriver, shaft)","msg":821,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(shaft, tip)","msg":822,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"has_part(radiator, bleed_valve)","msg":823,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(unscrew, turn)","msg":828,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"is_a(tighten, turn)","msg":829,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(prise, fitting, removed)","msg":830,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"effect(shut, water_supply, off)","msg":831,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"precondition(remove, handle, water_off)","msg":832,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"precondition(unscrew, valve, water_off)","msg":833,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(bake_banana_bread)","msg":927,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, banana)","msg":928,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, flour)","msg":929,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, sugar)","msg":930,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, egg)","msg":931,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, butter)","msg":932,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, baking_soda)","msg":933,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, bowl)","msg":934,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, fork)","msg":935,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, loaf_tin)","msg":936,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(bake_banana_bread, oven)","msg":937,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(bake_banana_bread, bake_banana_bread_s1)","msg":938,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(bake_banana_bread_s1, preheat)","msg":939,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(bake_banana_bread_s1, oven)","msg":940,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(bake_banana_bread, bake_banana_bread_s2)","msg":941,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(bake_banana_bread_s2, mash)","msg":942,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(bake_banana_bread_s2, banana)","msg":943,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s2, bowl)","msg":944,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s2, bowl, contain)","msg":945,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s2, fork)","msg":946,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s2, fork, press)","msg":947,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(bake_banana_bread_s2, banana_ripe)","msg":948,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(bake_banana_bread, bake_banana_bread_s3)","msg":949,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(bake_banana_bread_s3, mix)","msg":950,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(bake_banana_bread_s3, flour)","msg":951,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s3, butter)","msg":952,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s3, butter, flavour)","msg":953,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s3, sugar)","msg":954,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s3, sugar, sweeten)","msg":955,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s3, egg)","msg":956,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s3, egg, bind)","msg":957,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s3, baking_soda)","msg":958,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s3, baking_soda, raise)","msg":959,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(bake_banana_bread_s3, butter_melted)","msg":960,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(bake_banana_bread, bake_banana_bread_s4)","msg":961,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(bake_banana_bread_s4, pour)","msg":962,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(bake_banana_bread_s4, batter)","msg":963,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s4, loaf_tin)","msg":964,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s4, loaf_tin, contain)","msg":965,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(bake_banana_bread_s4, tin_greased)","msg":966,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(bake_banana_bread, bake_banana_bread_s5)","msg":967,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(bake_banana_bread_s5, bake)","msg":968,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(bake_banana_bread_s5, banana_bread)","msg":969,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(bake_banana_bread_s5, oven)","msg":970,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(bake_banana_bread_s5, oven, heat)","msg":971,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(bake_banana_bread_s1, bake_banana_bread_s3)","msg":972,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(bake_banana_bread_s2, bake_banana_bread_s3)","msg":973,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(bake_banana_bread_s3, bake_banana_bread_s4)","msg":974,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(bake_banana_bread_s4, bake_banana_bread_s5)","msg":975,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"achieves(bake_banana_bread_s2, mashed)","msg":976,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(bake_banana_bread_s3, mashed)","msg":977,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(bake_banana_bread_s4, contain, can_go_in, oven)","msg":978,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(make_apple_crumble)","msg":981,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, apple)","msg":982,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, flour)","msg":983,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, butter)","msg":984,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, sugar)","msg":985,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, knife)","msg":986,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, bowl)","msg":987,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, baking_dish)","msg":988,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_apple_crumble, oven)","msg":989,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s1)","msg":990,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s1, preheat)","msg":991,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s1, oven)","msg":992,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s2)","msg":993,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s2, peel)","msg":994,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s2, apple)","msg":995,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s2, knife)","msg":996,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s2, knife, cut)","msg":997,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s3)","msg":998,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s3, slice)","msg":999,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s3, apple)","msg":1000,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s3, knife)","msg":1001,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s3, knife, cut)","msg":1002,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s4)","msg":1003,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s4, rub)","msg":1004,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s4, butter)","msg":1005,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s4, flour)","msg":1006,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s4, flour, mix)","msg":1007,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s4, sugar)","msg":1008,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s4, sugar, sweeten)","msg":1009,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s4, bowl)","msg":1010,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s4, bowl, contain)","msg":1011,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s5)","msg":1012,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s5, spread)","msg":1013,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s5, apple)","msg":1014,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s5, baking_dish)","msg":1015,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s5, baking_dish, contain)","msg":1016,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s6)","msg":1017,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s6, scatter)","msg":1018,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s6, crumble)","msg":1019,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_apple_crumble, make_apple_crumble_s7)","msg":1020,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_apple_crumble_s7, bake)","msg":1021,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_apple_crumble_s7, crumble)","msg":1022,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_apple_crumble_s7, oven)","msg":1023,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_apple_crumble_s7, oven, heat)","msg":1024,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s2, make_apple_crumble_s3)","msg":1025,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s1, make_apple_crumble_s4)","msg":1026,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s3, make_apple_crumble_s4)","msg":1027,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s4, make_apple_crumble_s5)","msg":1028,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s5, make_apple_crumble_s6)","msg":1029,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_apple_crumble_s6, make_apple_crumble_s7)","msg":1030,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(make_apple_crumble_s5, contain, can_go_in, oven)","msg":1031,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(make_apple_crumble_s2, cut, has_property, sharp)","msg":1032,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(make_apple_crumble_s3, cut, has_property, sharp)","msg":1033,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(make_omelette)","msg":1036,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, egg)","msg":1037,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, butter)","msg":1038,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, salt)","msg":1039,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, bowl)","msg":1040,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, fork)","msg":1041,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(make_omelette, pan)","msg":1042,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_omelette, make_omelette_s1)","msg":1043,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_omelette_s1, crack)","msg":1044,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_omelette_s1, egg)","msg":1045,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_omelette_s1, bowl)","msg":1046,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_omelette_s1, bowl, contain)","msg":1047,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_omelette, make_omelette_s2)","msg":1048,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_omelette_s2, beat)","msg":1049,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_omelette_s2, egg)","msg":1050,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_omelette_s2, fork)","msg":1051,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_omelette_s2, fork, beat)","msg":1052,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_omelette_s2, salt)","msg":1053,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_omelette_s2, salt, season)","msg":1054,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_omelette, make_omelette_s3)","msg":1055,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_omelette_s3, melt)","msg":1056,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_omelette_s3, butter)","msg":1057,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_omelette_s3, pan)","msg":1058,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_omelette_s3, pan, heat)","msg":1059,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_omelette, make_omelette_s4)","msg":1060,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_omelette_s4, cook)","msg":1061,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_omelette_s4, egg)","msg":1062,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(make_omelette_s4, pan)","msg":1063,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(make_omelette_s4, pan, heat)","msg":1064,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(make_omelette, make_omelette_s5)","msg":1065,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(make_omelette_s5, fold)","msg":1066,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(make_omelette_s5, omelette)","msg":1067,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_omelette_s1, make_omelette_s2)","msg":1068,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_omelette_s2, make_omelette_s3)","msg":1069,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_omelette_s3, make_omelette_s4)","msg":1070,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_omelette_s4, make_omelette_s5)","msg":1071,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"achieves(make_omelette_s2, beaten)","msg":1072,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(make_omelette_s4, beaten)","msg":1073,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(make_omelette_s2, make_omelette_s4)","msg":1074,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(make_omelette_s3, heat, can_go_in, stove_top)","msg":1075,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(make_omelette_s4, heat, can_go_in, stove_top)","msg":1076,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(boil_egg)","msg":1079,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(boil_egg, egg)","msg":1080,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(boil_egg, water)","msg":1081,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(boil_egg, pot)","msg":1082,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(boil_egg, bowl)","msg":1083,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(boil_egg, boil_egg_s1)","msg":1084,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(boil_egg_s1, boil)","msg":1085,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(boil_egg_s1, water)","msg":1086,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(boil_egg_s1, pot)","msg":1087,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(boil_egg_s1, pot, heat)","msg":1088,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(boil_egg, boil_egg_s2)","msg":1089,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(boil_egg_s2, lower)","msg":1090,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(boil_egg_s2, egg)","msg":1091,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(boil_egg_s2, spoon)","msg":1092,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(boil_egg_s2, spoon, hold)","msg":1093,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(boil_egg, boil_egg_s3)","msg":1094,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(boil_egg_s3, boil)","msg":1095,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(boil_egg_s3, egg)","msg":1096,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(boil_egg, boil_egg_s4)","msg":1097,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(boil_egg_s4, cool)","msg":1098,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(boil_egg_s4, egg)","msg":1099,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(boil_egg_s4, bowl)","msg":1100,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(boil_egg_s4, bowl, contain)","msg":1101,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(boil_egg_s4, water)","msg":1102,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(boil_egg_s4, water, cool)","msg":1103,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(boil_egg_s1, boil_egg_s2)","msg":1104,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(boil_egg_s2, boil_egg_s3)","msg":1105,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(boil_egg_s3, boil_egg_s4)","msg":1106,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(boil_egg_s1, heat, can_go_in, stove_top)","msg":1107,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(boil_egg_s4, contain, has_property, watertight)","msg":1108,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(clean_window)","msg":1111,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, bucket)","msg":1112,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, water)","msg":1113,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, dish_soap)","msg":1114,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, sponge)","msg":1115,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, squeegee)","msg":1116,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_window, cloth)","msg":1117,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_window, clean_window_s1)","msg":1118,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_window_s1, mix)","msg":1119,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_window_s1, dish_soap)","msg":1120,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_window_s1, water)","msg":1121,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_window_s1, water, mix)","msg":1122,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_window_s1, bucket)","msg":1123,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_window_s1, bucket, contain)","msg":1124,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_window, clean_window_s2)","msg":1125,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_window_s2, wash)","msg":1126,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_window_s2, window)","msg":1127,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_window_s2, sponge)","msg":1128,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_window_s2, sponge, clean)","msg":1129,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_window, clean_window_s3)","msg":1130,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_window_s3, dry)","msg":1131,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_window_s3, window)","msg":1132,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_window_s3, squeegee)","msg":1133,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_window_s3, squeegee, dry)","msg":1134,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_window, clean_window_s4)","msg":1135,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_window_s4, wipe)","msg":1136,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_window_s4, frame)","msg":1137,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_window_s4, cloth)","msg":1138,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_window_s4, cloth, wipe)","msg":1139,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_window_s1, clean_window_s2)","msg":1140,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_window_s2, clean_window_s3)","msg":1141,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_window_s3, clean_window_s4)","msg":1142,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"achieves(clean_window_s2, wet)","msg":1143,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(clean_window_s3, wet)","msg":1144,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(clean_window_s1, contain, has_property, watertight)","msg":1145,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(clean_window_s3, dry, has_property, lint_free)","msg":1146,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(clean_microwave)","msg":1149,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_microwave, bowl)","msg":1150,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_microwave, water)","msg":1151,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_microwave, lemon)","msg":1152,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_microwave, cloth)","msg":1153,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(clean_microwave, microwave)","msg":1154,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_microwave, clean_microwave_s1)","msg":1155,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_microwave_s1, fill)","msg":1156,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_microwave_s1, bowl)","msg":1157,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_microwave_s1, water)","msg":1158,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_microwave_s1, water, clean)","msg":1159,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_microwave_s1, lemon)","msg":1160,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_microwave_s1, lemon, clean)","msg":1161,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_microwave, clean_microwave_s2)","msg":1162,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_microwave_s2, heat)","msg":1163,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_microwave_s2, bowl)","msg":1164,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_microwave_s2, microwave)","msg":1165,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_microwave_s2, microwave, heat)","msg":1166,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_microwave, clean_microwave_s3)","msg":1167,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_microwave_s3, leave)","msg":1168,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_microwave_s3, microwave)","msg":1169,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(clean_microwave, clean_microwave_s4)","msg":1170,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(clean_microwave_s4, wipe)","msg":1171,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(clean_microwave_s4, microwave)","msg":1172,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(clean_microwave_s4, cloth)","msg":1173,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(clean_microwave_s4, cloth, wipe)","msg":1174,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_microwave_s1, clean_microwave_s2)","msg":1175,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_microwave_s2, clean_microwave_s3)","msg":1176,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(clean_microwave_s3, clean_microwave_s4)","msg":1177,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(clean_microwave_s1, clean, has_property, acidic)","msg":1178,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(fix_dripping_tap)","msg":1181,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(fix_dripping_tap, spanner)","msg":1182,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(fix_dripping_tap, screwdriver)","msg":1183,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(fix_dripping_tap, washer)","msg":1184,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s1)","msg":1185,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s1, shut)","msg":1186,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s1, water_supply)","msg":1187,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s2)","msg":1188,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s2, remove)","msg":1189,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s2, handle)","msg":1190,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(fix_dripping_tap_s2, screwdriver)","msg":1191,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(fix_dripping_tap_s2, screwdriver, loosen)","msg":1192,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s3)","msg":1193,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s3, unscrew)","msg":1194,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s3, valve)","msg":1195,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(fix_dripping_tap_s3, spanner)","msg":1196,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(fix_dripping_tap_s3, spanner, loosen)","msg":1197,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s4)","msg":1198,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s4, replace)","msg":1199,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s4, washer)","msg":1200,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s5)","msg":1201,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s5, reassemble)","msg":1202,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s5, tap)","msg":1203,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s6)","msg":1204,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s6, tighten)","msg":1205,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s6, tap)","msg":1206,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(fix_dripping_tap_s6, spanner)","msg":1207,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(fix_dripping_tap_s6, spanner, fasten)","msg":1208,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(fix_dripping_tap_s6, screwdriver)","msg":1209,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(fix_dripping_tap_s6, screwdriver, fasten)","msg":1210,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s7)","msg":1211,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s7, open)","msg":1212,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s7, water_supply)","msg":1213,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(fix_dripping_tap, fix_dripping_tap_s8)","msg":1214,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(fix_dripping_tap_s8, check)","msg":1215,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(fix_dripping_tap_s8, tap)","msg":1216,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s1, fix_dripping_tap_s2)","msg":1217,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s2, fix_dripping_tap_s3)","msg":1218,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s3, fix_dripping_tap_s4)","msg":1219,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s4, fix_dripping_tap_s5)","msg":1220,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s5, fix_dripping_tap_s6)","msg":1221,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s6, fix_dripping_tap_s7)","msg":1222,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(fix_dripping_tap_s7, fix_dripping_tap_s8)","msg":1223,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"achieves(fix_dripping_tap_s2, removed)","msg":1224,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"requires_state(fix_dripping_tap_s3, removed)","msg":1225,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(fix_dripping_tap_s3, loosen, can_do, grip)","msg":1226,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"task(replace_door_handle)","msg":1229,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(replace_door_handle, new_handle)","msg":1230,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"needs(replace_door_handle, screwdriver)","msg":1233,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(replace_door_handle, replace_door_handle_s1)","msg":1234,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(replace_door_handle_s1, unscrew)","msg":1235,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(replace_door_handle_s1, handle)","msg":1236,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(replace_door_handle_s1, screwdriver)","msg":1237,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(replace_door_handle_s1, screwdriver, loosen)","msg":1238,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(replace_door_handle, replace_door_handle_s2)","msg":1239,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(replace_door_handle_s2, pull)","msg":1240,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(replace_door_handle_s2, spindle)","msg":1241,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(replace_door_handle, replace_door_handle_s3)","msg":1242,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(replace_door_handle_s3, slide)","msg":1243,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(replace_door_handle_s3, spindle)","msg":1244,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(replace_door_handle_s3, new_handle)","msg":1245,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(replace_door_handle_s3, new_handle, fasten)","msg":1246,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(replace_door_handle, replace_door_handle_s4)","msg":1247,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(replace_door_handle_s4, screw)","msg":1248,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(replace_door_handle_s4, new_handle)","msg":1249,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"uses(replace_door_handle_s4, screwdriver)","msg":1250,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"role(replace_door_handle_s4, screwdriver, fasten)","msg":1251,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"step(replace_door_handle, replace_door_handle_s5)","msg":1252,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"action(replace_door_handle_s5, test)","msg":1253,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"object_of(replace_door_handle_s5, new_handle)","msg":1254,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(replace_door_handle_s1, replace_door_handle_s2)","msg":1255,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(replace_door_handle_s2, replace_door_handle_s3)","msg":1256,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(replace_door_handle_s3, replace_door_handle_s4)","msg":1257,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"before(replace_door_handle_s4, replace_door_handle_s5)","msg":1258,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(replace_door_handle_s1, loosen, has_property, cross_tip)","msg":1259,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"conf":1.0,"event":"stored","fact":"demands(replace_door_handle_s4, fasten, has_property, cross_tip)","msg":1260,"negated":false,"rec":"prov","schema":"prov4/1","session":"m33_check"}
+{"case":"cooking/case_omelette_fork","event":"case","fact":"lacks(user, fork)","msg":1263,"rec":"prov","schema":"prov4/1"}
+{"case":"cooking/case_omelette_fork","event":"case","fact":"has(user, chopsticks)","msg":1264,"rec":"prov","schema":"prov4/1"}
+{"case":"cooking/case_omelette_fork","event":"case","fact":"swap(make_omelette_s2, fork, chopsticks)","msg":1265,"rec":"prov","schema":"prov4/1"}
+{"case":"cooking/case_boil_egg_spoon","event":"case","fact":"lacks(user, spoon)","msg":1268,"rec":"prov","schema":"prov4/1"}
+{"case":"cooking/case_boil_egg_spoon","event":"case","fact":"has(user, ladle)","msg":1269,"rec":"prov","schema":"prov4/1"}
+{"case":"cooking/case_boil_egg_spoon","event":"case","fact":"swap(boil_egg_s2, spoon, ladle)","msg":1270,"rec":"prov","schema":"prov4/1"}
+{"case":"cleaning/case_window_sponge","event":"case","fact":"lacks(user, sponge)","msg":1273,"rec":"prov","schema":"prov4/1"}
+{"case":"cleaning/case_window_sponge","event":"case","fact":"has(user, dish_cloth)","msg":1274,"rec":"prov","schema":"prov4/1"}
+{"case":"cleaning/case_window_sponge","event":"case","fact":"swap(clean_window_s2, sponge, dish_cloth)","msg":1275,"rec":"prov","schema":"prov4/1"}
+{"case":"repair/case_tap_screwdriver","event":"case","fact":"lacks(user, screwdriver)","msg":1278,"rec":"prov","schema":"prov4/1"}
+{"case":"repair/case_tap_screwdriver","event":"case","fact":"has(user, butter_knife)","msg":1279,"rec":"prov","schema":"prov4/1"}
+{"case":"repair/case_tap_screwdriver","event":"case","fact":"swap(fix_dripping_tap_s2, screwdriver, butter_knife)","msg":1280,"rec":"prov","schema":"prov4/1"}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/1","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["baking_dish","baking_tin","baking_tray"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/2","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"waiting","support":["glass_dish","glass_jar","pyrex_jug"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/3","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"waiting","support":["food_bag","plastic_jug","plastic_tub"]}
+{"built_from":[],"conf":0.8,"confirmed_by":null,"counter":[],"id":"learn/L1/4","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["fork","knife","metal_colander","spoon"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/5","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["cotton_rag","paper_towel","tea_towel"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/6","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["plastic_bucket","plastic_jug","plastic_tub"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/7","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["plastic_bucket","plastic_jug","plastic_tub"]}
+{"built_from":["learn/L1/5"],"conf":0.75,"confirmed_by":"ask: can_do(cotton_rag, soak_up)?","counter":[],"id":"learn/L2/8","kind":"rule","layer":2,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["paper_towel","sponge","tea_towel","cotton_rag"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/9","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["knife","saw","scissors"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L1/10","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["cotton_rag","paper_towel","tea_towel"]}
+{"built_from":["learn/L1/1","learn/L1/6","learn/L1/7"],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/L2/11","kind":"rule","layer":2,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"hypothesis","support":["rubber_glove","rubber_mallet","rubber_seal"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/B/1","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"subsumed","support":["3 swap cases"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/B/2","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"subsumed","support":["3 swap cases"]}
+{"built_from":[],"conf":0.75,"confirmed_by":null,"counter":[],"id":"learn/B/3","kind":"rule","layer":1,"rec":"prov","schema":"prov4/1","specialised_from":null,"status":"subsumed","support":["3 swap cases"]}
