@@ -172,6 +172,35 @@ fn main() {
             std::fs::write(root().join("data/training/teach4").join(format!("{session}.json")), serde_json::to_string_pretty(&out).unwrap()).unwrap();
             println!("{}", json!({"session": session, "live_calls": calls, "accepted": agent.stats.accepted, "rejected": agent.stats.rejected}));
         }
+        Some("bench") => {
+            // answer benchmark questions from a KB rebuilt from raw (zero calls):
+            // --from s1,s2 --file data/bench4/dev.jsonl [--out NAME]
+            let from = arg(&args, "--from").expect("--from");
+            let mut rows = Vec::new();
+            for s in from.split(',') {
+                rows.extend(agent4::kb::read_lines(&root().join("data/kb4/raw/sessions").join(format!("{s}.jsonl"))));
+            }
+            let (mut agent, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], true, true);
+            let file = arg(&args, "--file").expect("--file");
+            let norm = |s: &str| s.split_whitespace().collect::<String>().trim_end_matches('.').to_string();
+            let (mut known, mut total) = (0usize, 0usize);
+            let mut hits = Vec::new();
+            for q in agent4::kb::read_lines(std::path::Path::new(&file)) {
+                let kind = q["gold"]["kind"].as_str().unwrap_or("");
+                if kind == "gap" {
+                    continue;
+                }
+                total += 1;
+                let ans = agent.respond(q["query"].as_str().unwrap_or(""));
+                let claims: std::collections::BTreeSet<String> = ans.claims.iter().map(|(c, _)| norm(c)).collect();
+                let golds: Vec<String> = q["gold"]["atoms"].as_array().map(|v| v.iter().filter_map(|a| a.as_str()).map(|a| norm(a)).collect()).unwrap_or_default();
+                if !golds.is_empty() && golds.iter().all(|g| claims.contains(g)) {
+                    known += 1;
+                    hits.push(q["id"].clone());
+                }
+            }
+            println!("{}", json!({"from": from, "file": file, "facts": agent.facts.len(), "symbols": agent.sorts.len(), "answerable": total, "answered_correct": known, "ids": hits}));
+        }
         Some("drift") => {
             let every: usize = arg(&args, "--every").and_then(|v| v.parse().ok()).unwrap_or(7);
             let (dfx, n) = eval4::drift(&fx, every);
