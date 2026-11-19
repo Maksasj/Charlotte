@@ -67,14 +67,26 @@ fn dir() -> PathBuf {
 
 pub struct Teacher {
     cache: Mutex<HashMap<String, String>>,
+    /// archive folder (cache.jsonl, ledger.jsonl); 3.0 uses data/training/calls3
+    pub dir: PathBuf,
+    /// hard budget of successful live calls in this ledger
+    pub budget: usize,
+    /// cap on live calls made by this Teacher (a run's own limit), if any
+    pub run_cap: Option<usize>,
+    run_calls: std::sync::atomic::AtomicUsize,
     /// when false, a cache miss is an error instead of a live call (replays, tests)
     pub live: bool,
 }
 
 impl Teacher {
     pub fn open(live: bool) -> Teacher {
+        Teacher::open_at(dir(), BUDGET, live)
+    }
+
+    /// A teacher channel on its own archive and budget (Design 4.0: data/training/calls4).
+    pub fn open_at(folder: PathBuf, budget: usize, live: bool) -> Teacher {
         let mut cache = HashMap::new();
-        if let Ok(t) = std::fs::read_to_string(dir().join("cache.jsonl")) {
+        if let Ok(t) = std::fs::read_to_string(folder.join("cache.jsonl")) {
             for line in t.lines() {
                 if let Ok(v) = serde_json::from_str::<Value>(line) {
                     if v["ok"].as_bool() == Some(true) {
@@ -85,12 +97,16 @@ impl Teacher {
                 }
             }
         }
-        Teacher { cache: Mutex::new(cache), live }
+        Teacher { cache: Mutex::new(cache), dir: folder, budget, run_cap: None, run_calls: std::sync::atomic::AtomicUsize::new(0), live }
     }
 
     /// Successful live calls (refusals such as plan-limit errors cost no model work).
     pub fn live_calls() -> usize {
-        std::fs::read_to_string(dir().join("ledger.jsonl"))
+        Self::live_calls_at(&dir())
+    }
+
+    pub fn live_calls_at(folder: &std::path::Path) -> usize {
+        std::fs::read_to_string(folder.join("ledger.jsonl"))
             .map(|t| t.lines().filter(|l| serde_json::from_str::<Value>(l).ok().and_then(|v| v["ok"].as_bool()) == Some(true)).count())
             .unwrap_or(0)
     }
@@ -110,8 +126,13 @@ impl Teacher {
         if LIMIT_HIT.load(std::sync::atomic::Ordering::SeqCst) {
             return Err("plan usage limit reached earlier in this run".into());
         }
-        if Self::live_calls() >= BUDGET {
-            return Err(format!("{BUDGET} live Haiku calls used; ask the user before going past it"));
+        if Self::live_calls_at(&self.dir) >= self.budget {
+            return Err(format!("{} live Haiku calls used; ask the user before going past it", self.budget));
+        }
+        if let Some(cap) = self.run_cap {
+            if self.run_calls.load(std::sync::atomic::Ordering::SeqCst) >= cap {
+                return Err(format!("run cap of {cap} live calls reached"));
+            }
         }
         let t0 = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let start = std::time::Instant::now();
@@ -138,9 +159,10 @@ impl Teacher {
         };
         let rec = json!({"key": k, "unix": t0, "tag": tag, "model": MODEL, "system": system, "prompt": prompt,
                          "answer": answer, "ok": ok, "seconds": (start.elapsed().as_secs_f64() * 100.0).round() / 100.0});
-        let _ = std::fs::create_dir_all(dir());
-        append(&dir().join("cache.jsonl"), &rec.to_string());
-        append(&dir().join("ledger.jsonl"), &json!({"unix": t0, "tag": tag, "ok": ok}).to_string());
+        let _ = std::fs::create_dir_all(&self.dir);
+        append(&self.dir.join("cache.jsonl"), &rec.to_string());
+        append(&self.dir.join("ledger.jsonl"), &json!({"unix": t0, "tag": tag, "ok": ok}).to_string());
+        self.run_calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         if ok {
             self.cache.lock().unwrap().insert(k, answer.clone());
             Ok(answer)

@@ -71,6 +71,8 @@ pub struct Agent {
     case_open: Option<String>,
     pub naming: bool,
     pub stats: Stats,
+    /// (message, reason) for every rejected message, for the teacher audit
+    pub rejects: Vec<(String, String)>,
     model: Option<Model>,
 }
 
@@ -86,7 +88,7 @@ impl Agent {
         Agent {
             session: session.into(), sorts: BTreeMap::new(), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
             canon: BTreeMap::new(), not_same: BTreeSet::new(), questions: Vec::new(), learned: Vec::new(), off: Vec::new(),
-            learning: true, naming: true, bulk: false, stats: Stats::default(), model: None, cases: Vec::new(), case_open: None,
+            learning: true, naming: true, bulk: false, stats: Stats::default(), rejects: Vec::new(), model: None, cases: Vec::new(), case_open: None,
         }
     }
 
@@ -260,6 +262,14 @@ impl Agent {
 
     /// Process one teacher message; returns the agent's reply lines.
     pub fn hear(&mut self, line: &str, channel: &str, teacher: &mut dyn Teacher) -> Vec<String> {
+        let out = self.hear_inner(line, channel, teacher);
+        if let Some(r) = out.iter().find(|r| r.starts_with("reject:")) {
+            self.rejects.push((line.to_string(), r.clone()));
+        }
+        out
+    }
+
+    fn hear_inner(&mut self, line: &str, channel: &str, teacher: &mut dyn Teacher) -> Vec<String> {
         self.stats.messages += 1;
         let id = self.log("teacher", channel, line);
         let parsed = match msg::parse(line) {
@@ -281,14 +291,31 @@ impl Agent {
                 }
                 vec![]
             }
-            Msg::Answer { .. } | Msg::Query { .. } | Msg::Request { .. } => vec![],
+            Msg::Answer { n, text } => {
+                // the teacher answers the agent's question n in a later turn (design 9.3)
+                let Some(q) = self.questions.get(n).cloned() else { return vec![format!("reject: no question {n}.")] };
+                let t = text.trim().trim_end_matches('.').to_string();
+                if t == "yes" || t == "no" {
+                    // a yes/no answer concerns the question's own atom
+                    let atom = q.trim_start_matches("ask:").trim().split('?').next().unwrap_or("").trim().to_string();
+                    let stated = if t == "yes" { atom.clone() } else if let Some(r) = atom.strip_prefix("not ") { r.to_string() } else { format!("not {atom}") };
+                    return self.hear(&format!("{stated}."), "answer", teacher);
+                }
+                if t == "unknown" {
+                    self.stats.unknown_answers += 1;
+                    return vec!["ok.".into()];
+                }
+                self.hear(&format!("{t}."), "answer", teacher)
+            }
+            Msg::Query { .. } | Msg::Request { .. } => vec![],
             Msg::New { sym, sort } => {
                 if !sorts::SORTS.contains(&sort.as_str()) {
                     self.stats.rejected += 1;
                     return vec![format!("reject: unknown sort {sort}.")];
                 }
                 if let Some(d) = self.sorts.get(&sym) {
-                    if d != &sort && !(sorts::compatible(d, &sort) && matches!(sort.as_str(), "action" | "function")) {
+                    // a compatible redeclaration (place and item; action and function) keeps the first sort
+                    if d != &sort && !sorts::compatible(d, &sort) {
                         self.stats.rejected += 1;
                         return vec![format!("reject: {sym} is {d}, not {sort}.")];
                     }

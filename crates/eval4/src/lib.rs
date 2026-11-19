@@ -3,6 +3,7 @@
 //! prefixes and size stress. Zero model calls.
 
 pub mod scale;
+pub mod teach;
 
 use agent4::{Agent, Answer, Teacher};
 use serde::{Deserialize, Serialize};

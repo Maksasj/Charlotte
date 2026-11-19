@@ -1,0 +1,18 @@
+{
+  "agent": "0.1.0",
+  "base_rules": "fnv:1a2e23fe848025dd",
+  "build": "e7ef95552b05e9b4",
+  "counts": {
+    "aliases": 1,
+    "facts": 261,
+    "rules": 9,
+    "symbols": 477
+  },
+  "raw_messages": 1284,
+  "schemas": {
+    "facts": "facts4/1",
+    "lang": "formal4/1",
+    "prov": "prov4/1",
+    "raw": "raw4/1"
+  }
+}

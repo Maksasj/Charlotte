@@ -27,6 +27,8 @@ fn formal() -> Vec<String> {
               "isa", "part", "stand_in", "ask_fit", "ask_conflict", "not", "new", "query", "retract", "yes", "no",
               "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
               "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary",
+              // teacher-channel CLI options and record keys (milestone 34)
+              "pilot", "size", "sorts", "stages", "unit",
               // kb4 record fields and conversation events (Design 4.0 section 8.2)
               "batch", "batch_end", "built_from", "end", "finish", "jsonl", "lang", "layer", "live", "msg_id", "pass", "prov", "raw", "rec", "rule", "schema", "speaker", "turn"] {
         v.push(w.into());

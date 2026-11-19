@@ -1,0 +1,252 @@
+% schema facts4/1  base B1-B9 fnv:1a2e23fe848025dd  raw 1301 msgs
+is_a(egg, animal_product).                                   % f:000000 msg 624
+is_a(animal_product, food).                                  % f:000001 msg 625
+is_a(flour, dry_ingredient).                                 % f:000002 msg 629
+is_a(cocoa_powder, dry_ingredient).                          % f:000003 msg 631
+is_a(couscous, grain).                                       % f:000004 msg 634
+is_a(grain, dry_ingredient).                                 % f:000005 msg 635
+is_a(dry_ingredient, ingredient).                            % f:000006 msg 636
+is_a(ingredient, food).                                      % f:000007 msg 637
+is_a(cucumber, vegetable).                                   % f:000008 msg 640
+is_a(vegetable, food).                                       % f:000009 msg 641
+is_a(garlic, vegetable).                                     % f:00000a msg 643
+is_a(floret, vegetable).                                     % f:00000b msg 649
+is_a(flatbread, bread).                                      % f:00000c msg 653
+is_a(bread, baked_good).                                     % f:00000d msg 654
+is_a(baked_good, food).                                      % f:00000e msg 655
+is_a(fork, cutlery).                                         % f:00000f msg 660
+is_a(cutlery, utensil).                                      % f:000010 msg 661
+is_a(utensil, kitchen_tool).                                 % f:000011 msg 662
+is_a(food_processor, appliance).                             % f:000012 msg 665
+is_a(appliance, kitchen_tool).                               % f:000013 msg 666
+is_a(frying_pan, cookware).                                  % f:000014 msg 669
+is_a(cookware, kitchen_tool).                                % f:000015 msg 670
+is_a(foil, wrapping).                                        % f:000016 msg 673
+is_a(wrapping, kitchen_tool).                                % f:000017 msg 674
+is_a(tool, household_item).                                  % f:000018 msg 708
+is_a(cleaning_tool, tool).                                   % f:000019 msg 709
+is_a(cleaning_agent, household_item).                        % f:00001a msg 710
+is_a(container, household_item).                             % f:00001b msg 711
+is_a(textile, household_item).                               % f:00001c msg 712
+is_a(garment_part, household_item).                          % f:00001d msg 713
+is_a(floor_covering, household_item).                        % f:00001e msg 714
+is_a(cloth, cleaning_tool).                                  % f:00001f msg 715
+is_a(brush, cleaning_tool).                                  % f:000020 msg 718
+is_a(broom, cleaning_tool).                                  % f:000021 msg 719
+is_a(drying_rack, tool).                                     % f:000022 msg 720
+is_a(bowl, container).                                       % f:000023 msg 721
+is_a(bucket, container).                                     % f:000024 msg 722
+is_a(box, container).                                        % f:000025 msg 723
+is_a(bag, container).                                        % f:000026 msg 724
+is_a(bin_bag, bag).                                          % f:000027 msg 725
+is_a(cool_box, container).                                   % f:000028 msg 726
+is_a(dish, container).                                       % f:000029 msg 727
+is_a(detergent, cleaning_agent).                             % f:00002a msg 728
+is_a(dish_soap, detergent).                                  % f:00002b msg 729
+is_a(floor_cleaner, cleaning_agent).                         % f:00002c msg 730
+is_a(baking_soda, cleaning_agent).                           % f:00002d msg 731
+is_a(carpet, floor_covering).                                % f:00002e msg 732
+is_a(clothing, textile).                                     % f:00002f msg 733
+is_a(collar, garment_part).                                  % f:000030 msg 734
+is_a(closet, home_area).                                     % f:000031 msg 735
+is_a(drawer, home_area).                                     % f:000032 msg 736
+is_a(floor, home_area).                                      % f:000033 msg 737
+is_a(hand_tool, tool).                                       % f:000034 msg 743
+is_a(hex_key, hand_tool).                                    % f:000035 msg 744
+is_a(allen_key, hex_key).                                    % f:000036 msg 745
+is_a(hammer, hand_tool).                                     % f:000037 msg 747
+is_a(hardware, part).                                        % f:000038 msg 750
+is_a(hinge, hardware).                                       % f:000039 msg 752
+is_a(power_source, part).                                    % f:00003a msg 756
+is_a(battery, power_source).                                 % f:00003b msg 758
+is_a(bookshelf, furniture).                                  % f:00003c msg 761
+is_a(door, part).                                            % f:00003d msg 763
+is_a(alarm, appliance).                                      % f:00003e msg 766
+made_of(frying_pan, metal).                                  % f:00003f msg 791
+made_of(fork, metal).                                        % f:000040 msg 792
+-made_of(fork, wood).                                        % f:000041 msg 793
+made_of(foil, metal).                                        % f:000042 msg 794
+-has_property(foil, absorbent).                              % f:000043 msg 795
+has_property(glass, fragile).                                % f:000044 msg 796
+has_property(frying_pan, heat_resistant).                    % f:000045 msg 802
+-has_property(frying_pan, fragile).                          % f:000046 msg 803
+has_property(egg, fragile).                                  % f:000047 msg 804
+-has_property(egg, heat_resistant).                          % f:000048 msg 805
+-has_property(fork, sharp).                                  % f:000049 msg 806
+-has_property(frying_pan, sharp).                            % f:00004a msg 807
+made_of(cloth, fabric).                                      % f:00004b msg 838
+made_of(clothing, fabric).                                   % f:00004c msg 839
+-made_of(clothing, metal).                                   % f:00004d msg 840
+made_of(carpet, fabric).                                     % f:00004e msg 841
+made_of(bowl, ceramic).                                      % f:00004f msg 842
+-made_of(bowl, fabric).                                      % f:000050 msg 843
+made_of(dish, ceramic).                                      % f:000051 msg 844
+made_of(bucket, plastic).                                    % f:000052 msg 845
+made_of(bag, plastic).                                       % f:000053 msg 846
+made_of(box, cardboard).                                     % f:000054 msg 847
+made_of(drying_rack, metal).                                 % f:000055 msg 848
+made_of(cool_box, plastic).                                  % f:000056 msg 849
+has_property(cloth, absorbent).                              % f:000057 msg 850
+has_property(carpet, absorbent).                             % f:000058 msg 854
+-has_property(bag, absorbent).                               % f:000059 msg 855
+has_property(bag, flexible).                                 % f:00005a msg 856
+-has_property(bag, rigid).                                   % f:00005b msg 857
+-has_property(dish, absorbent).                              % f:00005c msg 858
+has_property(dish, rigid).                                   % f:00005d msg 859
+has_property(bucket, rigid).                                 % f:00005e msg 860
+has_property(clothing, flexible).                            % f:00005f msg 861
+-has_property(clothing, rigid).                              % f:000060 msg 862
+has_property(drying_rack, rigid).                            % f:000061 msg 863
+made_of(allen_key, metal).                                   % f:000062 msg 888
+made_of(hinge, metal).                                       % f:000063 msg 890
+made_of(caulk_gun, metal).                                   % f:000064 msg 891
+made_of(door, wood).                                         % f:000065 msg 893
+made_of(bookshelf, wood).                                    % f:000066 msg 894
+made_of(alarm, plastic).                                     % f:000067 msg 896
+-made_of(cloth, metal).                                      % f:000068 msg 897
+-made_of(allen_key, wood).                                   % f:000069 msg 898
+has_property(alarm, fragile).                                % f:00006a msg 904
+-has_property(allen_key, sharp).                             % f:00006b msg 909
+-has_property(caulk_gun, fragile).                           % f:00006c msg 910
+-has_property(battery, heat_resistant).                      % f:00006d msg 911
+-has_property(door, absorbent).                              % f:00006e msg 912
+can_do(fork, beat).                                          % f:00006f msg 932
+can_do_on(fork, beat, egg).                                  % f:000070 msg 933
+can_do(food_processor, chop).                                % f:000071 msg 934
+can_do_on(food_processor, chop, garlic).                     % f:000072 msg 935
+used_for(frying_pan, contain).                               % f:000073 msg 936
+can_go_in(egg, fridge).                                      % f:000074 msg 937
+can_go_in(cucumber, fridge).                                 % f:000075 msg 938
+can_go_in(flatbread, oven).                                  % f:000076 msg 939
+can_go_in(garlic, counter).                                  % f:000077 msg 940
+-can_go_in(fork, oven).                                      % f:000078 msg 941
+-can_go_in(food_processor, oven).                            % f:000079 msg 942
+-can_go_in(cucumber, oven).                                  % f:00007a msg 943
+has_part(garlic, clove).                                     % f:00007b msg 944
+has_part(clothing, collar).                                  % f:00007c msg 995
+can_do(cloth, absorb).                                       % f:00007d msg 996
+can_do(cloth, cover).                                        % f:00007e msg 997
+can_do(bag, contain).                                        % f:00007f msg 998
+can_do(bin_bag, contain).                                    % f:000080 msg 999
+can_do(box, contain).                                        % f:000081 msg 1000
+can_do(bucket, contain).                                     % f:000082 msg 1001
+can_do(bowl, contain).                                       % f:000083 msg 1002
+can_do(container, contain).                                  % f:000084 msg 1003
+can_do(cool_box, contain).                                   % f:000085 msg 1004
+-can_do(broom, absorb).                                      % f:000086 msg 1005
+can_do_on(cloth, buff, dish).                                % f:000087 msg 1006
+can_do_on(brush, dust, carpet).                              % f:000088 msg 1007
+used_for(broom, dust).                                       % f:000089 msg 1008
+used_for(brush, dust).                                       % f:00008a msg 1009
+can_go_in(dish, sink).                                       % f:00008b msg 1010
+can_go_in(dish, drying_rack).                                % f:00008c msg 1011
+can_go_in(bowl, fridge).                                     % f:00008d msg 1012
+can_go_in(baking_soda, fridge).                              % f:00008e msg 1013
+can_go_in(broom, closet).                                    % f:00008f msg 1014
+can_go_in(bucket, closet).                                   % f:000090 msg 1015
+can_go_in(detergent, closet).                                % f:000091 msg 1016
+-can_go_in(cloth, oven).                                     % f:000092 msg 1018
+-can_go_in(dish_soap, oven).                                 % f:000093 msg 1019
+-can_go_in(floor_cleaner, oven).                             % f:000094 msg 1020
+-can_go_in(carpet, fridge).                                  % f:000095 msg 1021
+has_part(door, hinge).                                       % f:000096 msg 1040
+has_part(door, handle).                                      % f:000097 msg 1041
+used_for(hammer, beat).                                      % f:000098 msg 1044
+can_do(cloth, wipe).                                         % f:000099 msg 1048
+used_for(caulk_gun, squeeze).                                % f:00009a msg 1049
+can_go_in(battery, battery_compartment).                     % f:00009b msg 1050
+has_part(alarm, battery).                                    % f:00009c msg 1051
+-can_go_in(battery, hole).                                   % f:00009d msg 1052
+has_part(bookshelf, back_panel).                             % f:00009e msg 1053
+can_do(handle, hold).                                        % f:00009f msg 1054
+-can_do(alarm, contain).                                     % f:0000a0 msg 1057
+has_part(broccoli, floret).                                  % f:0000a1 msg 1080
+has_part(cauliflower, floret).                               % f:0000a2 msg 1081
+is_a(shell, taco_shell).                                     % f:0000a3 msg 0
+has_part(egg, shell).                                        % f:0000a4 msg 1082
+has_part(egg, yolk).                                         % f:0000a5 msg 1085
+has_part(egg, egg_white).                                    % f:0000a6 msg 1086
+has_part(frying_pan, handle).                                % f:0000a7 msg 1087
+has_part(food_processor, blade).                             % f:0000a8 msg 1088
+has_part(food_processor, bowl).                              % f:0000a9 msg 1089
+has_part(food_processor, lid).                               % f:0000aa msg 1090
+has_part(fork, tine).                                        % f:0000ab msg 1091
+is_a(taco_shell, shell).                                     % f:0000ac msg 1094
+has_part(bag, handle).                                       % f:0000ad msg 1105
+has_part(bowl, rim).                                         % f:0000ae msg 1106
+has_part(box, lid).                                          % f:0000af msg 1107
+has_part(broom, handle).                                     % f:0000b0 msg 1108
+has_part(broom, head).                                       % f:0000b1 msg 1109
+has_part(brush, bristles).                                   % f:0000b2 msg 1110
+has_part(brush, handle).                                     % f:0000b3 msg 1111
+has_part(bucket, handle).                                    % f:0000b4 msg 1112
+has_part(bucket, rim).                                       % f:0000b5 msg 1113
+has_part(container, lid).                                    % f:0000b6 msg 1115
+has_part(cool_box, lid).                                     % f:0000b7 msg 1116
+has_part(carpet, backing).                                   % f:0000b8 msg 1117
+has_part(closet, door).                                      % f:0000b9 msg 1118
+has_part(dish_soap, cap).                                    % f:0000ba msg 1119
+has_part(floor_cleaner, cap).                                % f:0000bb msg 1120
+has_part(alarm, base).                                       % f:0000bc msg 1124
+has_part(bookshelf, base).                                   % f:0000bd msg 1126
+has_part(hammer, handle).                                    % f:0000be msg 1129
+has_part(caulk_gun, handle).                                 % f:0000bf msg 1130
+-has_part(alarm, hinge).                                     % f:0000c0 msg 1131
+-has_part(alarm, handle).                                    % f:0000c1 msg 1132
+-has_part(alarm, back_panel).                                % f:0000c2 msg 1133
+-has_part(bookshelf, battery).                               % f:0000c3 msg 1134
+-has_part(bookshelf, hinge).                                 % f:0000c4 msg 1135
+-has_part(door, battery).                                    % f:0000c5 msg 1136
+-has_part(door, back_panel).                                 % f:0000c6 msg 1137
+-has_part(hammer, battery).                                  % f:0000c7 msg 1138
+-has_part(hammer, hinge).                                    % f:0000c8 msg 1139
+-has_part(caulk_gun, battery).                               % f:0000c9 msg 1140
+-has_part(caulk_gun, back_panel).                            % f:0000ca msg 1141
+-has_part(hinge, handle).                                    % f:0000cb msg 1142
+-has_part(handle, hinge).                                    % f:0000cc msg 1143
+-has_part(battery, handle).                                  % f:0000cd msg 1144
+-has_part(hinge, battery).                                   % f:0000ce msg 1145
+-can_do(broom, contain).                                     % f:0000cf msg 1148
+can_do(food_processor, contain).                             % f:0000d0 msg 1150
+-has_part(bag, battery).                                     % f:0000d1 msg 1152
+is_a(fry, cook).                                             % f:0000d2 msg 1171
+-is_a(fry, cover).                                           % f:0000d3 msg 1172
+-is_a(cover, cook).                                          % f:0000d4 msg 1173
+effect(fry, garlic, fragrant).                               % f:0000d5 msg 1174
+effect(fry, flatbread, crisp).                               % f:0000d6 msg 1175
+effect(cover, frying_pan, covered).                          % f:0000d7 msg 1176
+effect(cover, cucumber, covered).                            % f:0000d8 msg 1177
+is_a(blot, absorb).                                          % f:0000d9 msg 1210
+is_a(dip, add).                                              % f:0000da msg 1211
+is_a(fill, add).                                             % f:0000db msg 1212
+effect(dust, carpet, cleaned).                               % f:0000dc msg 1215
+effect(empty, bucket, emptied).                              % f:0000dd msg 1216
+effect(fill, bucket, filled).                                % f:0000de msg 1217
+effect(flatten, box, flattened).                             % f:0000df msg 1219
+effect(cover, bowl, covered).                                % f:0000e0 msg 1220
+effect(empty, bin_bag, emptied).                             % f:0000e1 msg 1221
+effect(blot, carpet, dried).                                 % f:0000e2 msg 1222
+effect(absorb, cloth, damp).                                 % f:0000e3 msg 1223
+precondition(empty, bucket, filled).                         % f:0000e4 msg 1226
+precondition(buff, clothing, cleaned).                       % f:0000e5 msg 1227
+precondition(flatten, box, emptied).                         % f:0000e6 msg 1228
+precondition(absorb, cloth, dried).                          % f:0000e7 msg 1229
+-precondition(empty, bucket, cleaned).                       % f:0000e8 msg 1230
+is_a(hammer_in, fasten).                                     % f:0000e9 msg 1269
+is_a(fasten, attach).                                        % f:0000ea msg 1270
+is_a(hang, attach).                                          % f:0000eb msg 1271
+is_a(check, find).                                           % f:0000ec msg 1272
+effect(close, door, closed).                                 % f:0000ed msg 1275
+effect(fill, hole, filled).                                  % f:0000ee msg 1276
+effect(fit, hinge, fitted).                                  % f:0000ef msg 1278
+effect(attach, hinge, attached).                             % f:0000f0 msg 1279
+effect(fasten, bookshelf, fastened).                         % f:0000f1 msg 1280
+effect(hang, bookshelf, hung).                               % f:0000f2 msg 1281
+effect(find, hole, found).                                   % f:0000f3 msg 1282
+effect(check, door, checked).                                % f:0000f4 msg 1283
+effect(hold, handle, held).                                  % f:0000f5 msg 1284
+effect(cool, cloth, cooled).                                 % f:0000f6 msg 1285
+precondition(hang, bookshelf, fastened).                     % f:0000f7 msg 1287
+precondition(fill, hole, cleaned).                           % f:0000f8 msg 1288
+precondition(close, door, attached).                         % f:0000f9 msg 1290
+precondition(fit, hinge, cleaned).                           % f:0000fa msg 1291

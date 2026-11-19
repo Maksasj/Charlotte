@@ -1,0 +1,74 @@
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00000","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"topic cooking/g1.","turn":0}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00001","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(add, action).","turn":1}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00002","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(apple, item).","turn":2}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00003","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(avocado, item).","turn":3}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00004","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(baguette, item).","turn":4}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00005","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bake, action).","turn":5}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00006","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(baking_dish, place).","turn":6}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00007","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(baking_soda, material).","turn":7}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00008","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(baking_tray, place).","turn":8}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00009","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(banana, item).","turn":9}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00010","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(banana_bread, item).","turn":10}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00011","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(banana_ripe, state).","turn":11}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00012","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(basil, material).","turn":12}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00013","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(batter, material).","turn":13}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00014","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(beat, action).","turn":14}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00015","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(berry, item).","turn":15}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00016","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bind, action).","turn":16}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00017","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(blend, action).","turn":17}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00018","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(blender, place).","turn":18}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00019","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(boil, action).","turn":19}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00020","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(boiling, state).","turn":20}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00021","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bowl, place).","turn":21}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00022","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bread, material).","turn":22}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00023","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(break, action).","turn":23}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00024","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(broccoli, item).","turn":24}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00025","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(brown, state).","turn":25}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00026","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bubbling, state).","turn":26}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00027","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(bubbly, property).","turn":27}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00028","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(butter, material).","turn":28}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00029","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(butter_melted, state).","turn":29}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00030","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(butter_soft, state).","turn":30}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00031","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(cheese, material).","turn":31}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00032","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chickpea, item).","turn":32}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00033","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chili, item).","turn":33}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00034","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chili_powder, material).","turn":34}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00035","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chop, action).","turn":35}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00036","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chopped_tomato, state).","turn":36}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00037","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(chunky, property).","turn":37}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00038","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(cinnamon_stick, item).","turn":38}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00039","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(clean, state).","turn":39}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00040","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(clear, property).","turn":40}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00041","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(tomato, item).","turn":41}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00042","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(flour, material).","turn":42}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00043","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(egg, item).","turn":43}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00044","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(sugar, material).","turn":44}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00045","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(oven, place).","turn":45}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00046","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(knife, item).","turn":46}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00047","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(oil, material).","turn":47}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00048","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(water, material).","turn":48}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00049","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(heat, action).","turn":49}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00050","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"new(mix, action).","turn":50}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00051","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"same_as(blend, mix).","turn":51}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00052","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"is_a(baguette, bread).","turn":52}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00053","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"made_of(batter, flour).","turn":53}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00054","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"made_of(baguette, flour).","turn":54}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00055","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"made_of(banana_bread, flour).","turn":55}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00056","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"made_of(banana_bread, butter).","turn":56}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00057","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(batter, baking_tray).","turn":57}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00058","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(batter, baking_dish).","turn":58}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00059","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(banana_bread, baking_dish).","turn":59}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00060","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(chopped_tomato, bowl).","turn":60}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00061","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(butter_soft, bowl).","turn":61}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00062","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"can_go_in(banana, blender).","turn":62}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00063","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"not can_go_in(baguette, blender).","turn":63}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00064","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"effect(bake, banana_bread, brown).","turn":64}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00065","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"effect(chop, tomato, chopped_tomato).","turn":65}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00066","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"precondition(blend, banana, banana_ripe).","turn":66}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00067","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"precondition(chop, tomato, clean).","turn":67}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00068","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"not same_as(boil, boiling).","turn":68}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00069","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"not same_as(baking_soda, baking_tray).","turn":69}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00070","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"not same_as(chili, chili_powder).","turn":70}
+{"channel":"live","lang":"formal4/1","msg_id":"smoke0-t00071","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"teacher","text":"not same_as(bubbling, bubbly).","turn":71}
+{"channel":"batch_end","lang":"formal4/1","msg_id":"smoke0-t00072","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"agent","text":"batch end","turn":72}
+{"channel":"finish","lang":"formal4/1","msg_id":"smoke0-t00073","rec":"raw","schema":"raw4/1","session":"smoke0","speaker":"agent","text":"finish","turn":73}

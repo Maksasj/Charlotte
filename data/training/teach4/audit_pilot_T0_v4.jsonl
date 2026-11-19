@@ -1,0 +1,100 @@
+{"n": 1, "msg_id": "pilot_T0_v4-t00943", "statement": "made_of(broom, wood).", "verdict": "true", "note": ""}
+{"n": 2, "msg_id": "pilot_T0_v4-t00260", "statement": "not same_as(scoop, spoon).", "verdict": "true", "note": ""}
+{"n": 3, "msg_id": "pilot_T0_v4-t00683", "statement": "is_a(floret, vegetable_part).", "verdict": "true", "note": ""}
+{"n": 4, "msg_id": "pilot_T0_v4-t00257", "statement": "not same_as(season, sweeten).", "verdict": "true", "note": ""}
+{"n": 5, "msg_id": "pilot_T0_v4-t01282", "statement": "is_a(brown, cook).", "verdict": "true", "note": ""}
+{"n": 6, "msg_id": "pilot_T0_v4-t00396", "statement": "not same_as(oven, oven_rack).", "verdict": "true", "note": ""}
+{"n": 7, "msg_id": "pilot_T0_v4-t01187", "statement": "has_part(food_processor, bowl).", "verdict": "true", "note": ""}
+{"n": 8, "msg_id": "pilot_T0_v4-t01324", "statement": "precondition(fold, clothing, dry).", "verdict": "true", "note": ""}
+{"n": 9, "msg_id": "pilot_T0_v4-t00871", "statement": "has_property(clove, flavour).", "verdict": "true", "note": ""}
+{"n": 10, "msg_id": "pilot_T0_v4-t01275", "statement": "is_a(dice, cut).", "verdict": "true", "note": ""}
+{"n": 11, "msg_id": "pilot_T0_v4-t00199", "statement": "not same_as(oil, olive_oil).", "verdict": "true", "note": ""}
+{"n": 12, "msg_id": "pilot_T0_v4-t00821", "statement": "is_a(system, equipment).", "verdict": "true", "note": "vague kind"}
+{"n": 13, "msg_id": "pilot_T0_v4-t00824", "statement": "is_a(battery, power_source).", "verdict": "true", "note": ""}
+{"n": 14, "msg_id": "pilot_T0_v4-t00339", "statement": "not same_as(cloth, clothing).", "verdict": "true", "note": ""}
+{"n": 15, "msg_id": "pilot_T0_v4-t00816", "statement": "is_a(allen_key, hand_tool).", "verdict": "true", "note": ""}
+{"n": 16, "msg_id": "pilot_T0_v4-t01314", "statement": "is_a(fry, cook).", "verdict": "true", "note": ""}
+{"n": 17, "msg_id": "pilot_T0_v4-t01313", "statement": "is_a(chop, cut).", "verdict": "true", "note": ""}
+{"n": 18, "msg_id": "pilot_T0_v4-t01361", "statement": "effect(cool, heating, cooled).", "verdict": "false", "note": "heating is not an item"}
+{"n": 19, "msg_id": "pilot_T0_v4-t01162", "statement": "effect(fill, hole, firm).", "verdict": "false", "note": "filling a hole does not make the hole firm"}
+{"n": 20, "msg_id": "pilot_T0_v4-t01155", "statement": "has_part(door, handle).", "verdict": "true", "note": ""}
+{"n": 21, "msg_id": "pilot_T0_v4-t00698", "statement": "is_a(utensil, kitchen_item).", "verdict": "true", "note": ""}
+{"n": 22, "msg_id": "pilot_T0_v4-t00684", "statement": "is_a(egg, animal_product).", "verdict": "true", "note": ""}
+{"n": 23, "msg_id": "pilot_T0_v4-t01021", "statement": "not can_go_in(food_processor, fridge).", "verdict": "true", "note": ""}
+{"n": 24, "msg_id": "pilot_T0_v4-t00981", "statement": "made_of(alarm, plastic).", "verdict": "true", "note": ""}
+{"n": 25, "msg_id": "pilot_T0_v4-t00616", "statement": "not same_as(wheel, whetstone).", "verdict": "true", "note": ""}
+{"n": 26, "msg_id": "pilot_T0_v4-t00815", "statement": "is_a(hammer, hand_tool).", "verdict": "true", "note": ""}
+{"n": 27, "msg_id": "pilot_T0_v4-t00868", "statement": "not made_of(frying_pan, glass).", "verdict": "true", "note": ""}
+{"n": 28, "msg_id": "pilot_T0_v4-t00592", "statement": "not same_as(tire, tire_lever).", "verdict": "true", "note": ""}
+{"n": 29, "msg_id": "pilot_T0_v4-t00833", "statement": "is_a(storage_unit, furniture).", "verdict": "true", "note": ""}
+{"n": 30, "msg_id": "pilot_T0_v4-t00932", "statement": "made_of(bucket, plastic).", "verdict": "true", "note": ""}
+{"n": 31, "msg_id": "pilot_T0_v4-t01277", "statement": "is_a(halve, cut).", "verdict": "true", "note": ""}
+{"n": 32, "msg_id": "pilot_T0_v4-t01245", "statement": "is_a(spray_bottle, bottle).", "verdict": "true", "note": ""}
+{"n": 33, "msg_id": "pilot_T0_v4-t00835", "statement": "is_a(fabric_piece, textile).", "verdict": "true", "note": ""}
+{"n": 34, "msg_id": "pilot_T0_v4-t01362", "statement": "effect(close, door, closed).", "verdict": "true", "note": ""}
+{"n": 35, "msg_id": "pilot_T0_v4-t00947", "statement": "not made_of(box, glass).", "verdict": "true", "note": ""}
+{"n": 36, "msg_id": "pilot_T0_v4-t00694", "statement": "is_a(baked_good, food).", "verdict": "true", "note": ""}
+{"n": 37, "msg_id": "pilot_T0_v4-t01283", "statement": "is_a(crack, break).", "verdict": "true", "note": ""}
+{"n": 38, "msg_id": "pilot_T0_v4-t01252", "statement": "has_part(bookshelf, back_panel).", "verdict": "true", "note": ""}
+{"n": 39, "msg_id": "pilot_T0_v4-t00946", "statement": "made_of(drying_rack, metal).", "verdict": "true", "note": ""}
+{"n": 40, "msg_id": "pilot_T0_v4-t01354", "statement": "is_a(fry, cook).", "verdict": "true", "note": ""}
+{"n": 41, "msg_id": "pilot_T0_v4-t01320", "statement": "effect(flatten, bin_bag, flat).", "verdict": "true", "note": ""}
+{"n": 42, "msg_id": "pilot_T0_v4-t00765", "statement": "is_a(brush, cleaning_tool).", "verdict": "true", "note": ""}
+{"n": 43, "msg_id": "pilot_T0_v4-t01247", "statement": "has_part(door, handle).", "verdict": "true", "note": ""}
+{"n": 44, "msg_id": "pilot_T0_v4-t01075", "statement": "used_for(bin_bag, contain).", "verdict": "true", "note": ""}
+{"n": 45, "msg_id": "pilot_T0_v4-t00993", "statement": "not has_property(heating, absorbent).", "verdict": "true", "note": "true but uninformative"}
+{"n": 46, "msg_id": "pilot_T0_v4-t00144", "statement": "not same_as(mash, mix).", "verdict": "true", "note": ""}
+{"n": 47, "msg_id": "pilot_T0_v4-t01229", "statement": "has_part(detergent, bottle).", "verdict": "false", "note": "a bottle is detergent's container, not its part"}
+{"n": 48, "msg_id": "pilot_T0_v4-t01137", "statement": "can_do(bookshelf, hold).", "verdict": "true", "note": ""}
+{"n": 49, "msg_id": "pilot_T0_v4-t00767", "statement": "is_a(cleaning_tool, household_item).", "verdict": "true", "note": ""}
+{"n": 50, "msg_id": "pilot_T0_v4-t01312", "statement": "is_a(dice, chop).", "verdict": "true", "note": ""}
+{"n": 51, "msg_id": "pilot_T0_v4-t00700", "statement": "is_a(cookware, kitchen_item).", "verdict": "true", "note": ""}
+{"n": 52, "msg_id": "pilot_T0_v4-t00876", "statement": "not has_property(frying_pan, flavour).", "verdict": "true", "note": ""}
+{"n": 53, "msg_id": "pilot_T0_v4-t01142", "statement": "can_do(caulk_gun, coat).", "verdict": "true", "note": "a caulk gun applies sealant (coat is loose)"}
+{"n": 54, "msg_id": "pilot_T0_v4-t01139", "statement": "can_do_on(cloth, absorb, base).", "verdict": "false", "note": "cloth absorbs liquid, not a base"}
+{"n": 55, "msg_id": "pilot_T0_v4-t01226", "statement": "has_part(clothing, button).", "verdict": "true", "note": ""}
+{"n": 56, "msg_id": "pilot_T0_v4-t01290", "statement": "effect(boil, floret, cooked).", "verdict": "true", "note": ""}
+{"n": 57, "msg_id": "pilot_T0_v4-t01083", "statement": "can_go_in(bowl, fridge).", "verdict": "true", "note": ""}
+{"n": 58, "msg_id": "pilot_T0_v4-t01293", "statement": "effect(crush, garlic, garlic_crushed).", "verdict": "true", "note": ""}
+{"n": 59, "msg_id": "pilot_T0_v4-t01015", "statement": "can_go_in(couscous, closet).", "verdict": "true", "note": "a closet as pantry is loose"}
+{"n": 60, "msg_id": "pilot_T0_v4-t00759", "statement": "is_a(bucket, container).", "verdict": "true", "note": ""}
+{"n": 61, "msg_id": "pilot_T0_v4-t01228", "statement": "has_part(bag, handle).", "verdict": "true", "note": ""}
+{"n": 62, "msg_id": "pilot_T0_v4-t01367", "statement": "effect(blot, cloth, cloth_damp).", "verdict": "true", "note": ""}
+{"n": 63, "msg_id": "pilot_T0_v4-t01294", "statement": "precondition(flip, flatbread, golden).", "verdict": "true", "note": ""}
+{"n": 64, "msg_id": "pilot_T0_v4-t01017", "statement": "can_go_in(garlic, counter).", "verdict": "true", "note": ""}
+{"n": 65, "msg_id": "pilot_T0_v4-t01216", "statement": "has_part(brush, handle).", "verdict": "true", "note": ""}
+{"n": 66, "msg_id": "pilot_T0_v4-t00147", "statement": "not same_as(lift, lower).", "verdict": "true", "note": ""}
+{"n": 67, "msg_id": "pilot_T0_v4-t01186", "statement": "has_part(food_processor, motor).", "verdict": "true", "note": ""}
+{"n": 68, "msg_id": "pilot_T0_v4-t01315", "statement": "is_a(bake, cook).", "verdict": "true", "note": ""}
+{"n": 69, "msg_id": "pilot_T0_v4-t01077", "statement": "can_go_in(dish, sink).", "verdict": "true", "note": ""}
+{"n": 70, "msg_id": "pilot_T0_v4-t00549", "statement": "not same_as(light, lightbulb).", "verdict": "true", "note": ""}
+{"n": 71, "msg_id": "pilot_T0_v4-t00937", "statement": "not made_of(cloth, plastic).", "verdict": "true", "note": ""}
+{"n": 72, "msg_id": "pilot_T0_v4-t01183", "statement": "has_part(egg, egg_white).", "verdict": "true", "note": ""}
+{"n": 73, "msg_id": "pilot_T0_v4-t01081", "statement": "can_go_in(broom, closet).", "verdict": "true", "note": ""}
+{"n": 74, "msg_id": "pilot_T0_v4-t01087", "statement": "not can_go_in(dish_soap, oven).", "verdict": "true", "note": ""}
+{"n": 75, "msg_id": "pilot_T0_v4-t01227", "statement": "has_part(clothing, pocket).", "verdict": "true", "note": ""}
+{"n": 76, "msg_id": "pilot_T0_v4-t00953", "statement": "not has_property(bucket, heat_resistant).", "verdict": "true", "note": ""}
+{"n": 77, "msg_id": "pilot_T0_v4-t01134", "statement": "can_do(allen_key, fasten).", "verdict": "true", "note": ""}
+{"n": 78, "msg_id": "pilot_T0_v4-t01082", "statement": "can_go_in(drying_rack, counter).", "verdict": "true", "note": ""}
+{"n": 79, "msg_id": "pilot_T0_v4-t01156", "statement": "has_part(alarm, battery).", "verdict": "true", "note": ""}
+{"n": 80, "msg_id": "pilot_T0_v4-t01295", "statement": "precondition(fluff, couscous, cooked).", "verdict": "true", "note": ""}
+{"n": 81, "msg_id": "pilot_T0_v4-t00201", "statement": "not same_as(pot, potato).", "verdict": "true", "note": ""}
+{"n": 82, "msg_id": "pilot_T0_v4-t01182", "statement": "has_part(egg, egg_yolk).", "verdict": "true", "note": ""}
+{"n": 83, "msg_id": "pilot_T0_v4-t00699", "statement": "is_a(frying_pan, cookware).", "verdict": "true", "note": ""}
+{"n": 84, "msg_id": "pilot_T0_v4-t01291", "statement": "effect(crack, egg, cracked).", "verdict": "true", "note": ""}
+{"n": 85, "msg_id": "pilot_T0_v4-t01032", "statement": "can_do(glass, contain).", "verdict": "true", "note": ""}
+{"n": 86, "msg_id": "pilot_T0_v4-t00859", "statement": "made_of(frying_pan, metal).", "verdict": "true", "note": ""}
+{"n": 87, "msg_id": "pilot_T0_v4-t01020", "statement": "not can_go_in(fork, oven).", "verdict": "false", "note": "a metal fork can go in an oven"}
+{"n": 88, "msg_id": "pilot_T0_v4-t00259", "statement": "not same_as(simmer, steep).", "verdict": "true", "note": ""}
+{"n": 89, "msg_id": "pilot_T0_v4-t01161", "statement": "effect(anchor, base, firm).", "verdict": "true", "note": ""}
+{"n": 90, "msg_id": "pilot_T0_v4-t00146", "statement": "not same_as(hot, off_heat).", "verdict": "true", "note": ""}
+{"n": 91, "msg_id": "pilot_T0_v4-t01063", "statement": "is_a(bag, container).", "verdict": "true", "note": ""}
+{"n": 92, "msg_id": "pilot_T0_v4-t01232", "statement": "has_part(detergent, cap).", "verdict": "false", "note": "a cap is the bottle's part, not the detergent's"}
+{"n": 93, "msg_id": "pilot_T0_v4-t01256", "statement": "has_part(bottle, cap).", "verdict": "true", "note": ""}
+{"n": 94, "msg_id": "pilot_T0_v4-t00990", "statement": "not has_property(hinge, absorbent).", "verdict": "true", "note": ""}
+{"n": 95, "msg_id": "pilot_T0_v4-t00777", "statement": "is_a(textile, household_item).", "verdict": "true", "note": ""}
+{"n": 96, "msg_id": "pilot_T0_v4-t00687", "statement": "is_a(baking_ingredient, dry_good).", "verdict": "false", "note": "not every baking ingredient is a dry good (butter, eggs)"}
+{"n": 97, "msg_id": "pilot_T0_v4-t01284", "statement": "is_a(drizzle, add).", "verdict": "true", "note": ""}
+{"n": 98, "msg_id": "pilot_T0_v4-t00975", "statement": "not made_of(hinge, plastic).", "verdict": "true", "note": ""}
+{"n": 99, "msg_id": "pilot_T0_v4-t01317", "statement": "is_a(brown, cook).", "verdict": "true", "note": ""}
+{"n": 100, "msg_id": "pilot_T0_v4-t01281", "statement": "is_a(boil, cook).", "verdict": "true", "note": ""}

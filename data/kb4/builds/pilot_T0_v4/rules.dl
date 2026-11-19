@@ -1,0 +1,17 @@
+% learned rules: id, layer, status; compiled layer form
+% learn/L1/1  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, crumbly) :- has_property(X, flavour)
+lholdsn(X, has_property, crumbly) :- hh(X, has_property, flavour), not holds(X, has_property, crumbly), not holdsn(X, has_property, crumbly).
+% learn/L1/2  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, flavour) :- made_of(X, metal)
+lholdsn(X, has_property, flavour) :- hh(X, made_of, metal), not holds(X, has_property, flavour), not holdsn(X, has_property, flavour).
+% learn/L1/3  layer 1  status hypothesis  conf 0.75  support 3  rule made_of(X, fabric) :- not made_of(X, metal)
+lholds(X, made_of, fabric) :- hhn(X, made_of, metal), not holds(X, made_of, fabric), not holdsn(X, made_of, fabric).
+% learn/L1/4  layer 1  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, fridge) :- made_of(X, metal)
+lholdsn(X, can_go_in, fridge) :- hh(X, made_of, metal), not holds(X, can_go_in, fridge), not holdsn(X, can_go_in, fridge).
+% learn/L1/5  layer 1  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, fridge) :- has_part(X, handle)
+lholdsn(X, can_go_in, fridge) :- hh(X, has_part, handle), not holds(X, can_go_in, fridge), not holdsn(X, can_go_in, fridge).
+% learn/L2/6  layer 2  status retracted  conf 0.75  support 3  rule can_go_in(X, toolbox) :- not can_go_in(X, fridge)
+lholds(X, can_go_in, toolbox) :- hhn(X, can_go_in, fridge), not holds(X, can_go_in, toolbox), not holdsn(X, can_go_in, toolbox).
+% learn/L1/7  layer 1  status retracted  conf 0.75  support 3  rule has_part(X, head) :- has_part(X, handle)
+lholds(X, has_part, head) :- hh(X, has_part, handle), not holds(X, has_part, head), not holdsn(X, has_part, head).
+% learn/L1/8  layer 1  status hypothesis  conf 0.75  support 3  rule made_of(X, plastic) :- has_part(X, lid)
+lholds(X, made_of, plastic) :- hh(X, has_part, lid), not holds(X, made_of, plastic), not holdsn(X, made_of, plastic).

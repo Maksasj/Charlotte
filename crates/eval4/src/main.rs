@@ -99,8 +99,76 @@ fn main() {
             let out = arg(&args, "--out").unwrap_or_else(|| format!("{session}_replay"));
             let id = agent4::kb::write_build(&kbroot.join("builds").join(&out), &agent, rows.len()).unwrap();
             let asked = agent.questions.len();
+            if args.iter().any(|a| a == "--rejects") {
+                let mut by: std::collections::BTreeMap<String, usize> = Default::default();
+                for (_, r) in &agent.rejects {
+                    let key: String = r.split(':').nth(1).unwrap_or(r).split_whitespace().filter(|w| !w.contains('_') || w.ends_with(',')).take(6).collect::<Vec<_>>().join(" ");
+                    *by.entry(key).or_insert(0) += 1;
+                }
+                println!("{}", json!({"rejects": agent.rejects.len(), "by_reason": by, "examples": agent.rejects.iter().take(25).collect::<Vec<_>>()}));
+            }
             let under = asked > 0 && unanswered.len() * 20 > asked;
             println!("{}", json!({"build": id, "out": out, "questions": asked, "unanswered": unanswered.len(), "under_answered": under}));
+        }
+        Some("teach") => {
+            // stage teaching with Haiku (milestone 34): --stages 0,1 --units N --cap C --session S
+            let stages: Vec<u32> = arg(&args, "--stages").unwrap_or_else(|| "0".into()).split(',').filter_map(|v| v.parse().ok()).collect();
+            let max_units: usize = arg(&args, "--units").and_then(|v| v.parse().ok()).unwrap_or(usize::MAX);
+            let cap: usize = arg(&args, "--cap").and_then(|v| v.parse().ok()).unwrap_or(100);
+            let session = arg(&args, "--session").unwrap_or_else(|| "pilot".into());
+            let size = arg(&args, "--size").unwrap_or_else(|| "S".into());
+            let topics = agent4::kb::read_lines(&root().join("data/curriculum4").join(&size).join("topics.jsonl"));
+            let mut haiku = teach3::Teacher::open_at(root().join("data/training/calls4"), 5000, true);
+            haiku.run_cap = Some(cap);
+            // start from an earlier session's knowledge, replayed from raw through the live path
+            let mut agent = match arg(&args, "--from") {
+                Some(from) => {
+                    let rows = agent4::kb::read_lines(&root().join("data/kb4/raw/sessions").join(format!("{from}.jsonl")));
+                    let (mut a, _) = agent4::kb::replay(&rows, &from, &Default::default(), &[], true, true);
+                    a.session = session.clone();
+                    a
+                }
+                None => agent4::Agent::new(&session),
+            };
+            let only: Option<Vec<String>> = arg(&args, "--only").map(|v| v.split(',').map(String::from).collect());
+            let mut queue = eval4::teach::Queue::default();
+            queue.deny = agent4::deny::Deny::load(&root().join("data/bench4/deny.txt"));
+            // the H3 task names are denied at name level (design 9.2)
+            let calls0 = teach3::Teacher::live_calls_at(&root().join("data/training/calls4"));
+            let mut log = Vec::new();
+            let mut history: Vec<String> = Vec::new();
+            'outer: for stage in &stages {
+                for t in topics.iter().filter(|t| only.as_ref().map(|o| o.iter().any(|u| t["unit"] == u.as_str())).unwrap_or(true)).take(max_units) {
+                    let sorts: Vec<(String, String)> = t["sorts"].as_object().map(|o| o.iter().map(|(k, v)| (k.clone(), v.as_str().unwrap_or("").to_string())).collect()).unwrap_or_default();
+                    let u = eval4::teach::Unit { sorts, stage: *stage, unit: t["unit"].as_str().unwrap().into(), domain: t["domain"].as_str().unwrap().into(),
+                        symbols: t["symbols"].as_array().unwrap().iter().map(|v| v.as_str().unwrap().to_string()).collect() };
+                    match eval4::teach::teach_unit(&mut agent, &haiku, &mut queue, &u, &history) {
+                        Ok(rec) => {
+                            eprintln!("{rec}");
+                            log.push(rec);
+                        }
+                        Err(e) => {
+                            eprintln!("stopped: {e}");
+                            log.push(json!({"stage": stage, "unit": u.unit, "error": e}));
+                            if e.contains("limit") || e.contains("cap") || e.contains("budget") {
+                                break 'outer;
+                            }
+                        }
+                    }
+                    history = agent.raw.iter().rev().take(4).filter(|r| r["who"] == "agent").map(|r| r["text"].as_str().unwrap_or("").to_string()).collect();
+                }
+                agent.end_batch(&mut queue);
+            }
+            agent.finish();
+            let kbroot = root().join("data/kb4");
+            agent4::kb::write_raw(&kbroot, &agent, "live").unwrap();
+            let id = agent4::kb::write_build(&kbroot.join("builds").join(&session), &agent, agent.raw.len()).unwrap();
+            let calls = teach3::Teacher::live_calls_at(&root().join("data/training/calls4")) - calls0;
+            let out = json!({"session": session, "stages": stages, "live_calls": calls, "build": id, "calls": log, "stats": agent.stats,
+                "symbols": agent.sorts.len(), "aliases": agent.canon.len(), "questions_dropped": queue.dropped});
+            std::fs::create_dir_all(root().join("data/training/teach4")).unwrap();
+            std::fs::write(root().join("data/training/teach4").join(format!("{session}.json")), serde_json::to_string_pretty(&out).unwrap()).unwrap();
+            println!("{}", json!({"session": session, "live_calls": calls, "accepted": agent.stats.accepted, "rejected": agent.stats.rejected}));
         }
         Some("drift") => {
             let every: usize = arg(&args, "--every").and_then(|v| v.parse().ok()).unwrap_or(7);

@@ -1,0 +1,11 @@
+% schema facts4/1  base B1-B9 fnv:1a2e23fe848025dd  raw 74 msgs
+made_of(baguette, flour).                                    % f:000000 msg 54
+made_of(banana_bread, flour).                                % f:000001 msg 55
+made_of(banana_bread, butter).                               % f:000002 msg 56
+can_go_in(banana_bread, baking_dish).                        % f:000003 msg 59
+can_go_in(banana, blender).                                  % f:000004 msg 62
+-can_go_in(baguette, blender).                               % f:000005 msg 63
+effect(bake, banana_bread, brown).                           % f:000006 msg 64
+effect(chop, tomato, chopped_tomato).                        % f:000007 msg 65
+precondition(mix, banana, banana_ripe).                      % f:000008 msg 66
+precondition(chop, tomato, clean).                           % f:000009 msg 67

@@ -1,0 +1,15 @@
+% learned rules: id, layer, status; compiled layer form
+% learn/L1/1  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, sharp) :- made_of(X, metal)
+lholdsn(X, has_property, sharp) :- hh(X, made_of, metal), not holds(X, has_property, sharp), not holdsn(X, has_property, sharp).
+% learn/L1/2  layer 1  status specialised  conf 0.80  support 4  rule can_do(X, contain) :- made_of(X, plastic)
+lholds(X, can_do, contain) :- hh(X, made_of, plastic), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/3  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, contain) :- made_of(X, plastic), has_part(X, lid)
+lholds(X, can_do, contain) :- hh(X, made_of, plastic), hh(X, has_part, lid), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/4  layer 1  status specialised  conf 0.75  support 3  rule can_do(X, contain) :- has_part(X, handle)
+lholds(X, can_do, contain) :- hh(X, has_part, handle), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/5  layer 1  status hypothesis  conf 0.75  support 3  rule can_do(X, contain) :- has_part(X, handle), has_part(X, lid)
+lholds(X, can_do, contain) :- hh(X, has_part, handle), hh(X, has_part, lid), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/6  layer 1  status hypothesis  conf 0.88  support 8  rule can_do(X, contain) :- has_part(X, lid)
+lholds(X, can_do, contain) :- hh(X, has_part, lid), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/7  layer 1  status hypothesis  conf 0.75  support 4  rule not has_part(X, battery) :- has_part(X, handle)
+lholdsn(X, has_part, battery) :- hh(X, has_part, handle), not holds(X, has_part, battery), not holdsn(X, has_part, battery).
