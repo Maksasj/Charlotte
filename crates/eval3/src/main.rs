@@ -193,6 +193,22 @@ fn main() {
             }
             println!("{kinds:?}");
         }
+        Some("identity") => {
+            // zero calls: top-1 task identity for later requests, on a run's vault
+            let v = kb3::Vault::load(&root().join("data/training/runs3").join(arg(&args, "--name").expect("--name")).join("vault.json")).unwrap();
+            for set in ["data/curriculum3/train", "data/curriculum3/dev"] {
+                let (mut ok, mut n) = (0, 0);
+                for sc in load(set) {
+                    let mut qs: Vec<String> = sc.requests.iter().skip(1).cloned().collect();
+                    qs.extend(sc.variants.iter().map(|v| v.request.clone()));
+                    for q in qs {
+                        n += 1;
+                        ok += (agent3::identity::rank(&v, &q).first().map(|r| r.0.as_str()) == Some(sc.task.as_str())) as usize;
+                    }
+                }
+                println!("{set}: {ok}/{n}");
+            }
+        }
         Some("situation") => {
             let m = Models::load(&Models::default_path()).unwrap();
             let (f, c) = m.parse_situation(&arg(&args, "--q").expect("--q"));

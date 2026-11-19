@@ -9,6 +9,13 @@ use std::collections::{BTreeMap, BTreeSet};
 
 const STEM: usize = 4;
 
+/// Weight of words in learned task names, against 1 for a task's own content words
+/// (0.5: best of 0.25-3 on training requests, phase B).
+/// `SLA3_ALIAS_WEIGHT` overrides it for tuning on training requests.
+fn alias_weight() -> f64 {
+    std::env::var("SLA3_ALIAS_WEIGHT").ok().and_then(|v| v.parse().ok()).unwrap_or(0.5)
+}
+
 fn stem(w: &str) -> String {
     w.chars().take(STEM).collect()
 }
@@ -65,7 +72,7 @@ fn knowledge(vault: &Vault) -> BTreeMap<String, BTreeMap<String, f64>> {
     for f in vault.live() {
         match f.pred.as_str() {
             "needs" | "goal" => add(&mut k, f.arg(0), f.arg(1), 1.0),
-            "task_alias" => add(&mut k, f.arg(0), unquote(f.arg(1)), 2.0),
+            "task_alias" => add(&mut k, f.arg(0), unquote(f.arg(1)), alias_weight()),
             "action" | "object_of" | "uses" => {
                 if let Some(t) = step_task.get(f.arg(0)) {
                     let t = t.clone();
