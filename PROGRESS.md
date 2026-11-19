@@ -43,7 +43,13 @@ Results on the sealed held-out set H3 (final reading; counts in `data/training/r
 | 28 final measurement | Every target reported with intervals; 3 readings in the ledger | done | yes |
 | 29 research PDF | Builds from a clean checkout; numbers check; every number generated | 8 pages, 882 numbers match | yes |
 
-**Milestones 24 and 25 did not pass their acceptance tests.** Their thresholds were set in the design before any build. The agent reached about half of them, and the remaining gap is the same one the held-out results show:
+**After the acceptance check (run `c1_both_r9`, dev only, unverified on held-out data)**, two general fixes were made:
+- needs are merged as a list: the teacher's items join the learner's;
+- the weight of learned task names was tuned on training requests.
+
+On dev, these raised stored-exact to 12/19, second encounter to 12/19, identity to 37/38 (met), wrong claims on variants to 4/28, and taught-variant repeats to 5/14.
+
+**Milestones 24 and 25 still do not pass their acceptance tests.** Their thresholds were set in the design before any build. The agent reached about half of them, and the remaining gap is the same one the held-out results show:
 - one misread step per task;
 - task identity;
 - adaptation that rarely has knowledge to draw on.
