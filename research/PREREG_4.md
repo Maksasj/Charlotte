@@ -1,6 +1,6 @@
 # Design 4.0 pre-registration (DRAFT)
 
-**Status.** Drafted on 2026-11-19, after the go decision D4.13, from `research/SPIKE_4.md`. It is **frozen at milestone 36**, after the first sealed reading R1's protocol is fixed and before R1 is read (design section 11). Until then the user may change any value. Every value marked "set after the spike" in the design is proposed here, with the spike number it comes from.
+**Status.** Drafted on 2026-11-19, after the go decision D4.13, from `research/SPIKE_4.md`. **The user confirmed all proposed values and the hypothesis-on-gap scoring rule on 2026-11-19.** It is **frozen at milestone 36**, after the first sealed reading R1's protocol is fixed and before R1 is read (design section 11). Until then the user may change any value. Every value marked "set after the spike" in the design is proposed here, with the spike number it comes from.
 
 ## Values set after the spike
 
@@ -18,9 +18,9 @@
 | Support threshold k | 3 (D4.7) | k = 2: +2 correct, +1 wrong; k = 4: nothing learned that matters |
 | Prediction budget | 5 times support before confirmation (design 7.1) | Held back the 2 spurious material rules |
 
-## Scoring decision left open by D4.13 (to be confirmed by the user before the freeze)
+## Scoring decision left open by D4.13 (confirmed by the user, 2026-11-19)
 
-**Proposed:** a claim marked `hypothesis`, with its rule and support, on a question whose gold is a gap is scored in its own class, **hypothesis-on-gap**. It counts against hypothesis precision, not as a wrong answer. A wrong answer stays a claim contrary to the gold, or a deduced claim where the gold is a gap. The spike's q088 is this case.
+**Decided:** a claim marked `hypothesis`, with its rule and support, on a question whose gold is a gap is scored in its own class, **hypothesis-on-gap**. It counts against hypothesis precision, not as a wrong answer. A wrong answer stays a claim contrary to the gold, or a deduced claim where the gold is a gap. The spike's q088 is this case.
 
 ## Primary contrasts (R3, Holm-corrected)
 

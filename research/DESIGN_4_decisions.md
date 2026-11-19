@@ -17,3 +17,4 @@ These decisions come from the 4.0 pre-planning (P1-P16, in `research/DESIGN_4_pr
 | D4.11 | 2026-11-19 | Spike gate | Phase B goes ahead if the spike reaches at least 60% correct on 2-hop questions, 0 inventions, 100% valid proofs, and learned rules add correct answers without adding wrong ones. The user decides go or no-go on the spike report | |
 | D4.12 | 2026-11-19 | Spike fixture review (D4.3) | Approved by the user, unchanged | The sealed `data/spike4/MANIFEST.sha256` is the reviewed fixture |
 | D4.13 | 2026-11-19 | Spike go/no-go (G1) | **Go to phase B.** The rule-learning fix loop ran first. The remaining wrong answer (q088) is treated as a fixture IND/GAP tension; how a marked hypothesis on a gap gold is scored is decided in phase B (PREREG_4) | SPIKE_4.md sections 2 and 10 |
+| D4.14 | 2026-11-19 | PREREG_4 values | All proposed values confirmed, including hypothesis-on-gap scoring | Frozen at milestone 36 |
