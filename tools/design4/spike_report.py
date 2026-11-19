@@ -206,7 +206,43 @@ def main():
         s50 = json.load(open(sc50))
         w(f"3. **Scaling.** At x50 ({s50['taught_facts']} taught facts) full closure takes {s50['closure_ms']} ms and every answer matches x1. Answering recomputes the model for each question's `given` facts ({s50['answer_ms_all_questions']} ms for 100 questions). The per-question demand slice (design 7.5) is needed before size L.")
     w(f"4. **Rules that never mattered here.** B3, B5 and B9 changed no answer: the fixture's conflicts are all answered by the oracle, its part chains are short, and gaps are scored as the absence of a claim. They are kept as safety rules; their unique contribution is 0 on this fixture.\n")
-    w("## 10. Values proposed for phase B (set after the spike)\n")
+    fx = load("fix_full")
+    if fx:
+        fs = fx["run"]["summary"]
+        fg = learned_add(fx, nl)
+        fproofs = check_proofs("fix_full_proofs")
+        fst = count_status(fx["run"])
+        w("## 10. After the rule-learning fixes (user go: fix first)\n")
+        w("Following the user's decision (go, after fixing rule learning first), the inducer was changed in four ways, all from the findings in section 9. None was tuned to particular questions:")
+        w("1. Support counts only subjects whose head fact was taught about them, not inherited.")
+        w("2. A rule `H :- B` is refused when its converse `B :- H` is already accepted.")
+        w("3. A rule must predict at least one subject outside its support's own kinds.")
+        w("4. The design's prediction budget (7.1): a rule that would add more than 5 times its support in new conclusions waits for its confirming answer.")
+        w("The scorer is unchanged.\n")
+        w("| Measure | First spike | After the fixes |\n|---|---|---|")
+        w(f"| Correct | {S['classes'].get('correct', 0)} | {fs['classes'].get('correct', 0)} |")
+        w(f"| Wrong | {S['wrong']} | {fs['wrong']} |")
+        w(f"| Invented | {S['invented']} | {fs['invented']} |")
+        w(f"| 2-hop correct | {S['g1_two_hop']['correct']}/{S['g1_two_hop']['n']} | {fs['g1_two_hop']['correct']}/{fs['g1_two_hop']['n']} |")
+        w(f"| Valid proofs (ref_reason) | {proofs['proofs'] - proofs['failed']}/{proofs['proofs']} | {fproofs['proofs'] - fproofs['failed']}/{fproofs['proofs']} |")
+        w(f"| Learned rules: active / waiting / retracted | {count_status(run).get('hypothesis', 0)} / 0 / {count_status(run).get('retracted', 0)} | {fst.get('hypothesis', 0)} / {fst.get('waiting', 0)} / {fst.get('retracted', 0)} |")
+        w(f"| Learned on against off | +{learned_gain['plus']} correct, +{learned_gain['wrong_added']} wrong | +{fg['plus']} correct, +{fg['wrong_added']} wrong |")
+        for name, label in (("fix_k2", "k = 2"), ("fix_k4", "k = 4")):
+            r = load(name)
+            if r:
+                g = learned_add(r, nl)
+                w(f"| {label}, learned on against off | | +{g['plus']} correct, +{g['wrong_added']} wrong |")
+        wrong_ids = [x["id"] for x in fx["scored"] if x["class"] in ("wrong", "invented")]
+        w(f"\nActive rules after the fixes:\n")
+        for r in fx["run"]["learned_rules"]:
+            if r["status"] == "hypothesis":
+                w(f"- `{r['rule']}`: support {len(r['support'])}{' (confirmed)' if r['confirmed'] else ''}")
+        w(f"\n**The remaining wrong answer** is {', '.join(wrong_ids) or 'none'}.")
+        if "q088" in wrong_ids:
+            w("The fixture plants `can_do(X, cut) :- has_property(X, sharp)` as an intended induction cluster. Its own note on q088 says \"the base rules have no proof; only the induced sharp->cut rule would give one\", yet q088's gold is a gap. The agent answers q088 with a stand-in **marked as a hypothesis**, with the rule's support. Under the unchanged scorer that counts as wrong. It is a tension in the fixture between the IND cluster and this GAP question, not an inducer overgeneralisation. Whether a marked hypothesis on a gap gold should count as wrong or as a separate hypothesis class is a scoring decision for phase B.")
+        fgate = fs["g1_two_hop"]["rate"] >= 0.60 and fs["invented"] == 0 and fproofs["failed"] == 0 and fg["plus"] >= 1 and fg["wrong_added"] == 0
+        w(f"\n**Gate G1 after the fixes: {'met' if fgate else 'not met'}** (learned rules {'add no wrong answer' if fg['wrong_added'] == 0 else 'still add ' + str(fg['wrong_added']) + ' wrong answer'}). At k = 4 learning adds nothing either way. The user decides.\n")
+    w("## 11. Values proposed for phase B (set after the spike)\n")
     w(f"- **Support threshold k:** 3, as decided (D4.7). Compare the k = 2 and k = 4 rows of section 5 for the trade-off between more induced answers and more wrong ones.")
     w(f"- **Hop limit:** 4 (the fixture's deepest gold proofs are 3 hops; no answer needed more).")
     w(f"- **Hypothesis precision:** the share of induced answers that were right on the IND questions is {S['ind_correct']}/10. Phase B's threshold should be set from this and the dev set.")
@@ -232,8 +268,8 @@ def learned_add(full, nl):
     return {"plus": plus - minus, "wrong_added": wrong_added}
 
 
-def check_proofs():
-    p = os.path.join(D, "full_proofs.jsonl")
+def check_proofs(name="full_proofs"):
+    p = os.path.join(D, name + ".jsonl")
     r = subprocess.run(["python3", "-I", os.path.join(ROOT, "tools/design4/ref_reason.py"), "--proofs", p, "--facts", p + ".facts"], capture_output=True, text=True)
     return json.loads(r.stdout.strip().splitlines()[-1])
 

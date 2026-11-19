@@ -15,6 +15,8 @@ use sla_reasoner::RuleInput;
 use std::collections::{BTreeMap, BTreeSet};
 
 pub static MIN_SUPPORT: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(3);
+/// Design 7.1 starting value: at most 5 new conclusions per supporting subject before confirmation.
+pub static PREDICTION_BUDGET: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(5);
 
 /// A literal over a subject X: `rel(X, value)` or its negation.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
@@ -98,6 +100,15 @@ fn features(agent: &mut Agent) -> BTreeMap<String, BTreeSet<Lit>> {
     out
 }
 
+/// What was taught about each subject itself (not inherited): the evidence a rule may count.
+fn taught(agent: &Agent) -> BTreeMap<String, BTreeSet<Lit>> {
+    let mut out: BTreeMap<String, BTreeSet<Lit>> = BTreeMap::new();
+    for (f, s) in agent.facts.iter().filter(|(f, s)| s.retracted_by.is_none() && f.args.len() == 2 && INHERITABLE.contains(&f.pred.as_str())) {
+        out.entry(sym_of(&f.args[0])).or_default().insert(Lit { rel: f.pred.clone(), val: sym_of(&f.args[1]), neg: s.negated });
+    }
+    out
+}
+
 fn parents(agent: &Agent, x: &str) -> BTreeSet<String> {
     agent.facts.iter().filter(|(f, s)| f.pred == "is_a" && s.retracted_by.is_none() && sym_of(&f.args[0]) == x).map(|(f, _)| sym_of(&f.args[1])).collect()
 }
@@ -125,6 +136,29 @@ struct Score {
     support: Vec<String>,
     counter: Vec<String>,
     predictions: Vec<String>,
+}
+
+/// Support counts only subjects whose head fact was taught about them (fix 1, after the first
+/// spike run): a fact inherited from a kind is one piece of evidence, not one per subkind.
+fn score_taught(feats: &BTreeMap<String, BTreeSet<Lit>>, taught: &BTreeMap<String, BTreeSet<Lit>>, head: &Lit, body: &[Lit], except: &[String]) -> Score {
+    let mut s = Score { support: vec![], counter: vec![], predictions: vec![] };
+    let none = BTreeSet::new();
+    for (x, f) in feats {
+        if except.contains(x) || !body.iter().all(|l| f.contains(l)) {
+            continue;
+        }
+        let t = taught.get(x).unwrap_or(&none);
+        if t.contains(head) {
+            s.support.push(x.clone());
+        } else if f.contains(head) {
+            // inherited only: neither support nor a new prediction
+        } else if f.contains(&contrary(head)) {
+            s.counter.push(x.clone());
+        } else {
+            s.predictions.push(x.clone());
+        }
+    }
+    s
 }
 
 fn score(feats: &BTreeMap<String, BTreeSet<Lit>>, head: &Lit, body: &[Lit], except: &[String]) -> Score {
@@ -162,6 +196,7 @@ pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
     out.extend(induce_cases(agent));
     let k = MIN_SUPPORT.load(std::sync::atomic::Ordering::SeqCst);
     let feats = features(agent);
+    let tfeats = taught(agent);
     let mut heads: BTreeSet<Lit> = BTreeSet::new();
     for f in feats.values() {
         heads.extend(f.iter().filter(|l| INHERITABLE.contains(&l.rel.as_str())).cloned());
@@ -194,8 +229,12 @@ pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
             if known.contains(&(head.clone(), body.clone())) {
                 continue;
             }
-            let s = score(&feats, head, &body, &[]);
-            if s.support.len() >= k && s.counter.is_empty() && !s.predictions.is_empty() && kinds_ok(agent, &s.support) {
+            let s = score_taught(&feats, &tfeats, head, &body, &[]);
+            // fix 3: a rule must reach beyond inheritance, predicting a subject outside its
+            // support's own kinds
+            let skinds: BTreeSet<String> = s.support.iter().flat_map(|x| parents(agent, x)).collect();
+            let reaches = s.predictions.iter().any(|p| parents(agent, p).is_disjoint(&skinds));
+            if s.support.len() >= k && s.counter.is_empty() && reaches && kinds_ok(agent, &s.support) {
                 // minimality: no accepted shorter body with an equal or larger support set
                 let dominated = best_for_head.iter().any(|(b, bs)| b.len() < body.len() && body.iter().all(|l| b.contains(l) || true) && bs.support.len() >= s.support.len() && b.iter().all(|l| body.contains(l)));
                 if !dominated {
@@ -207,7 +246,17 @@ pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
             accepted.push((head.clone(), b, s));
         }
     }
+    // fix 2: no circular pairs; a rule H :- B is refused when B :- H is already accepted
+    let mut kept: Vec<(Lit, Vec<Lit>, Score)> = Vec::new();
     for (head, body, s) in accepted {
+        let converse = |h: &Lit, b: &[Lit]| b.len() == 1 && (agent.learned.iter().any(|r| r.status == "hypothesis" && r.body.len() == 1 && r.head == b[0] && r.body[0] == *h)
+            || kept.iter().any(|(kh, kb, _)| kb.len() == 1 && *kh == b[0] && kb[0] == *h));
+        if converse(&head, &body) {
+            continue;
+        }
+        kept.push((head, body, s));
+    }
+    for (head, body, s) in kept {
         let n = agent.learned.len() + 1;
         let layer = 1 + agent
             .learned
@@ -246,6 +295,13 @@ pub fn induce(agent: &mut Agent, teacher: &mut dyn Teacher) -> Vec<String> {
             let lines = revise(agent, agent.learned.len() - 1, &x);
             out.extend(lines);
             continue;
+        }
+        // prediction budget (design 7.1): a rule that would add more than BUDGET x its support
+        // waits for its confirming answer before any conclusion is used
+        let budget = PREDICTION_BUDGET.load(std::sync::atomic::Ordering::SeqCst);
+        if rule.confirmed_by.is_none() && rule.predictions.len() > budget * rule.support.len() {
+            rule.status = "waiting".into();
+            out.push(format!("waiting: {} predicts {} from support {} (budget x{budget}).", rule.id, rule.predictions.len(), rule.support.len()));
         }
         agent.learned.push(rule);
     }

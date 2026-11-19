@@ -167,7 +167,45 @@ The copies rename items, places, tasks and steps, and share functions, materials
 3. **Scaling.** At x50 (34598 taught facts) full closure takes 1378 ms and every answer matches x1. Answering recomputes the model for each question's `given` facts (154937 ms for 100 questions). The per-question demand slice (design 7.5) is needed before size L.
 4. **Rules that never mattered here.** B3, B5 and B9 changed no answer: the fixture's conflicts are all answered by the oracle, its part chains are short, and gaps are scored as the absence of a claim. They are kept as safety rules; their unique contribution is 0 on this fixture.
 
-## 10. Values proposed for phase B (set after the spike)
+## 10. After the rule-learning fixes (user go: fix first)
+
+Following the user's decision (go, after fixing rule learning first), the inducer was changed in four ways, all from the findings in section 9. None was tuned to particular questions:
+1. Support counts only subjects whose head fact was taught about them, not inherited.
+2. A rule `H :- B` is refused when its converse `B :- H` is already accepted.
+3. A rule must predict at least one subject outside its support's own kinds.
+4. The design's prediction budget (7.1): a rule that would add more than 5 times its support in new conclusions waits for its confirming answer.
+The scorer is unchanged.
+
+| Measure | First spike | After the fixes |
+|---|---|---|
+| Correct | 76 | 76 |
+| Wrong | 2 | 1 |
+| Invented | 0 | 0 |
+| 2-hop correct | 30/36 | 30/36 |
+| Valid proofs (ref_reason) | 62/62 | 60/60 |
+| Learned rules: active / waiting / retracted | 68 / 0 / 1 | 9 / 2 / 0 |
+| Learned on against off | +1 correct, +2 wrong | +1 correct, +1 wrong |
+| k = 2, learned on against off | | +2 correct, +1 wrong |
+| k = 4, learned on against off | | +0 correct, +0 wrong |
+
+Active rules after the fixes:
+
+- `can_go_in(X, oven) :- has_property(X, heat_resistant)`: support 3
+- `made_of(X, metal) :- can_go_in(X, dishwasher)`: support 4
+- `has_property(X, absorbent) :- can_do(X, wipe)`: support 3
+- `not can_go_in(X, oven) :- made_of(X, plastic)`: support 3
+- `not can_go_in(X, oven) :- can_do(X, contain), made_of(X, plastic)`: support 3
+- `can_do(X, soak_up) :- has_property(X, absorbent)`: support 4 (confirmed)
+- `can_do(X, cut) :- has_property(X, sharp)`: support 3
+- `can_do(X, soak_up) :- can_do(X, wipe)`: support 3
+- `made_of(X, rubber) :- not can_go_in(X, oven)`: support 3
+
+**The remaining wrong answer** is q088.
+The fixture plants `can_do(X, cut) :- has_property(X, sharp)` as an intended induction cluster. Its own note on q088 says "the base rules have no proof; only the induced sharp->cut rule would give one", yet q088's gold is a gap. The agent answers q088 with a stand-in **marked as a hypothesis**, with the rule's support. Under the unchanged scorer that counts as wrong. It is a tension in the fixture between the IND cluster and this GAP question, not an inducer overgeneralisation. Whether a marked hypothesis on a gap gold should count as wrong or as a separate hypothesis class is a scoring decision for phase B.
+
+**Gate G1 after the fixes: not met** (learned rules still add 1 wrong answer). At k = 4 learning adds nothing either way. The user decides.
+
+## 11. Values proposed for phase B (set after the spike)
 
 - **Support threshold k:** 3, as decided (D4.7). Compare the k = 2 and k = 4 rows of section 5 for the trade-off between more induced answers and more wrong ones.
 - **Hop limit:** 4 (the fixture's deepest gold proofs are 3 hops; no answer needed more).
