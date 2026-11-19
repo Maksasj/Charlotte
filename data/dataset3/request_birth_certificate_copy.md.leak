@@ -1,0 +1,125 @@
+---
+id: request_birth_certificate_copy
+stage: procedures
+task: request_birth_certificate_copy
+schema: v3
+---
+# Request a birth certificate copy
+
+## requests
+- How do I get a copy of my birth certificate from the registry office?
+- What do I need to do to order a certified copy of my birth certificate?
+- Can you walk me through requesting a replacement birth certificate?
+
+## situation
+- I need a copy of my birth certificate for a passport application.
+- I have my photo ID, a payment card, a pen and a paper clip.
+
+## ground truth
+```datalog
+task(request_birth_certificate_copy).
+domain(request_birth_certificate_copy, errands).
+goal(request_birth_certificate_copy, birth_certificate_copy).
+needs(request_birth_certificate_copy, application_form).
+needs(request_birth_certificate_copy, pen).
+needs(request_birth_certificate_copy, photo_id).
+needs(request_birth_certificate_copy, paper_clip).
+needs(request_birth_certificate_copy, payment_card).
+takes_time(request_birth_certificate_copy, 15, 30, minute).
+step(request_birth_certificate_copy, request_birth_certificate_copy_s1).
+action(request_birth_certificate_copy_s1, fill).
+object_of(request_birth_certificate_copy_s1, application_form).
+uses(request_birth_certificate_copy_s1, pen).
+role(request_birth_certificate_copy_s1, pen, mark).
+takes_time(request_birth_certificate_copy_s1, 10, 15, minute).
+step(request_birth_certificate_copy, request_birth_certificate_copy_s2).
+action(request_birth_certificate_copy_s2, attach).
+object_of(request_birth_certificate_copy_s2, photo_id).
+onto(request_birth_certificate_copy_s2, application_form).
+uses(request_birth_certificate_copy_s2, paper_clip).
+role(request_birth_certificate_copy_s2, paper_clip, fasten).
+step(request_birth_certificate_copy, request_birth_certificate_copy_s3).
+action(request_birth_certificate_copy_s3, pay).
+object_of(request_birth_certificate_copy_s3, fee).
+uses(request_birth_certificate_copy_s3, payment_card).
+role(request_birth_certificate_copy_s3, payment_card, pay).
+overlaps(request_birth_certificate_copy_s3, request_birth_certificate_copy_s1).
+step(request_birth_certificate_copy, request_birth_certificate_copy_s4).
+action(request_birth_certificate_copy_s4, submit).
+object_of(request_birth_certificate_copy_s4, application_form).
+check(request_birth_certificate_copy_s4, form_received).
+before(request_birth_certificate_copy_s1, request_birth_certificate_copy_s2).
+before(request_birth_certificate_copy_s2, request_birth_certificate_copy_s4).
+before(request_birth_certificate_copy_s3, request_birth_certificate_copy_s4).
+```
+
+## aliases
+```datalog
+task_alias(request_birth_certificate_copy, "birth certificate copy").
+task_alias(request_birth_certificate_copy, "replacement birth certificate").
+alias(application_form, "application form").
+alias(photo_id, "photo ID").
+alias(paper_clip, "paper clip").
+alias(payment_card, "payment card").
+alias(form_received, "form received").
+```
+
+## teach
+- To request a birth certificate copy you need an application form, a pen, a photo ID, a paper clip and a payment card.
+- Requesting a birth certificate copy takes 15 to 30 minutes.
+- Step 1 of requesting a birth certificate copy: fill in the application form with a pen for 10 to 15 minutes.
+- While step 1 runs, step 3 of requesting a birth certificate copy: pay the fee with the payment card.
+- Step 2 of requesting a birth certificate copy: attach the photo ID onto the application form with a paper clip.
+- Step 4 of requesting a birth certificate copy: submit the application form at the registry office.
+
+## checklist
+- names what is needed, including an application form, a pen, a photo ID, a paper clip and a payment card
+- gives the steps in order: fill in the form, attach the photo ID, submit the form
+- says the fee can be paid with the payment card while the form is being filled in
+- gives a total time of about 15 to 30 minutes
+
+## variant
+- change: no paper clip, but a stapler: staple the photo ID to the form instead.
+- request: I don't have a paper clip. Can I use a stapler for my birth certificate copy?
+- situation: I have a stapler, a pen, my photo ID and a payment card, but no paper clip.
+- expect: The reply keeps the same steps but staples the photo ID onto the application form in place of using a paper clip.
+
+```datalog situation
+has(user, stapler).
+lacks(user, paper_clip).
+has(user, photo_id).
+has(user, payment_card).
+has(user, pen).
+```
+
+```datalog difference
+swap(request_birth_certificate_copy_s2, paper_clip, stapler).
+extra_need(stapler).
+no_need(paper_clip).
+```
+
+- change: I live abroad and cannot visit the registry office, so I post the form in an envelope instead of handing it in.
+- request: I live abroad and can't go to the registry office. Can I send my birth certificate request by post?
+- situation: I live abroad and want to post the request, so I have an envelope, a pen, my photo ID, a paper clip and a payment card.
+- expect: The reply fills in and attaches the form as before, pays the fee while the form is filled in, and then posts the form in an envelope instead of submitting it at the counter.
+
+```datalog situation
+has(user, envelope).
+has(user, pen).
+has(user, photo_id).
+has(user, paper_clip).
+has(user, payment_card).
+```
+
+```datalog difference
+drop(request_birth_certificate_copy_s4).
+add_step(request_birth_certificate_copy_s9, request_birth_certificate_copy_s2).
+step(request_birth_certificate_copy, request_birth_certificate_copy_s9).
+action(request_birth_certificate_copy_s9, post).
+object_of(request_birth_certificate_copy_s9, application_form).
+uses(request_birth_certificate_copy_s9, envelope).
+role(request_birth_certificate_copy_s9, envelope, contain).
+before(request_birth_certificate_copy_s2, request_birth_certificate_copy_s9).
+before(request_birth_certificate_copy_s3, request_birth_certificate_copy_s9).
+extra_need(envelope).
+```

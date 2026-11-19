@@ -1,0 +1,124 @@
+---
+id: plan_summer_camp_schedule
+stage: procedures
+task: plan_summer_camp_schedule
+schema: v3
+---
+# Plan a summer camp schedule
+
+## requests
+- Can you help me plan the schedule for summer camp? I have to fit the activities into the days.
+- What's the best way to lay out a summer camp timetable, week by week?
+- I need to organise the camp activities across the weeks. How should I go about it?
+
+## situation
+- I have a list of camp activities, a wall calendar and a pen.
+- I have about 40 minutes to do it this evening.
+
+## ground truth
+```datalog
+task(plan_summer_camp_schedule).
+domain(plan_summer_camp_schedule, planning).
+goal(plan_summer_camp_schedule, camp_schedule).
+needs(plan_summer_camp_schedule, activity_list).
+needs(plan_summer_camp_schedule, calendar).
+needs(plan_summer_camp_schedule, pen).
+takes_time(plan_summer_camp_schedule, 30, 45, minute).
+step(plan_summer_camp_schedule, plan_summer_camp_schedule_s1).
+action(plan_summer_camp_schedule_s1, list).
+object_of(plan_summer_camp_schedule_s1, activity).
+uses(plan_summer_camp_schedule_s1, activity_list).
+role(plan_summer_camp_schedule_s1, activity_list, contain).
+step(plan_summer_camp_schedule, plan_summer_camp_schedule_s2).
+action(plan_summer_camp_schedule_s2, measure).
+object_of(plan_summer_camp_schedule_s2, camp_day).
+uses(plan_summer_camp_schedule_s2, calendar).
+role(plan_summer_camp_schedule_s2, calendar, measure).
+overlaps(plan_summer_camp_schedule_s2, plan_summer_camp_schedule_s1).
+step(plan_summer_camp_schedule, plan_summer_camp_schedule_s3).
+action(plan_summer_camp_schedule_s3, write).
+object_of(plan_summer_camp_schedule_s3, activity).
+uses(plan_summer_camp_schedule_s3, pen).
+role(plan_summer_camp_schedule_s3, pen, write).
+uses(plan_summer_camp_schedule_s3, calendar).
+role(plan_summer_camp_schedule_s3, calendar, hold).
+into(plan_summer_camp_schedule_s3, calendar).
+step(plan_summer_camp_schedule, plan_summer_camp_schedule_s4).
+action(plan_summer_camp_schedule_s4, check).
+object_of(plan_summer_camp_schedule_s4, schedule).
+uses(plan_summer_camp_schedule_s4, calendar).
+role(plan_summer_camp_schedule_s4, calendar, hold).
+check(plan_summer_camp_schedule_s4, no_clashes).
+before(plan_summer_camp_schedule_s1, plan_summer_camp_schedule_s3).
+before(plan_summer_camp_schedule_s2, plan_summer_camp_schedule_s3).
+before(plan_summer_camp_schedule_s3, plan_summer_camp_schedule_s4).
+```
+
+## aliases
+```datalog
+task_alias(plan_summer_camp_schedule, "summer camp schedule").
+task_alias(plan_summer_camp_schedule, "camp timetable").
+alias(activity_list, "list of activities").
+alias(calendar, "wall calendar").
+alias(camp_day, "camp day").
+alias(no_clashes, "no clashes").
+alias(schedule, "camp timetable").
+```
+
+## teach
+- To plan a summer camp schedule you need an activity list, a calendar and a pen.
+- Planning a summer camp schedule takes 30 to 45 minutes.
+- Step 1 of planning a summer camp schedule: list the activities on the activity list.
+- While step 1 runs, step 2 of planning a summer camp schedule: measure how many camp days there are on the calendar.
+- Step 3 of planning a summer camp schedule: write each activity into its day on the calendar with the pen.
+- Step 4 of planning a summer camp schedule: check the schedule for clashes.
+
+## checklist
+- names what is needed, including an activity list, a calendar and a pen
+- gives the steps in order: list the activities, count the camp days, write activities into the calendar, check for clashes
+- says the listing and counting can be done together, and the writing comes after both
+- gives a total time of about 30 to 45 minutes
+
+## variant
+- change: no pen, so use a pencil instead
+- request: I need to plan the camp schedule but I can only find a pencil, no pen. Can I still do it?
+- situation: I have an activity list, a wall calendar and a pencil, and about 40 minutes.
+- expect: The reply uses the pencil in place of the pen when writing activities into the calendar, and otherwise follows the usual order.
+
+```datalog situation
+has(user, activity_list).
+has(user, calendar).
+lacks(user, pen).
+has(user, pencil).
+time_limit(user, 40, minute).
+```
+
+```datalog difference
+extra_need(pencil).
+no_need(pen).
+swap(plan_summer_camp_schedule_s3, pen, pencil).
+role(plan_summer_camp_schedule_s3, pencil, write).
+```
+
+## variant
+- change: add a step at the end to send a copy of the schedule to the parents
+- request: I'd like the camp schedule done and then a copy sent to both parents. What should I do?
+- situation: I have an activity list, a wall calendar and a pen, and I want to send a copy to two parents.
+- expect: The reply gives the usual four steps and then adds a final step to send the finished schedule to the two parents.
+
+```datalog situation
+has(user, activity_list).
+has(user, calendar).
+has(user, pen).
+wants(user, parent_copy).
+count(user, parent, 2).
+```
+
+```datalog difference
+add_step(plan_summer_camp_schedule_s9, plan_summer_camp_schedule_s4).
+step(plan_summer_camp_schedule, plan_summer_camp_schedule_s9).
+action(plan_summer_camp_schedule_s9, send).
+object_of(plan_summer_camp_schedule_s9, schedule).
+before(plan_summer_camp_schedule_s4, plan_summer_camp_schedule_s9).
+change(plan_summer_camp_schedule, takes_time, 30_45, 35_50).
+```
