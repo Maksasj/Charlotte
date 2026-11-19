@@ -17,11 +17,21 @@ Three iterations kept finding the same split.
 - **Reading English stayed the bottleneck.** v1's parser failed on conversation, and 2.0 moved reading to Haiku plus about 225 hard-coded strings. In 3.0, Haiku still read 497 of 535 teach lines, and distilling Haiku's readings did not make the agent self-sufficient.
 - **Generalisation failed even without language.** In phase A's fact-only experiment X4, substitution by function found 19% of the needed changes, case transfer 19% and induced rules 1.4%. The reason was not the logic. The knowledge base held only procedures, with no relations about things, and the agent had no general inference over relations. Most new situations need knowledge that no other task contains in a form that can be chained.
 
-So 4.0 aims at the part that has never been tested properly: **an agent that derives new, provable knowledge from what it was taught, across domains, without inventing anything, and gets better as it is taught more.** Language leaves the core path.
+So 4.0 aims at the part that has never been tested properly: **an agent that creates new knowledge from what it was taught, across domains, with a reason for every piece, and gets better as it is taught more.** Language leaves the core path.
+
+**Generalisation means creating new knowledge. Three kinds are kept apart:**
+
+| Kind | What it is | Example | Allowed |
+|---|---|---|---|
+| **Derived (deduction)** | New knowledge that follows from taught facts by the rules | taught `is_a(muffin_tray, baking_tin)` and `can_hold(baking_tin, batter)`, so `can_hold(muffin_tray, batter)`: never taught, provable | Yes. Shown with its proof |
+| **Induced (a generalised pattern)** | A new rule lifted from several examples, going beyond what strictly follows | fork, spoon and chopsticks each stood in for a whisk because each `can_do(beat)`, so "anything that can beat can stand in for a whisk" | Yes, as a **hypothesis**: shown with its supporting examples and confidence, and retracted if a counterexample is taught |
+| **Invented (hallucinated)** | A claim with no basis in anything taught | "use a colander", when nothing taught links a colander to the job | **No** |
+
+"Invents nothing" in this document always means the third kind only: no claim without a proof or supporting examples.
 
 ## 2. Goal
 
-> **Taught only through conversation, the agent derives correct, proven answers to multi-hop questions in domains it was not taught directly, invents nothing, and gets better as it is taught more.**
+> **Taught only through conversation, the agent derives correct answers to multi-hop questions in domains it was not taught directly. Every answer carries its proof, or, for an induced rule, its supporting examples. It makes no claim without one, and it gets better as it is taught more.**
 
 Generalisation and learning are the priority. When a new situation shares parts with known ones, the agent finds a way by deriving it. The worked example:
 
