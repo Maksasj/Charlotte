@@ -57,7 +57,16 @@ pub fn norm(s: &str) -> String {
 impl Fixture {
     pub fn load(dir: &Path) -> Result<Fixture, String> {
         let mut teach = Vec::new();
-        for f in ["baking.msgs", "cooking.msgs", "cleaning.msgs", "repair.msgs", "procedures_fixture.msgs"] {
+        // the curriculum order is part of the fixture (teach/order.txt), not of this code
+        let order: Vec<String> = match std::fs::read_to_string(dir.join("teach/order.txt")) {
+            Ok(t) => t.lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect(),
+            Err(_) => {
+                let mut v: Vec<String> = std::fs::read_dir(dir.join("teach")).map(|r| r.flatten().map(|e| e.file_name().to_string_lossy().to_string()).filter(|n| n.ends_with(".msgs")).collect()).unwrap_or_default();
+                v.sort();
+                v
+            }
+        };
+        for f in &order {
             let p = dir.join("teach").join(f);
             let Ok(t) = std::fs::read_to_string(&p) else { continue };
             for (k, l) in t.lines().enumerate() {

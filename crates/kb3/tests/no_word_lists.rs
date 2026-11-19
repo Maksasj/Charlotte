@@ -26,7 +26,7 @@ fn formal() -> Vec<String> {
               "effect", "precondition", "demands", "state_of", "holds", "holdsn", "lholds", "lholdsn", "pos", "neg",
               "isa", "part", "stand_in", "ask_fit", "ask_conflict", "not", "new", "query", "retract", "yes", "no",
               "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
-              "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming"] {
+              "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary"] {
         v.push(w.into());
     }
     v

@@ -380,7 +380,8 @@ pub fn induce_cases(agent: &mut Agent) -> Vec<String> {
     }
     let shared = shared.unwrap_or_default();
     if n < k || tasks.len() < 2 || !shared.contains("role") || !shared.contains("can") {
-        return vec![format!("no adaptation rule: {n} swap cases from {} tasks share {:?}", tasks.len(), shared)];
+        let t = tasks.len();
+        return vec![format!("induce_cases: none; support {n}; tasks {t}; shared {shared:?}")];
     }
     let mut body = vec!["lacks(user, I)", "has(user, J)", "role(S, I, F)", "can(J, F)", "J != I"];
     let mut src = String::new();
@@ -398,11 +399,14 @@ pub fn induce_cases(agent: &mut Agent) -> Vec<String> {
         let shown = r.rule.to_string();
         agent.learned.push(Rule {
             id: r.id.clone(), layer: 1, head: Lit { rel: "stand_in".into(), val: "-".into(), neg: false }, body: vec![], except: vec![],
-            support: vec![format!("{n} swap cases")], counter: vec![], predictions: vec![], status: if active { "hypothesis".into() } else { "subsumed_by_B7".into() },
+            support: vec![format!("{n} swap cases")], counter: vec![], predictions: vec![], status: if active { "hypothesis".into() } else { "subsumed".into() },
             confirmed_by: None, built_from: vec![], specialised_from: None, conf: n as f64 / (n as f64 + 1.0), input: r,
         });
         let _ = shown;
     }
     agent.reset_model();
-    vec![format!("hypothesis (adaptation): stand_in(S, I, J) :- {} support {n} cases from {} tasks{}.", body.join(", "), tasks.len(), if active { "" } else { " (subsumed by B7, not active)" })]
+    let status = if active { "hypothesis" } else { "subsumed" };
+    let t = tasks.len();
+    let shown = body.join(", ");
+    vec![format!("{status}: stand_in(S, I, J) :- {shown}; support {n}; tasks {t}.")]
 }
