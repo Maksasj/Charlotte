@@ -91,7 +91,7 @@ impl Agent {
         id
     }
 
-    fn canonical(&self, s: &str) -> String {
+    pub fn canonical(&self, s: &str) -> String {
         let mut cur = s.to_string();
         while let Some(n) = self.canon.get(&cur) {
             if *n == cur {
@@ -102,7 +102,7 @@ impl Agent {
         cur
     }
 
-    fn canon_atom(&self, a: &GroundAtom) -> GroundAtom {
+    pub fn canon_atom(&self, a: &GroundAtom) -> GroundAtom {
         GroundAtom::new(&a.pred, a.args.iter().map(|v| match v { Value::Sym(s) => Value::Sym(self.canonical(s)), o => o.clone() }).collect())
     }
 
@@ -468,7 +468,7 @@ impl Agent {
         }
     }
 
-    fn canonical_goal(&self, goal: &str) -> String {
+    pub fn canonical_goal(&self, goal: &str) -> String {
         let mut out = String::new();
         let mut tok = String::new();
         for ch in goal.chars() {

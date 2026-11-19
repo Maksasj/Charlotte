@@ -58,7 +58,7 @@ fn main() {
                     let a = d.agent.respond(&q.query);
                     let given: Vec<String> = match agent4::msg::parse(&q.query) {
                         Ok(Some(agent4::msg::Msg::Query { given, .. })) | Ok(Some(agent4::msg::Msg::Request { given, .. })) => {
-                            given.iter().map(|(g, n)| reason4::encode(g, *n).to_string()).collect()
+                            given.iter().map(|(g, n)| reason4::encode(&d.agent.canon_atom(g), *n).to_string()).collect()
                         }
                         _ => vec![],
                     };

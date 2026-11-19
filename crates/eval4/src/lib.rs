@@ -49,9 +49,14 @@ pub struct Fixture {
     pub deny: BTreeSet<String>,
 }
 
-/// Normalise an atom line for comparison: no spaces, no trailing period.
+/// Normalise an atom line for comparison: no spaces, no trailing period; the protocol's
+/// `swap(S, I, J)` and the rule's `stand_in(S, I, J)` are the same claim (E4).
 pub fn norm(s: &str) -> String {
-    s.trim().trim_end_matches('.').chars().filter(|c| !c.is_whitespace()).collect()
+    let t: String = s.trim().trim_end_matches('.').chars().filter(|c| !c.is_whitespace()).collect();
+    match t.strip_prefix("swap(") {
+        Some(r) => format!("stand_in({r}"),
+        None => t,
+    }
 }
 
 impl Fixture {
@@ -287,14 +292,15 @@ pub fn score(agent: &mut Agent, q: &Question) -> Scored {
     let taught: BTreeSet<String> = agent.engine_facts(&[]).iter().map(|f| norm(&f.atom.to_string())).collect();
     let given: BTreeSet<String> = match agent4::msg::parse(&q.query) {
         Ok(Some(agent4::msg::Msg::Query { given, .. })) | Ok(Some(agent4::msg::Msg::Request { given, .. })) => {
-            given.iter().map(|(a, n)| norm(&reason4::encode(a, *n).to_string())).collect()
+            given.iter().map(|(a, n)| norm(&reason4::encode(&agent.canon_atom(a), *n).to_string())).collect()
         }
         _ => BTreeSet::new(),
     };
     let claims: Vec<String> = ans.claims.iter().map(|(c, _)| norm(c)).collect();
     let kinds: Vec<String> = ans.claims.iter().map(|(_, r)| r["kind"].as_str().unwrap_or("none").to_string()).collect();
     let proof_ok = ans.claims.iter().all(|(_, r)| proof_valid(r, &taught, &given));
-    let gold: Vec<String> = q.gold.atoms.iter().map(|a| norm(a)).collect();
+    // gold atoms in the agent's own canonical names (its learned same_as table)
+    let gold: Vec<String> = q.gold.atoms.iter().map(|a| norm(&agent.canonical_goal(a))).collect();
     let has_all = !gold.is_empty() && gold.iter().all(|g| claims.contains(g));
     let hyp_used = ans.claims.iter().filter(|(c, _)| gold.contains(&norm(c))).any(|(_, r)| r["kind"] == "hypothesis");
     let class = if !proof_ok && !claims.is_empty() {
