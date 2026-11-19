@@ -202,3 +202,18 @@ Generated paraphrases help a weak parser but not the full one. Gains per 100 pai
 | **5.3.4 Noticing:** ≤ 10% false alarms → keep the blindness target | 3.5% on dev | Keep. Noticing is tied to knowledge; a missed situation costs a clarifying question, not a wrong answer |
 | **5.3.5 Output** | No experiment needed | Relation lines (D5) |
 | **X8 split** | Every split already has compound divergence of about 0.91, and the hand dev split is easier than random | Algorithmic tier = repeated random task splits (5 seeds) plus atom-held-out tests |
+
+## Phase B findings (milestone 24 onward)
+
+Each finding comes from a C1 run on train and dev. Runs are in `data/training/runs3/` and calls are in `data/training/calls3/`.
+
+1. **Kind-specific taggers.** A learned line-kind classifier with separate taggers for step, needs and time lines raised coverage at ≥ 95% precision from 10.9% to 33.7% of dev step lines. In the parser-only dry run, second encounters went to 5/19.
+2. **Plan usage limit (overnight, run r2).** The plan's 5-hour limit refused about 600 calls. Refusals cost no model work, but they had been counted. Fixes:
+   - the ledger now counts only successful calls (257 real calls at that point);
+   - runs fail fast after the first refusal;
+   - archive appends are locked, after two lines interleaved under parallel writers (recovered; the original file is kept).
+3. **The fallback's answers lost their final period.** Haiku often writes facts without a closing "."; the parser now accepts them.
+4. **Naming, not content (run r4).** Second-encounter failures were mostly symbol names: Haiku's "shelve_and_drawer" against the ground truth's `shelf`, and "bananas" against `banana`. The check now matches items and objects by the gold symbol's head word, and state values by a shared word (schema section 6). This was the second encounter's biggest change, from 16 to 29 of 71, and it came from the measure, not from the agent.
+5. **The learned parser beats the teacher's reading on the lines it is unsure of.** On the 217 such lines with a cached fallback, the learned parse has the right action and object on 196, against 176 for Haiku: both right 165, learned only 31, fallback only 11, neither 10. The parser learned the ground truth's own naming conventions. Consequence: the agent keeps the learned facts and takes from the teacher only the predicates the learned parse lacks.
+6. **The situation tagger is weak.** It has only 34 training variants, and "I don't own a loaf tin" became `has(tin)`. It never reaches 95% on dev, so every situation reading currently goes to the teacher, and each answer becomes a training pair for the tagger.
+7. **Cases had been stored with the scenario's own situation facts.** That was a quiet leak, fixed: a case now holds the situation the agent read. Same-task case reuse matches by situation overlap.
