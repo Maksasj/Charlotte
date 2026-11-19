@@ -1,34 +1,44 @@
 # PROGRESS
 
 Build log for the Symbolic Learning Agent. The current design is
-`research/Symbolic Learning Agent – Design 2.0.md` (milestones 12 to 18);
-v1 is `research/DESIGN_1.md` (milestones 1 to 11) with its findings in
-`research/REPORT_DESIGN_1.md`; 2.0's findings are in `research/REPORT_DESIGN_2.md`.
+`research/Symbolic Learning Agent – Design 3.0.md` (phase A milestones 19-21, phase B 22-29).
+Earlier designs:
+- v1: `research/DESIGN_1.md` (milestones 1-11), findings in `research/REPORT_DESIGN_1.md`;
+- 2.0: `research/Symbolic Learning Agent – Design 2.0.md` (milestones 12-18), findings in `research/REPORT_DESIGN_2.md`.
+
+3.0's decisions are in `research/DESIGN_3_decisions.md`, its experiments and phase B findings in `research/DESIGN_3_experiments.md`, and its frozen targets in `research/PREREG_3.md`. The research PDF is `paper/main.pdf`, built by `make -C paper`.
 
 ## Current milestone
 
-**Design 2.0 is done (v2.0.0, 2026-11-18): all milestones (12 to 18) are built and measured, and every target in scope is met.**
-Milestone 18, on the 20 held-out scenarios after training (last runs,
-`eval/curriculum/2026-11-18T11-09-26.md` to `...T11-44-15.md`):
+**Design 3.0 is done (2026-11-19).** Every milestone is built and measured, and every pre-registered target is reported met or not.
 
-- met: transfer 6 of 15 (40%) in five of the last six runs (target 40%);
-  second encounter 15 to 18 of 20 (75-90%, target 70%); not understood 0.4-1.3%;
-  helpful + clarify 74-80%; contradicting facts 0.8-1.0%; pairwise preference
-  over the milestone 12 build 20 of 20; teacher meta requests 0;
-- retention (no target) rose from 10 of 20 to 14-17 of 20;
-- judge score 5.10 to 5.42 (target 6.0): **out of scope, user decision
-  2026-11-18**. The remaining low ratings come from what the teacher taught
-  (thin steps, no sample wording, no tips), not from the agent, so the agent
-  cannot fix them. See "Held-out fixes (2026-11-18, afternoon)".
+Results on the sealed held-out set H3 (final reading; counts in `data/training/runs3/h3_r3_function/summary.json`):
 
-Earlier milestones' missed targets are listed under "2.0 problems". Two of them
-were put out of scope by the user on 2026-11-17 (entries marked "user decision"
-there): the 2 s translation time and act accuracy. The final vault is the one
-from the first 2026-11-18 run, in `vault/` (committed copy in
-`data/training/curriculum/vaults/2026-11-18T05-11-26/`), consolidated afterwards.
-The next design is 3.0; see "Notes for Design 3.0".
+| Tier | Result |
+|---|---|
+| New task (T), second encounter after one teaching | 15/60 (25%) |
+| New domain (G, gardening), second encounter | 7/34 (21%) |
+| New situation on a known task (S) | 5/60 (8%); B1 without adaptation 3/60; v2.0.0 replay 0/40 |
+| Haiku given the same teaching (B2) | T 18/60, S 10/60, with more false claims |
+| Algorithmic tier, 5 random splits | 23/70 (33%) |
 
-## How to run
+- **Targets:** none of the frozen targets is met except "no word lists in agent code" (test passes). No target was lowered (`research/PREREG_3.md`).
+- **No significant gain** (exact McNemar) from adaptation, the rules arm, the C2 dataset, or distillation from the teacher.
+- **Haiku budget:** 4,486 of 5,000 live calls, all cached and archived in `data/training/calls3/`, plus 2.0's translator cache for B3.
+
+3.0 is one iteration, not the last (decision D1). The paper's discussion lists what a next one would address: task identity, teaching adaptation knowledge about items, and learning the ground truth's naming from the teacher.
+
+## How to run 3.0
+
+- **Tests:** `cargo test --workspace` (230 pass, 1 ignored; no model calls).
+- **Models:** `python3 -I tools/design3/train_parser.py`, then `cargo run --release -p eval3 --bin sla3 -- calibrate`.
+- **C1 curriculum:** `sla3 run --set both [--live] [--c2] [--arm function|rules|none]`.
+- **Sealed H3 reading (counts only):** `sla3 h3 --reading N --vault data/training/runs3/<run>/vault.json [--live]`. Record every reading in `data/heldout3/READINGS.md`.
+- **Baselines:** `sla3 b2 --live` (Haiku with the teaching); `cargo run --release -p replay2 --bin sla_replay2 -- --tiers S --limit 40` (v2.0.0 replay).
+- **Training lab (live stream):** `sla3 lab --port 8733`; log in once at `/api/login?token=$(cat data/training/lab3/token)`.
+- **Paper:** `make -C paper`; `make -C paper check` verifies every number against `data/`.
+
+## How to run (2.0)
 
 From the repo root (Rust toolchain: stable-x86_64-pc-windows-gnu):
 

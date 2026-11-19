@@ -359,14 +359,25 @@ def form_pairs(sc, e):
 
 # ------------------------------------------------------------------ main
 def load_pairs():
-    """Fallback answers (D16): {task, line, facts: [[pred, args...]...]} appended by teach3."""
+    """Fallback answers (D16): {task, line, facts: [[pred, args...]...]} appended by teach3.
+
+    Pairs from H3 tasks are never used (they were read during sealed H3 readings)."""
+    h3 = set()
+    man = os.path.join(ROOT, "data", "heldout3", "MANIFEST.sha256")
+    if os.path.exists(man):
+        for l in open(man):
+            h3.add(l.split("  ", 1)[1].strip().split("/", 1)[1][:-3].split("__")[0])
+    for f in os.listdir(os.path.join(ROOT, "data", "curriculum3", "heldout_domain")):
+        h3.add(f[:-3])
     out = []
     if os.path.exists(PAIRS):
         for line in open(PAIRS, encoding="utf-8"):
             try:
-                out.append(json.loads(line))
+                d = json.loads(line)
             except ValueError:
-                pass
+                continue
+            if d.get("task") not in h3:
+                out.append(d)
     return out
 
 

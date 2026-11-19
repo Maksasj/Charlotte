@@ -23,3 +23,8 @@ Phase A, milestone 19. Each row is a decision the user made. The inputs are `DES
 | D17 | 2026-11-19 | Request identity (X2) | Overlap over the agent's own knowledge plus learned task aliases; confirm with the user when the top two scores are close; learned request detection | Learned associations did not transfer to new tasks |
 | D18 | 2026-11-19 | Adaptation (X4) | Both arms (D6), gated by support; otherwise state the gap and ask the teacher | Neither arm met the wrong-claim condition ungated |
 | D19 | 2026-11-19 | Algorithmic held-out tier (X8) | 5 repeated random task splits plus atom-held-out tests | MCD has nothing to push at about 70 tasks |
+| D20 | 2026-11-19 | Fallback policy (phase B finding 5) | Keep the learned action and object, and add the teacher's other predicates | Learned 196/217 against fallback 176/217 exact on unsure lines |
+| D21 | 2026-11-19 | Distillation (finding 8) | Agreement-filtered distillation adopted; all-pairs distillation rejected | All pairs: 49/91. Agreement: 66/101 (fair). Coverage at 95% fell |
+| D22 | 2026-11-19 | Targets after the H3 baseline | Not lowered (`research/PREREG_3.md`) | Lowering after seeing the baseline would fit targets to results |
+| D23 | 2026-11-19 | Call budget in the readings | H3 readings without variant teaching; B3 on 40 tier-S cases; split tier on cached calls | Stays within 5,000 (4,486 used) |
+| D24 | 2026-11-19 | Outcome | 3.0 done; no frozen target met except "no word lists" | See `paper/main.pdf` |

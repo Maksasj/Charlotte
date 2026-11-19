@@ -99,6 +99,16 @@ The training dashboard has two parts: the API server, and the page.
 
 ## Status
 
+**Design 3.0 (2026-11-19).** The 3.0 agent (crates `kb3`, `parse3`, `teach3`, `agent3`, `eval3`) works as follows:
+- it learns household procedures from teaching lines, with learned taggers and Haiku as a fallback reader;
+- it stores them as facts with provenance;
+- it answers in relation lines: one fact per line, checked exactly against the ground truth;
+- it holds no English word lists, enforced by a test.
+
+On a sealed held-out set it answers 25% of new tasks exactly after one teaching, 21% in a never-seen domain, and 8% of new situations. Full results, limits and targets: `paper/main.pdf` and `PROGRESS.md`. The 2.0 agent (crates `agent`, `translate`, ...) is kept unchanged for the v2.0.0 replay baseline.
+
+
+
 Design 2.0 is done (v2.0.0): milestones 12 to 18 are built and measured. Milestone 18's targets
 are met on the held-out scenarios: transfer 6 of 15 (40%), second encounter 75-90%.
 The judge score (5.1-5.4, target 6.0) was put out of scope by the user, because the
