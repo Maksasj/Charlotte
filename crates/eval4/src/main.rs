@@ -354,7 +354,8 @@ fn main() {
                             Err(e) => {
                                 eprintln!("stopped: {e}");
                                 log.push(json!({"block": b, "stage": stage, "unit": u.unit, "error": e}));
-                                if e.contains("limit") || e.contains("cap") || e.contains("budget") || e.contains("leak") {
+                                // a P1 hit in a unit's own text skips that unit (logged); limits stop the run
+                                if e.contains("limit") || e.contains("cap") || e.contains("budget") {
                                     stop = true;
                                     break 'blocks;
                                 }

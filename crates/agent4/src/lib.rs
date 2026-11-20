@@ -86,7 +86,8 @@ fn sym_of(v: &Value) -> String {
 impl Agent {
     pub fn new(session: &str) -> Agent {
         Agent {
-            session: session.into(), sorts: BTreeMap::new(), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
+            // the situation subject is a protocol constant of the formal language (has(user, I))
+            session: session.into(), sorts: BTreeMap::from([("user".to_string(), "agent".to_string())]), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
             canon: BTreeMap::new(), not_same: BTreeSet::new(), questions: Vec::new(), learned: Vec::new(), off: Vec::new(),
             learning: true, naming: true, bulk: false, stats: Stats::default(), rejects: Vec::new(), model: None, cases: Vec::new(), case_open: None,
         }

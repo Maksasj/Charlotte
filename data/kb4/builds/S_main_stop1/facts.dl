@@ -1,0 +1,1959 @@
+% schema facts4/1  base B1-B9 fnv:baaa3bb5b37f1f8e  raw 4583 msgs
+is_a(clothing, household_item).                              % f:000000 msg 653
+is_a(clothing_part, clothing).                               % f:000001 msg 654
+is_a(furniture, household_item).                             % f:000002 msg 655
+is_a(fixture, household_item).                               % f:000003 msg 656
+is_a(appliance, household_item).                             % f:000004 msg 657
+is_a(kitchen_utensil, household_item).                       % f:000005 msg 658
+is_a(cleaning_tool, household_item).                         % f:000006 msg 659
+is_a(cleaning_agent, household_item).                        % f:000007 msg 660
+is_a(liquid, household_item).                                % f:000008 msg 661
+is_a(refuse, household_item).                                % f:000009 msg 662
+is_a(ingredient, household_item).                            % f:00000a msg 663
+is_a(shirt, clothing).                                       % f:00000b msg 664
+is_a(shoe, clothing).                                        % f:00000c msg 665
+is_a(sleeve, clothing_part).                                 % f:00000d msg 666
+is_a(shelf, furniture).                                      % f:00000e msg 667
+is_a(step_stool, furniture).                                 % f:00000f msg 668
+is_a(window, fixture).                                       % f:000010 msg 669
+is_a(vacuum_cleaner, appliance).                             % f:000011 msg 670
+is_a(washing_machine, appliance).                            % f:000012 msg 671
+is_a(sieve, kitchen_utensil).                                % f:000013 msg 672
+is_a(sponge, cleaning_tool).                                 % f:000014 msg 673
+is_a(squeegee, cleaning_tool).                               % f:000015 msg 674
+is_a(spray_bottle, cleaning_tool).                           % f:000016 msg 675
+is_a(towel, cleaning_tool).                                  % f:000017 msg 676
+is_a(vinegar, cleaning_agent).                               % f:000018 msg 677
+is_a(shoe_polish, cleaning_agent).                           % f:000019 msg 678
+is_a(waste, refuse).                                         % f:00001a msg 679
+is_a(stain, refuse).                                         % f:00001b msg 680
+is_a(salt, ingredient).                                      % f:00001c msg 681
+is_a(cucumber, vegetable).                                   % f:00001d msg 739
+is_a(vegetable, produce).                                    % f:00001e msg 740
+is_a(produce, food).                                         % f:00001f msg 741
+is_a(garlic, vegetable).                                     % f:000020 msg 742
+is_a(clove, vegetable_part).                                 % f:000021 msg 743
+is_a(vegetable_part, produce).                               % f:000022 msg 744
+is_a(floret, vegetable_part).                                % f:000023 msg 745
+is_a(egg, animal_product).                                   % f:000024 msg 746
+is_a(animal_product, food).                                  % f:000025 msg 747
+is_a(flour, baking_ingredient).                              % f:000026 msg 748
+is_a(baking_ingredient, dry_good).                           % f:000027 msg 749
+is_a(dry_good, food).                                        % f:000028 msg 750
+is_a(cocoa_powder, baking_ingredient).                       % f:000029 msg 751
+is_a(couscous, grain).                                       % f:00002a msg 752
+is_a(grain, dry_good).                                       % f:00002b msg 753
+is_a(crumble, dessert).                                      % f:00002c msg 754
+is_a(dessert, baked_good).                                   % f:00002d msg 755
+is_a(baked_good, food).                                      % f:00002e msg 756
+is_a(flatbread, bread).                                      % f:00002f msg 757
+is_a(bread, baked_good).                                     % f:000030 msg 758
+is_a(fork, utensil).                                         % f:000031 msg 759
+is_a(utensil, kitchen_item).                                 % f:000032 msg 760
+is_a(cookware, kitchen_item).                                % f:000033 msg 761
+is_a(glass, container).                                      % f:000034 msg 762
+is_a(container, kitchen_item).                               % f:000035 msg 763
+is_a(food_processor, appliance).                             % f:000036 msg 764
+is_a(appliance, kitchen_item).                               % f:000037 msg 765
+is_a(foil, wrapping).                                        % f:000038 msg 766
+is_a(wrapping, kitchen_item).                                % f:000039 msg 767
+is_a(lemon, citrus).                                         % f:00003a msg 802
+is_a(lime, citrus).                                          % f:00003b msg 803
+is_a(citrus, food).                                          % f:00003c msg 804
+is_a(lettuce, leafy_vegetable).                              % f:00003d msg 805
+is_a(leafy_vegetable, food).                                 % f:00003e msg 806
+is_a(kidney_bean, legume).                                   % f:00003f msg 807
+is_a(legume, food).                                          % f:000040 msg 808
+is_a(honey, sweetener).                                      % f:000041 msg 811
+is_a(sweetener, food).                                       % f:000042 msg 812
+is_a(granola, cereal).                                       % f:000043 msg 813
+is_a(cereal, food).                                          % f:000044 msg 814
+is_a(milk, dairy).                                           % f:000045 msg 815
+is_a(mozzarella, dairy).                                     % f:000046 msg 816
+is_a(dairy, food).                                           % f:000047 msg 817
+is_a(meat, food).                                            % f:000048 msg 818
+is_a(juice, drink).                                          % f:000049 msg 819
+is_a(drink, food).                                           % f:00004a msg 820
+is_a(grater, kitchen_tool).                                  % f:00004b msg 821
+is_a(knife, kitchen_tool).                                   % f:00004c msg 822
+is_a(ladle, kitchen_tool).                                   % f:00004d msg 823
+is_a(juicer, kitchen_tool).                                  % f:00004e msg 824
+is_a(kitchen_tool, tool).                                    % f:00004f msg 825
+is_a(kettle, vessel).                                        % f:000050 msg 826
+is_a(mug, vessel).                                           % f:000051 msg 827
+is_a(loaf_tin, vessel).                                      % f:000052 msg 828
+is_a(lid, vessel_part).                                      % f:000053 msg 829
+is_a(vessel_part, vessel).                                   % f:000054 msg 830
+is_a(screwdriver, hand_tool).                                % f:000055 msg 866
+is_a(spanner, hand_tool).                                    % f:000056 msg 867
+is_a(hand_tool, tool).                                       % f:000057 msg 868
+is_a(utility_knife, cutting_tool).                           % f:000058 msg 869
+is_a(cutting_tool, tool).                                    % f:000059 msg 870
+is_a(tape_measure, measuring_tool).                          % f:00005a msg 871
+is_a(measuring_tool, tool).                                  % f:00005b msg 872
+is_a(step_ladder, ladder).                                   % f:00005c msg 873
+is_a(ladder, equipment).                                     % f:00005d msg 874
+is_a(shelf, fixture).                                        % f:00005e msg 875
+is_a(fixture, building_part).                                % f:00005f msg 876
+is_a(side_panel, panel).                                     % f:000060 msg 877
+is_a(panel, building_part).                                  % f:000061 msg 878
+is_a(tap, fixture).                                          % f:000062 msg 879
+is_a(valve, fitting).                                        % f:000063 msg 880
+is_a(fitting, building_part).                                % f:000064 msg 881
+is_a(screw, fastener).                                       % f:000065 msg 882
+is_a(fastener, hardware).                                    % f:000066 msg 883
+is_a(hardware, supply).                                      % f:000067 msg 884
+is_a(sandpaper, abrasive).                                   % f:000068 msg 885
+is_a(abrasive, supply).                                      % f:000069 msg 886
+is_a(rubbing_alcohol, solvent).                              % f:00006a msg 887
+is_a(solvent, chemical).                                     % f:00006b msg 888
+is_a(chemical, supply).                                      % f:00006c msg 889
+is_a(sealant, repair_material).                              % f:00006d msg 890
+is_a(spackle, filler).                                       % f:00006e msg 891
+is_a(filler, repair_material).                               % f:00006f msg 892
+is_a(repair_material, supply).                               % f:000070 msg 893
+is_a(towel, cleaning_cloth).                                 % f:000071 msg 894
+is_a(cleaning_cloth, supply).                                % f:000072 msg 895
+made_of(sponge, foam).                                       % f:000073 msg 920
+-made_of(sponge, metal).                                     % f:000074 msg 921
+made_of(towel, fabric).                                      % f:000075 msg 922
+-made_of(towel, plastic).                                    % f:000076 msg 923
+made_of(shirt, fabric).                                      % f:000077 msg 924
+made_of(window, glass_material).                             % f:000078 msg 925
+made_of(squeegee, rubber).                                   % f:000079 msg 926
+made_of(sieve, metal).                                       % f:00007a msg 927
+made_of(spray_bottle, plastic).                              % f:00007b msg 928
+made_of(step_stool, metal).                                  % f:00007c msg 929
+made_of(shelf, wood).                                        % f:00007d msg 930
+has_property(sponge, absorbent).                             % f:00007e msg 931
+has_property(sponge, flexible).                              % f:00007f msg 932
+-has_property(sponge, rigid).                                % f:000080 msg 933
+has_property(towel, absorbent).                              % f:000081 msg 934
+-has_property(towel, waterproof).                            % f:000082 msg 935
+has_property(shirt, flexible).                               % f:000083 msg 936
+has_property(window, fragile).                               % f:000084 msg 937
+has_property(window, transparent).                           % f:000085 msg 938
+-has_property(squeegee, absorbent).                          % f:000086 msg 939
+has_property(squeegee, flexible).                            % f:000087 msg 940
+has_property(sieve, rigid).                                  % f:000088 msg 941
+has_property(spray_bottle, waterproof).                      % f:000089 msg 942
+has_property(shelf, rigid).                                  % f:00008a msg 943
+-has_property(shelf, flexible).                              % f:00008b msg 944
+has_property(step_stool, rigid).                             % f:00008c msg 945
+made_of(glass, glass_material).                              % f:00008d msg 962
+made_of(foil, aluminum).                                     % f:00008e msg 963
+made_of(fork, metal).                                        % f:00008f msg 964
+made_of(frying_pan, metal).                                  % f:000090 msg 965
+-made_of(glass, metal).                                      % f:000091 msg 968
+-made_of(frying_pan, glass_material).                        % f:000092 msg 969
+-made_of(foil, glass_material).                              % f:000093 msg 970
+-made_of(fork, glass_material).                              % f:000094 msg 971
+has_property(glass, fragile).                                % f:000095 msg 972
+-has_property(glass, flexible).                              % f:000096 msg 973
+-has_property(glass, absorbent).                             % f:000097 msg 974
+has_property(foil, flexible).                                % f:000098 msg 975
+-has_property(foil, absorbent).                              % f:000099 msg 976
+has_property(egg, fragile).                                  % f:00009a msg 977
+-has_property(egg, flexible).                                % f:00009b msg 978
+has_property(couscous, absorbent).                           % f:00009c msg 979
+has_property(crumble, crumbly).                              % f:00009d msg 980
+has_property(flatbread, flexible).                           % f:00009e msg 981
+-has_property(flatbread, crumbly).                           % f:00009f msg 982
+has_property(frying_pan, heat_resistant).                    % f:0000a0 msg 983
+-has_property(fork, fragile).                                % f:0000a1 msg 984
+has_property(garlic, flavour).                               % f:0000a2 msg 985
+has_property(clove, flavour).                                % f:0000a3 msg 986
+has_property(cocoa_powder, flavour).                         % f:0000a4 msg 987
+-has_property(flour, flavour).                               % f:0000a5 msg 988
+is_a(frying_pan, pan).                                       % f:0000a6 msg 991
+made_of(pan, metal).                                         % f:0000a7 msg 1009
+made_of(knife, metal).                                       % f:0000a8 msg 1011
+made_of(grater, metal).                                      % f:0000a9 msg 1012
+made_of(kettle, metal).                                      % f:0000aa msg 1013
+made_of(ladle, metal).                                       % f:0000ab msg 1014
+made_of(juicer, plastic).                                    % f:0000ac msg 1015
+made_of(mug, ceramic).                                       % f:0000ad msg 1016
+made_of(loaf_tin, aluminum).                                 % f:0000ae msg 1017
+has_property(knife, sharp).                                  % f:0000af msg 1018
+has_property(grater, sharp).                                 % f:0000b0 msg 1019
+has_property(kettle, heat_resistant).                        % f:0000b1 msg 1021
+has_property(ladle, heat_resistant).                         % f:0000b2 msg 1022
+has_property(loaf_tin, heat_resistant).                      % f:0000b3 msg 1023
+has_property(mug, fragile).                                  % f:0000b4 msg 1024
+has_property(granola, crumbly).                              % f:0000b5 msg 1025
+-made_of(mug, metal).                                        % f:0000b6 msg 1026
+-made_of(frying_pan, plastic).                               % f:0000b7 msg 1027
+-has_property(mug, absorbent).                               % f:0000b8 msg 1028
+-has_property(frying_pan, fragile).                          % f:0000b9 msg 1029
+-has_property(honey, absorbent).                             % f:0000ba msg 1030
+-has_property(honey, crumbly).                               % f:0000bb msg 1031
+made_of(screwdriver, metal).                                 % f:0000bc msg 1054
+made_of(screwdriver, plastic).                               % f:0000bd msg 1055
+made_of(screw, metal).                                       % f:0000be msg 1056
+-made_of(spanner, fabric).                                   % f:0000bf msg 1057
+made_of(tape_measure, metal).                                % f:0000c0 msg 1058
+made_of(tape_measure, plastic).                              % f:0000c1 msg 1059
+made_of(utility_knife, metal).                               % f:0000c2 msg 1060
+-has_property(spanner, sharp).                               % f:0000c3 msg 1061
+-has_property(screwdriver, sharp).                           % f:0000c4 msg 1062
+-made_of(towel, metal).                                      % f:0000c5 msg 1065
+made_of(tire_lever, plastic).                                % f:0000c6 msg 1066
+made_of(tire_lever, metal).                                  % f:0000c7 msg 1067
+made_of(tube, plastic).                                      % f:0000c8 msg 1068
+made_of(tap, metal).                                         % f:0000c9 msg 1069
+made_of(valve, metal).                                       % f:0000ca msg 1070
+made_of(step_ladder, aluminum).                              % f:0000cb msg 1072
+made_of(side_panel, wood).                                   % f:0000cc msg 1073
+-has_property(side_panel, fragile).                          % f:0000cd msg 1074
+can_do(sponge, scrub).                                       % f:0000ce msg 1096
+can_do(towel, absorb).                                       % f:0000cf msg 1097
+can_do_on(sponge, scrub, stain).                             % f:0000d0 msg 1098
+can_do_on(shoe_polish, spread, shoe).                        % f:0000d1 msg 1099
+used_for(vinegar, scrub).                                    % f:0000d2 msg 1100
+can_go_in(sponge, sink).                                     % f:0000d3 msg 1101
+can_go_in(towel, drawer).                                    % f:0000d4 msg 1102
+can_go_in(shoe, closet).                                     % f:0000d5 msg 1103
+can_go_in(step_stool, closet).                               % f:0000d6 msg 1104
+can_go_in(vacuum_cleaner, closet).                           % f:0000d7 msg 1105
+-can_go_in(shoe, sink).                                      % f:0000d8 msg 1106
+-can_go_in(shoe_polish, sink).                               % f:0000d9 msg 1107
+-can_go_in(vacuum_cleaner, sink).                            % f:0000da msg 1108
+-can_go_in(window, drawer).                                  % f:0000db msg 1109
+can_go_in(foil, oven).                                       % f:0000dc msg 1126
+-can_go_in(fork, oven).                                      % f:0000dd msg 1127
+can_go_in(glass, fridge).                                    % f:0000de msg 1128
+can_go_in(egg, fridge).                                      % f:0000df msg 1129
+can_go_in(flour, closet).                                    % f:0000e0 msg 1130
+can_do(frying_pan, hold).                                    % f:0000e1 msg 1131
+can_do(food_processor, mix).                                 % f:0000e2 msg 1132
+can_do_on(food_processor, mix, egg).                         % f:0000e3 msg 1133
+can_do(foil, cover).                                         % f:0000e4 msg 1134
+can_do(glass, contain).                                      % f:0000e5 msg 1135
+-can_do(fork, contain).                                      % f:0000e6 msg 1136
+can_do(mug, hold).                                           % f:0000e7 msg 1161
+can_do_on(mug, hold, milk).                                  % f:0000e8 msg 1162
+can_do(kettle, heat).                                        % f:0000e9 msg 1163
+can_do(kettle, hold).                                        % f:0000ea msg 1164
+can_do_on(kettle, heat, milk).                               % f:0000eb msg 1165
+can_do(lid, cover).                                          % f:0000ec msg 1166
+can_do_on(lid, cover, kettle).                               % f:0000ed msg 1167
+can_do_on(lid, cover, mug).                                  % f:0000ee msg 1168
+can_do(loaf_tin, contain).                                   % f:0000ef msg 1169
+can_do_on(loaf_tin, hold, minced_beef).                      % f:0000f0 msg 1170
+can_do(ladle, lift).                                         % f:0000f1 msg 1171
+can_do_on(ladle, lift, juice).                               % f:0000f2 msg 1172
+can_do(ladle, mix).                                          % f:0000f3 msg 1173
+used_for(honey, bind).                                       % f:0000f4 msg 1174
+used_for(lemon, moisten).                                    % f:0000f5 msg 1175
+can_go_in(mug, closet).                                      % f:0000f6 msg 1178
+can_go_in(milk, fridge).                                     % f:0000f7 msg 1179
+can_go_in(hummus, fridge).                                   % f:0000f8 msg 1180
+can_go_in(lettuce, fridge).                                  % f:0000f9 msg 1181
+can_go_in(minced_beef, fridge).                              % f:0000fa msg 1182
+can_go_in(granola, closet).                                  % f:0000fb msg 1183
+can_go_in(juicer, closet).                                   % f:0000fc msg 1184
+can_go_in(loaf_tin, oven).                                   % f:0000fd msg 1185
+-can_go_in(milk, oven).                                      % f:0000fe msg 1186
+-can_go_in(lettuce, oven).                                   % f:0000ff msg 1187
+-can_go_in(juice, oven).                                     % f:000100 msg 1188
+-can_do(lid, heat).                                          % f:000101 msg 1189
+used_for(towel, wipe).                                       % f:000102 msg 1205
+can_go_in(towel, closet).                                    % f:000103 msg 1207
+-can_go_in(towel, oven).                                     % f:000104 msg 1208
+can_go_in(screwdriver, drawer).                              % f:000105 msg 1210
+-can_go_in(screwdriver, oven).                               % f:000106 msg 1211
+-has_property(screwdriver, absorbent).                       % f:000107 msg 1212
+can_do(spackle, spread).                                     % f:000108 msg 1213
+precondition(sand, spackle, spackle_dry).                    % f:000109 msg 1214
+used_for(rubbing_alcohol, wipe).                             % f:00010a msg 1215
+can_go_in(rubbing_alcohol, closet).                          % f:00010b msg 1216
+-can_go_in(rubbing_alcohol, oven).                           % f:00010c msg 1217
+can_go_in(sandpaper, drawer).                                % f:00010d msg 1218
+-can_go_in(sandpaper, oven).                                 % f:00010e msg 1219
+-can_do(towel, spread).                                      % f:00010f msg 1220
+used_for(spanner, fasten).                                   % f:000110 msg 1242
+can_do(allen_key, fasten).                                   % f:000111 msg 1243
+can_do(radiator_key, loosen).                                % f:000112 msg 1244
+can_do(caulk_gun, spread).                                   % f:000113 msg 1245
+can_do(putty_knife, spread).                                 % f:000114 msg 1246
+can_do_on(screwdriver, fasten, screw).                       % f:000115 msg 1249
+can_do_on(spanner, loosen, nut).                             % f:000116 msg 1250
+can_do_on(caulk_gun, spread, caulk).                         % f:000117 msg 1253
+-can_do(paintbrush, fasten).                                 % f:000118 msg 1254
+-can_do(caulk_gun, loosen).                                  % f:000119 msg 1255
+-can_go_in(caulk_gun, oven).                                 % f:00011a msg 1256
+is_a(putty_knife, knife).                                    % f:00011b msg 1262
+is_a(pine_nut, nut).                                         % f:00011c msg 1264
+has_part(vacuum_cleaner, hose).                              % f:00011d msg 1296
+has_part(vacuum_cleaner, bag).                               % f:00011e msg 1297
+has_part(vacuum_cleaner, brush).                             % f:00011f msg 1298
+has_part(vacuum_cleaner, handle).                            % f:000120 msg 1299
+has_part(spray_bottle, trigger).                             % f:000121 msg 1302
+has_part(spray_bottle, nozzle).                              % f:000122 msg 1303
+has_part(spray_bottle, handle).                              % f:000123 msg 1304
+has_part(washing_machine, drum).                             % f:000124 msg 1305
+has_part(washing_machine, door).                             % f:000125 msg 1306
+has_part(shoe, sole).                                        % f:000126 msg 1307
+has_part(shoe, lace).                                        % f:000127 msg 1308
+has_part(shirt, sleeve).                                     % f:000128 msg 1309
+has_part(shirt, collar).                                     % f:000129 msg 1310
+has_part(shirt, button).                                     % f:00012a msg 1311
+has_part(sieve, mesh).                                       % f:00012b msg 1312
+has_part(sieve, handle).                                     % f:00012c msg 1313
+has_part(squeegee, blade).                                   % f:00012d msg 1314
+has_part(squeegee, handle).                                  % f:00012e msg 1315
+has_part(step_stool, step).                                  % f:00012f msg 1316
+has_part(window, pane).                                      % f:000130 msg 1317
+has_part(window, frame).                                     % f:000131 msg 1318
+has_part(window, sill).                                      % f:000132 msg 1319
+has_part(shelf, bracket).                                    % f:000133 msg 1320
+has_part(food_processor, blade).                             % f:000134 msg 1336
+has_part(food_processor, bowl).                              % f:000135 msg 1337
+has_part(food_processor, lid).                               % f:000136 msg 1338
+has_part(fork, tine).                                        % f:000137 msg 1339
+has_part(egg, egg_shell).                                    % f:000138 msg 1340
+has_part(egg, egg_yolk).                                     % f:000139 msg 1341
+has_part(egg, egg_white).                                    % f:00013a msg 1342
+has_part(garlic, clove).                                     % f:00013b msg 1343
+has_part(cauliflower, floret).                               % f:00013c msg 1344
+has_part(cauliflower, stem).                                 % f:00013d msg 1345
+has_part(broccoli, floret).                                  % f:00013e msg 1346
+has_part(broccoli, stem).                                    % f:00013f msg 1347
+has_part(floret, stem).                                      % f:000140 msg 1348
+has_part(knife, blade).                                      % f:000141 msg 1358
+has_part(knife, handle).                                     % f:000142 msg 1359
+has_part(ladle, bowl).                                       % f:000143 msg 1360
+has_part(ladle, handle).                                     % f:000144 msg 1361
+has_part(mug, handle).                                       % f:000145 msg 1362
+has_part(kettle, lid).                                       % f:000146 msg 1363
+has_part(kettle, handle).                                    % f:000147 msg 1364
+has_part(lid, knob).                                         % f:000148 msg 1365
+has_part(juicer, reamer).                                    % f:000149 msg 1366
+has_part(juicer, bowl).                                      % f:00014a msg 1367
+has_part(grater, blade).                                     % f:00014b msg 1368
+-has_part(knife, spout).                                     % f:00014c msg 1369
+-has_part(ladle, blade).                                     % f:00014d msg 1370
+-has_part(kettle, blade).                                    % f:00014e msg 1371
+-has_part(mug, spout).                                       % f:00014f msg 1372
+-has_part(mug, lid).                                         % f:000150 msg 1373
+-has_part(ladle, lid).                                       % f:000151 msg 1374
+is_a(wall_bracket, bracket).                                 % f:000152 msg 1377
+is_a(new_handle, handle).                                    % f:000153 msg 1379
+has_part(tire, valve).                                       % f:000154 msg 1407
+has_part(tire, rim).                                         % f:000155 msg 1408
+has_part(tire, tread).                                       % f:000156 msg 1409
+has_part(tire, bead).                                        % f:000157 msg 1410
+has_part(tire, sidewall).                                    % f:000158 msg 1411
+has_part(tap, valve).                                        % f:000159 msg 1412
+has_part(utility_knife, blade).                              % f:00015a msg 1413
+has_part(screwdriver, shank).                                % f:00015b msg 1414
+has_part(screwdriver, tip).                                  % f:00015c msg 1415
+has_part(screw, head).                                       % f:00015d msg 1416
+has_part(screw, thread).                                     % f:00015e msg 1417
+has_part(spanner, jaw).                                      % f:00015f msg 1418
+has_part(spanner, shank).                                    % f:000160 msg 1419
+has_part(tube, cap).                                         % f:000161 msg 1420
+has_part(tube, nozzle).                                      % f:000162 msg 1421
+has_part(tape_measure, housing).                             % f:000163 msg 1422
+has_part(tape_measure, blade).                               % f:000164 msg 1423
+has_part(step_ladder, step).                                 % f:000165 msg 1424
+has_part(spindle, shaft).                                    % f:000166 msg 1425
+has_part(fork, handle).                                      % f:000167 msg 1433
+-made_of(food_processor, metal).                             % f:000168 msg 1435
+is_a(sort, separate).                                        % f:000169 msg 1454
+is_a(sweep, dust).                                           % f:00016a msg 1455
+is_a(vacuum, dust).                                          % f:00016b msg 1456
+is_a(wring, drain).                                          % f:00016c msg 1457
+-is_a(throw, dust).                                          % f:00016d msg 1458
+effect(wash, shirt, cleaned).                                % f:00016e msg 1459
+effect(wash, window, cleaned).                               % f:00016f msg 1460
+effect(wash, sponge, cleaned).                               % f:000170 msg 1461
+effect(wash, towel, cleaned).                                % f:000171 msg 1462
+effect(wash, shoe, cleaned).                                 % f:000172 msg 1463
+effect(wring, sponge, damp).                                 % f:000173 msg 1464
+effect(wring, towel, damp).                                  % f:000174 msg 1465
+precondition(wring, sponge, damp).                           % f:000175 msg 1466
+precondition(wring, towel, damp).                            % f:000176 msg 1467
+effect(spray, window, damp).                                 % f:000177 msg 1468
+effect(spray, shelf, damp).                                  % f:000178 msg 1469
+effect(dust, shelf, cleaned).                                % f:000179 msg 1470
+effect(vacuum, shelf, cleaned).                              % f:00017a msg 1471
+-effect(throw, waste, cleaned).                              % f:00017b msg 1472
+effect(boil, water, steamy).                                 % f:00017c msg 1473
+effect(buff, shoe, shiny).                                   % f:00017d msg 1474
+effect(buff, window, shiny).                                 % f:00017e msg 1475
+precondition(buff, shoe, cleaned).                           % f:00017f msg 1476
+precondition(buff, window, cleaned).                         % f:000180 msg 1477
+is_a(dice, cut).                                             % f:000181 msg 1498
+is_a(chop, cut).                                             % f:000182 msg 1499
+is_a(halve, cut).                                            % f:000183 msg 1500
+is_a(fry, cook).                                             % f:000184 msg 1501
+is_a(bake, cook).                                            % f:000185 msg 1502
+is_a(boil, cook).                                            % f:000186 msg 1503
+is_a(crack, break).                                          % f:000187 msg 1504
+effect(cook, egg, cooked).                                   % f:000188 msg 1505
+effect(fry, egg, cooked).                                    % f:000189 msg 1506
+effect(boil, egg, firm).                                     % f:00018a msg 1507
+effect(cook, couscous, cooked).                              % f:00018b msg 1508
+effect(crush, garlic, garlic_crushed).                       % f:00018c msg 1509
+effect(cut, garlic, garlic_cut).                             % f:00018d msg 1510
+effect(brown, flour, golden).                                % f:00018e msg 1511
+effect(fry, garlic, golden).                                 % f:00018f msg 1512
+effect(fry, flatbread, golden).                              % f:000190 msg 1513
+effect(blot, cucumber, dry).                                 % f:000191 msg 1514
+precondition(cut, cucumber, cleaned).                        % f:000192 msg 1515
+precondition(dice, cucumber, cleaned).                       % f:000193 msg 1516
+precondition(blot, cucumber, damp).                          % f:000194 msg 1517
+precondition(drain, couscous, cooked).                       % f:000195 msg 1518
+precondition(drizzle, flatbread, cooked).                    % f:000196 msg 1519
+is_a(grate, cut).                                            % f:000197 msg 1548
+is_a(mash, crush).                                           % f:000198 msg 1549
+is_a(crush, break).                                          % f:000199 msg 1550
+is_a(brown, cook).                                           % f:00019a msg 1553
+is_a(layer, add).                                            % f:00019b msg 1554
+effect(halve, lemon, halved).                                % f:00019c msg 1555
+effect(chop, lettuce, in_pieces).                            % f:00019d msg 1556
+effect(dice, lettuce, in_pieces).                            % f:00019e msg 1557
+effect(mash, kidney_bean, mashed).                           % f:00019f msg 1558
+effect(melt, honey, melted).                                 % f:0001a0 msg 1559
+effect(bake, granola, crisp).                                % f:0001a1 msg 1560
+effect(brown, mozzarella, golden).                           % f:0001a2 msg 1561
+effect(boil, milk, boiling).                                 % f:0001a3 msg 1562
+effect(cook, minced_beef, cooked).                           % f:0001a4 msg 1563
+effect(drain, lettuce, dry).                                 % f:0001a5 msg 1564
+effect(close, kettle, covered).                              % f:0001a6 msg 1565
+precondition(mash, kidney_bean, cooked).                     % f:0001a7 msg 1566
+precondition(drain, kidney_bean, cooked).                    % f:0001a8 msg 1567
+precondition(blot, lettuce, damp).                           % f:0001a9 msg 1568
+precondition(melt, honey, hot).                              % f:0001aa msg 1569
+precondition(cook, minced_beef, hot).                        % f:0001ab msg 1570
+is_a(shut, close).                                           % f:0001ac msg 1621
+is_a(spray, apply).                                          % f:0001ad msg 1622
+is_a(tape, attach).                                          % f:0001ae msg 1623
+is_a(test, check).                                           % f:0001af msg 1624
+is_a(tighten, twist).                                        % f:0001b0 msg 1625
+is_a(unscrew, twist).                                        % f:0001b1 msg 1626
+effect(tighten, screw, tight).                               % f:0001b2 msg 1627
+precondition(tighten, screw, loose).                         % f:0001b3 msg 1628
+effect(unscrew, screw, loose).                               % f:0001b4 msg 1629
+precondition(unscrew, screw, tight).                         % f:0001b5 msg 1630
+effect(tighten, valve, tight).                               % f:0001b6 msg 1631
+effect(shut, valve, closed).                                 % f:0001b7 msg 1632
+effect(sharpen, utility_knife, sharpened).                   % f:0001b8 msg 1633
+effect(unpack, tape_measure, unpacked).                      % f:0001b9 msg 1634
+effect(spray, spot, wet).                                    % f:0001ba msg 1635
+effect(soak, towel, wet).                                    % f:0001bb msg 1636
+effect(rinse, towel, clean).                                 % f:0001bc msg 1637
+effect(rinse, spanner, clean).                               % f:0001bd msg 1638
+effect(rinse, spot, clean).                                  % f:0001be msg 1639
+effect(sand, side_panel, smooth).                            % f:0001bf msg 1641
+precondition(sand, side_panel, dry).                         % f:0001c0 msg 1642
+effect(sand, shelf, smooth).                                 % f:0001c1 msg 1643
+task(declutter_closet).                                      % f:0001c2 msg 1646
+takes_time(declutter_closet, 60, 90, minute).                % f:0001c3 msg 1647
+step(declutter_closet, declutter_closet_s1).                 % f:0001c4 msg 1648
+action(declutter_closet_s1, take).                           % f:0001c5 msg 1649
+object_of(declutter_closet_s1, closet_contents).             % f:0001c6 msg 1650
+from(declutter_closet_s1, closet).                           % f:0001c7 msg 1651
+takes_time(declutter_closet_s1, 10, 15, minute).             % f:0001c8 msg 1652
+step(declutter_closet, declutter_closet_s2).                 % f:0001c9 msg 1653
+action(declutter_closet_s2, sort).                           % f:0001ca msg 1654
+object_of(declutter_closet_s2, clothes).                     % f:0001cb msg 1655
+into(declutter_closet_s2, keep_pile).                        % f:0001cc msg 1656
+into(declutter_closet_s2, donate_pile).                      % f:0001cd msg 1659
+into(declutter_closet_s2, throw_away_pile).                  % f:0001ce msg 1662
+takes_time(declutter_closet_s2, 25, 40, minute).             % f:0001cf msg 1665
+step(declutter_closet, declutter_closet_s3).                 % f:0001d0 msg 1666
+action(declutter_closet_s3, pack).                           % f:0001d1 msg 1667
+object_of(declutter_closet_s3, donate_pile).                 % f:0001d2 msg 1668
+object_of(declutter_closet_s3, throw_away_pile).             % f:0001d3 msg 1669
+uses(declutter_closet_s3, bags).                             % f:0001d4 msg 1670
+takes_time(declutter_closet_s3, 5, 10, minute).              % f:0001d5 msg 1672
+step(declutter_closet, declutter_closet_s4).                 % f:0001d6 msg 1673
+action(declutter_closet_s4, wipe).                           % f:0001d7 msg 1674
+object_of(declutter_closet_s4, shelf).                       % f:0001d8 msg 1675
+uses(declutter_closet_s4, cloth).                            % f:0001d9 msg 1677
+role(declutter_closet_s4, cloth, wiping).                    % f:0001da msg 1680
+takes_time(declutter_closet_s4, 5, 10, minute).              % f:0001db msg 1681
+step(declutter_closet, declutter_closet_s5).                 % f:0001dc msg 1682
+action(declutter_closet_s5, hang).                           % f:0001dd msg 1683
+object_of(declutter_closet_s5, cloth).                       % f:0001de msg 1684
+uses(declutter_closet_s5, hanger).                           % f:0001df msg 1685
+into(declutter_closet_s5, closet).                           % f:0001e0 msg 1686
+takes_time(declutter_closet_s5, 15, 20, minute).             % f:0001e1 msg 1687
+needs(declutter_closet, bags).                               % f:0001e2 msg 1688
+needs(declutter_closet, damp_cloth).                         % f:0001e3 msg 1689
+needs(declutter_closet, hangers).                            % f:0001e4 msg 1692
+task(mop_floor).                                             % f:0001e5 msg 1694
+step(mop_floor, mop_floor_s5).                               % f:0001e6 msg 1695
+object_of(mop_floor_s5, floor).                              % f:0001e7 msg 1697
+uses(mop_floor_s5, mop).                                     % f:0001e8 msg 1698
+from(mop_floor_s5, far_corner).                              % f:0001e9 msg 1699
+onto(mop_floor_s5, door).                                    % f:0001ea msg 1700
+takes_time(mop_floor_s5, 10, 15, minute).                    % f:0001eb msg 1701
+takes_time(mop_floor, 25, 35, minute).                       % f:0001ec msg 1702
+needs(mop_floor, broom).                                     % f:0001ed msg 1703
+needs(mop_floor, bucket).                                    % f:0001ee msg 1704
+needs(mop_floor, mop).                                       % f:0001ef msg 1705
+needs(mop_floor, cleaner).                                   % f:0001f0 msg 1706
+needs(mop_floor, warm_water).                                % f:0001f1 msg 1709
+step(mop_floor, mop_floor_s6).                               % f:0001f2 msg 1712
+object_of(mop_floor_s6, floor).                              % f:0001f3 msg 1714
+takes_time(mop_floor_s6, 5, 10, minute).                     % f:0001f4 msg 1715
+check(mop_floor_s6, floor_dry).                              % f:0001f5 msg 1716
+warning(mop_floor_s6, slippery_floor).                       % f:0001f6 msg 1717
+step(mop_floor, mop_floor_s4).                               % f:0001f7 msg 1718
+action(mop_floor_s4, wring).                                 % f:0001f8 msg 1719
+object_of(mop_floor_s4, mop).                                % f:0001f9 msg 1720
+until(mop_floor_s4, damp).                                   % f:0001fa msg 1721
+check(mop_floor_s4, not_dripping).                           % f:0001fb msg 1722
+takes_time(mop_floor_s4, 1, 1, minute).                      % f:0001fc msg 1723
+step(mop_floor, mop_floor_s1).                               % f:0001fd msg 1724
+action(mop_floor_s1, sweep).                                 % f:0001fe msg 1725
+object_of(mop_floor_s1, floor).                              % f:0001ff msg 1726
+uses(mop_floor_s1, broom).                                   % f:000200 msg 1727
+action(mop_floor_s5, check).                                 % f:000201 msg 1729
+object_of(mop_floor_s5, mop).                                % f:000202 msg 1730
+check(mop_floor_s5, not_dripping).                           % f:000203 msg 1731
+condition(mop_floor_s4, barely_damp).                        % f:000204 msg 1735
+step(mop_floor, mop_floor_s3).                               % f:000205 msg 1736
+action(mop_floor_s3, dip).                                   % f:000206 msg 1737
+object_of(mop_floor_s3, mop).                                % f:000207 msg 1738
+into(mop_floor_s3, bucket).                                  % f:000208 msg 1739
+uses(mop_floor_s3, bucket).                                  % f:000209 msg 1740
+step(mop_floor, mop_floor_s8).                               % f:00020a msg 1741
+action(mop_floor_s8, let).                                   % f:00020b msg 1742
+object_of(mop_floor_s8, floor).                              % f:00020c msg 1743
+until(mop_floor_s8, dry).                                    % f:00020d msg 1744
+optional(mop_floor_s8).                                      % f:00020e msg 1745
+warning(mop_floor_s8, walking_on_wet_floor).                 % f:00020f msg 1746
+uses(mop_floor_s6, go).                                      % f:000210 msg 1750
+role(mop_floor_s6, section, floor_area).                     % f:000211 msg 1751
+purpose(mop_floor_s6, clean_floor).                          % f:000212 msg 1752
+from(mop_floor_s6, far_corner).                              % f:000213 msg 1753
+step(mop_floor, mop_floor_s2).                               % f:000214 msg 1754
+action(mop_floor_s2, fill).                                  % f:000215 msg 1755
+object_of(mop_floor_s2, bucket).                             % f:000216 msg 1756
+uses(mop_floor_s2, water).                                   % f:000217 msg 1757
+uses(mop_floor_s2, wood_floor_cleaner).                      % f:000218 msg 1758
+into(mop_floor_s2, bucket).                                  % f:000219 msg 1761
+step(mop_floor, mop_floor_s7).                               % f:00021a msg 1762
+object_of(mop_floor_s7, section).                            % f:00021b msg 1764
+uses(mop_floor_s7, towel).                                   % f:00021c msg 1765
+role(mop_floor_s7, towel, absorb_water).                     % f:00021d msg 1766
+action(mop_floor_s1, test).                                  % f:00021e msg 1768
+uses(mop_floor_s1, wood_floor_cleaner).                      % f:00021f msg 1770
+condition(mop_floor_s1, hidden_spot).                        % f:000220 msg 1771
+check(mop_floor_s1, cleaner_label_wood_floor_directions).    % f:000221 msg 1772
+purpose(mop_floor_s8, dry).                                  % f:000222 msg 1776
+warning(mop_floor_s8, walking_on_floor).                     % f:000223 msg 1777
+from(mop_floor_s3, bucket).                                  % f:000224 msg 1780
+setting(mop_floor_s6, starting_point, far_corner, none).     % f:000225 msg 1790
+until(mop_floor_s4, barely_damp).                            % f:000226 msg 1794
+condition(mop_floor_s7, as_you_go).                          % f:000227 msg 1799
+setting(mop_floor_s5, section, 1, count).                    % f:000228 msg 1808
+condition(mop_floor_s5, starting_from_far_corner).           % f:000229 msg 1809
+action(mop_floor_s8, check).                                 % f:00022a msg 1811
+object_of(mop_floor_s8, cleaner).                            % f:00022b msg 1812
+check(mop_floor_s8, wood_specific_directions).               % f:00022c msg 1813
+needs(mop_floor, towel).                                     % f:00022d msg 1817
+needs(mop_floor, water).                                     % f:00022e msg 1818
+needs(mop_floor, wood_floor_cleaner).                        % f:00022f msg 1819
+uses(mop_floor_s4, mop).                                     % f:000230 msg 1822
+condition(mop_floor_s4, not_dripping).                       % f:000231 msg 1824
+object_of(mop_floor_s7, floor).                              % f:000232 msg 1827
+optional(mop_floor_s7).                                      % f:000233 msg 1828
+warning(mop_floor_s7, walking_on_wet_floor).                 % f:000234 msg 1829
+until(mop_floor_s7, dry).                                    % f:000235 msg 1830
+uses(mop_floor_s6, towel).                                   % f:000236 msg 1833
+role(mop_floor_s6, towel, drying_tool).                      % f:000237 msg 1834
+takes_time(mop_floor_s1, 5, 10, minute).                     % f:000238 msg 1843
+uses(mop_floor_s2, cleaner).                                 % f:000239 msg 1849
+takes_time(mop_floor_s2, 2, 3, minute).                      % f:00023a msg 1851
+task(sort_recycling).                                        % f:00023b msg 1853
+needs(sort_recycling, water).                                % f:00023c msg 1854
+needs(sort_recycling, recycling).                            % f:00023d msg 1855
+needs(sort_recycling, bins).                                 % f:00023e msg 1856
+takes_time(sort_recycling, 10, 15, minute).                  % f:00023f msg 1857
+step(sort_recycling, sort_recycling_s3).                     % f:000240 msg 1858
+action(sort_recycling_s3, separate).                         % f:000241 msg 1859
+object_of(sort_recycling_s3, glass_bottle).                  % f:000242 msg 1860
+takes_time(sort_recycling_s3, 2, 3, minute).                 % f:000243 msg 1862
+step(sort_recycling, sort_recycling_s4).                     % f:000244 msg 1863
+action(sort_recycling_s4, put).                              % f:000245 msg 1864
+object_of(sort_recycling_s4, waste).                         % f:000246 msg 1865
+into(sort_recycling_s4, bins).                               % f:000247 msg 1866
+takes_time(sort_recycling_s4, 2, 3, minute).                 % f:000248 msg 1867
+step(sort_recycling, sort_recycling_s2).                     % f:000249 msg 1868
+action(sort_recycling_s2, flatten).                          % f:00024a msg 1869
+object_of(sort_recycling_s2, cardboard_box).                 % f:00024b msg 1870
+takes_time(sort_recycling_s2, 2, 3, minute).                 % f:00024c msg 1873
+step(sort_recycling, sort_recycling_s1).                     % f:00024d msg 1874
+action(sort_recycling_s1, rinse).                            % f:00024e msg 1875
+object_of(sort_recycling_s1, food_container).                % f:00024f msg 1876
+object_of(sort_recycling_s1, tin).                           % f:000250 msg 1879
+uses(sort_recycling_s1, water).                              % f:000251 msg 1882
+takes_time(sort_recycling_s1, 3, 5, minute).                 % f:000252 msg 1883
+task(wash_dishes).                                           % f:000253 msg 1885
+needs(wash_dishes, sink).                                    % f:000254 msg 1886
+needs(wash_dishes, water).                                   % f:000255 msg 1887
+needs(wash_dishes, dish_soap).                               % f:000256 msg 1888
+needs(wash_dishes, sponge).                                  % f:000257 msg 1891
+needs(wash_dishes, drying_rack).                             % f:000258 msg 1892
+takes_time(wash_dishes, 15, 25, minute).                     % f:000259 msg 1893
+step(wash_dishes, wash_dishes_s4).                           % f:00025a msg 1894
+action(wash_dishes_s4, rinse).                               % f:00025b msg 1895
+object_of(wash_dishes_s4, dish).                             % f:00025c msg 1896
+uses(wash_dishes_s4, water).                                 % f:00025d msg 1899
+condition(wash_dishes_s4, clean).                            % f:00025e msg 1900
+takes_time(wash_dishes_s4, 2, 3, minute).                    % f:00025f msg 1901
+action(wash_dishes_s5, put).                                 % f:000260 msg 1902
+object_of(wash_dishes_s5, dish).                             % f:000261 msg 1903
+onto(wash_dishes_s5, rack).                                  % f:000262 msg 1904
+uses(wash_dishes_s5, rack).                                  % f:000263 msg 1907
+until(wash_dishes_s5, dry).                                  % f:000264 msg 1908
+step(wash_dishes, wash_dishes_s3).                           % f:000265 msg 1909
+action(wash_dishes_s3, wash).                                % f:000266 msg 1910
+object_of(wash_dishes_s3, dish).                             % f:000267 msg 1911
+uses(wash_dishes_s3, sponge).                                % f:000268 msg 1912
+takes_time(wash_dishes_s3, 8, 14, minute).                   % f:000269 msg 1913
+purpose(wash_dishes_s3, keep_water_clean).                   % f:00026a msg 1914
+condition(wash_dishes_s3, glass_before_pan).                 % f:00026b msg 1915
+step(wash_dishes, wash_dishes_s1).                           % f:00026c msg 1916
+action(wash_dishes_s1, scrape).                              % f:00026d msg 1917
+object_of(wash_dishes_s1, plate).                            % f:00026e msg 1918
+into(wash_dishes_s1, bin).                                   % f:00026f msg 1919
+takes_time(wash_dishes_s1, 2, 3, minute).                    % f:000270 msg 1922
+step(wash_dishes, wash_dishes_s2).                           % f:000271 msg 1923
+action(wash_dishes_s2, fill).                                % f:000272 msg 1924
+object_of(wash_dishes_s2, sink).                             % f:000273 msg 1925
+uses(wash_dishes_s2, water).                                 % f:000274 msg 1926
+uses(wash_dishes_s2, soap).                                  % f:000275 msg 1927
+into(wash_dishes_s2, sink).                                  % f:000276 msg 1930
+condition(wash_dishes_s2, hot_water).                        % f:000277 msg 1931
+amount(wash_dishes_s2, soap, 1, squirt).                     % f:000278 msg 1932
+takes_time(wash_dishes_s2, 2, 3, minute).                    % f:000279 msg 1933
+task(bake_potato).                                           % f:00027a msg 1935
+takes_time(bake_potato, 60, 70, minute).                     % f:00027b msg 1936
+needs(bake_potato, potato).                                  % f:00027c msg 1937
+needs(bake_potato, olive_oil).                               % f:00027d msg 1938
+needs(bake_potato, salt).                                    % f:00027e msg 1941
+needs(bake_potato, fork).                                    % f:00027f msg 1942
+needs(bake_potato, baking_tray).                             % f:000280 msg 1943
+needs(bake_potato, oven).                                    % f:000281 msg 1944
+step(bake_potato, bake_potato_s2).                           % f:000282 msg 1945
+action(bake_potato_s2, wash).                                % f:000283 msg 1946
+object_of(bake_potato_s2, potato).                           % f:000284 msg 1947
+overlaps(bake_potato_s2, bake_potato_s1).                    % f:000285 msg 1948
+step(bake_potato, bake_potato_s3).                           % f:000286 msg 1949
+action(bake_potato_s3, prick).                               % f:000287 msg 1950
+object_of(bake_potato_s3, potato).                           % f:000288 msg 1951
+uses(bake_potato_s3, fork).                                  % f:000289 msg 1952
+purpose(bake_potato_s3, steam_escape).                       % f:00028a msg 1953
+overlaps(bake_potato_s3, bake_potato_s1).                    % f:00028b msg 1954
+step(bake_potato, bake_potato_s4).                           % f:00028c msg 1955
+action(bake_potato_s4, rub).                                 % f:00028d msg 1956
+object_of(bake_potato_s4, potato).                           % f:00028e msg 1957
+uses(bake_potato_s4, olive).                                 % f:00028f msg 1958
+uses(bake_potato_s4, oil).                                   % f:000290 msg 1959
+uses(bake_potato_s4, salt).                                  % f:000291 msg 1960
+purpose(bake_potato_s4, crispy_skin).                        % f:000292 msg 1961
+overlaps(bake_potato_s4, bake_potato_s1).                    % f:000293 msg 1962
+step(bake_potato, bake_potato_s5).                           % f:000294 msg 1963
+action(bake_potato_s5, bake).                                % f:000295 msg 1964
+object_of(bake_potato_s5, potato).                           % f:000296 msg 1965
+uses(bake_potato_s5, tray).                                  % f:000297 msg 1966
+uses(bake_potato_s5, oven).                                  % f:000298 msg 1969
+onto(bake_potato_s5, tray).                                  % f:000299 msg 1970
+into(bake_potato_s5, oven).                                  % f:00029a msg 1971
+until(bake_potato_s5, soft_inside).                          % f:00029b msg 1972
+takes_time(bake_potato_s5, 50, 60, minute).                  % f:00029c msg 1973
+action(bake_potato_s6, bake).                                % f:00029d msg 1976
+object_of(bake_potato_s6, potato).                           % f:00029e msg 1977
+uses(bake_potato_s6, baking_tray).                           % f:00029f msg 1978
+into(bake_potato_s6, oven).                                  % f:0002a0 msg 1979
+onto(bake_potato_s6, baking_tray).                           % f:0002a1 msg 1980
+until(bake_potato_s6, soft).                                 % f:0002a2 msg 1981
+takes_time(bake_potato_s6, 5, 10, minute).                   % f:0002a3 msg 1982
+check(bake_potato_s6, inside_soft).                          % f:0002a4 msg 1983
+uses(bake_potato_s4, olive_oil).                             % f:0002a5 msg 1987
+uses(bake_potato_s5, microwave).                             % f:0002a6 msg 1992
+takes_time(bake_potato_s5, 8, 10, minute).                   % f:0002a7 msg 1993
+step(bake_potato, bake_potato_s1).                           % f:0002a8 msg 1994
+action(bake_potato_s1, heat).                                % f:0002a9 msg 1995
+object_of(bake_potato_s1, oven).                             % f:0002aa msg 1996
+uses(bake_potato_s1, oven).                                  % f:0002ab msg 1997
+setting(bake_potato_s1, temperature, 200, celsius).          % f:0002ac msg 1998
+takes_time(bake_potato_s1, 10, 10, minute).                  % f:0002ad msg 1999
+overlaps(bake_potato_s1, bake_potato_s2).                    % f:0002ae msg 2000
+overlaps(bake_potato_s1, bake_potato_s3).                    % f:0002af msg 2001
+overlaps(bake_potato_s1, bake_potato_s4).                    % f:0002b0 msg 2002
+needs(bake_potato, microwave).                               % f:0002b1 msg 2007
+task(make_chili_con_carne).                                  % f:0002b2 msg 2017
+needs(make_chili_con_carne, minced_beef).                    % f:0002b3 msg 2018
+needs(make_chili_con_carne, onion).                          % f:0002b4 msg 2019
+needs(make_chili_con_carne, tin_of_kidney_beans).            % f:0002b5 msg 2020
+needs(make_chili_con_carne, tin_of_chopped_tomatoes).        % f:0002b6 msg 2021
+needs(make_chili_con_carne, chili_powder).                   % f:0002b7 msg 2022
+needs(make_chili_con_carne, oil).                            % f:0002b8 msg 2023
+needs(make_chili_con_carne, knife).                          % f:0002b9 msg 2024
+needs(make_chili_con_carne, large_pot).                      % f:0002ba msg 2025
+takes_time(make_chili_con_carne, 45, 60, minute).            % f:0002bb msg 2028
+step(make_chili_con_carne, make_chili_con_carne_s5).         % f:0002bc msg 2029
+action(make_chili_con_carne_s5, simmer).                     % f:0002bd msg 2030
+object_of(make_chili_con_carne_s5, chili).                   % f:0002be msg 2031
+into(make_chili_con_carne_s5, pot).                          % f:0002bf msg 2032
+condition(make_chili_con_carne_s5, lid_half_on).             % f:0002c0 msg 2035
+takes_time(make_chili_con_carne_s5, 30, 40, minute).         % f:0002c1 msg 2036
+step(make_chili_con_carne, make_chili_con_carne_s6).         % f:0002c2 msg 2037
+action(make_chili_con_carne_s6, stir).                       % f:0002c3 msg 2038
+object_of(make_chili_con_carne_s6, chili).                   % f:0002c4 msg 2039
+overlaps(make_chili_con_carne_s6, make_chili_con_carne_s5).  % f:0002c5 msg 2040
+step(make_chili_con_carne, make_chili_con_carne_s1).         % f:0002c6 msg 2041
+action(make_chili_con_carne_s1, drain).                      % f:0002c7 msg 2042
+object_of(make_chili_con_carne_s1, lentil).                  % f:0002c8 msg 2043
+uses(make_chili_con_carne_s1, pot).                          % f:0002c9 msg 2044
+role(make_chili_con_carne_s1, pot, drain_vessel).            % f:0002ca msg 2045
+action(make_chili_con_carne_s1, chop).                       % f:0002cb msg 2046
+object_of(make_chili_con_carne_s1, onion).                   % f:0002cc msg 2047
+uses(make_chili_con_carne_s1, knife).                        % f:0002cd msg 2048
+takes_time(make_chili_con_carne_s1, 3, 4, minute).           % f:0002ce msg 2049
+takes_time(make_chili_con_carne_s5, 20, 20, minute).         % f:0002cf msg 2054
+step(make_chili_con_carne, make_chili_con_carne_s2).         % f:0002d0 msg 2055
+action(make_chili_con_carne_s2, fry).                        % f:0002d1 msg 2056
+object_of(make_chili_con_carne_s2, onion).                   % f:0002d2 msg 2057
+uses(make_chili_con_carne_s2, oil).                          % f:0002d3 msg 2058
+into(make_chili_con_carne_s2, pot).                          % f:0002d4 msg 2059
+until(make_chili_con_carne_s2, soft).                        % f:0002d5 msg 2060
+takes_time(make_chili_con_carne_s2, 5, 6, minute).           % f:0002d6 msg 2061
+action(make_chili_con_carne_s3, add).                        % f:0002d7 msg 2063
+object_of(make_chili_con_carne_s3, chopped_tomato).          % f:0002d8 msg 2064
+object_of(make_chili_con_carne_s3, chili_powder).            % f:0002d9 msg 2067
+object_of(make_chili_con_carne_s3, kidney_bean).             % f:0002da msg 2068
+into(make_chili_con_carne_s3, pot).                          % f:0002db msg 2069
+takes_time(make_chili_con_carne_s3, 1, 2, minute).           % f:0002dc msg 2070
+condition(make_chili_con_carne_s6, simmering).               % f:0002dd msg 2075
+step(make_chili_con_carne, make_chili_con_carne_s4).         % f:0002de msg 2076
+action(make_chili_con_carne_s4, add).                        % f:0002df msg 2077
+object_of(make_chili_con_carne_s4, lentil).                  % f:0002e0 msg 2078
+into(make_chili_con_carne_s4, pot).                          % f:0002e1 msg 2079
+condition(make_chili_con_carne_s4, drained).                 % f:0002e2 msg 2080
+object_of(make_chili_con_carne_s6, chili_con_carne).         % f:0002e3 msg 2094
+condition(make_chili_con_carne_s4, lentil_drained).          % f:0002e4 msg 2100
+step(make_chili_con_carne, make_chili_con_carne_s3).         % f:0002e5 msg 2101
+uses(make_chili_con_carne_s2, pot).                          % f:0002e6 msg 2112
+needs(make_chili_con_carne, chopped_tomato).                 % f:0002e7 msg 2125
+needs(make_chili_con_carne, kidney_bean).                    % f:0002e8 msg 2126
+needs(make_chili_con_carne, lentil).                         % f:0002e9 msg 2128
+needs(make_chili_con_carne, pot).                            % f:0002ea msg 2131
+object_of(make_chili_con_carne_s3, tomato).                  % f:0002eb msg 2134
+object_of(make_chili_con_carne_s3, powder).                  % f:0002ec msg 2137
+object_of(make_chili_con_carne_s3, bean).                    % f:0002ed msg 2140
+uses(make_chili_con_carne_s3, tomato).                       % f:0002ee msg 2143
+uses(make_chili_con_carne_s3, powder).                       % f:0002ef msg 2144
+uses(make_chili_con_carne_s3, bean).                         % f:0002f0 msg 2145
+role(make_chili_con_carne_s2, oil, cooking_medium).          % f:0002f1 msg 2152
+role(make_chili_con_carne_s2, pot, cooking_vessel).          % f:0002f2 msg 2153
+action(make_chili_con_carne_s3, brown).                      % f:0002f3 msg 2168
+object_of(make_chili_con_carne_s3, beef).                    % f:0002f4 msg 2169
+uses(make_chili_con_carne_s3, onion).                        % f:0002f5 msg 2172
+uses(make_chili_con_carne_s3, pot).                          % f:0002f6 msg 2173
+takes_time(make_chili_con_carne_s3, 5, 6, minute).           % f:0002f7 msg 2175
+object_of(make_chili_con_carne_s4, tomatoes).                % f:0002f8 msg 2178
+object_of(make_chili_con_carne_s4, beans).                   % f:0002f9 msg 2181
+object_of(make_chili_con_carne_s4, powder).                  % f:0002fa msg 2184
+uses(make_chili_con_carne_s4, tomatoes).                     % f:0002fb msg 2185
+uses(make_chili_con_carne_s4, beans).                        % f:0002fc msg 2186
+uses(make_chili_con_carne_s4, powder).                       % f:0002fd msg 2187
+takes_time(make_chili_con_carne_s4, 1, 2, minute).           % f:0002fe msg 2188
+uses(make_chili_con_carne_s4, lentil).                       % f:0002ff msg 2192
+task(make_french_toast).                                     % f:000300 msg 2195
+object_of(make_french_toast_s1, egg).                        % f:000301 msg 2197
+object_of(make_french_toast_s1, milk).                       % f:000302 msg 2198
+uses(make_french_toast_s1, bowl).                            % f:000303 msg 2199
+into(make_french_toast_s1, bowl).                            % f:000304 msg 2200
+takes_time(make_french_toast_s1, 2, 3, minute).              % f:000305 msg 2201
+takes_time(make_french_toast, 12, 15, minute).               % f:000306 msg 2202
+needs(make_french_toast, bread).                             % f:000307 msg 2203
+needs(make_french_toast, eggs).                              % f:000308 msg 2204
+needs(make_french_toast, milk).                              % f:000309 msg 2205
+needs(make_french_toast, butter).                            % f:00030a msg 2206
+needs(make_french_toast, bowl).                              % f:00030b msg 2207
+needs(make_french_toast, pan).                               % f:00030c msg 2208
+step(make_french_toast, make_french_toast_s2).               % f:00030d msg 2209
+action(make_french_toast_s2, melt).                          % f:00030e msg 2210
+object_of(make_french_toast_s2, butter).                     % f:00030f msg 2211
+into(make_french_toast_s2, frying_pan).                      % f:000310 msg 2212
+uses(make_french_toast_s2, frying_pan).                      % f:000311 msg 2213
+setting(make_french_toast_s2, heat, medium, level).          % f:000312 msg 2214
+takes_time(make_french_toast_s2, 2, 3, minute).              % f:000313 msg 2215
+overlaps(make_french_toast_s2, make_french_toast_s1).        % f:000314 msg 2216
+step(make_french_toast, make_french_toast_s3).               % f:000315 msg 2217
+action(make_french_toast_s3, dip).                           % f:000316 msg 2218
+object_of(make_french_toast_s3, bread).                      % f:000317 msg 2219
+into(make_french_toast_s3, bowl).                            % f:000318 msg 2220
+uses(make_french_toast_s3, bowl).                            % f:000319 msg 2221
+condition(make_french_toast_s3, turned_once).                % f:00031a msg 2222
+takes_time(make_french_toast_s3, 1, 2, minute).              % f:00031b msg 2223
+step(make_french_toast, make_french_toast_s4).               % f:00031c msg 2224
+action(make_french_toast_s4, fry).                           % f:00031d msg 2225
+object_of(make_french_toast_s4, bread).                      % f:00031e msg 2226
+uses(make_french_toast_s4, pan).                             % f:00031f msg 2227
+into(make_french_toast_s4, pan).                             % f:000320 msg 2228
+until(make_french_toast_s4, golden_brown_both_sides).        % f:000321 msg 2229
+takes_time(make_french_toast_s4, 6, 8, minute).              % f:000322 msg 2230
+uses(make_french_toast_s4, frying_pan).                      % f:000323 msg 2233
+setting(make_french_toast_s4, temperature, hot, none).       % f:000324 msg 2234
+until(make_french_toast_s4, golden).                         % f:000325 msg 2236
+check(make_french_toast_s4, both_sides_golden).              % f:000326 msg 2237
+needs(make_french_toast, frying_pan).                        % f:000327 msg 2238
+action(make_french_toast_s2, heat).                          % f:000328 msg 2240
+object_of(make_french_toast_s2, vegetable_oil).              % f:000329 msg 2241
+needs(make_french_toast, vegetable_oil).                     % f:00032a msg 2249
+uses(make_french_toast_s1, milk).                            % f:00032b msg 2252
+into(make_french_toast_s3, egg_and_milk_mixture).            % f:00032c msg 2259
+into(make_french_toast_s4, hot_frying_pan).                  % f:00032d msg 2264
+uses(make_french_toast_s3, egg_milk_mixture).                % f:00032e msg 2272
+step(make_french_toast, make_french_toast_s1).               % f:00032f msg 2275
+uses(make_french_toast_s3, egg).                             % f:000330 msg 2289
+needs(make_french_toast, egg).                               % f:000331 msg 2293
+check(make_french_toast_s4, golden).                         % f:000332 msg 2308
+object_of(make_french_toast_s2, oil).                        % f:000333 msg 2312
+uses(make_french_toast_s2, pan).                             % f:000334 msg 2313
+uses(make_french_toast_s2, oil).                             % f:000335 msg 2314
+role(make_french_toast_s2, pan, frying).                     % f:000336 msg 2315
+task(make_guacamole).                                        % f:000337 msg 2320
+takes_time(make_guacamole, 10, 14, minute).                  % f:000338 msg 2321
+needs(make_guacamole, avocados).                             % f:000339 msg 2322
+needs(make_guacamole, lime).                                 % f:00033a msg 2323
+needs(make_guacamole, onion).                                % f:00033b msg 2324
+needs(make_guacamole, salt).                                 % f:00033c msg 2325
+needs(make_guacamole, knife).                                % f:00033d msg 2326
+needs(make_guacamole, bowl).                                 % f:00033e msg 2327
+needs(make_guacamole, fork).                                 % f:00033f msg 2328
+step(make_guacamole, make_guacamole_s4).                     % f:000340 msg 2329
+action(make_guacamole_s4, mash).                             % f:000341 msg 2330
+object_of(make_guacamole_s4, avocado).                       % f:000342 msg 2331
+uses(make_guacamole_s4, fork).                               % f:000343 msg 2332
+until(make_guacamole_s4, slightly_chunky).                   % f:000344 msg 2333
+takes_time(make_guacamole_s4, 2, 3, minute).                 % f:000345 msg 2334
+step(make_guacamole, make_guacamole_s3).                     % f:000346 msg 2335
+action(make_guacamole_s3, scoop).                            % f:000347 msg 2336
+object_of(make_guacamole_s3, flesh).                         % f:000348 msg 2337
+into(make_guacamole_s3, bowl).                               % f:000349 msg 2338
+takes_time(make_guacamole_s3, 2, 3, minute).                 % f:00034a msg 2339
+step(make_guacamole, make_guacamole_s5).                     % f:00034b msg 2340
+action(make_guacamole_s5, mix).                              % f:00034c msg 2341
+object_of(make_guacamole_s5, onion).                         % f:00034d msg 2342
+uses(make_guacamole_s5, lime).                               % f:00034e msg 2343
+uses(make_guacamole_s5, salt).                               % f:00034f msg 2344
+amount(make_guacamole_s5, salt, 1, pinch).                   % f:000350 msg 2345
+takes_time(make_guacamole_s5, 1, 2, minute).                 % f:000351 msg 2346
+step(make_guacamole, make_guacamole_s2).                     % f:000352 msg 2347
+action(make_guacamole_s2, halve).                            % f:000353 msg 2348
+object_of(make_guacamole_s2, avocado).                       % f:000354 msg 2349
+uses(make_guacamole_s2, knife).                              % f:000355 msg 2350
+action(make_guacamole_s1, chop).                             % f:000356 msg 2351
+object_of(make_guacamole_s1, onion).                         % f:000357 msg 2352
+uses(make_guacamole_s1, knife).                              % f:000358 msg 2353
+step(make_guacamole, make_guacamole_s1).                     % f:000359 msg 2354
+until(make_guacamole_s4, chunky).                            % f:00035a msg 2359
+uses(make_guacamole_s5, lemon).                              % f:00035b msg 2363
+needs(make_guacamole, lemon).                                % f:00035c msg 2366
+object_of(make_guacamole_s3, avocado_flesh).                 % f:00035d msg 2370
+uses(make_guacamole_s3, bowl).                               % f:00035e msg 2373
+needs(make_guacamole, avocado).                              % f:00035f msg 2375
+condition(make_guacamole_s4, chunky).                        % f:000360 msg 2387
+condition(make_guacamole_s1, finely_chopped).                % f:000361 msg 2398
+takes_time(make_guacamole_s1, 3, 4, minute).                 % f:000362 msg 2399
+uses(make_guacamole_s3, spoon).                              % f:000363 msg 2402
+from(make_guacamole_s3, avocado).                            % f:000364 msg 2404
+task(make_hot_chocolate).                                    % f:000365 msg 2406
+takes_time(make_hot_chocolate, 6, 9, minute).                % f:000366 msg 2407
+needs(make_hot_chocolate, milk).                             % f:000367 msg 2408
+needs(make_hot_chocolate, cocoa).                            % f:000368 msg 2409
+needs(make_hot_chocolate, sugar).                            % f:000369 msg 2410
+needs(make_hot_chocolate, saucepan).                         % f:00036a msg 2411
+needs(make_hot_chocolate, mug).                              % f:00036b msg 2412
+action(make_hot_chocolate_s4, stir).                         % f:00036c msg 2413
+object_of(make_hot_chocolate_s4, powder).                    % f:00036d msg 2414
+uses(make_hot_chocolate_s4, mug).                            % f:00036e msg 2415
+from(make_hot_chocolate_s4, cocoa).                          % f:00036f msg 2416
+into(make_hot_chocolate_s4, milk).                           % f:000370 msg 2417
+until(make_hot_chocolate_s4, smooth).                        % f:000371 msg 2418
+takes_time(make_hot_chocolate_s4, 1, 2, minute).             % f:000372 msg 2419
+overlaps(make_hot_chocolate_s2, make_hot_chocolate_s1).      % f:000373 msg 2420
+action(make_hot_chocolate_s2, mix).                          % f:000374 msg 2421
+object_of(make_hot_chocolate_s2, cocoa).                     % f:000375 msg 2422
+object_of(make_hot_chocolate_s2, sugar).                     % f:000376 msg 2423
+uses(make_hot_chocolate_s2, milk).                           % f:000377 msg 2424
+into(make_hot_chocolate_s2, mug).                            % f:000378 msg 2425
+condition(make_hot_chocolate_s2, milk_cold).                 % f:000379 msg 2426
+takes_time(make_hot_chocolate_s2, 1, 2, minute).             % f:00037a msg 2427
+step(make_hot_chocolate, make_hot_chocolate_s4).             % f:00037b msg 2428
+object_of(make_hot_chocolate_s4, mixture).                   % f:00037c msg 2430
+action(make_hot_chocolate_s3, pour).                         % f:00037d msg 2435
+object_of(make_hot_chocolate_s3, oat_milk).                  % f:00037e msg 2436
+uses(make_hot_chocolate_s3, oat_milk).                       % f:00037f msg 2439
+into(make_hot_chocolate_s3, mug).                            % f:000380 msg 2440
+condition(make_hot_chocolate_s3, hot).                       % f:000381 msg 2441
+needs(make_hot_chocolate, oat_milk).                         % f:000382 msg 2442
+step(make_hot_chocolate, make_hot_chocolate_s1).             % f:000383 msg 2443
+action(make_hot_chocolate_s1, heat).                         % f:000384 msg 2444
+object_of(make_hot_chocolate_s1, oat_milk).                  % f:000385 msg 2445
+uses(make_hot_chocolate_s1, saucepan).                       % f:000386 msg 2446
+setting(make_hot_chocolate_s1, heat, medium, level).         % f:000387 msg 2447
+takes_time(make_hot_chocolate_s1, 4, 5, minute).             % f:000388 msg 2448
+step(make_hot_chocolate, make_hot_chocolate_s2).             % f:000389 msg 2449
+object_of(make_hot_chocolate_s2, cocoa_powder).              % f:00038a msg 2451
+uses(make_hot_chocolate_s2, oat_milk).                       % f:00038b msg 2453
+uses(make_hot_chocolate_s2, mug).                            % f:00038c msg 2454
+step(make_hot_chocolate, make_hot_chocolate_s3).             % f:00038d msg 2463
+object_of(make_hot_chocolate_s3, milk).                      % f:00038e msg 2465
+uses(make_hot_chocolate_s3, milk).                           % f:00038f msg 2466
+role(make_hot_chocolate_s3, oat, modifier).                  % f:000390 msg 2467
+uses(make_hot_chocolate_s2, oat).                            % f:000391 msg 2474
+uses(make_hot_chocolate_s2, chocolate).                      % f:000392 msg 2475
+object_of(make_hot_chocolate_s1, oat).                       % f:000393 msg 2481
+object_of(make_hot_chocolate_s1, milk).                      % f:000394 msg 2482
+into(make_hot_chocolate_s1, saucepan).                       % f:000395 msg 2484
+from(make_hot_chocolate_s3, saucepan).                       % f:000396 msg 2489
+uses(make_hot_chocolate_s3, mug).                            % f:000397 msg 2491
+task(make_omelette).                                         % f:000398 msg 2501
+takes_time(make_omelette, 6, 10, minute).                    % f:000399 msg 2502
+needs(make_omelette, eggs).                                  % f:00039a msg 2503
+needs(make_omelette, butter).                                % f:00039b msg 2504
+needs(make_omelette, salt).                                  % f:00039c msg 2505
+needs(make_omelette, bowl).                                  % f:00039d msg 2506
+needs(make_omelette, fork).                                  % f:00039e msg 2507
+needs(make_omelette, frying_pan).                            % f:00039f msg 2508
+step(make_omelette, make_omelette_s5).                       % f:0003a0 msg 2509
+action(make_omelette_s5, fold).                              % f:0003a1 msg 2510
+object_of(make_omelette_s5, omelette).                       % f:0003a2 msg 2511
+setting(make_omelette_s5, portion, 2, part).                 % f:0003a3 msg 2512
+step(make_omelette, make_omelette_s2).                       % f:0003a4 msg 2515
+action(make_omelette_s2, beat).                              % f:0003a5 msg 2516
+object_of(make_omelette_s2, eggs).                           % f:0003a6 msg 2517
+uses(make_omelette_s2, fork).                                % f:0003a7 msg 2518
+uses(make_omelette_s2, salt).                                % f:0003a8 msg 2519
+amount(make_omelette_s2, salt, 1, pinch).                    % f:0003a9 msg 2520
+takes_time(make_omelette_s2, 1, 1, minute).                  % f:0003aa msg 2521
+step(make_omelette, make_omelette_s4).                       % f:0003ab msg 2522
+action(make_omelette_s4, cook).                              % f:0003ac msg 2523
+object_of(make_omelette_s4, eggs).                           % f:0003ad msg 2524
+uses(make_omelette_s4, pan).                                 % f:0003ae msg 2525
+until(make_omelette_s4, set).                                % f:0003af msg 2526
+takes_time(make_omelette_s4, 3, 4, minute).                  % f:0003b0 msg 2527
+step(make_omelette, make_omelette_s6).                       % f:0003b1 msg 2528
+action(make_omelette_s6, fold).                              % f:0003b2 msg 2529
+object_of(make_omelette_s6, omelette).                       % f:0003b3 msg 2530
+step(make_omelette, make_omelette_s3).                       % f:0003b4 msg 2531
+action(make_omelette_s3, melt).                              % f:0003b5 msg 2532
+object_of(make_omelette_s3, butter).                         % f:0003b6 msg 2533
+uses(make_omelette_s3, pan).                                 % f:0003b7 msg 2534
+into(make_omelette_s3, pan).                                 % f:0003b8 msg 2535
+takes_time(make_omelette_s3, 1, 2, minute).                  % f:0003b9 msg 2536
+action(make_omelette_s1, crack).                             % f:0003ba msg 2537
+object_of(make_omelette_s1, egg).                            % f:0003bb msg 2538
+into(make_omelette_s1, bowl).                                % f:0003bc msg 2539
+action(make_omelette_s1, pour).                              % f:0003bd msg 2540
+object_of(make_omelette_s1, beaten_egg).                     % f:0003be msg 2541
+into(make_omelette_s1, buttered_pan).                        % f:0003bf msg 2544
+step(make_omelette, make_omelette_s1).                       % f:0003c0 msg 2547
+object_of(make_omelette_s4, egg).                            % f:0003c1 msg 2549
+into(make_omelette_s4, pan).                                 % f:0003c2 msg 2551
+action(make_omelette_s2, watch).                             % f:0003c3 msg 2555
+object_of(make_omelette_s2, edge).                           % f:0003c4 msg 2556
+check(make_omelette_s2, edge_firm).                          % f:0003c5 msg 2557
+check(make_omelette_s2, middle_wet).                         % f:0003c6 msg 2558
+until(make_omelette_s2, edge_firm).                          % f:0003c7 msg 2559
+action(make_omelette_s5, sprinkle).                          % f:0003c8 msg 2561
+object_of(make_omelette_s5, cheese).                         % f:0003c9 msg 2562
+onto(make_omelette_s5, egg).                                 % f:0003ca msg 2563
+condition(make_omelette_s5, egg_almost_set).                 % f:0003cb msg 2564
+object_of(make_omelette_s2, egg).                            % f:0003cc msg 2567
+action(make_omelette_s3, pour).                              % f:0003cd msg 2572
+object_of(make_omelette_s3, egg).                            % f:0003ce msg 2573
+condition(make_omelette_s3, pan_is_hot).                     % f:0003cf msg 2575
+action(make_omelette_s4, check).                             % f:0003d0 msg 2577
+check(make_omelette_s4, almost_set).                         % f:0003d1 msg 2578
+condition(make_omelette_s4, top_is_glossy_but_slightly_wet). % f:0003d2 msg 2579
+until(make_omelette_s3, almost_set).                         % f:0003d3 msg 2580
+uses(make_omelette_s5, cheese).                              % f:0003d4 msg 2584
+into(make_omelette_s5, egg).                                 % f:0003d5 msg 2585
+needs(make_omelette, egg).                                   % f:0003d6 msg 2588
+needs(make_omelette, cheese).                                % f:0003d7 msg 2591
+needs(make_omelette, pan).                                   % f:0003d8 msg 2594
+purpose(make_omelette_s2, seasoned_egg).                     % f:0003d9 msg 2601
+object_of(make_omelette_s1, eggs).                           % f:0003da msg 2610
+uses(make_omelette_s1, bowl).                                % f:0003db msg 2612
+uses(make_omelette_s1, egg).                                 % f:0003dc msg 2615
+task(make_quesadilla).                                       % f:0003dd msg 2633
+action(make_quesadilla_s2, sprinkle).                        % f:0003de msg 2634
+object_of(make_quesadilla_s2, cheese).                       % f:0003df msg 2635
+uses(make_quesadilla_s2, cheese).                            % f:0003e0 msg 2636
+into(make_quesadilla_s2, tortillas).                         % f:0003e1 msg 2637
+step(make_quesadilla, make_quesadilla_s2).                   % f:0003e2 msg 2638
+step(make_quesadilla, make_quesadilla_s3).                   % f:0003e3 msg 2639
+action(make_quesadilla_s3, put).                             % f:0003e4 msg 2640
+object_of(make_quesadilla_s3, tortilla).                     % f:0003e5 msg 2641
+onto(make_quesadilla_s3, top).                               % f:0003e6 msg 2642
+takes_time(make_quesadilla_s3, 1, 1, minute).                % f:0003e7 msg 2643
+uses(make_quesadilla_s3, tortillas).                         % f:0003e8 msg 2644
+optional(make_quesadilla_s3).                                % f:0003e9 msg 2645
+overlaps(make_quesadilla_s3, make_quesadilla_s2).            % f:0003ea msg 2646
+role(make_quesadilla_s3, tortillas, second_tortilla).        % f:0003eb msg 2647
+until(make_quesadilla_s3, ready).                            % f:0003ec msg 2648
+step(make_quesadilla, make_quesadilla_s1).                   % f:0003ed msg 2649
+action(make_quesadilla_s1, heat).                            % f:0003ee msg 2650
+object_of(make_quesadilla_s1, pan).                          % f:0003ef msg 2651
+uses(make_quesadilla_s1, pan).                               % f:0003f0 msg 2652
+role(make_quesadilla_s1, pan, cooking_vessel).               % f:0003f1 msg 2653
+condition(make_quesadilla_s1, dry).                          % f:0003f2 msg 2654
+setting(make_quesadilla_s1, heat_level, medium, none).       % f:0003f3 msg 2655
+takes_time(make_quesadilla_s1, 2, 3, minute).                % f:0003f4 msg 2656
+takes_time(make_quesadilla, 8, 12, minute).                  % f:0003f5 msg 2657
+needs(make_quesadilla, tortillas).                           % f:0003f6 msg 2658
+needs(make_quesadilla, grated_cheese).                       % f:0003f7 msg 2659
+needs(make_quesadilla, frying_pan).                          % f:0003f8 msg 2662
+needs(make_quesadilla, spatula).                             % f:0003f9 msg 2663
+needs(make_quesadilla, knife).                               % f:0003fa msg 2664
+action(make_quesadilla_s3, scatter).                         % f:0003fb msg 2667
+object_of(make_quesadilla_s3, chicken).                      % f:0003fc msg 2668
+onto(make_quesadilla_s3, cheese).                            % f:0003fd msg 2669
+needs(make_quesadilla, tortilla).                            % f:0003fe msg 2670
+step(make_quesadilla, make_quesadilla_s8).                   % f:0003ff msg 2671
+action(make_quesadilla_s8, cut).                             % f:000400 msg 2672
+object_of(make_quesadilla_s8, quesadilla).                   % f:000401 msg 2673
+uses(make_quesadilla_s8, knife).                             % f:000402 msg 2674
+step(make_quesadilla, make_quesadilla_s7).                   % f:000403 msg 2676
+action(make_quesadilla_s7, fry).                             % f:000404 msg 2677
+object_of(make_quesadilla_s7, quesadilla).                   % f:000405 msg 2678
+until(make_quesadilla_s7, cheese_melted).                    % f:000406 msg 2679
+takes_time(make_quesadilla_s7, 2, 3, minute).                % f:000407 msg 2680
+step(make_quesadilla, make_quesadilla_s4).                   % f:000408 msg 2681
+action(make_quesadilla_s4, put).                             % f:000409 msg 2682
+object_of(make_quesadilla_s4, tortilla).                     % f:00040a msg 2683
+onto(make_quesadilla_s4, cheese).                            % f:00040b msg 2684
+takes_time(make_quesadilla_s4, 1, 1, minute).                % f:00040c msg 2685
+step(make_quesadilla, make_quesadilla_s5).                   % f:00040d msg 2686
+action(make_quesadilla_s5, fry).                             % f:00040e msg 2687
+object_of(make_quesadilla_s5, bottom_side).                  % f:00040f msg 2688
+uses(make_quesadilla_s5, pan).                               % f:000410 msg 2689
+until(make_quesadilla_s5, golden).                           % f:000411 msg 2690
+takes_time(make_quesadilla_s5, 2, 3, minute).                % f:000412 msg 2691
+step(make_quesadilla, make_quesadilla_s6).                   % f:000413 msg 2692
+action(make_quesadilla_s6, flip).                            % f:000414 msg 2693
+object_of(make_quesadilla_s6, quesadilla).                   % f:000415 msg 2694
+uses(make_quesadilla_s6, spatula).                           % f:000416 msg 2695
+role(make_quesadilla_s6, spatula, flipper).                  % f:000417 msg 2696
+action(make_quesadilla_s1, repeat).                          % f:000418 msg 2698
+uses(make_quesadilla_s1, frying_pan).                        % f:000419 msg 2700
+object_of(make_quesadilla_s1, frying_pan).                   % f:00041a msg 2703
+setting(make_quesadilla_s1, heat, medium, level).            % f:00041b msg 2704
+condition(make_quesadilla_s1, dry_pan).                      % f:00041c msg 2706
+needs(make_quesadilla, chicken).                             % f:00041d msg 2707
+action(make_quesadilla_s1, scatter).                         % f:00041e msg 2709
+object_of(make_quesadilla_s1, chicken).                      % f:00041f msg 2710
+onto(make_quesadilla_s1, cheese).                            % f:000420 msg 2711
+optional(make_quesadilla_s1).                                % f:000421 msg 2712
+onto(make_quesadilla_s2, tortilla).                          % f:000422 msg 2716
+condition(make_quesadilla_s2, tortilla_held).                % f:000423 msg 2717
+amount(make_quesadilla_s8, quesadilla, wedge, unit).         % f:000424 msg 2723
+object_of(make_quesadilla_s5, quesadilla).                   % f:000425 msg 2731
+role(make_quesadilla_s2, tortilla, holder).                  % f:000426 msg 2739
+condition(make_quesadilla_s1, pan_dry).                      % f:000427 msg 2746
+into(make_quesadilla_s3, cheese).                            % f:000428 msg 2749
+needs(make_quesadilla, cheese).                              % f:000429 msg 2751
+into(make_quesadilla_s5, frying_pan).                        % f:00042a msg 2760
+check(make_quesadilla_s5, bottom_golden).                    % f:00042b msg 2762
+until(make_quesadilla_s1, dry).                              % f:00042c msg 2778
+action(make_quesadilla_s5, flip).                            % f:00042d msg 2779
+uses(make_quesadilla_s5, spatula).                           % f:00042e msg 2781
+role(make_quesadilla_s5, spatula, flipping_tool).            % f:00042f msg 2782
+action(make_quesadilla_s6, fry).                             % f:000430 msg 2784
+object_of(make_quesadilla_s6, other_side).                   % f:000431 msg 2785
+uses(make_quesadilla_s6, pan).                               % f:000432 msg 2786
+until(make_quesadilla_s6, cheese_melted).                    % f:000433 msg 2787
+takes_time(make_quesadilla_s6, 2, 3, minute).                % f:000434 msg 2788
+action(make_quesadilla_s4, fry).                             % f:000435 msg 2790
+object_of(make_quesadilla_s4, quesadilla).                   % f:000436 msg 2791
+uses(make_quesadilla_s4, pan).                               % f:000437 msg 2792
+takes_time(make_quesadilla_s4, 2, 3, minute).                % f:000438 msg 2793
+until(make_quesadilla_s4, bottom_golden).                    % f:000439 msg 2794
+task(bleed_radiator).                                        % f:00043a msg 2796
+needs(bleed_radiator, radiator_key).                         % f:00043b msg 2797
+needs(bleed_radiator, cloth).                                % f:00043c msg 2798
+takes_time(bleed_radiator, 10, 15, minute).                  % f:00043d msg 2799
+step(bleed_radiator, bleed_radiator_s2).                     % f:00043e msg 2800
+action(bleed_radiator_s2, cool).                             % f:00043f msg 2801
+object_of(bleed_radiator_s2, radiator).                      % f:000440 msg 2802
+takes_time(bleed_radiator_s2, 5, 10, minute).                % f:000441 msg 2803
+step(bleed_radiator, bleed_radiator_s3).                     % f:000442 msg 2804
+action(bleed_radiator_s3, hold).                             % f:000443 msg 2805
+object_of(bleed_radiator_s3, cloth).                         % f:000444 msg 2806
+uses(bleed_radiator_s3, cloth).                              % f:000445 msg 2807
+role(bleed_radiator_s3, cloth, catch_drips).                 % f:000446 msg 2808
+into(bleed_radiator_s3, bleed_valve).                        % f:000447 msg 2809
+action(bleed_radiator_s4, open).                             % f:000448 msg 2813
+object_of(bleed_radiator_s4, bleed_valve).                   % f:000449 msg 2814
+uses(bleed_radiator_s4, key).                                % f:00044a msg 2815
+role(bleed_radiator_s4, key, turning_tool).                  % f:00044b msg 2818
+amount(bleed_radiator_s4, bleed_valve, 0.25, turn).          % f:00044c msg 2819
+until(bleed_radiator_s4, water_drips).                       % f:00044d msg 2820
+takes_time(bleed_radiator_s4, 1, 2, minute).                 % f:00044e msg 2821
+step(bleed_radiator, bleed_radiator_s5).                     % f:00044f msg 2822
+action(bleed_radiator_s5, close).                            % f:000450 msg 2823
+object_of(bleed_radiator_s5, valve).                         % f:000451 msg 2824
+uses(bleed_radiator_s5, key).                                % f:000452 msg 2825
+role(bleed_radiator_s5, key, valve_turning).                 % f:000453 msg 2826
+takes_time(bleed_radiator_s5, 1, 1, minute).                 % f:000454 msg 2827
+action(bleed_radiator_s1, switch_off).                       % f:000455 msg 2828
+object_of(bleed_radiator_s1, heating).                       % f:000456 msg 2829
+action(bleed_radiator_s3, start).                            % f:000457 msg 2835
+object_of(bleed_radiator_s3, radiator).                      % f:000458 msg 2836
+condition(bleed_radiator_s3, farthest).                      % f:000459 msg 2837
+step(bleed_radiator, bleed_radiator_s4).                     % f:00045a msg 2838
+action(bleed_radiator_s4, hold).                             % f:00045b msg 2839
+object_of(bleed_radiator_s4, cloth).                         % f:00045c msg 2840
+uses(bleed_radiator_s4, cloth).                              % f:00045d msg 2841
+role(bleed_radiator_s4, cloth, catch_drip).                  % f:00045e msg 2842
+action(bleed_radiator_s5, hold).                             % f:00045f msg 2845
+object_of(bleed_radiator_s5, cloth).                         % f:000460 msg 2846
+uses(bleed_radiator_s5, cloth).                              % f:000461 msg 2847
+condition(bleed_radiator_s5, cloth_under_valve).             % f:000462 msg 2848
+amount(bleed_radiator_s5, cloth, 3, time).                   % f:000463 msg 2849
+action(bleed_radiator_s6, open).                             % f:000464 msg 2850
+object_of(bleed_radiator_s6, valve).                         % f:000465 msg 2851
+uses(bleed_radiator_s6, radiator_key).                       % f:000466 msg 2852
+amount(bleed_radiator_s6, valve, 0.25, turn).                % f:000467 msg 2853
+step(bleed_radiator, bleed_radiator_s6).                     % f:000468 msg 2854
+step(bleed_radiator, bleed_radiator_s7).                     % f:000469 msg 2855
+action(bleed_radiator_s7, open).                             % f:00046a msg 2856
+object_of(bleed_radiator_s7, valve).                         % f:00046b msg 2857
+until(bleed_radiator_s7, dripping).                          % f:00046c msg 2858
+step(bleed_radiator, bleed_radiator_s8).                     % f:00046d msg 2859
+action(bleed_radiator_s8, repeat).                           % f:00046e msg 2860
+object_of(bleed_radiator_s8, opening_step).                  % f:00046f msg 2861
+amount(bleed_radiator_s8, opening_step, 3, time).            % f:000470 msg 2864
+step(bleed_radiator, bleed_radiator_s9).                     % f:000471 msg 2865
+action(bleed_radiator_s9, close).                            % f:000472 msg 2866
+object_of(bleed_radiator_s9, radiator_valve).                % f:000473 msg 2867
+uses(bleed_radiator_s9, radiator_key).                       % f:000474 msg 2870
+role(bleed_radiator_s9, radiator_key, turning_tool).         % f:000475 msg 2871
+step(bleed_radiator, bleed_radiator_s10).                    % f:000476 msg 2872
+action(bleed_radiator_s10, repeat).                          % f:000477 msg 2873
+action(bleed_radiator_s11, check).                           % f:000478 msg 2876
+step(bleed_radiator, bleed_radiator_s12).                    % f:000479 msg 2879
+action(bleed_radiator_s12, switch_on).                       % f:00047a msg 2880
+object_of(bleed_radiator_s12, heating).                      % f:00047b msg 2881
+step(bleed_radiator, bleed_radiator_s1).                     % f:00047c msg 2884
+action(bleed_radiator_s1, switch).                           % f:00047d msg 2885
+condition(bleed_radiator_s1, off).                           % f:00047e msg 2887
+object_of(bleed_radiator_s3, farthest_radiator).             % f:00047f msg 2890
+action(bleed_radiator_s6, close).                            % f:000480 msg 2893
+uses(bleed_radiator_s6, key).                                % f:000481 msg 2895
+role(bleed_radiator_s6, key, turning_tool).                  % f:000482 msg 2896
+takes_time(bleed_radiator_s6, 1, 1, minute).                 % f:000483 msg 2897
+setting(bleed_radiator_s6, repetition, 3, count).            % f:000484 msg 2898
+action(bleed_radiator_s5, open).                             % f:000485 msg 2900
+amount(bleed_radiator_s5, key, 0.25, turn).                  % f:000486 msg 2903
+until(bleed_radiator_s5, dripping).                          % f:000487 msg 2904
+takes_time(bleed_radiator_s5, 1, 2, minute).                 % f:000488 msg 2905
+setting(bleed_radiator_s5, repeat, 3, time).                 % f:000489 msg 2906
+object_of(bleed_radiator_s4, drip).                          % f:00048a msg 2909
+role(bleed_radiator_s4, cloth, catch_drips).                 % f:00048b msg 2911
+action(bleed_radiator_s7, switch_on).                        % f:00048c msg 2915
+object_of(bleed_radiator_s7, heating).                       % f:00048d msg 2916
+action(bleed_radiator_s6, check).                            % f:00048e msg 2918
+takes_time(bleed_radiator_s6, 1, 2, minute).                 % f:00048f msg 2920
+action(bleed_radiator_s8, switch_on).                        % f:000490 msg 2925
+object_of(bleed_radiator_s8, heating).                       % f:000491 msg 2926
+action(bleed_radiator_s7, check).                            % f:000492 msg 2928
+takes_time(bleed_radiator_s7, 1, 2, minute).                 % f:000493 msg 2930
+task(patch_drywall_hole).                                    % f:000494 msg 2932
+takes_time(patch_drywall_hole, 40, 60, minute).              % f:000495 msg 2933
+step(patch_drywall_hole, patch_drywall_hole_s1).             % f:000496 msg 2934
+object_of(patch_drywall_hole_s1, loose_bit).                 % f:000497 msg 2936
+into(patch_drywall_hole_s1, hole).                           % f:000498 msg 2937
+takes_time(patch_drywall_hole_s1, 1, 2, minute).             % f:000499 msg 2938
+takes_time(patch_drywall_hole_s4, 30, 40, minute).           % f:00049a msg 2939
+step(patch_drywall_hole, patch_drywall_hole_s4).             % f:00049b msg 2940
+object_of(patch_drywall_hole_s4, spackle).                   % f:00049c msg 2942
+action(patch_drywall_hole_s2, fill).                         % f:00049d msg 2943
+object_of(patch_drywall_hole_s2, hole).                      % f:00049e msg 2944
+uses(patch_drywall_hole_s2, spackle).                        % f:00049f msg 2945
+uses(patch_drywall_hole_s2, knife).                          % f:0004a0 msg 2946
+role(patch_drywall_hole_s2, knife, apply_spackle).           % f:0004a1 msg 2947
+into(patch_drywall_hole_s2, hole).                           % f:0004a2 msg 2948
+step(patch_drywall_hole, patch_drywall_hole_s2).             % f:0004a3 msg 2949
+step(patch_drywall_hole, patch_drywall_hole_s5).             % f:0004a4 msg 2950
+action(patch_drywall_hole_s5, sand).                         % f:0004a5 msg 2951
+object_of(patch_drywall_hole_s5, spackle).                   % f:0004a6 msg 2952
+uses(patch_drywall_hole_s5, sandpaper).                      % f:0004a7 msg 2953
+condition(patch_drywall_hole_s5, spackle_dry).               % f:0004a8 msg 2954
+until(patch_drywall_hole_s5, smooth).                        % f:0004a9 msg 2955
+until(patch_drywall_hole_s5, level_with_wall).               % f:0004aa msg 2956
+takes_time(patch_drywall_hole_s5, 2, 3, minute).             % f:0004ab msg 2957
+needs(patch_drywall_hole, spackle).                          % f:0004ac msg 2958
+needs(patch_drywall_hole, knife).                            % f:0004ad msg 2959
+needs(patch_drywall_hole, sandpaper).                        % f:0004ae msg 2960
+needs(patch_drywall_hole, matching).                         % f:0004af msg 2961
+needs(patch_drywall_hole, paint).                            % f:0004b0 msg 2962
+needs(patch_drywall_hole, paintbrush).                       % f:0004b1 msg 2963
+step(patch_drywall_hole, patch_drywall_hole_s3).             % f:0004b2 msg 2964
+action(patch_drywall_hole_s3, spread).                       % f:0004b3 msg 2965
+object_of(patch_drywall_hole_s3, spackle).                   % f:0004b4 msg 2966
+uses(patch_drywall_hole_s3, putty_knife).                    % f:0004b5 msg 2967
+onto(patch_drywall_hole_s3, mesh_patch).                     % f:0004b6 msg 2968
+needs(patch_drywall_hole, putty_knife).                      % f:0004b7 msg 2971
+step(patch_drywall_hole, patch_drywall_hole_s7).             % f:0004b8 msg 2972
+object_of(patch_drywall_hole_s7, patch).                     % f:0004b9 msg 2974
+uses(patch_drywall_hole_s7, paintbrush).                     % f:0004ba msg 2977
+purpose(patch_drywall_hole_s7, match_wall).                  % f:0004bb msg 2978
+action(patch_drywall_hole_s6, sand).                         % f:0004bc msg 2979
+object_of(patch_drywall_hole_s6, spackle).                   % f:0004bd msg 2980
+uses(patch_drywall_hole_s6, sandpaper).                      % f:0004be msg 2981
+condition(patch_drywall_hole_s6, smooth).                    % f:0004bf msg 2982
+condition(patch_drywall_hole_s6, level_with_wall).           % f:0004c0 msg 2983
+action(patch_drywall_hole_s2, stick).                        % f:0004c1 msg 2984
+object_of(patch_drywall_hole_s2, mesh_patch).                % f:0004c2 msg 2985
+uses(patch_drywall_hole_s2, mesh).                           % f:0004c3 msg 2986
+onto(patch_drywall_hole_s2, hole).                           % f:0004c4 msg 2987
+action(patch_drywall_hole_s2, repeat).                       % f:0004c5 msg 2989
+condition(patch_drywall_hole_s2, low_spots_present).         % f:0004c6 msg 2990
+until(patch_drywall_hole_s2, dried).                         % f:0004c7 msg 2993
+warning(patch_drywall_hole_s2, premature_drying).            % f:0004c8 msg 2994
+needs(patch_drywall_hole, mesh_patch).                       % f:0004c9 msg 2995
+action(patch_drywall_hole_s1, check).                        % f:0004ca msg 3002
+object_of(patch_drywall_hole_s1, spackle).                   % f:0004cb msg 3003
+check(patch_drywall_hole_s1, low_spot).                      % f:0004cc msg 3004
+takes_time(patch_drywall_hole_s5, 30, 40, minute).           % f:0004cd msg 3008
+object_of(patch_drywall_hole_s2, patch).                     % f:0004ce msg 3011
+uses(patch_drywall_hole_s4, knife).                          % f:0004cf msg 3016
+condition(patch_drywall_hole_s4, flat).                      % f:0004d0 msg 3018
+onto(patch_drywall_hole_s3, mesh).                           % f:0004d1 msg 3028
+uses(patch_drywall_hole_s3, knife).                          % f:0004d2 msg 3029
+role(patch_drywall_hole_s3, knife, spreading_tool).          % f:0004d3 msg 3030
+purpose(patch_drywall_hole_s3, fill_patch).                  % f:0004d4 msg 3031
+needs(patch_drywall_hole, mesh).                             % f:0004d5 msg 3032
+needs(patch_drywall_hole, patch).                            % f:0004d6 msg 3033
+needs(patch_drywall_hole, putty).                            % f:0004d7 msg 3035
+role(patch_drywall_hole_s3, knife, smooth_spackle_flat).     % f:0004d8 msg 3044
+takes_time(patch_drywall_hole_s3, 2, 3, minute).             % f:0004d9 msg 3045
+step(patch_drywall_hole, patch_drywall_hole_s6).             % f:0004da msg 3046
+object_of(patch_drywall_hole_s6, wall).                      % f:0004db msg 3048
+uses(patch_drywall_hole_s6, paint).                          % f:0004dc msg 3049
+uses(patch_drywall_hole_s6, paintbrush).                     % f:0004dd msg 3050
+role(patch_drywall_hole_s6, paint, coat).                    % f:0004de msg 3051
+onto(patch_drywall_hole_s6, patch).                          % f:0004df msg 3052
+purpose(patch_drywall_hole_s6, match_wall).                  % f:0004e0 msg 3053
+takes_time(patch_drywall_hole_s6, 5, 10, minute).            % f:0004e1 msg 3054
+object_of(patch_drywall_hole_s1, hole).                      % f:0004e2 msg 3057
+role(patch_drywall_hole_s7, paintbrush, apply_paint).        % f:0004e3 msg 3061
+task(replace_smoke_alarm_battery).                           % f:0004e4 msg 3064
+needs(replace_smoke_alarm_battery, battery).                 % f:0004e5 msg 3065
+needs(replace_smoke_alarm_battery, ladder).                  % f:0004e6 msg 3066
+needs(replace_smoke_alarm_battery, step).                    % f:0004e7 msg 3067
+takes_time(replace_smoke_alarm_battery, 5, 8, minute).       % f:0004e8 msg 3068
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s4). % f:0004e9 msg 3069
+action(replace_smoke_alarm_battery_s4, twist).               % f:0004ea msg 3070
+object_of(replace_smoke_alarm_battery_s4, smoke_alarm).      % f:0004eb msg 3071
+onto(replace_smoke_alarm_battery_s4, base).                  % f:0004ec msg 3074
+takes_time(replace_smoke_alarm_battery_s4, 1, 1, minute).    % f:0004ed msg 3075
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s3). % f:0004ee msg 3076
+action(replace_smoke_alarm_battery_s3, replace).             % f:0004ef msg 3077
+object_of(replace_smoke_alarm_battery_s3, battery).          % f:0004f0 msg 3078
+uses(replace_smoke_alarm_battery_s3, battery).               % f:0004f1 msg 3079
+role(replace_smoke_alarm_battery_s3, battery, new).          % f:0004f2 msg 3080
+takes_time(replace_smoke_alarm_battery_s3, 1, 2, minute).    % f:0004f3 msg 3081
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s2). % f:0004f4 msg 3082
+action(replace_smoke_alarm_battery_s2, twist).               % f:0004f5 msg 3083
+object_of(replace_smoke_alarm_battery_s2, alarm).            % f:0004f6 msg 3084
+from(replace_smoke_alarm_battery_s2, base).                  % f:0004f7 msg 3087
+takes_time(replace_smoke_alarm_battery_s2, 1, 1, minute).    % f:0004f8 msg 3088
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s1). % f:0004f9 msg 3089
+action(replace_smoke_alarm_battery_s1, place).               % f:0004fa msg 3090
+object_of(replace_smoke_alarm_battery_s1, step_ladder).      % f:0004fb msg 3091
+uses(replace_smoke_alarm_battery_s1, ladder).                % f:0004fc msg 3092
+role(replace_smoke_alarm_battery_s1, ladder, support).       % f:0004fd msg 3093
+condition(replace_smoke_alarm_battery_s1, firmly_placed).    % f:0004fe msg 3094
+takes_time(replace_smoke_alarm_battery_s1, 1, 1, minute).    % f:0004ff msg 3095
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s5). % f:000500 msg 3096
+action(replace_smoke_alarm_battery_s5, press).               % f:000501 msg 3097
+object_of(replace_smoke_alarm_battery_s5, test_button).      % f:000502 msg 3098
+until(replace_smoke_alarm_battery_s5, alarm_beeping).        % f:000503 msg 3101
+takes_time(replace_smoke_alarm_battery_s5, 1, 1, minute).    % f:000504 msg 3102
+is_a(keep_pile, pile).                                       % f:000505 msg 3105
+is_a(donate_pile, pile).                                     % f:000506 msg 3107
+is_a(throw_away_pile, pile).                                 % f:000507 msg 3109
+is_a(cleaning_cloth, cloth).                                 % f:000508 msg 3111
+is_a(damp_cloth, cloth).                                     % f:000509 msg 3113
+is_a(floor_cleaner, cleaner).                                % f:00050a msg 3115
+is_a(warm_water, water).                                     % f:00050b msg 3117
+is_a(wood_floor_cleaner, cleaner).                           % f:00050c msg 3119
+is_a(cardboard_box, box).                                    % f:00050d msg 3121
+is_a(food_container, container).                             % f:00050e msg 3123
+task(clean_air_vents).                                       % f:00050f msg 3158
+step(clean_air_vents, clean_air_vents_s1).                   % f:000510 msg 3159
+step(clean_air_vents, clean_air_vents_s2).                   % f:000511 msg 3160
+step(clean_air_vents, clean_air_vents_s3).                   % f:000512 msg 3161
+step(clean_air_vents, clean_air_vents_s4).                   % f:000513 msg 3162
+step(clean_air_vents, clean_air_vents_s5).                   % f:000514 msg 3163
+action(clean_air_vents_s1, unscrew).                         % f:000515 msg 3164
+action(clean_air_vents_s2, vacuum).                          % f:000516 msg 3165
+action(clean_air_vents_s3, wipe_down).                       % f:000517 msg 3166
+action(clean_air_vents_s5, screw_on).                        % f:000518 msg 3168
+object_of(clean_air_vents_s1, vent_cover).                   % f:000519 msg 3169
+object_of(clean_air_vents_s2, vent_grille).                  % f:00051a msg 3170
+object_of(clean_air_vents_s3, vent_cover).                   % f:00051b msg 3171
+object_of(clean_air_vents_s4, vent_cover).                   % f:00051c msg 3172
+object_of(clean_air_vents_s5, vent_cover).                   % f:00051d msg 3173
+uses(clean_air_vents_s1, screwdriver).                       % f:00051e msg 3174
+uses(clean_air_vents_s2, vacuum_cleaner).                    % f:00051f msg 3175
+uses(clean_air_vents_s3, damp_cloth).                        % f:000520 msg 3176
+uses(clean_air_vents_s5, screwdriver).                       % f:000521 msg 3177
+role(clean_air_vents_s1, screwdriver, loosen).               % f:000522 msg 3178
+role(clean_air_vents_s2, vacuum_cleaner, suck).              % f:000523 msg 3179
+role(clean_air_vents_s3, damp_cloth, wipe).                  % f:000524 msg 3180
+role(clean_air_vents_s5, screwdriver, fasten).               % f:000525 msg 3181
+demands(clean_air_vents_s1, loosen, has_property, fits_screw). % f:000526 msg 3182
+demands(clean_air_vents_s2, suck, has_property, powered).    % f:000527 msg 3183
+demands(clean_air_vents_s3, absorb, has_property, absorbent). % f:000528 msg 3184
+demands(clean_air_vents_s5, fasten, has_property, fits_screw). % f:000529 msg 3185
+requires_state(clean_air_vents_s3, cloth_damp).              % f:00052a msg 3186
+requires_state(clean_air_vents_s4, cleaned).                 % f:00052b msg 3187
+requires_state(clean_air_vents_s5, dried).                   % f:00052c msg 3188
+achieves(clean_air_vents_s2, dust_removed).                  % f:00052d msg 3189
+achieves(clean_air_vents_s3, cleaned).                       % f:00052e msg 3190
+achieves(clean_air_vents_s4, dried).                         % f:00052f msg 3191
+achieves(clean_air_vents_s5, closed).                        % f:000530 msg 3192
+effect(wipe_down, vent_cover, cleaned).                      % f:000531 msg 3194
+before(clean_air_vents_s1, clean_air_vents_s2).              % f:000532 msg 3196
+before(clean_air_vents_s1, clean_air_vents_s3).              % f:000533 msg 3197
+before(clean_air_vents_s2, clean_air_vents_s5).              % f:000534 msg 3198
+before(clean_air_vents_s3, clean_air_vents_s4).              % f:000535 msg 3199
+before(clean_air_vents_s4, clean_air_vents_s5).              % f:000536 msg 3200
+is_a(smoke_alarm, alarm).                                    % f:000537 msg 3203
+is_a(test_button, button).                                   % f:000538 msg 3205
+task(clean_coffee_maker).                                    % f:000539 msg 3220
+step(clean_coffee_maker, clean_coffee_maker_s1).             % f:00053a msg 3221
+step(clean_coffee_maker, clean_coffee_maker_s2).             % f:00053b msg 3222
+step(clean_coffee_maker, clean_coffee_maker_s3).             % f:00053c msg 3223
+step(clean_coffee_maker, clean_coffee_maker_s4).             % f:00053d msg 3224
+before(clean_coffee_maker_s1, clean_coffee_maker_s2).        % f:00053e msg 3225
+before(clean_coffee_maker_s2, clean_coffee_maker_s3).        % f:00053f msg 3226
+before(clean_coffee_maker_s1, clean_coffee_maker_s4).        % f:000540 msg 3227
+action(clean_coffee_maker_s1, pour).                         % f:000541 msg 3228
+action(clean_coffee_maker_s2, run_brew_cycle).               % f:000542 msg 3229
+action(clean_coffee_maker_s3, rinse).                        % f:000543 msg 3230
+action(clean_coffee_maker_s4, wipe_down).                    % f:000544 msg 3231
+object_of(clean_coffee_maker_s1, coffee_maker).              % f:000545 msg 3232
+object_of(clean_coffee_maker_s2, coffee_maker).              % f:000546 msg 3233
+object_of(clean_coffee_maker_s3, coffee_maker).              % f:000547 msg 3234
+object_of(clean_coffee_maker_s4, coffee_maker).              % f:000548 msg 3235
+uses(clean_coffee_maker_s1, white_vinegar).                  % f:000549 msg 3236
+uses(clean_coffee_maker_s2, coffee_maker).                   % f:00054a msg 3239
+uses(clean_coffee_maker_s3, water).                          % f:00054b msg 3240
+uses(clean_coffee_maker_s3, coffee_maker).                   % f:00054c msg 3241
+uses(clean_coffee_maker_s4, cloth).                          % f:00054d msg 3242
+role(clean_coffee_maker_s1, coffee_maker, contain).          % f:00054e msg 3243
+role(clean_coffee_maker_s2, coffee_maker, contain).          % f:00054f msg 3244
+role(clean_coffee_maker_s3, coffee_maker, contain).          % f:000550 msg 3245
+role(clean_coffee_maker_s4, cloth, wipe).                    % f:000551 msg 3246
+demands(clean_coffee_maker_s1, contain, has_property, watertight). % f:000552 msg 3247
+demands(clean_coffee_maker_s2, contain, has_property, watertight). % f:000553 msg 3248
+demands(clean_coffee_maker_s3, contain, has_property, watertight). % f:000554 msg 3249
+demands(clean_coffee_maker_s4, wipe, has_property, absorbent). % f:000555 msg 3250
+requires_state(clean_coffee_maker_s4, cloth_damp).           % f:000556 msg 3251
+achieves(clean_coffee_maker_s4, cleaned).                    % f:000557 msg 3252
+is_a(white_vinegar, vinegar).                                % f:000558 msg 3255
+task(clean_light_fixture).                                   % f:000559 msg 3281
+step(clean_light_fixture, clean_light_fixture_s1).           % f:00055a msg 3282
+step(clean_light_fixture, clean_light_fixture_s2).           % f:00055b msg 3283
+step(clean_light_fixture, clean_light_fixture_s3).           % f:00055c msg 3284
+step(clean_light_fixture, clean_light_fixture_s4).           % f:00055d msg 3285
+step(clean_light_fixture, clean_light_fixture_s5).           % f:00055e msg 3286
+step(clean_light_fixture, clean_light_fixture_s6).           % f:00055f msg 3287
+has_part(light_fixture, glass_shade).                        % f:000560 msg 3288
+has_part(light_fixture, light).                              % f:000561 msg 3291
+action(clean_light_fixture_s1, switch_off).                  % f:000562 msg 3292
+action(clean_light_fixture_s2, remove).                      % f:000563 msg 3293
+action(clean_light_fixture_s3, wash).                        % f:000564 msg 3294
+action(clean_light_fixture_s5, refit).                       % f:000565 msg 3296
+action(clean_light_fixture_s6, switch_on).                   % f:000566 msg 3297
+object_of(clean_light_fixture_s1, light).                    % f:000567 msg 3298
+object_of(clean_light_fixture_s2, glass_shade).              % f:000568 msg 3299
+object_of(clean_light_fixture_s3, glass_shade).              % f:000569 msg 3300
+object_of(clean_light_fixture_s4, glass_shade).              % f:00056a msg 3301
+object_of(clean_light_fixture_s5, glass_shade).              % f:00056b msg 3302
+object_of(clean_light_fixture_s6, light).                    % f:00056c msg 3303
+uses(clean_light_fixture_s1, wall_switch).                   % f:00056d msg 3304
+uses(clean_light_fixture_s2, stepladder).                    % f:00056e msg 3305
+uses(clean_light_fixture_s3, soapy_water).                   % f:00056f msg 3306
+uses(clean_light_fixture_s4, cloth).                         % f:000570 msg 3309
+uses(clean_light_fixture_s5, stepladder).                    % f:000571 msg 3310
+uses(clean_light_fixture_s6, wall_switch).                   % f:000572 msg 3311
+role(clean_light_fixture_s1, wall_switch, switch).           % f:000573 msg 3312
+role(clean_light_fixture_s2, stepladder, reach).             % f:000574 msg 3313
+role(clean_light_fixture_s3, soapy_water, loosen_dirt).      % f:000575 msg 3314
+role(clean_light_fixture_s4, cloth, wipe).                   % f:000576 msg 3315
+role(clean_light_fixture_s5, stepladder, reach).             % f:000577 msg 3316
+role(clean_light_fixture_s6, wall_switch, switch).           % f:000578 msg 3317
+demands(clean_light_fixture_s2, reach, has_property, stable). % f:000579 msg 3318
+demands(clean_light_fixture_s4, wipe, has_property, absorbent). % f:00057a msg 3319
+demands(clean_light_fixture_s5, reach, has_property, stable). % f:00057b msg 3320
+requires_state(clean_light_fixture_s2, switched_off).        % f:00057c msg 3321
+requires_state(clean_light_fixture_s3, removed).             % f:00057d msg 3322
+requires_state(clean_light_fixture_s4, washed).              % f:00057e msg 3323
+requires_state(clean_light_fixture_s5, dried).               % f:00057f msg 3324
+requires_state(clean_light_fixture_s6, refitted).            % f:000580 msg 3325
+achieves(clean_light_fixture_s1, switched_off).              % f:000581 msg 3326
+achieves(clean_light_fixture_s2, removed).                   % f:000582 msg 3327
+achieves(clean_light_fixture_s3, washed).                    % f:000583 msg 3328
+achieves(clean_light_fixture_s4, dried).                     % f:000584 msg 3329
+achieves(clean_light_fixture_s4, streak_free).               % f:000585 msg 3330
+achieves(clean_light_fixture_s5, refitted).                  % f:000586 msg 3331
+achieves(clean_light_fixture_s6, switched_on).               % f:000587 msg 3332
+before(clean_light_fixture_s1, clean_light_fixture_s2).      % f:000588 msg 3333
+before(clean_light_fixture_s2, clean_light_fixture_s3).      % f:000589 msg 3334
+before(clean_light_fixture_s3, clean_light_fixture_s4).      % f:00058a msg 3335
+before(clean_light_fixture_s4, clean_light_fixture_s5).      % f:00058b msg 3336
+before(clean_light_fixture_s5, clean_light_fixture_s6).      % f:00058c msg 3337
+is_a(light_fixture, fixture).                                % f:00058d msg 3340
+is_a(soapy_water, water).                                    % f:00058e msg 3342
+task(clean_mattress).                                        % f:00058f msg 3369
+step(clean_mattress, clean_mattress_s1).                     % f:000590 msg 3370
+step(clean_mattress, clean_mattress_s2).                     % f:000591 msg 3371
+step(clean_mattress, clean_mattress_s3).                     % f:000592 msg 3372
+step(clean_mattress, clean_mattress_s4).                     % f:000593 msg 3373
+step(clean_mattress, clean_mattress_s5).                     % f:000594 msg 3374
+step(clean_mattress, clean_mattress_s6).                     % f:000595 msg 3375
+action(clean_mattress_s1, vacuum).                           % f:000596 msg 3376
+action(clean_mattress_s2, mix).                              % f:000597 msg 3377
+action(clean_mattress_s3, spray).                            % f:000598 msg 3378
+action(clean_mattress_s4, scrub).                            % f:000599 msg 3379
+action(clean_mattress_s5, wipe_down).                        % f:00059a msg 3380
+action(clean_mattress_s6, leave_to_dry).                     % f:00059b msg 3381
+object_of(clean_mattress_s1, mattress).                      % f:00059c msg 3382
+object_of(clean_mattress_s2, mild_detergent).                % f:00059d msg 3383
+object_of(clean_mattress_s3, mattress).                      % f:00059e msg 3386
+object_of(clean_mattress_s4, mattress).                      % f:00059f msg 3387
+object_of(clean_mattress_s5, mattress).                      % f:0005a0 msg 3388
+object_of(clean_mattress_s6, mattress).                      % f:0005a1 msg 3389
+uses(clean_mattress_s1, vacuum_cleaner).                     % f:0005a2 msg 3390
+uses(clean_mattress_s2, mild_detergent).                     % f:0005a3 msg 3391
+uses(clean_mattress_s2, spray_bottle).                       % f:0005a4 msg 3392
+uses(clean_mattress_s3, spray_bottle).                       % f:0005a5 msg 3393
+uses(clean_mattress_s4, soft_brush).                         % f:0005a6 msg 3394
+uses(clean_mattress_s5, clean_cloth).                        % f:0005a7 msg 3397
+role(clean_mattress_s1, vacuum_cleaner, suck_up).            % f:0005a8 msg 3400
+role(clean_mattress_s2, mild_detergent, dissolve).           % f:0005a9 msg 3401
+role(clean_mattress_s2, spray_bottle, hold_liquid).          % f:0005aa msg 3402
+role(clean_mattress_s3, spray_bottle, hold_liquid).          % f:0005ab msg 3403
+role(clean_mattress_s4, soft_brush, scrub_surface).          % f:0005ac msg 3404
+role(clean_mattress_s5, clean_cloth, wipe_surface).          % f:0005ad msg 3405
+demands(clean_mattress_s1, suck_up, has_property, powerful). % f:0005ae msg 3406
+demands(clean_mattress_s2, dissolve, has_property, water_soluble). % f:0005af msg 3407
+demands(clean_mattress_s2, hold_liquid, has_property, watertight). % f:0005b0 msg 3408
+demands(clean_mattress_s3, hold_liquid, has_property, watertight). % f:0005b1 msg 3409
+demands(clean_mattress_s4, scrub_surface, has_property, soft). % f:0005b2 msg 3410
+demands(clean_mattress_s5, wipe_surface, has_property, absorbent). % f:0005b3 msg 3411
+before(clean_mattress_s1, clean_mattress_s3).                % f:0005b4 msg 3412
+before(clean_mattress_s2, clean_mattress_s3).                % f:0005b5 msg 3413
+before(clean_mattress_s3, clean_mattress_s4).                % f:0005b6 msg 3414
+before(clean_mattress_s4, clean_mattress_s5).                % f:0005b7 msg 3415
+before(clean_mattress_s5, clean_mattress_s6).                % f:0005b8 msg 3416
+requires_state(clean_mattress_s3, detergent_mixed).          % f:0005b9 msg 3417
+requires_state(clean_mattress_s4, stains_lifted).            % f:0005ba msg 3418
+requires_state(clean_mattress_s5, scrubbed).                 % f:0005bb msg 3419
+requires_state(clean_mattress_s6, cleaned).                  % f:0005bc msg 3420
+achieves(clean_mattress_s1, vacuumed).                       % f:0005bd msg 3421
+achieves(clean_mattress_s2, detergent_mixed).                % f:0005be msg 3422
+achieves(clean_mattress_s3, stains_lifted).                  % f:0005bf msg 3423
+achieves(clean_mattress_s4, scrubbed).                       % f:0005c0 msg 3424
+achieves(clean_mattress_s5, cleaned).                        % f:0005c1 msg 3425
+achieves(clean_mattress_s6, dried).                          % f:0005c2 msg 3426
+is_a(mild_detergent, detergent).                             % f:0005c3 msg 3429
+is_a(soft_brush, brush).                                     % f:0005c4 msg 3431
+is_a(clean_cloth, cloth).                                    % f:0005c5 msg 3433
+task(caramelise_onions).                                     % f:0005c6 msg 3457
+step(caramelise_onions, caramelise_onions_s1).               % f:0005c7 msg 3458
+step(caramelise_onions, caramelise_onions_s2).               % f:0005c8 msg 3459
+step(caramelise_onions, caramelise_onions_s3).               % f:0005c9 msg 3460
+step(caramelise_onions, caramelise_onions_s4).               % f:0005ca msg 3461
+step(caramelise_onions, caramelise_onions_s5).               % f:0005cb msg 3462
+action(caramelise_onions_s1, chop).                          % f:0005cc msg 3463
+object_of(caramelise_onions_s1, onion).                      % f:0005cd msg 3464
+uses(caramelise_onions_s1, knife).                           % f:0005ce msg 3465
+uses(caramelise_onions_s1, chopping_board).                  % f:0005cf msg 3466
+role(caramelise_onions_s1, knife, cut).                      % f:0005d0 msg 3467
+role(caramelise_onions_s1, chopping_board, support).         % f:0005d1 msg 3468
+demands(caramelise_onions_s1, cut, has_property, sharp).     % f:0005d2 msg 3469
+achieves(caramelise_onions_s1, chopped).                     % f:0005d3 msg 3470
+action(caramelise_onions_s2, heat_up).                       % f:0005d4 msg 3471
+object_of(caramelise_onions_s2, butter).                     % f:0005d5 msg 3472
+uses(caramelise_onions_s2, frying_pan).                      % f:0005d6 msg 3473
+uses(caramelise_onions_s2, hob).                             % f:0005d7 msg 3474
+role(caramelise_onions_s2, frying_pan, cooking_vessel).      % f:0005d8 msg 3475
+role(caramelise_onions_s2, hob, heat).                       % f:0005d9 msg 3476
+demands(caramelise_onions_s2, cooking_vessel, has_property, heat_resistant). % f:0005da msg 3477
+achieves(caramelise_onions_s2, butter_melted).               % f:0005db msg 3478
+action(caramelise_onions_s3, add).                           % f:0005dc msg 3479
+object_of(caramelise_onions_s3, onion).                      % f:0005dd msg 3480
+uses(caramelise_onions_s3, frying_pan).                      % f:0005de msg 3481
+requires_state(caramelise_onions_s3, chopped).               % f:0005df msg 3482
+requires_state(caramelise_onions_s3, butter_melted).         % f:0005e0 msg 3483
+action(caramelise_onions_s4, stir).                          % f:0005e1 msg 3484
+object_of(caramelise_onions_s4, onion).                      % f:0005e2 msg 3485
+uses(caramelise_onions_s4, wooden_spoon).                    % f:0005e3 msg 3486
+uses(caramelise_onions_s4, frying_pan).                      % f:0005e4 msg 3489
+role(caramelise_onions_s4, wooden_spoon, mix).               % f:0005e5 msg 3490
+achieves(caramelise_onions_s4, golden_brown).                % f:0005e6 msg 3491
+achieves(caramelise_onions_s4, caramelised).                 % f:0005e7 msg 3492
+action(caramelise_onions_s5, season).                        % f:0005e8 msg 3493
+object_of(caramelise_onions_s5, onion).                      % f:0005e9 msg 3494
+uses(caramelise_onions_s5, salt).                            % f:0005ea msg 3495
+achieves(caramelise_onions_s5, seasoned).                    % f:0005eb msg 3497
+before(caramelise_onions_s1, caramelise_onions_s3).          % f:0005ec msg 3498
+before(caramelise_onions_s2, caramelise_onions_s3).          % f:0005ed msg 3499
+before(caramelise_onions_s3, caramelise_onions_s4).          % f:0005ee msg 3500
+before(caramelise_onions_s4, caramelise_onions_s5).          % f:0005ef msg 3501
+is_a(wooden_spoon, spoon).                                   % f:0005f0 msg 3504
+task(cream_butter_and_sugar).                                % f:0005f1 msg 3523
+step(cream_butter_and_sugar, cream_butter_and_sugar_s1).     % f:0005f2 msg 3524
+step(cream_butter_and_sugar, cream_butter_and_sugar_s2).     % f:0005f3 msg 3525
+step(cream_butter_and_sugar, cream_butter_and_sugar_s3).     % f:0005f4 msg 3526
+step(cream_butter_and_sugar, cream_butter_and_sugar_s4).     % f:0005f5 msg 3527
+step(cream_butter_and_sugar, cream_butter_and_sugar_s5).     % f:0005f6 msg 3528
+action(cream_butter_and_sugar_s1, soften).                   % f:0005f7 msg 3529
+object_of(cream_butter_and_sugar_s1, butter).                % f:0005f8 msg 3530
+achieves(cream_butter_and_sugar_s1, butter_soft).            % f:0005f9 msg 3531
+action(cream_butter_and_sugar_s2, measure_out).              % f:0005fa msg 3532
+object_of(cream_butter_and_sugar_s2, sugar).                 % f:0005fb msg 3533
+uses(cream_butter_and_sugar_s2, measuring_cup).              % f:0005fc msg 3534
+role(cream_butter_and_sugar_s2, measuring_cup, measure).     % f:0005fd msg 3535
+achieves(cream_butter_and_sugar_s2, measured).               % f:0005fe msg 3536
+action(cream_butter_and_sugar_s3, pour).                     % f:0005ff msg 3537
+object_of(cream_butter_and_sugar_s3, sugar).                 % f:000600 msg 3538
+uses(cream_butter_and_sugar_s3, mixing_bowl).                % f:000601 msg 3539
+role(cream_butter_and_sugar_s3, mixing_bowl, contain).       % f:000602 msg 3542
+requires_state(cream_butter_and_sugar_s3, butter_soft).      % f:000603 msg 3543
+requires_state(cream_butter_and_sugar_s3, measured).         % f:000604 msg 3544
+action(cream_butter_and_sugar_s4, beat).                     % f:000605 msg 3545
+object_of(cream_butter_and_sugar_s4, butter).                % f:000606 msg 3546
+object_of(cream_butter_and_sugar_s4, sugar).                 % f:000607 msg 3547
+uses(cream_butter_and_sugar_s4, electric_mixer).             % f:000608 msg 3548
+role(cream_butter_and_sugar_s4, electric_mixer, mix).        % f:000609 msg 3549
+requires_state(cream_butter_and_sugar_s4, butter_soft).      % f:00060a msg 3550
+achieves(cream_butter_and_sugar_s4, pale_and_fluffy).        % f:00060b msg 3551
+action(cream_butter_and_sugar_s5, scrape_down).              % f:00060c msg 3552
+object_of(cream_butter_and_sugar_s5, mixing_bowl).           % f:00060d msg 3553
+uses(cream_butter_and_sugar_s5, spatula).                    % f:00060e msg 3554
+role(cream_butter_and_sugar_s5, spatula, scrape).            % f:00060f msg 3555
+demands(cream_butter_and_sugar_s5, scrape, has_property, flexible). % f:000610 msg 3556
+requires_state(cream_butter_and_sugar_s5, pale_and_fluffy).  % f:000611 msg 3557
+before(cream_butter_and_sugar_s1, cream_butter_and_sugar_s3). % f:000612 msg 3558
+before(cream_butter_and_sugar_s2, cream_butter_and_sugar_s3). % f:000613 msg 3559
+before(cream_butter_and_sugar_s3, cream_butter_and_sugar_s4). % f:000614 msg 3560
+before(cream_butter_and_sugar_s4, cream_butter_and_sugar_s5). % f:000615 msg 3561
+is_a(mixing_bowl, bowl).                                     % f:000616 msg 3564
+task(make_stock).                                            % f:000617 msg 3583
+step(make_stock, make_stock_s1).                             % f:000618 msg 3584
+step(make_stock, make_stock_s2).                             % f:000619 msg 3585
+step(make_stock, make_stock_s3).                             % f:00061a msg 3586
+step(make_stock, make_stock_s4).                             % f:00061b msg 3587
+step(make_stock, make_stock_s5).                             % f:00061c msg 3588
+action(make_stock_s1, heat).                                 % f:00061d msg 3589
+object_of(make_stock_s1, water).                             % f:00061e msg 3590
+uses(make_stock_s1, pot).                                    % f:00061f msg 3591
+uses(make_stock_s1, stove).                                  % f:000620 msg 3592
+role(make_stock_s1, pot, contain).                           % f:000621 msg 3593
+role(make_stock_s1, stove, apply_heat).                      % f:000622 msg 3594
+demands(make_stock_s1, contain, has_property, heat_resistant). % f:000623 msg 3595
+achieves(make_stock_s1, heated).                             % f:000624 msg 3596
+action(make_stock_s2, add).                                  % f:000625 msg 3597
+object_of(make_stock_s2, chicken_bone).                      % f:000626 msg 3598
+uses(make_stock_s2, pot).                                    % f:000627 msg 3599
+role(make_stock_s2, pot, contain).                           % f:000628 msg 3600
+requires_state(make_stock_s2, heated).                       % f:000629 msg 3601
+action(make_stock_s3, add).                                  % f:00062a msg 3602
+object_of(make_stock_s3, onion).                             % f:00062b msg 3603
+uses(make_stock_s3, pot).                                    % f:00062c msg 3604
+role(make_stock_s3, pot, contain).                           % f:00062d msg 3605
+action(make_stock_s4, simmer).                               % f:00062e msg 3606
+object_of(make_stock_s4, stock).                             % f:00062f msg 3607
+uses(make_stock_s4, pot).                                    % f:000630 msg 3608
+uses(make_stock_s4, stove).                                  % f:000631 msg 3609
+role(make_stock_s4, pot, contain).                           % f:000632 msg 3610
+role(make_stock_s4, stove, apply_heat).                      % f:000633 msg 3611
+demands(make_stock_s4, apply_heat, has_property, heat_resistant). % f:000634 msg 3612
+achieves(make_stock_s4, reduced).                            % f:000635 msg 3613
+achieves(make_stock_s4, flavour_developed).                  % f:000636 msg 3614
+action(make_stock_s5, strain).                               % f:000637 msg 3615
+object_of(make_stock_s5, stock).                             % f:000638 msg 3616
+uses(make_stock_s5, pot).                                    % f:000639 msg 3617
+uses(make_stock_s5, strainer).                               % f:00063a msg 3618
+role(make_stock_s5, strainer, filter).                       % f:00063b msg 3619
+demands(make_stock_s5, filter, has_property, perforated).    % f:00063c msg 3620
+requires_state(make_stock_s5, reduced).                      % f:00063d msg 3621
+achieves(make_stock_s5, strained).                           % f:00063e msg 3622
+before(make_stock_s1, make_stock_s2).                        % f:00063f msg 3623
+before(make_stock_s2, make_stock_s3).                        % f:000640 msg 3624
+before(make_stock_s3, make_stock_s4).                        % f:000641 msg 3625
+before(make_stock_s4, make_stock_s5).                        % f:000642 msg 3626
+task(replace_bicycle_chain).                                 % f:000643 msg 3632
+step(replace_bicycle_chain, replace_bicycle_chain_s1).       % f:000644 msg 3633
+step(replace_bicycle_chain, replace_bicycle_chain_s2).       % f:000645 msg 3634
+step(replace_bicycle_chain, replace_bicycle_chain_s3).       % f:000646 msg 3635
+step(replace_bicycle_chain, replace_bicycle_chain_s4).       % f:000647 msg 3636
+step(replace_bicycle_chain, replace_bicycle_chain_s5).       % f:000648 msg 3637
+step(replace_bicycle_chain, replace_bicycle_chain_s6).       % f:000649 msg 3638
+has_part(bicycle_chain, pin).                                % f:00064a msg 3662
+action(replace_bicycle_chain_s1, shift).                     % f:00064b msg 3663
+action(replace_bicycle_chain_s2, break).                     % f:00064c msg 3664
+action(replace_bicycle_chain_s3, remove).                    % f:00064d msg 3665
+action(replace_bicycle_chain_s5, join).                      % f:00064e msg 3667
+action(replace_bicycle_chain_s6, lubricate).                 % f:00064f msg 3668
+object_of(replace_bicycle_chain_s1, bicycle_chain).          % f:000650 msg 3669
+object_of(replace_bicycle_chain_s2, bicycle_chain).          % f:000651 msg 3670
+object_of(replace_bicycle_chain_s3, bicycle_chain).          % f:000652 msg 3671
+object_of(replace_bicycle_chain_s4, bicycle_chain).          % f:000653 msg 3672
+object_of(replace_bicycle_chain_s5, bicycle_chain).          % f:000654 msg 3673
+object_of(replace_bicycle_chain_s6, bicycle_chain).          % f:000655 msg 3674
+uses(replace_bicycle_chain_s1, smallest_rear_sprocket).      % f:000656 msg 3675
+uses(replace_bicycle_chain_s2, chain_breaker).               % f:000657 msg 3676
+uses(replace_bicycle_chain_s4, derailleur).                  % f:000658 msg 3677
+uses(replace_bicycle_chain_s5, quick_link).                  % f:000659 msg 3678
+uses(replace_bicycle_chain_s6, chain_oil).                   % f:00065a msg 3679
+role(replace_bicycle_chain_s1, smallest_rear_sprocket, engage). % f:00065b msg 3682
+role(replace_bicycle_chain_s2, chain_breaker, push_pin_out). % f:00065c msg 3683
+role(replace_bicycle_chain_s4, derailleur, guide).           % f:00065d msg 3684
+role(replace_bicycle_chain_s5, quick_link, bind).            % f:00065e msg 3685
+role(replace_bicycle_chain_s6, chain_oil, coat).             % f:00065f msg 3686
+before(replace_bicycle_chain_s1, replace_bicycle_chain_s2).  % f:000660 msg 3687
+before(replace_bicycle_chain_s2, replace_bicycle_chain_s3).  % f:000661 msg 3688
+before(replace_bicycle_chain_s3, replace_bicycle_chain_s4).  % f:000662 msg 3689
+before(replace_bicycle_chain_s4, replace_bicycle_chain_s5).  % f:000663 msg 3690
+before(replace_bicycle_chain_s5, replace_bicycle_chain_s6).  % f:000664 msg 3691
+achieves(replace_bicycle_chain_s1, on_smallest_sprocket).    % f:000665 msg 3692
+achieves(replace_bicycle_chain_s2, pin_pushed_out).          % f:000666 msg 3693
+achieves(replace_bicycle_chain_s3, removed).                 % f:000667 msg 3694
+achieves(replace_bicycle_chain_s4, threaded).                % f:000668 msg 3695
+achieves(replace_bicycle_chain_s5, joined).                  % f:000669 msg 3696
+achieves(replace_bicycle_chain_s5, clicked_in).              % f:00066a msg 3697
+achieves(replace_bicycle_chain_s6, lubricated).              % f:00066b msg 3698
+achieves(replace_bicycle_chain_s6, moves_freely).            % f:00066c msg 3699
+requires_state(replace_bicycle_chain_s2, on_smallest_sprocket). % f:00066d msg 3700
+requires_state(replace_bicycle_chain_s3, pin_pushed_out).    % f:00066e msg 3701
+requires_state(replace_bicycle_chain_s4, removed).           % f:00066f msg 3702
+requires_state(replace_bicycle_chain_s5, threaded).          % f:000670 msg 3703
+requires_state(replace_bicycle_chain_s6, joined).            % f:000671 msg 3704
+demands(replace_bicycle_chain_s1, engage, can_do_on, bicycle_chain). % f:000672 msg 3705
+demands(replace_bicycle_chain_s2, push_pin_out, can_do_on, pin). % f:000673 msg 3706
+demands(replace_bicycle_chain_s4, guide, can_do_on, bicycle_chain). % f:000674 msg 3707
+demands(replace_bicycle_chain_s5, bind, can_do_on, bicycle_chain). % f:000675 msg 3708
+demands(replace_bicycle_chain_s6, coat, can_do_on, bicycle_chain). % f:000676 msg 3709
+is_a(chain_oil, oil).                                        % f:000677 msg 3712
+task(replace_toilet_flapper).                                % f:000678 msg 3734
+step(replace_toilet_flapper, replace_toilet_flapper_s1).     % f:000679 msg 3735
+step(replace_toilet_flapper, replace_toilet_flapper_s2).     % f:00067a msg 3736
+step(replace_toilet_flapper, replace_toilet_flapper_s3).     % f:00067b msg 3737
+step(replace_toilet_flapper, replace_toilet_flapper_s4).     % f:00067c msg 3738
+step(replace_toilet_flapper, replace_toilet_flapper_s5).     % f:00067d msg 3739
+step(replace_toilet_flapper, replace_toilet_flapper_s6).     % f:00067e msg 3740
+action(replace_toilet_flapper_s1, shut).                     % f:00067f msg 3741
+action(replace_toilet_flapper_s2, flush).                    % f:000680 msg 3742
+action(replace_toilet_flapper_s3, wipe_down).                % f:000681 msg 3743
+action(replace_toilet_flapper_s4, loosen).                   % f:000682 msg 3744
+action(replace_toilet_flapper_s5, fasten).                   % f:000683 msg 3745
+action(replace_toilet_flapper_s6, open).                     % f:000684 msg 3746
+object_of(replace_toilet_flapper_s1, water_valve).           % f:000685 msg 3747
+object_of(replace_toilet_flapper_s2, toilet).                % f:000686 msg 3750
+object_of(replace_toilet_flapper_s3, tank).                  % f:000687 msg 3751
+object_of(replace_toilet_flapper_s4, old_flapper).           % f:000688 msg 3752
+object_of(replace_toilet_flapper_s5, flapper).               % f:000689 msg 3755
+object_of(replace_toilet_flapper_s6, water_valve).           % f:00068a msg 3758
+uses(replace_toilet_flapper_s3, sponge).                     % f:00068b msg 3759
+uses(replace_toilet_flapper_s4, pliers).                     % f:00068c msg 3760
+uses(replace_toilet_flapper_s5, flapper).                    % f:00068d msg 3761
+role(replace_toilet_flapper_s3, sponge, absorb).             % f:00068e msg 3762
+demands(replace_toilet_flapper_s3, absorb, has_property, absorbent). % f:00068f msg 3763
+role(replace_toilet_flapper_s4, pliers, grip).               % f:000690 msg 3764
+role(replace_toilet_flapper_s5, flapper, seal).              % f:000691 msg 3765
+demands(replace_toilet_flapper_s5, seal, has_property, watertight). % f:000692 msg 3766
+achieves(replace_toilet_flapper_s3, cleaned).                % f:000693 msg 3769
+achieves(replace_toilet_flapper_s6, no_longer_running).      % f:000694 msg 3770
+before(replace_toilet_flapper_s1, replace_toilet_flapper_s2). % f:000695 msg 3771
+before(replace_toilet_flapper_s2, replace_toilet_flapper_s3). % f:000696 msg 3772
+before(replace_toilet_flapper_s3, replace_toilet_flapper_s4). % f:000697 msg 3773
+before(replace_toilet_flapper_s4, replace_toilet_flapper_s5). % f:000698 msg 3774
+before(replace_toilet_flapper_s5, replace_toilet_flapper_s6). % f:000699 msg 3775
+has_part(toilet, tank).                                      % f:00069a msg 3776
+has_part(toilet, flush_valve).                               % f:00069b msg 3777
+has_part(toilet, water_valve).                               % f:00069c msg 3780
+is_a(water_valve, valve).                                    % f:00069d msg 3783
+is_a(old_flapper, flapper).                                  % f:00069e msg 3785
+-is_a(flapper, old_flapper).                                 % f:00069f msg 3787
+is_a(flush_valve, valve).                                    % f:0006a0 msg 3789
+task(replace_zipper_slider).                                 % f:0006a1 msg 3790
+is_a(old_slider, zipper_slider).                             % f:0006a2 msg 3811
+is_a(new_slider, zipper_slider).                             % f:0006a3 msg 3812
+has_part(zipper, zipper_teeth).                              % f:0006a4 msg 3813
+has_part(zipper, zipper_tape).                               % f:0006a5 msg 3814
+has_part(zipper_slider, bottom_stop).                        % f:0006a6 msg 3815
+step(replace_zipper_slider, replace_zipper_slider_s1).       % f:0006a7 msg 3816
+step(replace_zipper_slider, replace_zipper_slider_s2).       % f:0006a8 msg 3817
+step(replace_zipper_slider, replace_zipper_slider_s3).       % f:0006a9 msg 3818
+step(replace_zipper_slider, replace_zipper_slider_s4).       % f:0006aa msg 3819
+step(replace_zipper_slider, replace_zipper_slider_s5).       % f:0006ab msg 3820
+action(replace_zipper_slider_s1, pull_off).                  % f:0006ac msg 3821
+action(replace_zipper_slider_s2, wipe_teeth).                % f:0006ad msg 3822
+action(replace_zipper_slider_s3, slide_on).                  % f:0006ae msg 3823
+action(replace_zipper_slider_s4, squeeze_shut).              % f:0006af msg 3824
+action(replace_zipper_slider_s5, test_run).                  % f:0006b0 msg 3825
+object_of(replace_zipper_slider_s1, old_slider).             % f:0006b1 msg 3826
+object_of(replace_zipper_slider_s2, zipper_teeth).           % f:0006b2 msg 3827
+object_of(replace_zipper_slider_s3, zipper_teeth).           % f:0006b3 msg 3828
+object_of(replace_zipper_slider_s4, bottom_stop).            % f:0006b4 msg 3829
+object_of(replace_zipper_slider_s5, new_slider).             % f:0006b5 msg 3830
+uses(replace_zipper_slider_s1, pliers).                      % f:0006b6 msg 3831
+uses(replace_zipper_slider_s2, cloth).                       % f:0006b7 msg 3832
+uses(replace_zipper_slider_s3, new_slider).                  % f:0006b8 msg 3833
+uses(replace_zipper_slider_s4, pliers).                      % f:0006b9 msg 3834
+role(replace_zipper_slider_s1, pliers, grip).                % f:0006ba msg 3835
+role(replace_zipper_slider_s2, cloth, wipe).                 % f:0006bb msg 3836
+role(replace_zipper_slider_s3, new_slider, slide).           % f:0006bc msg 3837
+role(replace_zipper_slider_s4, pliers, grip).                % f:0006bd msg 3838
+demands(replace_zipper_slider_s1, grip, has_property, gentle). % f:0006be msg 3839
+demands(replace_zipper_slider_s2, wipe, has_property, absorbent). % f:0006bf msg 3840
+demands(replace_zipper_slider_s4, grip, has_property, gentle). % f:0006c0 msg 3841
+before(replace_zipper_slider_s1, replace_zipper_slider_s2).  % f:0006c1 msg 3842
+before(replace_zipper_slider_s2, replace_zipper_slider_s3).  % f:0006c2 msg 3843
+before(replace_zipper_slider_s3, replace_zipper_slider_s4).  % f:0006c3 msg 3844
+before(replace_zipper_slider_s4, replace_zipper_slider_s5).  % f:0006c4 msg 3845
+achieves(replace_zipper_slider_s1, removed).                 % f:0006c5 msg 3846
+achieves(replace_zipper_slider_s2, cleaned).                 % f:0006c6 msg 3847
+achieves(replace_zipper_slider_s3, attached).                % f:0006c7 msg 3848
+achieves(replace_zipper_slider_s4, closed).                  % f:0006c8 msg 3849
+achieves(replace_zipper_slider_s5, smooth_running).          % f:0006c9 msg 3850
+requires_state(replace_zipper_slider_s3, removed).           % f:0006ca msg 3851
+requires_state(replace_zipper_slider_s4, attached).          % f:0006cb msg 3852
+requires_state(replace_zipper_slider_s5, closed).            % f:0006cc msg 3853
+can_do(disinfectant_spray, coat).                            % f:0006cd msg 3879
+-can_do(damp_cloth, coat).                                   % f:0006ce msg 3880
+can_do_on(disinfectant_spray, coat, air_vent_cover).         % f:0006cf msg 3881
+can_do(damp_cloth, absorb_water).                            % f:0006d0 msg 3891
+has_property(damp_cloth, absorbent).                         % f:0006d1 msg 3892
+can_do_on(damp_cloth, absorb_water, air_vent_cover).         % f:0006d2 msg 3893
+-can_do(screwdriver, absorb_water).                          % f:0006d3 msg 3894
+is_a(air_vent_cover, vent_cover).                            % f:0006d4 msg 3897
+has_property(vinegar, acidic).                               % f:0006d5 msg 3907
+has_property(lemon_juice, acidic).                           % f:0006d6 msg 3908
+is_a(lemon_juice, juice).                                    % f:0006d7 msg 3914
+can_do(paper_towel, wipe).                                   % f:0006d8 msg 3937
+can_do(paper_towel, absorb_water).                           % f:0006d9 msg 3940
+used_for(paper_towel, absorb_water).                         % f:0006da msg 3941
+-can_do(stepladder, wipe).                                   % f:0006db msg 3942
+can_do_on(cloth, wipe, fixture_body).                        % f:0006dc msg 3949
+can_do_on(soapy_water, wipe, fixture_body).                  % f:0006dd msg 3950
+-can_do_on(stepladder, wipe, fixture_body).                  % f:0006de msg 3951
+is_a(paper_towel, towel).                                    % f:0006df msg 3954
+can_do(clean_cloth, wipe).                                   % f:0006e0 msg 3978
+has_property(clean_cloth, absorbent).                        % f:0006e1 msg 3979
+can_do_on(clean_cloth, wipe, mattress).                      % f:0006e2 msg 3980
+-can_do(vacuum_cleaner, wipe).                               % f:0006e3 msg 3981
+can_do(metal_spoon, stir).                                   % f:0006e4 msg 4002
+can_do_on(metal_spoon, stir, onion).                         % f:0006e5 msg 4005
+used_for(wooden_spoon, stir).                                % f:0006e6 msg 4006
+used_for(metal_spoon, stir).                                 % f:0006e7 msg 4007
+is_a(metal_spoon, spoon).                                    % f:0006e8 msg 4010
+can_do(wooden_spoon, stir).                                  % f:0006e9 msg 4017
+can_do_on(wooden_spoon, stir, butter).                       % f:0006ea msg 4018
+made_of(wooden_spoon, wood).                                 % f:0006eb msg 4019
+precondition(beat, butter, butter_soft).                     % f:0006ec msg 4020
+effect(boil, water, boiling).                                % f:0006ed msg 4046
+effect(simmer, water, bubbling).                             % f:0006ee msg 4047
+can_do(stove, apply_heat).                                   % f:0006ef msg 4049
+-is_a(leek, onion).                                          % f:0006f0 msg 4060
+can_go_in(pot, stove).                                       % f:0006f1 msg 4061
+can_do(pot, hold).                                           % f:0006f2 msg 4062
+can_do_on(quick_link, bind, new_chain).                      % f:0006f3 msg 4084
+used_for(quick_link, bind).                                  % f:0006f4 msg 4085
+-used_for(quick_link, cut).                                  % f:0006f5 msg 4086
+-used_for(chain_oil, bind).                                  % f:0006f6 msg 4087
+used_for(rag, wipe).                                         % f:0006f7 msg 4096
+made_of(rag, fabric).                                        % f:0006f8 msg 4097
+-used_for(chain_oil, wipe).                                  % f:0006f9 msg 4098
+can_do(pliers, grip).                                        % f:0006fa msg 4124
+can_do(screwdriver, turn).                                   % f:0006fb msg 4125
+-can_do(sponge, turn).                                       % f:0006fc msg 4126
+can_do(sponge, absorb_water).                                % f:0006fd msg 4138
+used_for(pliers, crimp).                                     % f:0006fe msg 4154
+can_do_on(hammer, flatten, zipper_stop).                     % f:0006ff msg 4155
+-can_do_on(cloth, flatten, zipper_stop).                     % f:000700 msg 4156
+is_a(food, item).                                            % f:000701 msg 4171
+is_a(fruit, food).                                           % f:000702 msg 4172
+is_a(lemon, fruit).                                          % f:000703 msg 4173
+is_a(tool, item).                                            % f:000704 msg 4174
+is_a(mop, tool).                                             % f:000705 msg 4175
+is_a(textile, item).                                         % f:000706 msg 4176
+is_a(lace, textile).                                         % f:000707 msg 4177
+is_a(laundry, textile).                                      % f:000708 msg 4178
+is_a(paper, item).                                           % f:000709 msg 4179
+is_a(newspaper, paper).                                      % f:00070a msg 4180
+is_a(household_object, item).                                % f:00070b msg 4181
+is_a(container, household_object).                           % f:00070c msg 4182
+is_a(dish, household_object).                                % f:00070d msg 4184
+is_a(plate, dish).                                           % f:00070e msg 4185
+is_a(appliance, household_object).                           % f:00070f msg 4186
+is_a(iron, appliance).                                       % f:000710 msg 4187
+is_a(ironing_board, household_object).                       % f:000711 msg 4188
+is_a(frame, household_object).                               % f:000712 msg 4189
+is_a(hanger, household_object).                              % f:000713 msg 4190
+is_a(oven_rack, household_object).                           % f:000714 msg 4191
+can_do(clean_cloth, absorb_water).                           % f:000715 msg 4194
+is_a(apple, fruit).                                          % f:000716 msg 4235
+is_a(avocado, fruit).                                        % f:000717 msg 4236
+is_a(banana, fruit).                                         % f:000718 msg 4237
+is_a(berry, fruit).                                          % f:000719 msg 4238
+is_a(fruit, produce).                                        % f:00071a msg 4239
+is_a(chili, vegetable).                                      % f:00071b msg 4241
+is_a(chopped_tomato, vegetable).                             % f:00071c msg 4242
+is_a(herb, produce).                                         % f:00071d msg 4243
+is_a(basil, herb).                                           % f:00071e msg 4244
+is_a(legume, produce).                                       % f:00071f msg 4245
+is_a(chickpea, legume).                                      % f:000720 msg 4246
+is_a(chili_powder, spice).                                   % f:000721 msg 4247
+is_a(cinnamon_stick, spice).                                 % f:000722 msg 4248
+is_a(butter, dairy).                                         % f:000723 msg 4249
+is_a(cheese, dairy).                                         % f:000724 msg 4250
+is_a(baking_soda, leavening_agent).                          % f:000725 msg 4251
+is_a(batter, mixture).                                       % f:000726 msg 4252
+is_a(baguette, bread).                                       % f:000727 msg 4254
+is_a(banana_bread, baked_good).                              % f:000728 msg 4255
+is_a(container, equipment).                                  % f:000729 msg 4256
+is_a(bowl, container).                                       % f:00072a msg 4257
+is_a(appliance, equipment).                                  % f:00072b msg 4258
+is_a(blender, appliance).                                    % f:00072c msg 4259
+is_a(bakeware, equipment).                                   % f:00072d msg 4260
+is_a(baking_dish, bakeware).                                 % f:00072e msg 4261
+is_a(baking_tray, bakeware).                                 % f:00072f msg 4262
+is_a(knife, cutting_tool).                                   % f:000730 msg 4302
+is_a(cutting_tool, hand_tool).                               % f:000731 msg 4303
+is_a(putty_knife, scraping_tool).                            % f:000732 msg 4305
+is_a(scraping_tool, hand_tool).                              % f:000733 msg 4306
+is_a(paintbrush, applicator).                                % f:000734 msg 4307
+is_a(applicator, hand_tool).                                 % f:000735 msg 4308
+is_a(pencil, marking_tool).                                  % f:000736 msg 4309
+is_a(marking_tool, hand_tool).                               % f:000737 msg 4310
+is_a(radiator_key, hand_tool).                               % f:000738 msg 4311
+is_a(patch_kit, repair_supply).                              % f:000739 msg 4314
+is_a(patch, repair_supply).                                  % f:00073a msg 4315
+is_a(lubricant, repair_supply).                              % f:00073b msg 4316
+is_a(paint, coating).                                        % f:00073c msg 4317
+is_a(coating, repair_supply).                                % f:00073d msg 4318
+is_a(sealant, repair_supply).                                % f:00073e msg 4319
+is_a(nail, fastener).                                        % f:00073f msg 4320
+is_a(latch, fastener).                                       % f:000740 msg 4321
+is_a(hardware, part).                                        % f:000741 msg 4323
+is_a(joint, part).                                           % f:000742 msg 4324
+is_a(new_handle, part).                                      % f:000743 msg 4325
+is_a(lightbulb, light).                                      % f:000744 msg 4326
+is_a(old_bulb, lightbulb).                                   % f:000745 msg 4327
+is_a(light, fixture).                                        % f:000746 msg 4328
+is_a(radiator, heating_unit).                                % f:000747 msg 4329
+made_of(newspaper, paper_material).                          % f:000748 msg 4343
+made_of(paper_towel, paper_material).                        % f:000749 msg 4344
+made_of(plate, ceramic).                                     % f:00074a msg 4345
+made_of(hanger, aluminum).                                   % f:00074b msg 4346
+-made_of(iron, aluminum).                                    % f:00074c msg 4347
+-made_of(glass, paper_material).                             % f:00074d msg 4348
+-made_of(plate, paper_material).                             % f:00074e msg 4349
+has_property(plate, fragile).                                % f:00074f msg 4351
+has_property(lace, fragile).                                 % f:000750 msg 4352
+has_property(newspaper, absorbent).                          % f:000751 msg 4353
+has_property(mop, absorbent).                                % f:000752 msg 4354
+has_property(oven_rack, heat_resistant).                     % f:000753 msg 4355
+-has_property(paper_towel, waterproof).                      % f:000754 msg 4356
+-has_property(lemon, absorbent).                             % f:000755 msg 4358
+-has_property(oven_rack, absorbent).                         % f:000756 msg 4359
+is_a(spoon, spoon).                                          % f:000757 msg 4364
+made_of(baking_dish, ceramic).                               % f:000758 msg 4374
+-made_of(baking_dish, plastic).                              % f:000759 msg 4376
+made_of(baking_tray, aluminum).                              % f:00075a msg 4377
+-made_of(baking_tray, plastic).                              % f:00075b msg 4378
+made_of(bowl, ceramic).                                      % f:00075c msg 4379
+made_of(bowl, plastic).                                      % f:00075d msg 4380
+made_of(blender, plastic).                                   % f:00075e msg 4381
+made_of(blender, metal).                                     % f:00075f msg 4382
+made_of(clean_cloth, fabric).                                % f:000760 msg 4383
+made_of(spoon, metal).                                       % f:000761 msg 4384
+-made_of(spoon, plastic).                                    % f:000762 msg 4385
+-made_of(baking_soda, metal).                                % f:000763 msg 4386
+has_property(bread, crumbly).                                % f:000764 msg 4393
+made_of(nail, metal).                                        % f:000765 msg 4416
+made_of(latch, metal).                                       % f:000766 msg 4417
+made_of(pencil, wood).                                       % f:000767 msg 4418
+made_of(radiator, metal).                                    % f:000768 msg 4421
+made_of(radiator_key, metal).                                % f:000769 msg 4422
+made_of(putty_knife, metal).                                 % f:00076a msg 4423
+-made_of(pencil, metal).                                     % f:00076b msg 4424
+-made_of(radiator, wood).                                    % f:00076c msg 4425
+-made_of(nail, wood).                                        % f:00076d msg 4426
+-made_of(lightbulb, wood).                                   % f:00076e msg 4427
+has_property(lightbulb, fragile).                            % f:00076f msg 4429
+-has_property(putty_knife, sharp).                           % f:000770 msg 4435
+-has_property(radiator, fragile).                            % f:000771 msg 4438
+-can_go_in(iron, fridge).                                    % f:000772 msg 4462
+-can_go_in(laundry, oven).                                   % f:000773 msg 4463
+-can_do(glass, absorb_water).                                % f:000774 msg 4465
+can_do(iron, press).                                         % f:000775 msg 4466
+can_do_on(iron, press, laundry).                             % f:000776 msg 4467
+effect(heat, iron, iron_hot).                                % f:000777 msg 4468
+can_do_on(newspaper, polish, glass).                         % f:000778 msg 4469
+can_do(baking_tray, hold).                                   % f:000779 msg 4487
+can_do(baking_dish, hold).                                   % f:00077a msg 4488
+can_do(bowl, hold).                                          % f:00077b msg 4489
+can_do(bowl, contain).                                       % f:00077c msg 4490
+can_do(blender, mix).                                        % f:00077d msg 4491
+can_do_on(bowl, mix, batter).                                % f:00077e msg 4492
+can_do_on(blender, mix, batter).                             % f:00077f msg 4493
+used_for(baking_tray, apply_heat).                           % f:000780 msg 4494
+used_for(baking_dish, apply_heat).                           % f:000781 msg 4495
+used_for(blender, mix).                                      % f:000782 msg 4496
+has_property(baking_tray, heat_resistant).                   % f:000783 msg 4499
+has_property(baking_dish, heat_resistant).                   % f:000784 msg 4500
+can_go_in(baking_tray, oven).                                % f:000785 msg 4501
+can_go_in(baking_dish, oven).                                % f:000786 msg 4502
+can_go_in(butter, fridge).                                   % f:000787 msg 4503
+can_go_in(broccoli, fridge).                                 % f:000788 msg 4504
+-can_go_in(blender, oven).                                   % f:000789 msg 4505
+-can_go_in(butter, oven).                                    % f:00078a msg 4506
+-can_go_in(bread, fridge).                                   % f:00078b msg 4507
+-can_do(bowl, apply_heat).                                   % f:00078c msg 4508
+can_do_on(baking_tray, apply_heat, bread).                   % f:00078d msg 4509
+can_do_on(putty_knife, lift, old_sealant).                   % f:00078e msg 4537
+can_do_on(putty_knife, coat, patch).                         % f:00078f msg 4540
+used_for(putty_knife, coat).                                 % f:000790 msg 4541
+can_go_in(putty_knife, toolbox).                             % f:000791 msg 4542
+can_do_on(paintbrush, apply_paint, paint).                   % f:000792 msg 4543
+used_for(paintbrush, coat).                                  % f:000793 msg 4544
+can_go_in(paintbrush, toolbox).                              % f:000794 msg 4545
+used_for(pencil, measure).                                   % f:000795 msg 4546
+-used_for(pencil, coat).                                     % f:000796 msg 4547
+can_go_in(pencil, toolbox).                                  % f:000797 msg 4548
+used_for(masking_tape, protect).                             % f:000798 msg 4549
+can_do_on(masking_tape, protect, picture).                   % f:000799 msg 4550
+can_go_in(masking_tape, toolbox).                            % f:00079a msg 4551
+can_go_in(nail, toolbox).                                    % f:00079b msg 4552
+used_for(patch_kit, bind).                                   % f:00079c msg 4553
+can_go_in(patch_kit, closet).                                % f:00079d msg 4554
+can_do_on(lubricant, coat, joint).                           % f:00079e msg 4555
+can_go_in(lubricant, closet).                                % f:00079f msg 4556
+can_go_in(lightbulb, closet).                                % f:0007a0 msg 4557
+-can_do(lightbulb, measure).                                 % f:0007a1 msg 4558
+used_for(pump, lift).                                        % f:0007a2 msg 4559
+can_go_in(radiator_key, toolbox).                            % f:0007a3 msg 4560
+-can_go_in(radiator, toolbox).                               % f:0007a4 msg 4561
+-can_go_in(radiator, closet).                                % f:0007a5 msg 4562
