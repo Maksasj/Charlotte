@@ -9,7 +9,7 @@ use agent4::{Agent, Teacher as AgentTeacher};
 use serde_json::{json, Value as J};
 use std::collections::BTreeSet;
 
-pub const PROMPT_VERSION: &str = "stage_v6";
+pub const PROMPT_VERSION: &str = "stage_v7";
 const OTHERS: &str = "Other symbols already declared (keep their sorts): ";
 const SEP: &str = ", ";
 
@@ -38,7 +38,7 @@ pub fn stage_task(stage: u32) -> &'static str {
         4 => "Stage 4, parts: teach has_part facts for the items below that have parts.",
         5 => "Stage 5, actions and states: teach effect and precondition facts for the actions below, and is_a between actions.",
         6 => "Stage 6, a procedure: teach the task below as formal facts, from its name and English outline. Use task(T). step(T, S). action(S, A). object_of(S, O). uses(S, I). role(S, I, F). before(S1, S2). requires_state(S, St). achieves(S, St). demands(S, F, Rel, V). Name the steps with the task's own name and a number, in order: for the task clean_oven they are clean_oven_s1, clean_oven_s2, and so on; all symbols are lower case. Do not declare the task or its steps with new(...): task(...) and step(...) declare them. role says what function F the item I serves in step S; demands says what that function needs of whatever item fills the role there, as a relation and value (for example demands(S, heat, can_go_in, oven) or demands(S, contain, has_property, watertight)). Declare new symbols with new(...).",
-        7 => "Stage 7, situations: for each situation below, teach one case: a line topic <domain>/case_<task>_<n>. then the situation facts as given (has, lacks, state_of; user is the fixed situation subject and is never declared), then the resolution: swap(Step, Missing, Substitute). or drop(Step). using the task's step names (the task's name and a number, such as clean_oven_s2), all lower case. Close each case with topic <domain>/<task>. and then teach, as ordinary facts, why the resolution works or what does not work (for example can_do, has_property or a negative fact on a specific kind). If a situation needs no change of steps, give the case with no resolution.",
+        7 => "Stage 7, situations: for each situation below, teach one case. Open it with a line that starts with the word topic, exactly like: topic cleaning/case_clean_oven_1. Then the situation facts as given (has, lacks, state_of; user is the fixed situation subject and is never declared), then the resolution: swap(Step, Missing, Substitute). or drop(Step). using the task's step names (the task's name and a number, such as clean_oven_s2), all lower case. Close each case with a line that starts with the word topic, exactly like: topic cleaning/clean_oven. and then teach, as ordinary facts, why the resolution works or what does not work (for example can_do, has_property or a negative fact on a specific kind). If a situation needs no change of steps, give the case with no resolution.",
         _ => "Teach facts about the symbols below.",
     }
 }
