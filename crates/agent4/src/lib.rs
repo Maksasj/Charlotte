@@ -74,6 +74,9 @@ pub struct Agent {
     /// (message, reason) for every rejected message, for the teacher audit
     pub rejects: Vec<(String, String)>,
     model: Option<Model>,
+    /// base rules only: the per-message checks of the conversation read holds/holdsn and
+    /// conflicts, which learned rules (lholds, lholdsn) never write, so they need not pay for them
+    model_base: Option<Model>,
 }
 
 fn sym_of(v: &Value) -> String {
@@ -89,7 +92,7 @@ impl Agent {
             // the situation subject is a protocol constant of the formal language (has(user, I))
             session: session.into(), sorts: BTreeMap::from([("user".to_string(), "agent".to_string())]), facts: Vec::new(), raw: Vec::new(), provenance: Vec::new(),
             canon: BTreeMap::new(), not_same: BTreeSet::new(), questions: Vec::new(), learned: Vec::new(), off: Vec::new(),
-            learning: true, naming: true, bulk: false, stats: Stats::default(), rejects: Vec::new(), model: None, cases: Vec::new(), case_open: None,
+            learning: true, naming: true, bulk: false, stats: Stats::default(), rejects: Vec::new(), model: None, model_base: None, cases: Vec::new(), case_open: None,
         }
     }
 
@@ -220,10 +223,12 @@ impl Agent {
         self.facts.push((a.clone(), Stored { atom: a.to_string(), negated, msg, conf, retracted_by: None }));
         self.stats.accepted += 1;
         self.model = None;
+        self.model_base = None;
     }
 
     pub fn reset_model(&mut self) {
         self.model = None;
+        self.model_base = None;
     }
 
     pub fn engine_facts(&self, extra: &[(GroundAtom, bool)]) -> Vec<FactInput> {
@@ -257,9 +262,17 @@ impl Agent {
         self.model.as_ref().unwrap()
     }
 
+    fn model_base(&mut self) -> &Model {
+        if self.model_base.is_none() {
+            let off: Vec<&str> = self.off.iter().map(String::as_str).collect();
+            self.model_base = Some(reason4::run(&self.engine_facts(&[]), &off, &[]).expect("model"));
+        }
+        self.model_base.as_ref().unwrap()
+    }
+
     fn holds_now(&mut self, a: &GroundAtom, negated: bool) -> bool {
         let h = holds_atom(a, negated);
-        self.model().contains(&h)
+        self.model_base().contains(&h)
     }
 
     /// Process one teacher message; returns the agent's reply lines.
@@ -334,6 +347,7 @@ impl Agent {
                 }
                 self.provenance.push(json!({"fact": a.to_string(), "negated": negated, "msg": id, "event": "retracted"}));
                 self.model = None;
+        self.model_base = None;
                 vec!["ok. retracted.".into()]
             }
             Msg::Fact { atom, negated } => {
@@ -365,6 +379,7 @@ impl Agent {
                     } else if x != y {
                         self.canon.insert(x, y);
                         self.model = None;
+        self.model_base = None;
                     }
                     return vec!["ok.".into()];
                 }
@@ -406,7 +421,7 @@ impl Agent {
                     }
                 }
                 let before: BTreeSet<String> = self.visible();
-                let conflicts_before: BTreeSet<String> = self.model().facts_of("ask_conflict").iter().map(|g| g.to_string()).collect();
+                let conflicts_before: BTreeSet<String> = self.model_base().facts_of("ask_conflict").iter().map(|g| g.to_string()).collect();
                 self.store(a, negated, id, if channel == "fixture" { 1.0 } else { 0.9 });
                 let after = self.visible();
                 let new: Vec<String> = after.difference(&before).take(3).cloned().collect();
@@ -415,7 +430,7 @@ impl Agent {
                     out.push(if shown.is_empty() { "ok.".into() } else { format!("ok. derived: {}", shown.join("; ")) });
                 }
                 // a new diamond: neither kind is more specific, so ask (E3)
-                let conflicts_now: Vec<sla_core::term::GroundAtom> = self.model().facts_of("ask_conflict");
+                let conflicts_now: Vec<sla_core::term::GroundAtom> = self.model_base().facts_of("ask_conflict");
                 for c in conflicts_now {
                     if conflicts_before.contains(&c.to_string()) || self.facts.iter().any(|(f, s)| s.retracted_by.is_none() && f.args.first() == c.args.first() && f.pred == sym_of(&c.args[1])) {
                         continue;
@@ -436,7 +451,7 @@ impl Agent {
         let (neg, s) = match line.strip_prefix("not ") { Some(r) => (true, r), None => (false, line) };
         let Ok(a) = reason4::parse_atom(s) else { return vec![] };
         let h = holds_atom(&a, neg);
-        let m = self.model();
+        let m = self.model_base();
         m.proof(&h).map(|p| p.leaves().iter().filter(|l| l.pred != "inheritable").filter_map(|l| surface(l).map(|(x, n)| if n { format!("not {x}") } else { x.to_string() }).or_else(|| Some(l.to_string()))).collect()).unwrap_or_default()
     }
 
@@ -461,7 +476,7 @@ impl Agent {
     /// Derived item knowledge, as surface lines (what "ok. derived:" shows).
     fn visible(&mut self) -> BTreeSet<String> {
         let taught: BTreeSet<String> = self.facts.iter().filter(|(_, s)| s.retracted_by.is_none()).map(|(a, s)| if s.negated { format!("not {a}") } else { a.to_string() }).collect();
-        let m = self.model();
+        let m = self.model_base();
         let mut out = BTreeSet::new();
         for p in ["holds", "holdsn", "holds3", "holdsn3"] {
             for g in m.facts_of(p) {
