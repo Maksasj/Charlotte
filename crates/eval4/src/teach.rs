@@ -9,7 +9,7 @@ use agent4::{Agent, Teacher as AgentTeacher};
 use serde_json::{json, Value as J};
 use std::collections::BTreeSet;
 
-pub const PROMPT_VERSION: &str = "stage_v4";
+pub const PROMPT_VERSION: &str = "stage_v5";
 const OTHERS: &str = "Other symbols already declared (keep their sorts): ";
 const SEP: &str = ", ";
 
@@ -33,10 +33,12 @@ pub fn stage_task(stage: u32) -> &'static str {
     match stage {
         0 => "Stage 0, vocabulary only: declare every symbol below with new(sym, sort), using the suggested sort unless it is clearly wrong. Add same_as(a, b) for two listed names of one thing, and not same_as(a, b) for look-alike names of different things of the same sort. Add up to 10 closely related symbols that are missing, declared with new(...). Teach no other facts in this stage.",
         1 => "Stage 1, kinds: teach is_a facts for the items below, two or three levels up to general kinds, so kinds are shared across items.",
-        2 => "Stage 2, materials and properties: teach made_of and has_property facts for the items below, including negatives where a natural guess would be wrong.",
+        2 => "Stage 2, materials and properties: teach made_of and has_property facts for the items below, including negatives where a natural guess would be wrong. A material whose plain name is already declared as an item takes the suffix _material (glass_material, paper_material); declare it with new(...) as material.",
         3 => "Stage 3, functions: teach can_do, can_do_on, used_for and can_go_in facts for the items below, including negatives where they matter (for example what cannot go in an oven).",
         4 => "Stage 4, parts: teach has_part facts for the items below that have parts.",
         5 => "Stage 5, actions and states: teach effect and precondition facts for the actions below, and is_a between actions.",
+        6 => "Stage 6, a procedure: teach the task below as formal facts, from its name and English outline. Use task(T). step(T, S). action(S, A). object_of(S, O). uses(S, I). role(S, I, F). before(S1, S2). requires_state(S, St). achieves(S, St). demands(S, F, Rel, V). Name steps T_s1, T_s2, ... in order. role says what function F the item I serves in step S; demands says what that function needs of whatever item fills the role there, as a relation and value (for example demands(S, heat, can_go_in, oven) or demands(S, contain, has_property, watertight)). Declare new symbols with new(...).",
+        7 => "Stage 7, situations: for each situation below, teach one case: a line topic <domain>/case_<task>_<n>. then the situation facts as given (has, lacks, state_of), then the resolution: swap(Step, Missing, Substitute). or drop(Step). using the task's step names. Close each case with topic <domain>/<task>. and then teach, as ordinary facts, why the resolution works or what does not work (for example can_do, has_property or a negative fact on a specific kind). If a situation needs no change of steps, give the case with no resolution.",
         _ => "Teach facts about the symbols below.",
     }
 }
@@ -68,6 +70,9 @@ impl AgentTeacher for Queue {
 pub struct Unit {
     /// suggested sorts from the seed (stage 0 only)
     pub sorts: Vec<(String, String)>,
+    /// extra material shown to the teacher: role lists, the English step outline, situations
+    pub text: String,
+    pub task: Option<String>,
     pub stage: u32,
     pub unit: String,
     pub domain: String,
@@ -84,7 +89,16 @@ pub fn teach_unit(agent: &mut Agent, haiku: &teach3::Teacher, queue: &mut Queue,
         u.symbols.iter().map(|s| match agent.sorts.get(s) { Some(t) => format!("{s} ({t})"), None => s.clone() }).collect::<Vec<_>>().join(", ")
     };
     let used_elsewhere: Vec<String> = agent.sorts.iter().filter(|(k, t)| !u.symbols.contains(k) && matches!(t.as_str(), "state" | "action" | "function" | "property" | "material" | "place")).take(60).map(|(k, t)| format!("{k} ({t})")).collect();
-    let mut prompt = format!("{}\nDomain: {}. Unit: {}.\nSymbols: {listed}\n", stage_task(u.stage), u.domain, u.unit);
+    let mut prompt = format!("{}\nDomain: {}. Unit: {}.\n", stage_task(u.stage), u.domain, u.unit);
+    if !listed.is_empty() {
+        prompt.push_str(&format!("Symbols: {listed}\n"));
+    }
+    if let Some(t) = &u.task {
+        prompt.push_str(&format!("Task: {t}.\n"));
+    }
+    if !u.text.is_empty() {
+        prompt.push_str(&format!("{}\n{}\n", if u.stage == 3 { "Functions and the items that serve them in the seed procedures:" } else if u.stage == 6 { "Outline:" } else { "Situations:" }, u.text));
+    }
     if u.stage > 0 && !used_elsewhere.is_empty() {
         let shown = used_elsewhere.join(SEP);
         prompt.push_str(&format!("{OTHERS}{shown}\n"));
@@ -102,11 +116,18 @@ pub fn teach_unit(agent: &mut Agent, haiku: &teach3::Teacher, queue: &mut Queue,
             prompt.push('\n');
         }
     }
-    prompt.push_str("Teach 20-30 statements.\n");
+    prompt.push_str(match u.stage {
+        6 => "Teach the whole procedure.\n",
+        7 => "Teach every situation.\n",
+        _ => "Teach 20-30 statements.\n",
+    });
     // P1: the prompt never carries a denied atom
     let p1 = queue.deny.hits(&prompt);
     if !p1.is_empty() {
         return Err(format!("P1 leak in prompt: {p1:?}"));
+    }
+    if std::env::var("SLA4_SHOW_PROMPT").is_ok() {
+        eprintln!("--- prompt stage {} {}\n{prompt}", u.stage, u.unit);
     }
     let reply = haiku.ask(SYSTEM, &prompt, &format!("teach4_stage{}_{PROMPT_VERSION}", u.stage))?;
     let (keep, withheld) = queue.deny.filter_reply(&reply);

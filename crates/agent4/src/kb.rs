@@ -192,6 +192,11 @@ pub fn replay(rows: &[J], session: &str, renames: &BTreeMap<String, String>, off
             if speaker == "agent" && channel == "finish" {
                 agent.finish();
             }
+            if speaker == "agent" && channel == "block_end" {
+                if let Some(n) = t.split_whitespace().nth(1).and_then(|v| v.parse().ok()) {
+                    agent.mark_block(n);
+                }
+            }
             continue;
         }
         let line = migrate(t, renames);

@@ -487,6 +487,11 @@ impl Agent {
         learn::induce(self, teacher)
     }
 
+    /// A curriculum boundary (a quarter block's end), kept in raw so snapshots replay a prefix.
+    pub fn mark_block(&mut self, block: usize) {
+        self.log("agent", "block_end", &format!("block {block} end"));
+    }
+
     /// End of teaching: suspended rules with nothing to separate their counterexample retract.
     pub fn finish(&mut self) -> Vec<String> {
         self.log("agent", "finish", "finish");

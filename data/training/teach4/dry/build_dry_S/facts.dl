@@ -1,0 +1,842 @@
+% schema facts4/1  base B1-B9 fnv:baaa3bb5b37f1f8e  raw 2101 msgs
+task(declutter_closet).                                      % f:000000 msg 626
+takes_time(declutter_closet, 60, 90, minute).                % f:000001 msg 627
+step(declutter_closet, declutter_closet_s1).                 % f:000002 msg 628
+action(declutter_closet_s1, take).                           % f:000003 msg 629
+object_of(declutter_closet_s1, closet_contents).             % f:000004 msg 630
+from(declutter_closet_s1, closet).                           % f:000005 msg 631
+takes_time(declutter_closet_s1, 10, 15, minute).             % f:000006 msg 632
+step(declutter_closet, declutter_closet_s2).                 % f:000007 msg 633
+action(declutter_closet_s2, sort).                           % f:000008 msg 634
+object_of(declutter_closet_s2, clothes).                     % f:000009 msg 635
+into(declutter_closet_s2, keep_pile).                        % f:00000a msg 636
+into(declutter_closet_s2, donate_pile).                      % f:00000b msg 639
+into(declutter_closet_s2, throw_away_pile).                  % f:00000c msg 642
+takes_time(declutter_closet_s2, 25, 40, minute).             % f:00000d msg 645
+step(declutter_closet, declutter_closet_s3).                 % f:00000e msg 646
+action(declutter_closet_s3, pack).                           % f:00000f msg 647
+object_of(declutter_closet_s3, donate_pile).                 % f:000010 msg 648
+object_of(declutter_closet_s3, throw_away_pile).             % f:000011 msg 649
+uses(declutter_closet_s3, bags).                             % f:000012 msg 650
+takes_time(declutter_closet_s3, 5, 10, minute).              % f:000013 msg 652
+step(declutter_closet, declutter_closet_s4).                 % f:000014 msg 653
+action(declutter_closet_s4, wipe).                           % f:000015 msg 654
+object_of(declutter_closet_s4, shelf).                       % f:000016 msg 655
+uses(declutter_closet_s4, cloth).                            % f:000017 msg 657
+role(declutter_closet_s4, cloth, wiping).                    % f:000018 msg 658
+takes_time(declutter_closet_s4, 5, 10, minute).              % f:000019 msg 659
+step(declutter_closet, declutter_closet_s5).                 % f:00001a msg 660
+action(declutter_closet_s5, hang).                           % f:00001b msg 661
+object_of(declutter_closet_s5, cloth).                       % f:00001c msg 662
+uses(declutter_closet_s5, hanger).                           % f:00001d msg 663
+into(declutter_closet_s5, closet).                           % f:00001e msg 664
+takes_time(declutter_closet_s5, 15, 20, minute).             % f:00001f msg 665
+needs(declutter_closet, bags).                               % f:000020 msg 666
+needs(declutter_closet, damp_cloth).                         % f:000021 msg 667
+needs(declutter_closet, hangers).                            % f:000022 msg 670
+task(mop_floor).                                             % f:000023 msg 672
+step(mop_floor, mop_floor_s5).                               % f:000024 msg 673
+object_of(mop_floor_s5, floor).                              % f:000025 msg 675
+uses(mop_floor_s5, mop).                                     % f:000026 msg 676
+from(mop_floor_s5, far_corner).                              % f:000027 msg 677
+onto(mop_floor_s5, door).                                    % f:000028 msg 678
+takes_time(mop_floor_s5, 10, 15, minute).                    % f:000029 msg 679
+takes_time(mop_floor, 25, 35, minute).                       % f:00002a msg 680
+needs(mop_floor, broom).                                     % f:00002b msg 681
+needs(mop_floor, bucket).                                    % f:00002c msg 682
+needs(mop_floor, mop).                                       % f:00002d msg 683
+needs(mop_floor, cleaner).                                   % f:00002e msg 684
+needs(mop_floor, warm_water).                                % f:00002f msg 687
+step(mop_floor, mop_floor_s6).                               % f:000030 msg 690
+object_of(mop_floor_s6, floor).                              % f:000031 msg 692
+takes_time(mop_floor_s6, 5, 10, minute).                     % f:000032 msg 693
+check(mop_floor_s6, floor_dry).                              % f:000033 msg 694
+warning(mop_floor_s6, slippery_floor).                       % f:000034 msg 695
+step(mop_floor, mop_floor_s4).                               % f:000035 msg 696
+action(mop_floor_s4, wring).                                 % f:000036 msg 697
+object_of(mop_floor_s4, mop).                                % f:000037 msg 698
+until(mop_floor_s4, damp).                                   % f:000038 msg 699
+check(mop_floor_s4, not_dripping).                           % f:000039 msg 700
+takes_time(mop_floor_s4, 1, 1, minute).                      % f:00003a msg 701
+step(mop_floor, mop_floor_s1).                               % f:00003b msg 702
+action(mop_floor_s1, sweep).                                 % f:00003c msg 703
+object_of(mop_floor_s1, floor).                              % f:00003d msg 704
+uses(mop_floor_s1, broom).                                   % f:00003e msg 705
+action(mop_floor_s5, check).                                 % f:00003f msg 707
+object_of(mop_floor_s5, mop).                                % f:000040 msg 708
+check(mop_floor_s5, not_dripping).                           % f:000041 msg 709
+condition(mop_floor_s4, barely_damp).                        % f:000042 msg 713
+step(mop_floor, mop_floor_s3).                               % f:000043 msg 714
+action(mop_floor_s3, dip).                                   % f:000044 msg 715
+object_of(mop_floor_s3, mop).                                % f:000045 msg 716
+into(mop_floor_s3, bucket).                                  % f:000046 msg 717
+uses(mop_floor_s3, bucket).                                  % f:000047 msg 718
+step(mop_floor, mop_floor_s8).                               % f:000048 msg 719
+action(mop_floor_s8, let).                                   % f:000049 msg 720
+object_of(mop_floor_s8, floor).                              % f:00004a msg 721
+until(mop_floor_s8, dry).                                    % f:00004b msg 722
+optional(mop_floor_s8).                                      % f:00004c msg 723
+warning(mop_floor_s8, walking_on_wet_floor).                 % f:00004d msg 724
+uses(mop_floor_s6, go).                                      % f:00004e msg 728
+role(mop_floor_s6, section, floor_area).                     % f:00004f msg 729
+purpose(mop_floor_s6, clean_floor).                          % f:000050 msg 730
+from(mop_floor_s6, far_corner).                              % f:000051 msg 731
+step(mop_floor, mop_floor_s2).                               % f:000052 msg 732
+action(mop_floor_s2, fill).                                  % f:000053 msg 733
+object_of(mop_floor_s2, bucket).                             % f:000054 msg 734
+uses(mop_floor_s2, water).                                   % f:000055 msg 735
+uses(mop_floor_s2, wood_floor_cleaner).                      % f:000056 msg 738
+into(mop_floor_s2, bucket).                                  % f:000057 msg 741
+step(mop_floor, mop_floor_s7).                               % f:000058 msg 742
+object_of(mop_floor_s7, section).                            % f:000059 msg 744
+uses(mop_floor_s7, towel).                                   % f:00005a msg 745
+role(mop_floor_s7, towel, absorb_water).                     % f:00005b msg 748
+action(mop_floor_s1, test).                                  % f:00005c msg 750
+uses(mop_floor_s1, wood_floor_cleaner).                      % f:00005d msg 752
+condition(mop_floor_s1, hidden_spot).                        % f:00005e msg 753
+check(mop_floor_s1, cleaner_label_wood_floor_directions).    % f:00005f msg 754
+purpose(mop_floor_s8, dry).                                  % f:000060 msg 758
+warning(mop_floor_s8, walking_on_floor).                     % f:000061 msg 759
+from(mop_floor_s3, bucket).                                  % f:000062 msg 762
+setting(mop_floor_s6, starting_point, far_corner, none).     % f:000063 msg 772
+until(mop_floor_s4, barely_damp).                            % f:000064 msg 776
+condition(mop_floor_s7, as_you_go).                          % f:000065 msg 781
+setting(mop_floor_s5, section, 1, count).                    % f:000066 msg 790
+condition(mop_floor_s5, starting_from_far_corner).           % f:000067 msg 791
+action(mop_floor_s8, check).                                 % f:000068 msg 793
+object_of(mop_floor_s8, cleaner).                            % f:000069 msg 794
+check(mop_floor_s8, wood_specific_directions).               % f:00006a msg 795
+needs(mop_floor, towel).                                     % f:00006b msg 799
+needs(mop_floor, water).                                     % f:00006c msg 800
+needs(mop_floor, wood_floor_cleaner).                        % f:00006d msg 801
+uses(mop_floor_s4, mop).                                     % f:00006e msg 804
+condition(mop_floor_s4, not_dripping).                       % f:00006f msg 806
+object_of(mop_floor_s7, floor).                              % f:000070 msg 809
+optional(mop_floor_s7).                                      % f:000071 msg 810
+warning(mop_floor_s7, walking_on_wet_floor).                 % f:000072 msg 811
+until(mop_floor_s7, dry).                                    % f:000073 msg 812
+uses(mop_floor_s6, towel).                                   % f:000074 msg 815
+role(mop_floor_s6, towel, drying_tool).                      % f:000075 msg 816
+takes_time(mop_floor_s1, 5, 10, minute).                     % f:000076 msg 825
+uses(mop_floor_s2, cleaner).                                 % f:000077 msg 831
+takes_time(mop_floor_s2, 2, 3, minute).                      % f:000078 msg 833
+task(sort_recycling).                                        % f:000079 msg 835
+needs(sort_recycling, water).                                % f:00007a msg 836
+needs(sort_recycling, recycling).                            % f:00007b msg 837
+needs(sort_recycling, bins).                                 % f:00007c msg 838
+takes_time(sort_recycling, 10, 15, minute).                  % f:00007d msg 839
+step(sort_recycling, sort_recycling_s3).                     % f:00007e msg 840
+action(sort_recycling_s3, separate).                         % f:00007f msg 841
+object_of(sort_recycling_s3, glass_bottle).                  % f:000080 msg 842
+from(sort_recycling_s3, plastic).                            % f:000081 msg 843
+takes_time(sort_recycling_s3, 2, 3, minute).                 % f:000082 msg 844
+step(sort_recycling, sort_recycling_s4).                     % f:000083 msg 845
+action(sort_recycling_s4, put).                              % f:000084 msg 846
+object_of(sort_recycling_s4, waste).                         % f:000085 msg 847
+into(sort_recycling_s4, bins).                               % f:000086 msg 848
+takes_time(sort_recycling_s4, 2, 3, minute).                 % f:000087 msg 849
+step(sort_recycling, sort_recycling_s2).                     % f:000088 msg 850
+action(sort_recycling_s2, flatten).                          % f:000089 msg 851
+object_of(sort_recycling_s2, cardboard_box).                 % f:00008a msg 852
+takes_time(sort_recycling_s2, 2, 3, minute).                 % f:00008b msg 855
+step(sort_recycling, sort_recycling_s1).                     % f:00008c msg 856
+action(sort_recycling_s1, rinse).                            % f:00008d msg 857
+object_of(sort_recycling_s1, food_container).                % f:00008e msg 858
+object_of(sort_recycling_s1, tin).                           % f:00008f msg 861
+uses(sort_recycling_s1, water).                              % f:000090 msg 864
+takes_time(sort_recycling_s1, 3, 5, minute).                 % f:000091 msg 865
+task(wash_dishes).                                           % f:000092 msg 867
+needs(wash_dishes, sink).                                    % f:000093 msg 868
+needs(wash_dishes, water).                                   % f:000094 msg 869
+needs(wash_dishes, dish_soap).                               % f:000095 msg 870
+needs(wash_dishes, sponge).                                  % f:000096 msg 873
+needs(wash_dishes, drying_rack).                             % f:000097 msg 874
+takes_time(wash_dishes, 15, 25, minute).                     % f:000098 msg 875
+step(wash_dishes, wash_dishes_s4).                           % f:000099 msg 876
+action(wash_dishes_s4, rinse).                               % f:00009a msg 877
+object_of(wash_dishes_s4, dish).                             % f:00009b msg 878
+uses(wash_dishes_s4, water).                                 % f:00009c msg 881
+condition(wash_dishes_s4, clean).                            % f:00009d msg 882
+takes_time(wash_dishes_s4, 2, 3, minute).                    % f:00009e msg 883
+action(wash_dishes_s5, put).                                 % f:00009f msg 884
+object_of(wash_dishes_s5, dish).                             % f:0000a0 msg 885
+onto(wash_dishes_s5, rack).                                  % f:0000a1 msg 886
+uses(wash_dishes_s5, rack).                                  % f:0000a2 msg 889
+until(wash_dishes_s5, dry).                                  % f:0000a3 msg 890
+step(wash_dishes, wash_dishes_s3).                           % f:0000a4 msg 891
+action(wash_dishes_s3, wash).                                % f:0000a5 msg 892
+object_of(wash_dishes_s3, dish).                             % f:0000a6 msg 893
+uses(wash_dishes_s3, sponge).                                % f:0000a7 msg 894
+takes_time(wash_dishes_s3, 8, 14, minute).                   % f:0000a8 msg 895
+purpose(wash_dishes_s3, keep_water_clean).                   % f:0000a9 msg 896
+condition(wash_dishes_s3, glass_before_pan).                 % f:0000aa msg 897
+step(wash_dishes, wash_dishes_s1).                           % f:0000ab msg 898
+action(wash_dishes_s1, scrape).                              % f:0000ac msg 899
+object_of(wash_dishes_s1, plate).                            % f:0000ad msg 900
+into(wash_dishes_s1, bin).                                   % f:0000ae msg 901
+takes_time(wash_dishes_s1, 2, 3, minute).                    % f:0000af msg 904
+step(wash_dishes, wash_dishes_s2).                           % f:0000b0 msg 905
+action(wash_dishes_s2, fill).                                % f:0000b1 msg 906
+object_of(wash_dishes_s2, sink).                             % f:0000b2 msg 907
+uses(wash_dishes_s2, water).                                 % f:0000b3 msg 908
+uses(wash_dishes_s2, soap).                                  % f:0000b4 msg 909
+into(wash_dishes_s2, sink).                                  % f:0000b5 msg 912
+condition(wash_dishes_s2, hot_water).                        % f:0000b6 msg 913
+amount(wash_dishes_s2, soap, 1, squirt).                     % f:0000b7 msg 914
+takes_time(wash_dishes_s2, 2, 3, minute).                    % f:0000b8 msg 915
+task(bake_potato).                                           % f:0000b9 msg 917
+takes_time(bake_potato, 60, 70, minute).                     % f:0000ba msg 918
+needs(bake_potato, potato).                                  % f:0000bb msg 919
+needs(bake_potato, olive_oil).                               % f:0000bc msg 920
+needs(bake_potato, salt).                                    % f:0000bd msg 923
+needs(bake_potato, fork).                                    % f:0000be msg 924
+needs(bake_potato, baking_tray).                             % f:0000bf msg 925
+needs(bake_potato, oven).                                    % f:0000c0 msg 926
+step(bake_potato, bake_potato_s2).                           % f:0000c1 msg 927
+action(bake_potato_s2, wash).                                % f:0000c2 msg 928
+object_of(bake_potato_s2, potato).                           % f:0000c3 msg 929
+overlaps(bake_potato_s2, bake_potato_s1).                    % f:0000c4 msg 930
+step(bake_potato, bake_potato_s3).                           % f:0000c5 msg 931
+action(bake_potato_s3, prick).                               % f:0000c6 msg 932
+object_of(bake_potato_s3, potato).                           % f:0000c7 msg 933
+uses(bake_potato_s3, fork).                                  % f:0000c8 msg 934
+purpose(bake_potato_s3, steam_escape).                       % f:0000c9 msg 935
+overlaps(bake_potato_s3, bake_potato_s1).                    % f:0000ca msg 936
+step(bake_potato, bake_potato_s4).                           % f:0000cb msg 937
+action(bake_potato_s4, rub).                                 % f:0000cc msg 938
+object_of(bake_potato_s4, potato).                           % f:0000cd msg 939
+uses(bake_potato_s4, olive).                                 % f:0000ce msg 940
+uses(bake_potato_s4, oil).                                   % f:0000cf msg 941
+uses(bake_potato_s4, salt).                                  % f:0000d0 msg 942
+purpose(bake_potato_s4, crispy_skin).                        % f:0000d1 msg 943
+overlaps(bake_potato_s4, bake_potato_s1).                    % f:0000d2 msg 944
+step(bake_potato, bake_potato_s5).                           % f:0000d3 msg 945
+action(bake_potato_s5, bake).                                % f:0000d4 msg 946
+object_of(bake_potato_s5, potato).                           % f:0000d5 msg 947
+uses(bake_potato_s5, tray).                                  % f:0000d6 msg 948
+uses(bake_potato_s5, oven).                                  % f:0000d7 msg 951
+onto(bake_potato_s5, tray).                                  % f:0000d8 msg 952
+into(bake_potato_s5, oven).                                  % f:0000d9 msg 953
+until(bake_potato_s5, soft_inside).                          % f:0000da msg 954
+takes_time(bake_potato_s5, 50, 60, minute).                  % f:0000db msg 955
+action(bake_potato_s6, bake).                                % f:0000dc msg 958
+object_of(bake_potato_s6, potato).                           % f:0000dd msg 959
+uses(bake_potato_s6, baking_tray).                           % f:0000de msg 960
+into(bake_potato_s6, oven).                                  % f:0000df msg 961
+onto(bake_potato_s6, baking_tray).                           % f:0000e0 msg 962
+until(bake_potato_s6, soft).                                 % f:0000e1 msg 963
+takes_time(bake_potato_s6, 5, 10, minute).                   % f:0000e2 msg 964
+check(bake_potato_s6, inside_soft).                          % f:0000e3 msg 965
+uses(bake_potato_s4, olive_oil).                             % f:0000e4 msg 969
+uses(bake_potato_s5, microwave).                             % f:0000e5 msg 974
+takes_time(bake_potato_s5, 8, 10, minute).                   % f:0000e6 msg 975
+step(bake_potato, bake_potato_s1).                           % f:0000e7 msg 976
+action(bake_potato_s1, heat).                                % f:0000e8 msg 977
+object_of(bake_potato_s1, oven).                             % f:0000e9 msg 978
+uses(bake_potato_s1, oven).                                  % f:0000ea msg 979
+setting(bake_potato_s1, temperature, 200, celsius).          % f:0000eb msg 980
+takes_time(bake_potato_s1, 10, 10, minute).                  % f:0000ec msg 981
+overlaps(bake_potato_s1, bake_potato_s2).                    % f:0000ed msg 982
+overlaps(bake_potato_s1, bake_potato_s3).                    % f:0000ee msg 983
+overlaps(bake_potato_s1, bake_potato_s4).                    % f:0000ef msg 984
+needs(bake_potato, microwave).                               % f:0000f0 msg 989
+task(make_chili_con_carne).                                  % f:0000f1 msg 999
+needs(make_chili_con_carne, minced_beef).                    % f:0000f2 msg 1000
+needs(make_chili_con_carne, onion).                          % f:0000f3 msg 1001
+needs(make_chili_con_carne, tin_of_kidney_beans).            % f:0000f4 msg 1002
+needs(make_chili_con_carne, tin_of_chopped_tomatoes).        % f:0000f5 msg 1003
+needs(make_chili_con_carne, chili_powder).                   % f:0000f6 msg 1004
+needs(make_chili_con_carne, oil).                            % f:0000f7 msg 1005
+needs(make_chili_con_carne, knife).                          % f:0000f8 msg 1006
+needs(make_chili_con_carne, large_pot).                      % f:0000f9 msg 1007
+takes_time(make_chili_con_carne, 45, 60, minute).            % f:0000fa msg 1010
+step(make_chili_con_carne, make_chili_con_carne_s5).         % f:0000fb msg 1011
+action(make_chili_con_carne_s5, simmer).                     % f:0000fc msg 1012
+object_of(make_chili_con_carne_s5, chili).                   % f:0000fd msg 1013
+into(make_chili_con_carne_s5, pot).                          % f:0000fe msg 1014
+condition(make_chili_con_carne_s5, lid_half_on).             % f:0000ff msg 1017
+takes_time(make_chili_con_carne_s5, 30, 40, minute).         % f:000100 msg 1018
+step(make_chili_con_carne, make_chili_con_carne_s6).         % f:000101 msg 1019
+action(make_chili_con_carne_s6, stir).                       % f:000102 msg 1020
+object_of(make_chili_con_carne_s6, chili).                   % f:000103 msg 1021
+overlaps(make_chili_con_carne_s6, make_chili_con_carne_s5).  % f:000104 msg 1022
+step(make_chili_con_carne, make_chili_con_carne_s1).         % f:000105 msg 1023
+action(make_chili_con_carne_s1, drain).                      % f:000106 msg 1024
+object_of(make_chili_con_carne_s1, lentil).                  % f:000107 msg 1025
+uses(make_chili_con_carne_s1, pot).                          % f:000108 msg 1026
+role(make_chili_con_carne_s1, pot, drain_vessel).            % f:000109 msg 1027
+action(make_chili_con_carne_s1, chop).                       % f:00010a msg 1028
+object_of(make_chili_con_carne_s1, onion).                   % f:00010b msg 1029
+uses(make_chili_con_carne_s1, knife).                        % f:00010c msg 1030
+takes_time(make_chili_con_carne_s1, 3, 4, minute).           % f:00010d msg 1031
+takes_time(make_chili_con_carne_s5, 20, 20, minute).         % f:00010e msg 1036
+step(make_chili_con_carne, make_chili_con_carne_s2).         % f:00010f msg 1037
+action(make_chili_con_carne_s2, fry).                        % f:000110 msg 1038
+object_of(make_chili_con_carne_s2, onion).                   % f:000111 msg 1039
+uses(make_chili_con_carne_s2, oil).                          % f:000112 msg 1040
+into(make_chili_con_carne_s2, pot).                          % f:000113 msg 1041
+until(make_chili_con_carne_s2, soft).                        % f:000114 msg 1042
+takes_time(make_chili_con_carne_s2, 5, 6, minute).           % f:000115 msg 1043
+action(make_chili_con_carne_s3, add).                        % f:000116 msg 1045
+object_of(make_chili_con_carne_s3, chopped_tomato).          % f:000117 msg 1046
+object_of(make_chili_con_carne_s3, chili_powder).            % f:000118 msg 1049
+object_of(make_chili_con_carne_s3, kidney_bean).             % f:000119 msg 1050
+into(make_chili_con_carne_s3, pot).                          % f:00011a msg 1051
+takes_time(make_chili_con_carne_s3, 1, 2, minute).           % f:00011b msg 1052
+condition(make_chili_con_carne_s6, simmering).               % f:00011c msg 1057
+step(make_chili_con_carne, make_chili_con_carne_s4).         % f:00011d msg 1058
+action(make_chili_con_carne_s4, add).                        % f:00011e msg 1059
+object_of(make_chili_con_carne_s4, lentil).                  % f:00011f msg 1060
+into(make_chili_con_carne_s4, pot).                          % f:000120 msg 1061
+condition(make_chili_con_carne_s4, drained).                 % f:000121 msg 1062
+object_of(make_chili_con_carne_s6, chili_con_carne).         % f:000122 msg 1076
+condition(make_chili_con_carne_s4, lentil_drained).          % f:000123 msg 1082
+step(make_chili_con_carne, make_chili_con_carne_s3).         % f:000124 msg 1083
+uses(make_chili_con_carne_s2, pot).                          % f:000125 msg 1094
+needs(make_chili_con_carne, chopped_tomato).                 % f:000126 msg 1107
+needs(make_chili_con_carne, kidney_bean).                    % f:000127 msg 1108
+needs(make_chili_con_carne, lentil).                         % f:000128 msg 1110
+needs(make_chili_con_carne, pot).                            % f:000129 msg 1113
+object_of(make_chili_con_carne_s3, tomato).                  % f:00012a msg 1116
+object_of(make_chili_con_carne_s3, powder).                  % f:00012b msg 1119
+object_of(make_chili_con_carne_s3, bean).                    % f:00012c msg 1122
+uses(make_chili_con_carne_s3, tomato).                       % f:00012d msg 1125
+uses(make_chili_con_carne_s3, powder).                       % f:00012e msg 1126
+uses(make_chili_con_carne_s3, bean).                         % f:00012f msg 1127
+role(make_chili_con_carne_s2, oil, cooking_medium).          % f:000130 msg 1134
+role(make_chili_con_carne_s2, pot, cooking_vessel).          % f:000131 msg 1135
+action(make_chili_con_carne_s3, brown).                      % f:000132 msg 1150
+object_of(make_chili_con_carne_s3, beef).                    % f:000133 msg 1151
+uses(make_chili_con_carne_s3, onion).                        % f:000134 msg 1154
+uses(make_chili_con_carne_s3, pot).                          % f:000135 msg 1155
+takes_time(make_chili_con_carne_s3, 5, 6, minute).           % f:000136 msg 1157
+object_of(make_chili_con_carne_s4, tomatoes).                % f:000137 msg 1160
+object_of(make_chili_con_carne_s4, beans).                   % f:000138 msg 1163
+object_of(make_chili_con_carne_s4, powder).                  % f:000139 msg 1166
+uses(make_chili_con_carne_s4, tomatoes).                     % f:00013a msg 1167
+uses(make_chili_con_carne_s4, beans).                        % f:00013b msg 1168
+uses(make_chili_con_carne_s4, powder).                       % f:00013c msg 1169
+takes_time(make_chili_con_carne_s4, 1, 2, minute).           % f:00013d msg 1170
+uses(make_chili_con_carne_s4, lentil).                       % f:00013e msg 1174
+task(make_french_toast).                                     % f:00013f msg 1177
+object_of(make_french_toast_s1, egg).                        % f:000140 msg 1179
+object_of(make_french_toast_s1, milk).                       % f:000141 msg 1180
+uses(make_french_toast_s1, bowl).                            % f:000142 msg 1181
+into(make_french_toast_s1, bowl).                            % f:000143 msg 1182
+takes_time(make_french_toast_s1, 2, 3, minute).              % f:000144 msg 1183
+takes_time(make_french_toast, 12, 15, minute).               % f:000145 msg 1184
+needs(make_french_toast, bread).                             % f:000146 msg 1185
+needs(make_french_toast, eggs).                              % f:000147 msg 1188
+needs(make_french_toast, milk).                              % f:000148 msg 1189
+needs(make_french_toast, butter).                            % f:000149 msg 1190
+needs(make_french_toast, bowl).                              % f:00014a msg 1191
+needs(make_french_toast, pan).                               % f:00014b msg 1192
+step(make_french_toast, make_french_toast_s2).               % f:00014c msg 1195
+action(make_french_toast_s2, melt).                          % f:00014d msg 1196
+object_of(make_french_toast_s2, butter).                     % f:00014e msg 1197
+into(make_french_toast_s2, frying_pan).                      % f:00014f msg 1198
+uses(make_french_toast_s2, frying_pan).                      % f:000150 msg 1201
+setting(make_french_toast_s2, heat, medium, level).          % f:000151 msg 1202
+takes_time(make_french_toast_s2, 2, 3, minute).              % f:000152 msg 1203
+overlaps(make_french_toast_s2, make_french_toast_s1).        % f:000153 msg 1204
+step(make_french_toast, make_french_toast_s3).               % f:000154 msg 1205
+action(make_french_toast_s3, dip).                           % f:000155 msg 1206
+object_of(make_french_toast_s3, bread).                      % f:000156 msg 1207
+into(make_french_toast_s3, bowl).                            % f:000157 msg 1208
+uses(make_french_toast_s3, bowl).                            % f:000158 msg 1209
+condition(make_french_toast_s3, turned_once).                % f:000159 msg 1210
+takes_time(make_french_toast_s3, 1, 2, minute).              % f:00015a msg 1211
+step(make_french_toast, make_french_toast_s4).               % f:00015b msg 1212
+action(make_french_toast_s4, fry).                           % f:00015c msg 1213
+object_of(make_french_toast_s4, bread).                      % f:00015d msg 1214
+uses(make_french_toast_s4, pan).                             % f:00015e msg 1215
+into(make_french_toast_s4, pan).                             % f:00015f msg 1216
+until(make_french_toast_s4, golden_brown_both_sides).        % f:000160 msg 1217
+takes_time(make_french_toast_s4, 6, 8, minute).              % f:000161 msg 1218
+uses(make_french_toast_s4, frying_pan).                      % f:000162 msg 1221
+setting(make_french_toast_s4, temperature, hot, none).       % f:000163 msg 1222
+until(make_french_toast_s4, golden).                         % f:000164 msg 1224
+check(make_french_toast_s4, both_sides_golden).              % f:000165 msg 1225
+needs(make_french_toast, frying_pan).                        % f:000166 msg 1226
+action(make_french_toast_s2, heat).                          % f:000167 msg 1228
+object_of(make_french_toast_s2, vegetable_oil).              % f:000168 msg 1229
+needs(make_french_toast, vegetable_oil).                     % f:000169 msg 1237
+uses(make_french_toast_s1, milk).                            % f:00016a msg 1240
+into(make_french_toast_s3, egg_and_milk_mixture).            % f:00016b msg 1247
+into(make_french_toast_s4, hot_frying_pan).                  % f:00016c msg 1252
+uses(make_french_toast_s3, egg_milk_mixture).                % f:00016d msg 1260
+step(make_french_toast, make_french_toast_s1).               % f:00016e msg 1263
+uses(make_french_toast_s3, egg).                             % f:00016f msg 1277
+needs(make_french_toast, egg).                               % f:000170 msg 1281
+check(make_french_toast_s4, golden).                         % f:000171 msg 1296
+object_of(make_french_toast_s2, oil).                        % f:000172 msg 1300
+uses(make_french_toast_s2, pan).                             % f:000173 msg 1301
+uses(make_french_toast_s2, oil).                             % f:000174 msg 1302
+role(make_french_toast_s2, pan, frying).                     % f:000175 msg 1303
+task(make_guacamole).                                        % f:000176 msg 1308
+takes_time(make_guacamole, 10, 14, minute).                  % f:000177 msg 1309
+needs(make_guacamole, avocados).                             % f:000178 msg 1310
+needs(make_guacamole, lime).                                 % f:000179 msg 1311
+needs(make_guacamole, onion).                                % f:00017a msg 1312
+needs(make_guacamole, salt).                                 % f:00017b msg 1313
+needs(make_guacamole, knife).                                % f:00017c msg 1314
+needs(make_guacamole, bowl).                                 % f:00017d msg 1315
+needs(make_guacamole, fork).                                 % f:00017e msg 1316
+step(make_guacamole, make_guacamole_s4).                     % f:00017f msg 1317
+action(make_guacamole_s4, mash).                             % f:000180 msg 1318
+object_of(make_guacamole_s4, avocado).                       % f:000181 msg 1319
+uses(make_guacamole_s4, fork).                               % f:000182 msg 1320
+until(make_guacamole_s4, slightly_chunky).                   % f:000183 msg 1321
+takes_time(make_guacamole_s4, 2, 3, minute).                 % f:000184 msg 1322
+step(make_guacamole, make_guacamole_s3).                     % f:000185 msg 1323
+action(make_guacamole_s3, scoop).                            % f:000186 msg 1324
+object_of(make_guacamole_s3, flesh).                         % f:000187 msg 1325
+into(make_guacamole_s3, bowl).                               % f:000188 msg 1326
+takes_time(make_guacamole_s3, 2, 3, minute).                 % f:000189 msg 1327
+step(make_guacamole, make_guacamole_s5).                     % f:00018a msg 1328
+action(make_guacamole_s5, mix).                              % f:00018b msg 1329
+object_of(make_guacamole_s5, onion).                         % f:00018c msg 1330
+uses(make_guacamole_s5, lime).                               % f:00018d msg 1331
+uses(make_guacamole_s5, salt).                               % f:00018e msg 1332
+amount(make_guacamole_s5, salt, 1, pinch).                   % f:00018f msg 1333
+takes_time(make_guacamole_s5, 1, 2, minute).                 % f:000190 msg 1334
+step(make_guacamole, make_guacamole_s2).                     % f:000191 msg 1335
+action(make_guacamole_s2, halve).                            % f:000192 msg 1336
+object_of(make_guacamole_s2, avocado).                       % f:000193 msg 1337
+uses(make_guacamole_s2, knife).                              % f:000194 msg 1338
+action(make_guacamole_s1, chop).                             % f:000195 msg 1339
+object_of(make_guacamole_s1, onion).                         % f:000196 msg 1340
+uses(make_guacamole_s1, knife).                              % f:000197 msg 1341
+step(make_guacamole, make_guacamole_s1).                     % f:000198 msg 1342
+until(make_guacamole_s4, chunky).                            % f:000199 msg 1347
+uses(make_guacamole_s5, lemon).                              % f:00019a msg 1351
+needs(make_guacamole, lemon).                                % f:00019b msg 1354
+object_of(make_guacamole_s3, avocado_flesh).                 % f:00019c msg 1358
+uses(make_guacamole_s3, bowl).                               % f:00019d msg 1361
+needs(make_guacamole, avocado).                              % f:00019e msg 1363
+role(make_guacamole_s4, fork, tool).                         % f:00019f msg 1373
+role(make_guacamole_s4, avocado, ingredient).                % f:0001a0 msg 1374
+condition(make_guacamole_s4, chunky).                        % f:0001a1 msg 1375
+condition(make_guacamole_s1, finely_chopped).                % f:0001a2 msg 1386
+takes_time(make_guacamole_s1, 3, 4, minute).                 % f:0001a3 msg 1387
+uses(make_guacamole_s3, spoon).                              % f:0001a4 msg 1390
+from(make_guacamole_s3, avocado).                            % f:0001a5 msg 1392
+task(make_hot_chocolate).                                    % f:0001a6 msg 1394
+takes_time(make_hot_chocolate, 6, 9, minute).                % f:0001a7 msg 1395
+needs(make_hot_chocolate, milk).                             % f:0001a8 msg 1396
+needs(make_hot_chocolate, cocoa).                            % f:0001a9 msg 1397
+needs(make_hot_chocolate, sugar).                            % f:0001aa msg 1398
+needs(make_hot_chocolate, saucepan).                         % f:0001ab msg 1399
+needs(make_hot_chocolate, mug).                              % f:0001ac msg 1400
+action(make_hot_chocolate_s4, stir).                         % f:0001ad msg 1401
+object_of(make_hot_chocolate_s4, powder).                    % f:0001ae msg 1402
+uses(make_hot_chocolate_s4, mug).                            % f:0001af msg 1403
+from(make_hot_chocolate_s4, cocoa).                          % f:0001b0 msg 1404
+into(make_hot_chocolate_s4, milk).                           % f:0001b1 msg 1405
+until(make_hot_chocolate_s4, smooth).                        % f:0001b2 msg 1406
+takes_time(make_hot_chocolate_s4, 1, 2, minute).             % f:0001b3 msg 1407
+overlaps(make_hot_chocolate_s2, make_hot_chocolate_s1).      % f:0001b4 msg 1408
+action(make_hot_chocolate_s2, mix).                          % f:0001b5 msg 1409
+object_of(make_hot_chocolate_s2, cocoa).                     % f:0001b6 msg 1410
+object_of(make_hot_chocolate_s2, sugar).                     % f:0001b7 msg 1411
+uses(make_hot_chocolate_s2, milk).                           % f:0001b8 msg 1412
+into(make_hot_chocolate_s2, mug).                            % f:0001b9 msg 1413
+condition(make_hot_chocolate_s2, milk_cold).                 % f:0001ba msg 1414
+takes_time(make_hot_chocolate_s2, 1, 2, minute).             % f:0001bb msg 1415
+step(make_hot_chocolate, make_hot_chocolate_s4).             % f:0001bc msg 1416
+object_of(make_hot_chocolate_s4, mixture).                   % f:0001bd msg 1418
+action(make_hot_chocolate_s3, pour).                         % f:0001be msg 1423
+object_of(make_hot_chocolate_s3, oat_milk).                  % f:0001bf msg 1424
+uses(make_hot_chocolate_s3, oat_milk).                       % f:0001c0 msg 1427
+into(make_hot_chocolate_s3, mug).                            % f:0001c1 msg 1428
+condition(make_hot_chocolate_s3, hot).                       % f:0001c2 msg 1429
+needs(make_hot_chocolate, oat_milk).                         % f:0001c3 msg 1430
+step(make_hot_chocolate, make_hot_chocolate_s1).             % f:0001c4 msg 1431
+action(make_hot_chocolate_s1, heat).                         % f:0001c5 msg 1432
+object_of(make_hot_chocolate_s1, oat_milk).                  % f:0001c6 msg 1433
+uses(make_hot_chocolate_s1, saucepan).                       % f:0001c7 msg 1434
+setting(make_hot_chocolate_s1, heat, medium, level).         % f:0001c8 msg 1435
+takes_time(make_hot_chocolate_s1, 4, 5, minute).             % f:0001c9 msg 1436
+step(make_hot_chocolate, make_hot_chocolate_s2).             % f:0001ca msg 1437
+object_of(make_hot_chocolate_s2, cocoa_powder).              % f:0001cb msg 1439
+uses(make_hot_chocolate_s2, oat_milk).                       % f:0001cc msg 1443
+uses(make_hot_chocolate_s2, mug).                            % f:0001cd msg 1444
+step(make_hot_chocolate, make_hot_chocolate_s3).             % f:0001ce msg 1453
+object_of(make_hot_chocolate_s3, milk).                      % f:0001cf msg 1455
+uses(make_hot_chocolate_s3, milk).                           % f:0001d0 msg 1456
+role(make_hot_chocolate_s3, oat, modifier).                  % f:0001d1 msg 1457
+uses(make_hot_chocolate_s2, oat).                            % f:0001d2 msg 1464
+uses(make_hot_chocolate_s2, chocolate).                      % f:0001d3 msg 1465
+object_of(make_hot_chocolate_s1, oat).                       % f:0001d4 msg 1471
+object_of(make_hot_chocolate_s1, milk).                      % f:0001d5 msg 1472
+into(make_hot_chocolate_s1, saucepan).                       % f:0001d6 msg 1474
+from(make_hot_chocolate_s3, saucepan).                       % f:0001d7 msg 1479
+uses(make_hot_chocolate_s3, mug).                            % f:0001d8 msg 1481
+task(make_omelette).                                         % f:0001d9 msg 1491
+takes_time(make_omelette, 6, 10, minute).                    % f:0001da msg 1492
+needs(make_omelette, eggs).                                  % f:0001db msg 1493
+needs(make_omelette, butter).                                % f:0001dc msg 1494
+needs(make_omelette, salt).                                  % f:0001dd msg 1495
+needs(make_omelette, bowl).                                  % f:0001de msg 1496
+needs(make_omelette, fork).                                  % f:0001df msg 1497
+needs(make_omelette, frying_pan).                            % f:0001e0 msg 1498
+step(make_omelette, make_omelette_s5).                       % f:0001e1 msg 1499
+action(make_omelette_s5, fold).                              % f:0001e2 msg 1500
+object_of(make_omelette_s5, omelette).                       % f:0001e3 msg 1501
+setting(make_omelette_s5, portion, 2, part).                 % f:0001e4 msg 1502
+step(make_omelette, make_omelette_s2).                       % f:0001e5 msg 1503
+action(make_omelette_s2, beat).                              % f:0001e6 msg 1504
+object_of(make_omelette_s2, eggs).                           % f:0001e7 msg 1505
+uses(make_omelette_s2, fork).                                % f:0001e8 msg 1506
+uses(make_omelette_s2, salt).                                % f:0001e9 msg 1507
+amount(make_omelette_s2, salt, 1, pinch).                    % f:0001ea msg 1508
+takes_time(make_omelette_s2, 1, 1, minute).                  % f:0001eb msg 1509
+step(make_omelette, make_omelette_s4).                       % f:0001ec msg 1510
+action(make_omelette_s4, cook).                              % f:0001ed msg 1511
+object_of(make_omelette_s4, eggs).                           % f:0001ee msg 1512
+uses(make_omelette_s4, pan).                                 % f:0001ef msg 1513
+until(make_omelette_s4, set).                                % f:0001f0 msg 1514
+takes_time(make_omelette_s4, 3, 4, minute).                  % f:0001f1 msg 1515
+step(make_omelette, make_omelette_s6).                       % f:0001f2 msg 1516
+action(make_omelette_s6, fold).                              % f:0001f3 msg 1517
+object_of(make_omelette_s6, omelette).                       % f:0001f4 msg 1518
+step(make_omelette, make_omelette_s3).                       % f:0001f5 msg 1519
+action(make_omelette_s3, melt).                              % f:0001f6 msg 1520
+object_of(make_omelette_s3, butter).                         % f:0001f7 msg 1521
+uses(make_omelette_s3, pan).                                 % f:0001f8 msg 1522
+into(make_omelette_s3, pan).                                 % f:0001f9 msg 1523
+takes_time(make_omelette_s3, 1, 2, minute).                  % f:0001fa msg 1524
+action(make_omelette_s1, crack).                             % f:0001fb msg 1525
+object_of(make_omelette_s1, egg).                            % f:0001fc msg 1526
+into(make_omelette_s1, bowl).                                % f:0001fd msg 1527
+action(make_omelette_s1, pour).                              % f:0001fe msg 1528
+object_of(make_omelette_s1, beaten_egg).                     % f:0001ff msg 1529
+into(make_omelette_s1, buttered_pan).                        % f:000200 msg 1532
+step(make_omelette, make_omelette_s1).                       % f:000201 msg 1535
+object_of(make_omelette_s4, egg).                            % f:000202 msg 1537
+into(make_omelette_s4, pan).                                 % f:000203 msg 1539
+action(make_omelette_s2, watch).                             % f:000204 msg 1543
+object_of(make_omelette_s2, edge).                           % f:000205 msg 1544
+check(make_omelette_s2, edge_firm).                          % f:000206 msg 1545
+check(make_omelette_s2, middle_wet).                         % f:000207 msg 1546
+until(make_omelette_s2, edge_firm).                          % f:000208 msg 1547
+action(make_omelette_s5, sprinkle).                          % f:000209 msg 1549
+object_of(make_omelette_s5, cheese).                         % f:00020a msg 1550
+onto(make_omelette_s5, egg).                                 % f:00020b msg 1551
+condition(make_omelette_s5, egg_almost_set).                 % f:00020c msg 1552
+object_of(make_omelette_s2, egg).                            % f:00020d msg 1555
+action(make_omelette_s3, pour).                              % f:00020e msg 1560
+object_of(make_omelette_s3, egg).                            % f:00020f msg 1561
+condition(make_omelette_s3, pan_is_hot).                     % f:000210 msg 1563
+action(make_omelette_s4, check).                             % f:000211 msg 1565
+check(make_omelette_s4, almost_set).                         % f:000212 msg 1566
+condition(make_omelette_s4, top_is_glossy_but_slightly_wet). % f:000213 msg 1567
+until(make_omelette_s3, almost_set).                         % f:000214 msg 1568
+uses(make_omelette_s5, cheese).                              % f:000215 msg 1572
+into(make_omelette_s5, egg).                                 % f:000216 msg 1573
+needs(make_omelette, egg).                                   % f:000217 msg 1576
+needs(make_omelette, cheese).                                % f:000218 msg 1579
+needs(make_omelette, pan).                                   % f:000219 msg 1582
+purpose(make_omelette_s2, seasoned_egg).                     % f:00021a msg 1589
+object_of(make_omelette_s1, eggs).                           % f:00021b msg 1598
+uses(make_omelette_s1, bowl).                                % f:00021c msg 1600
+uses(make_omelette_s1, egg).                                 % f:00021d msg 1603
+task(make_quesadilla).                                       % f:00021e msg 1621
+action(make_quesadilla_s2, sprinkle).                        % f:00021f msg 1622
+object_of(make_quesadilla_s2, cheese).                       % f:000220 msg 1623
+uses(make_quesadilla_s2, cheese).                            % f:000221 msg 1624
+into(make_quesadilla_s2, tortillas).                         % f:000222 msg 1625
+step(make_quesadilla, make_quesadilla_s2).                   % f:000223 msg 1626
+step(make_quesadilla, make_quesadilla_s3).                   % f:000224 msg 1627
+action(make_quesadilla_s3, put).                             % f:000225 msg 1628
+object_of(make_quesadilla_s3, tortilla).                     % f:000226 msg 1629
+onto(make_quesadilla_s3, top).                               % f:000227 msg 1630
+takes_time(make_quesadilla_s3, 1, 1, minute).                % f:000228 msg 1631
+uses(make_quesadilla_s3, tortillas).                         % f:000229 msg 1632
+optional(make_quesadilla_s3).                                % f:00022a msg 1633
+overlaps(make_quesadilla_s3, make_quesadilla_s2).            % f:00022b msg 1634
+role(make_quesadilla_s3, tortillas, second_tortilla).        % f:00022c msg 1635
+until(make_quesadilla_s3, ready).                            % f:00022d msg 1636
+step(make_quesadilla, make_quesadilla_s1).                   % f:00022e msg 1637
+action(make_quesadilla_s1, heat).                            % f:00022f msg 1638
+object_of(make_quesadilla_s1, pan).                          % f:000230 msg 1639
+uses(make_quesadilla_s1, pan).                               % f:000231 msg 1640
+role(make_quesadilla_s1, pan, cooking_vessel).               % f:000232 msg 1641
+condition(make_quesadilla_s1, dry).                          % f:000233 msg 1642
+setting(make_quesadilla_s1, heat_level, medium, none).       % f:000234 msg 1643
+takes_time(make_quesadilla_s1, 2, 3, minute).                % f:000235 msg 1644
+takes_time(make_quesadilla, 8, 12, minute).                  % f:000236 msg 1645
+needs(make_quesadilla, tortillas).                           % f:000237 msg 1646
+needs(make_quesadilla, grated_cheese).                       % f:000238 msg 1647
+needs(make_quesadilla, frying_pan).                          % f:000239 msg 1650
+needs(make_quesadilla, spatula).                             % f:00023a msg 1651
+needs(make_quesadilla, knife).                               % f:00023b msg 1652
+action(make_quesadilla_s3, scatter).                         % f:00023c msg 1655
+object_of(make_quesadilla_s3, chicken).                      % f:00023d msg 1656
+onto(make_quesadilla_s3, cheese).                            % f:00023e msg 1657
+needs(make_quesadilla, tortilla).                            % f:00023f msg 1658
+step(make_quesadilla, make_quesadilla_s8).                   % f:000240 msg 1659
+action(make_quesadilla_s8, cut).                             % f:000241 msg 1660
+object_of(make_quesadilla_s8, quesadilla).                   % f:000242 msg 1661
+uses(make_quesadilla_s8, knife).                             % f:000243 msg 1662
+role(make_quesadilla_s8, knife, cutting_tool).               % f:000244 msg 1663
+step(make_quesadilla, make_quesadilla_s7).                   % f:000245 msg 1664
+action(make_quesadilla_s7, fry).                             % f:000246 msg 1665
+object_of(make_quesadilla_s7, quesadilla).                   % f:000247 msg 1666
+until(make_quesadilla_s7, cheese_melted).                    % f:000248 msg 1667
+takes_time(make_quesadilla_s7, 2, 3, minute).                % f:000249 msg 1668
+step(make_quesadilla, make_quesadilla_s4).                   % f:00024a msg 1669
+action(make_quesadilla_s4, put).                             % f:00024b msg 1670
+object_of(make_quesadilla_s4, tortilla).                     % f:00024c msg 1671
+onto(make_quesadilla_s4, cheese).                            % f:00024d msg 1672
+takes_time(make_quesadilla_s4, 1, 1, minute).                % f:00024e msg 1673
+step(make_quesadilla, make_quesadilla_s5).                   % f:00024f msg 1674
+action(make_quesadilla_s5, fry).                             % f:000250 msg 1675
+object_of(make_quesadilla_s5, bottom_side).                  % f:000251 msg 1676
+uses(make_quesadilla_s5, pan).                               % f:000252 msg 1677
+until(make_quesadilla_s5, golden).                           % f:000253 msg 1678
+takes_time(make_quesadilla_s5, 2, 3, minute).                % f:000254 msg 1679
+step(make_quesadilla, make_quesadilla_s6).                   % f:000255 msg 1680
+action(make_quesadilla_s6, flip).                            % f:000256 msg 1681
+object_of(make_quesadilla_s6, quesadilla).                   % f:000257 msg 1682
+uses(make_quesadilla_s6, spatula).                           % f:000258 msg 1683
+role(make_quesadilla_s6, spatula, flipper).                  % f:000259 msg 1684
+action(make_quesadilla_s1, repeat).                          % f:00025a msg 1686
+uses(make_quesadilla_s1, frying_pan).                        % f:00025b msg 1688
+object_of(make_quesadilla_s1, frying_pan).                   % f:00025c msg 1691
+setting(make_quesadilla_s1, heat, medium, level).            % f:00025d msg 1692
+condition(make_quesadilla_s1, dry_pan).                      % f:00025e msg 1694
+needs(make_quesadilla, chicken).                             % f:00025f msg 1695
+action(make_quesadilla_s1, scatter).                         % f:000260 msg 1697
+object_of(make_quesadilla_s1, chicken).                      % f:000261 msg 1698
+onto(make_quesadilla_s1, cheese).                            % f:000262 msg 1699
+optional(make_quesadilla_s1).                                % f:000263 msg 1700
+onto(make_quesadilla_s2, tortilla).                          % f:000264 msg 1704
+condition(make_quesadilla_s2, tortilla_held).                % f:000265 msg 1705
+amount(make_quesadilla_s8, quesadilla, wedge, unit).         % f:000266 msg 1711
+object_of(make_quesadilla_s5, quesadilla).                   % f:000267 msg 1719
+role(make_quesadilla_s2, tortilla, holder).                  % f:000268 msg 1727
+condition(make_quesadilla_s1, pan_dry).                      % f:000269 msg 1734
+into(make_quesadilla_s3, cheese).                            % f:00026a msg 1737
+needs(make_quesadilla, cheese).                              % f:00026b msg 1739
+into(make_quesadilla_s5, frying_pan).                        % f:00026c msg 1748
+check(make_quesadilla_s5, bottom_golden).                    % f:00026d msg 1750
+until(make_quesadilla_s1, dry).                              % f:00026e msg 1766
+action(make_quesadilla_s5, flip).                            % f:00026f msg 1767
+uses(make_quesadilla_s5, spatula).                           % f:000270 msg 1769
+role(make_quesadilla_s5, spatula, flipping_tool).            % f:000271 msg 1770
+action(make_quesadilla_s6, fry).                             % f:000272 msg 1772
+object_of(make_quesadilla_s6, other_side).                   % f:000273 msg 1773
+uses(make_quesadilla_s6, pan).                               % f:000274 msg 1774
+until(make_quesadilla_s6, cheese_melted).                    % f:000275 msg 1775
+takes_time(make_quesadilla_s6, 2, 3, minute).                % f:000276 msg 1776
+action(make_quesadilla_s4, fry).                             % f:000277 msg 1778
+object_of(make_quesadilla_s4, quesadilla).                   % f:000278 msg 1779
+uses(make_quesadilla_s4, pan).                               % f:000279 msg 1780
+takes_time(make_quesadilla_s4, 2, 3, minute).                % f:00027a msg 1781
+until(make_quesadilla_s4, bottom_golden).                    % f:00027b msg 1782
+task(bleed_radiator).                                        % f:00027c msg 1784
+needs(bleed_radiator, radiator_key).                         % f:00027d msg 1785
+needs(bleed_radiator, cloth).                                % f:00027e msg 1786
+takes_time(bleed_radiator, 10, 15, minute).                  % f:00027f msg 1787
+step(bleed_radiator, bleed_radiator_s2).                     % f:000280 msg 1788
+action(bleed_radiator_s2, cool).                             % f:000281 msg 1789
+object_of(bleed_radiator_s2, radiator).                      % f:000282 msg 1790
+takes_time(bleed_radiator_s2, 5, 10, minute).                % f:000283 msg 1791
+step(bleed_radiator, bleed_radiator_s3).                     % f:000284 msg 1792
+action(bleed_radiator_s3, hold).                             % f:000285 msg 1793
+object_of(bleed_radiator_s3, cloth).                         % f:000286 msg 1794
+uses(bleed_radiator_s3, cloth).                              % f:000287 msg 1795
+role(bleed_radiator_s3, cloth, catch_drips).                 % f:000288 msg 1796
+into(bleed_radiator_s3, bleed_valve).                        % f:000289 msg 1797
+action(bleed_radiator_s4, open).                             % f:00028a msg 1801
+object_of(bleed_radiator_s4, bleed_valve).                   % f:00028b msg 1802
+uses(bleed_radiator_s4, key).                                % f:00028c msg 1803
+role(bleed_radiator_s4, key, turning_tool).                  % f:00028d msg 1806
+amount(bleed_radiator_s4, bleed_valve, 0.25, turn).          % f:00028e msg 1807
+until(bleed_radiator_s4, water_drips).                       % f:00028f msg 1808
+takes_time(bleed_radiator_s4, 1, 2, minute).                 % f:000290 msg 1809
+step(bleed_radiator, bleed_radiator_s5).                     % f:000291 msg 1810
+action(bleed_radiator_s5, close).                            % f:000292 msg 1811
+object_of(bleed_radiator_s5, valve).                         % f:000293 msg 1812
+uses(bleed_radiator_s5, key).                                % f:000294 msg 1815
+role(bleed_radiator_s5, key, valve_turning).                 % f:000295 msg 1816
+takes_time(bleed_radiator_s5, 1, 1, minute).                 % f:000296 msg 1817
+action(bleed_radiator_s1, switch_off).                       % f:000297 msg 1818
+object_of(bleed_radiator_s1, heating).                       % f:000298 msg 1819
+action(bleed_radiator_s3, start).                            % f:000299 msg 1825
+object_of(bleed_radiator_s3, radiator).                      % f:00029a msg 1826
+condition(bleed_radiator_s3, farthest).                      % f:00029b msg 1827
+step(bleed_radiator, bleed_radiator_s4).                     % f:00029c msg 1828
+action(bleed_radiator_s4, hold).                             % f:00029d msg 1829
+object_of(bleed_radiator_s4, cloth).                         % f:00029e msg 1830
+uses(bleed_radiator_s4, cloth).                              % f:00029f msg 1831
+role(bleed_radiator_s4, cloth, catch_drip).                  % f:0002a0 msg 1832
+action(bleed_radiator_s5, hold).                             % f:0002a1 msg 1835
+object_of(bleed_radiator_s5, cloth).                         % f:0002a2 msg 1836
+uses(bleed_radiator_s5, cloth).                              % f:0002a3 msg 1837
+condition(bleed_radiator_s5, cloth_under_valve).             % f:0002a4 msg 1838
+amount(bleed_radiator_s5, cloth, 3, time).                   % f:0002a5 msg 1839
+action(bleed_radiator_s6, open).                             % f:0002a6 msg 1840
+object_of(bleed_radiator_s6, valve).                         % f:0002a7 msg 1841
+uses(bleed_radiator_s6, radiator_key).                       % f:0002a8 msg 1842
+amount(bleed_radiator_s6, valve, 0.25, turn).                % f:0002a9 msg 1843
+step(bleed_radiator, bleed_radiator_s6).                     % f:0002aa msg 1844
+step(bleed_radiator, bleed_radiator_s7).                     % f:0002ab msg 1845
+action(bleed_radiator_s7, open).                             % f:0002ac msg 1846
+object_of(bleed_radiator_s7, valve).                         % f:0002ad msg 1847
+until(bleed_radiator_s7, dripping).                          % f:0002ae msg 1848
+step(bleed_radiator, bleed_radiator_s8).                     % f:0002af msg 1849
+action(bleed_radiator_s8, repeat).                           % f:0002b0 msg 1850
+object_of(bleed_radiator_s8, opening_step).                  % f:0002b1 msg 1851
+amount(bleed_radiator_s8, opening_step, 3, time).            % f:0002b2 msg 1852
+step(bleed_radiator, bleed_radiator_s9).                     % f:0002b3 msg 1853
+action(bleed_radiator_s9, close).                            % f:0002b4 msg 1854
+object_of(bleed_radiator_s9, radiator_valve).                % f:0002b5 msg 1855
+uses(bleed_radiator_s9, radiator_key).                       % f:0002b6 msg 1858
+role(bleed_radiator_s9, radiator_key, turning_tool).         % f:0002b7 msg 1859
+step(bleed_radiator, bleed_radiator_s10).                    % f:0002b8 msg 1860
+action(bleed_radiator_s10, repeat).                          % f:0002b9 msg 1861
+action(bleed_radiator_s11, check).                           % f:0002ba msg 1864
+step(bleed_radiator, bleed_radiator_s12).                    % f:0002bb msg 1867
+action(bleed_radiator_s12, switch_on).                       % f:0002bc msg 1868
+object_of(bleed_radiator_s12, heating).                      % f:0002bd msg 1869
+step(bleed_radiator, bleed_radiator_s1).                     % f:0002be msg 1872
+action(bleed_radiator_s1, switch).                           % f:0002bf msg 1873
+condition(bleed_radiator_s1, off).                           % f:0002c0 msg 1875
+object_of(bleed_radiator_s3, farthest_radiator).             % f:0002c1 msg 1878
+action(bleed_radiator_s6, close).                            % f:0002c2 msg 1881
+uses(bleed_radiator_s6, key).                                % f:0002c3 msg 1883
+role(bleed_radiator_s6, key, turning_tool).                  % f:0002c4 msg 1884
+takes_time(bleed_radiator_s6, 1, 1, minute).                 % f:0002c5 msg 1885
+setting(bleed_radiator_s6, repetition, 3, count).            % f:0002c6 msg 1886
+action(bleed_radiator_s5, open).                             % f:0002c7 msg 1888
+amount(bleed_radiator_s5, key, 0.25, turn).                  % f:0002c8 msg 1891
+until(bleed_radiator_s5, dripping).                          % f:0002c9 msg 1892
+takes_time(bleed_radiator_s5, 1, 2, minute).                 % f:0002ca msg 1893
+setting(bleed_radiator_s5, repeat, 3, time).                 % f:0002cb msg 1894
+object_of(bleed_radiator_s4, drip).                          % f:0002cc msg 1897
+role(bleed_radiator_s4, cloth, catch_drips).                 % f:0002cd msg 1899
+action(bleed_radiator_s7, switch_on).                        % f:0002ce msg 1903
+object_of(bleed_radiator_s7, heating).                       % f:0002cf msg 1904
+action(bleed_radiator_s6, check).                            % f:0002d0 msg 1906
+takes_time(bleed_radiator_s6, 1, 2, minute).                 % f:0002d1 msg 1908
+action(bleed_radiator_s8, switch_on).                        % f:0002d2 msg 1913
+object_of(bleed_radiator_s8, heating).                       % f:0002d3 msg 1914
+action(bleed_radiator_s7, check).                            % f:0002d4 msg 1916
+takes_time(bleed_radiator_s7, 1, 2, minute).                 % f:0002d5 msg 1918
+task(patch_drywall_hole).                                    % f:0002d6 msg 1920
+takes_time(patch_drywall_hole, 40, 60, minute).              % f:0002d7 msg 1921
+step(patch_drywall_hole, patch_drywall_hole_s1).             % f:0002d8 msg 1922
+object_of(patch_drywall_hole_s1, loose_bit).                 % f:0002d9 msg 1924
+into(patch_drywall_hole_s1, hole).                           % f:0002da msg 1925
+takes_time(patch_drywall_hole_s1, 1, 2, minute).             % f:0002db msg 1926
+takes_time(patch_drywall_hole_s4, 30, 40, minute).           % f:0002dc msg 1927
+step(patch_drywall_hole, patch_drywall_hole_s4).             % f:0002dd msg 1928
+object_of(patch_drywall_hole_s4, spackle).                   % f:0002de msg 1930
+action(patch_drywall_hole_s2, fill).                         % f:0002df msg 1931
+object_of(patch_drywall_hole_s2, hole).                      % f:0002e0 msg 1932
+uses(patch_drywall_hole_s2, spackle).                        % f:0002e1 msg 1933
+uses(patch_drywall_hole_s2, knife).                          % f:0002e2 msg 1934
+role(patch_drywall_hole_s2, knife, apply_spackle).           % f:0002e3 msg 1935
+into(patch_drywall_hole_s2, hole).                           % f:0002e4 msg 1936
+step(patch_drywall_hole, patch_drywall_hole_s2).             % f:0002e5 msg 1937
+step(patch_drywall_hole, patch_drywall_hole_s5).             % f:0002e6 msg 1938
+action(patch_drywall_hole_s5, sand).                         % f:0002e7 msg 1939
+object_of(patch_drywall_hole_s5, spackle).                   % f:0002e8 msg 1940
+uses(patch_drywall_hole_s5, sandpaper).                      % f:0002e9 msg 1941
+condition(patch_drywall_hole_s5, spackle_dry).               % f:0002ea msg 1942
+until(patch_drywall_hole_s5, smooth).                        % f:0002eb msg 1943
+until(patch_drywall_hole_s5, level_with_wall).               % f:0002ec msg 1944
+takes_time(patch_drywall_hole_s5, 2, 3, minute).             % f:0002ed msg 1945
+needs(patch_drywall_hole, spackle).                          % f:0002ee msg 1946
+needs(patch_drywall_hole, knife).                            % f:0002ef msg 1947
+needs(patch_drywall_hole, sandpaper).                        % f:0002f0 msg 1948
+needs(patch_drywall_hole, matching).                         % f:0002f1 msg 1949
+needs(patch_drywall_hole, paint).                            % f:0002f2 msg 1950
+needs(patch_drywall_hole, paintbrush).                       % f:0002f3 msg 1951
+step(patch_drywall_hole, patch_drywall_hole_s3).             % f:0002f4 msg 1952
+action(patch_drywall_hole_s3, spread).                       % f:0002f5 msg 1953
+object_of(patch_drywall_hole_s3, spackle).                   % f:0002f6 msg 1954
+uses(patch_drywall_hole_s3, putty_knife).                    % f:0002f7 msg 1955
+onto(patch_drywall_hole_s3, mesh_patch).                     % f:0002f8 msg 1958
+needs(patch_drywall_hole, putty_knife).                      % f:0002f9 msg 1961
+step(patch_drywall_hole, patch_drywall_hole_s7).             % f:0002fa msg 1962
+object_of(patch_drywall_hole_s7, patch).                     % f:0002fb msg 1964
+uses(patch_drywall_hole_s7, paintbrush).                     % f:0002fc msg 1967
+purpose(patch_drywall_hole_s7, match_wall).                  % f:0002fd msg 1968
+action(patch_drywall_hole_s6, sand).                         % f:0002fe msg 1969
+object_of(patch_drywall_hole_s6, spackle).                   % f:0002ff msg 1970
+uses(patch_drywall_hole_s6, sandpaper).                      % f:000300 msg 1971
+condition(patch_drywall_hole_s6, smooth).                    % f:000301 msg 1972
+condition(patch_drywall_hole_s6, level_with_wall).           % f:000302 msg 1973
+action(patch_drywall_hole_s2, stick).                        % f:000303 msg 1974
+object_of(patch_drywall_hole_s2, mesh_patch).                % f:000304 msg 1975
+uses(patch_drywall_hole_s2, mesh).                           % f:000305 msg 1976
+onto(patch_drywall_hole_s2, hole).                           % f:000306 msg 1977
+action(patch_drywall_hole_s2, repeat).                       % f:000307 msg 1979
+condition(patch_drywall_hole_s2, low_spots_present).         % f:000308 msg 1980
+until(patch_drywall_hole_s2, dried).                         % f:000309 msg 1983
+warning(patch_drywall_hole_s2, premature_drying).            % f:00030a msg 1984
+needs(patch_drywall_hole, mesh_patch).                       % f:00030b msg 1985
+action(patch_drywall_hole_s1, check).                        % f:00030c msg 1992
+object_of(patch_drywall_hole_s1, spackle).                   % f:00030d msg 1993
+check(patch_drywall_hole_s1, low_spot).                      % f:00030e msg 1994
+takes_time(patch_drywall_hole_s5, 30, 40, minute).           % f:00030f msg 1998
+object_of(patch_drywall_hole_s2, patch).                     % f:000310 msg 2001
+uses(patch_drywall_hole_s4, knife).                          % f:000311 msg 2006
+role(patch_drywall_hole_s4, knife, tool).                    % f:000312 msg 2007
+condition(patch_drywall_hole_s4, flat).                      % f:000313 msg 2008
+role(patch_drywall_hole_s6, sandpaper, abrasive).            % f:000314 msg 2013
+onto(patch_drywall_hole_s3, mesh).                           % f:000315 msg 2018
+uses(patch_drywall_hole_s3, knife).                          % f:000316 msg 2019
+role(patch_drywall_hole_s3, knife, spreading_tool).          % f:000317 msg 2020
+purpose(patch_drywall_hole_s3, fill_patch).                  % f:000318 msg 2021
+needs(patch_drywall_hole, mesh).                             % f:000319 msg 2022
+needs(patch_drywall_hole, patch).                            % f:00031a msg 2023
+needs(patch_drywall_hole, putty).                            % f:00031b msg 2025
+role(patch_drywall_hole_s3, knife, smooth_spackle_flat).     % f:00031c msg 2034
+takes_time(patch_drywall_hole_s3, 2, 3, minute).             % f:00031d msg 2035
+step(patch_drywall_hole, patch_drywall_hole_s6).             % f:00031e msg 2036
+object_of(patch_drywall_hole_s6, wall).                      % f:00031f msg 2038
+uses(patch_drywall_hole_s6, paint).                          % f:000320 msg 2039
+uses(patch_drywall_hole_s6, paintbrush).                     % f:000321 msg 2040
+role(patch_drywall_hole_s6, paint, coat).                    % f:000322 msg 2041
+onto(patch_drywall_hole_s6, patch).                          % f:000323 msg 2042
+purpose(patch_drywall_hole_s6, match_wall).                  % f:000324 msg 2043
+takes_time(patch_drywall_hole_s6, 5, 10, minute).            % f:000325 msg 2044
+object_of(patch_drywall_hole_s1, hole).                      % f:000326 msg 2047
+role(patch_drywall_hole_s7, paintbrush, apply_paint).        % f:000327 msg 2051
+task(replace_smoke_alarm_battery).                           % f:000328 msg 2054
+needs(replace_smoke_alarm_battery, battery).                 % f:000329 msg 2055
+needs(replace_smoke_alarm_battery, ladder).                  % f:00032a msg 2056
+needs(replace_smoke_alarm_battery, step).                    % f:00032b msg 2059
+takes_time(replace_smoke_alarm_battery, 5, 8, minute).       % f:00032c msg 2062
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s4). % f:00032d msg 2063
+action(replace_smoke_alarm_battery_s4, twist).               % f:00032e msg 2064
+object_of(replace_smoke_alarm_battery_s4, smoke_alarm).      % f:00032f msg 2065
+onto(replace_smoke_alarm_battery_s4, base).                  % f:000330 msg 2068
+takes_time(replace_smoke_alarm_battery_s4, 1, 1, minute).    % f:000331 msg 2069
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s3). % f:000332 msg 2070
+action(replace_smoke_alarm_battery_s3, replace).             % f:000333 msg 2071
+object_of(replace_smoke_alarm_battery_s3, battery).          % f:000334 msg 2072
+uses(replace_smoke_alarm_battery_s3, battery).               % f:000335 msg 2073
+role(replace_smoke_alarm_battery_s3, battery, new).          % f:000336 msg 2074
+takes_time(replace_smoke_alarm_battery_s3, 1, 2, minute).    % f:000337 msg 2075
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s2). % f:000338 msg 2076
+action(replace_smoke_alarm_battery_s2, twist).               % f:000339 msg 2077
+object_of(replace_smoke_alarm_battery_s2, alarm).            % f:00033a msg 2078
+from(replace_smoke_alarm_battery_s2, base).                  % f:00033b msg 2081
+takes_time(replace_smoke_alarm_battery_s2, 1, 1, minute).    % f:00033c msg 2082
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s1). % f:00033d msg 2083
+action(replace_smoke_alarm_battery_s1, place).               % f:00033e msg 2084
+object_of(replace_smoke_alarm_battery_s1, step_ladder).      % f:00033f msg 2085
+uses(replace_smoke_alarm_battery_s1, ladder).                % f:000340 msg 2088
+role(replace_smoke_alarm_battery_s1, ladder, support).       % f:000341 msg 2089
+condition(replace_smoke_alarm_battery_s1, firmly_placed).    % f:000342 msg 2090
+takes_time(replace_smoke_alarm_battery_s1, 1, 1, minute).    % f:000343 msg 2091
+step(replace_smoke_alarm_battery, replace_smoke_alarm_battery_s5). % f:000344 msg 2092
+action(replace_smoke_alarm_battery_s5, press).               % f:000345 msg 2093
+object_of(replace_smoke_alarm_battery_s5, test_button).      % f:000346 msg 2094
+until(replace_smoke_alarm_battery_s5, alarm_beeping).        % f:000347 msg 2095
+takes_time(replace_smoke_alarm_battery_s5, 1, 1, minute).    % f:000348 msg 2096
