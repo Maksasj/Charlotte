@@ -1,0 +1,300 @@
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(baguette, oven)"],"gold_canon":["can_go_in(baguette, oven)"],"id":"w1-009","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(cinnamon_stick, aromatic)"],"gold_canon":["has_property(cinnamon_stick, aromatic)"],"id":"w1-010","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(ladle, pour)"],"gold_canon":["can_do(ladle, pour)"],"id":"w1-011","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(potato, oven)"],"gold_canon":["can_go_in(potato, oven)"],"id":"w1-013","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(parmesan, fridge)"],"gold_canon":["can_go_in(parmesan, fridge)"],"id":"w1-019","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(chef_knife, edge)"],"gold_canon":["has_part(chef_knife, edge)"],"id":"w1-021","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(maple_syrup, sweet)"],"gold_canon":["has_property(maple_syrup, sweet)"],"id":"w1-023","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(prawn, freezer)"],"gold_canon":["can_go_in(prawn, freezer)"],"id":"w1-029","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(lamb_chop, freezer)"],"gold_canon":["can_go_in(lamb_chop, freezer)"],"id":"w1-030","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(rice, cupboard)"],"gold_canon":["can_go_in(rice, cupboard)"],"id":"w1-033","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(couscous, cupboard)"],"gold_canon":["can_go_in(couscous, cupboard)"],"id":"w1-034","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(mozzarella, fridge)"],"gold_canon":["can_go_in(mozzarella, fridge)"],"id":"w1-035","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(stockpot, heat)"],"gold_canon":["can_do(stockpot, heat)"],"id":"w1-038","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(bundt_tin, oven)"],"gold_canon":["can_go_in(bundt_tin, oven)"],"id":"w1-049","ms":11}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_hot_chocolate_s1, saucepan, electric_kettle)"],"gaps":["gap(make_hot_chocolate_s1, saucepan)"],"gold_canon":["stand_in(make_hot_chocolate_s1, saucepan, pot)"],"id":"w1-050","ms":11}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_hot_chocolate_s3, mug, plastic_tumbler)"],"gaps":["gap(make_hot_chocolate_s4, mug)","gap(make_hot_chocolate_s2, mug)","gap(make_hot_chocolate_s3, mug)"],"gold_canon":["stand_in(make_hot_chocolate_s3, mug, teacup)"],"id":"w1-055","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bake_banana_bread_s3, sugar, aspartame)"],"gaps":[],"gold_canon":["stand_in(bake_banana_bread_s3, sugar, honey)"],"id":"w1-058","ms":12}
+{"asks":[],"claims":[{"claim":"swap(make_chili_con_carne_s2, pot, frying_pan)","hops":1,"kind":"deduced"}],"excluded_canon":["stand_in(make_chili_con_carne_s3, pot, toaster)"],"gaps":["gap(make_chili_con_carne_s1, pot)","gap(make_chili_con_carne_s3, pot)"],"gold_canon":["stand_in(make_chili_con_carne_s3, pot, frying_pan)"],"id":"w1-060","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(boil_egg_s1, pot, electric_kettle)"],"gaps":[],"gold_canon":["stand_in(boil_egg_s1, pot, saucepan)"],"id":"w1-061","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bake_banana_bread_s4, loaf_tin, plastic_tub)"],"gaps":[],"gold_canon":["stand_in(bake_banana_bread_s4, loaf_tin, muffin_tray)"],"id":"w1-065","ms":11}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_flatbread_pizza_s2, baking_tray, cutting_board)"],"gaps":[],"gold_canon":["stand_in(make_flatbread_pizza_s2, baking_tray, pizza_stone)"],"id":"w1-067","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_tea_s2, mug, plastic_tumbler)"],"gaps":[],"gold_canon":["stand_in(make_tea_s2, mug, coffee_cup)"],"id":"w1-068","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_smoothie_s5, glass, paper_bag)"],"gaps":[],"gold_canon":["stand_in(make_smoothie_s5, glass, tumbler)"],"id":"w1-076","ms":11}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_chili_con_carne_s5, pot, slow_cooker)"],"gaps":["gap(make_chili_con_carne_s1, pot)","gap(make_chili_con_carne_s2, pot)","gap(make_chili_con_carne_s3, pot)"],"gold_canon":["stand_in(make_chili_con_carne_s5, pot, casserole_pot)"],"id":"w1-082","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_hot_chocolate_s1, saucepan, electric_kettle)"],"gaps":["gap(make_hot_chocolate_s1, saucepan)"],"gold_canon":["stand_in(make_hot_chocolate_s1, saucepan, stockpot)"],"id":"w1-083","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_french_toast_s4, frying_pan, toaster)"],"gaps":["gap(make_french_toast_s2, frying_pan)","gap(make_french_toast_s4, frying_pan)"],"gold_canon":["stand_in(make_french_toast_s4, frying_pan, griddle_pan)"],"id":"w1-084","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_apple_crumble_s5, baking_dish, plastic_tub)"],"gaps":[],"gold_canon":["stand_in(make_apple_crumble_s5, baking_dish, pie_dish)"],"id":"w1-086","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(make_mulled_wine_s5, mug, plastic_tumbler)"],"gaps":[],"gold_canon":["stand_in(make_mulled_wine_s5, mug, travel_mug)"],"id":"w1-090","ms":11}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(roast_vegetables_s2, knife, plastic_knife)"],"gaps":[],"gold_canon":["stand_in(roast_vegetables_s2, knife, vegetable_chopper)"],"id":"w1-092","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(squeeze_orange_juice_s4, sieve, colander)"],"gaps":[],"gold_canon":["stand_in(squeeze_orange_juice_s4, sieve, tea_strainer)"],"id":"w1-095","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(protect_seedling_s1, cloche, bucket)"],"gaps":["gap(protect_seedling_s1, cloche)"],"gold_canon":["stand_in(protect_seedling_s1, cloche, glass_jar)"],"id":"w1-101","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(eggshell, compost_bin)"],"gold_canon":["can_go_in(eggshell, compost_bin)"],"id":"w1-102","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(mist_seedlings_s1, mister)"],"gold_canon":["stand_in(mist_seedlings_s1, mister, trigger_sprayer)"],"id":"w1-111","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(sieve_compost_s1, riddle)"],"gold_canon":["stand_in(sieve_compost_s1, riddle, sieve)"],"id":"w1-113","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(onion_skin, compost_bin)"],"gold_canon":["can_go_in(onion_skin, compost_bin)"],"id":"w1-115","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(apple_core, compost_bin)"],"gold_canon":["can_go_in(apple_core, compost_bin)"],"id":"w1-116","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(white_vinegar, descale)"],"gold_canon":["can_do(white_vinegar, descale)"],"id":"w1-118","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(harvest_basil_s1, secateurs, plastic_knife)"],"gaps":["gap(harvest_basil_s1, secateurs)"],"gold_canon":["stand_in(harvest_basil_s1, secateurs, herb_scissors)"],"id":"w1-120","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(sow_seeds_s2, dibber)"],"gold_canon":["stand_in(sow_seeds_s2, dibber, bamboo_skewer)"],"id":"w1-121","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(protect_seedling_s1, cloche, bucket)"],"gaps":["gap(protect_seedling_s1, cloche)"],"gold_canon":["stand_in(protect_seedling_s1, cloche, pickle_jar)"],"id":"w1-125","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(loose_tea_leaves, compost_bin)"],"gold_canon":["can_go_in(loose_tea_leaves, compost_bin)"],"id":"w1-131","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(hass_avocado, sweet)"],"gold_canon":["not has_property(hass_avocado, sweet)"],"id":"w1-136","ms":11}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(steel_mixing_bowl, microwave)"],"gold_canon":["not can_go_in(steel_mixing_bowl, microwave)"],"id":"w1-137","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(copper_milk_pan, dishwasher)"],"gold_canon":["not can_go_in(copper_milk_pan, dishwasher)"],"id":"w1-141","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(raw_honey, perishable)"],"gold_canon":["not has_property(raw_honey, perishable)"],"id":"w1-148","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(borosilicate_casserole, oven)"],"gold_canon":["can_go_in(borosilicate_casserole, oven)"],"id":"w1-149","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(cast_iron_grill_pan, dishwasher)"],"gold_canon":["not can_go_in(cast_iron_grill_pan, dishwasher)"],"id":"w1-150","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(vacuum_flask_mug, microwave)"],"gold_canon":["not can_go_in(vacuum_flask_mug, microwave)"],"id":"w1-153","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(make_chili_con_carne_s1, knife)"],"gold_canon":["replace_step(make_chili_con_carne_s1, grate)"],"id":"w1-157","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(make_couscous_s1, boil_on_hob)"],"id":"w1-159","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(make_bruschetta_s3, toast)"],"id":"w1-161","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(make_tacos_s5, microwave_heat)"],"id":"w1-162","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(make_hot_chocolate_s1, saucepan)"],"gold_canon":["replace_step(make_hot_chocolate_s1, microwave_heat)"],"id":"w1-164","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(make_mulled_wine_s1, segment)"],"id":"w1-168","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(cornstarch, thicken)"],"gold_canon":["can_do(cornstarch, thicken)"],"id":"w1-171","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(cilantro, aromatic)"],"gold_canon":["has_property(cilantro, aromatic)"],"id":"w1-172","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(scallion, fridge)"],"gold_canon":["can_go_in(scallion, fridge)"],"id":"w1-176","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(loaf_tin, microwave)"],"gold_canon":["not can_go_in(loaf_tin, microwave)"],"id":"w1-177","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(spurtle, dishwasher)"],"gold_canon":["not can_go_in(spurtle, dishwasher)"],"id":"w1-178","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(cast_iron_trivet, dishwasher)"],"gold_canon":["not can_go_in(cast_iron_trivet, dishwasher)"],"id":"w1-186","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(cheese_slicer, cut)"],"gold_canon":["can_do(cheese_slicer, cut)"],"id":"w1-187","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(ghee, grease)"],"gold_canon":["can_do(ghee, grease)"],"id":"w1-191","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(pasta_insert, drain)"],"gold_canon":["can_do(pasta_insert, drain)"],"id":"w1-195","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: made_of(muffin_tray, metal)"],"gold_canon":["made_of(muffin_tray, metal)"],"id":"w1-196","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(make_couscous_s1, kettle)"],"id":"w1-198","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(make_hummus_s1, sieve)"],"id":"w1-201","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(range_cooker, oven_door)"],"gold_canon":["has_part(range_cooker, oven_door)"],"id":"w1-202","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(harvest_basil_s1, secateurs)"],"gold_canon":["gap(harvest_basil_s1, secateurs)"],"id":"w1-203","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(make_flatbread_pizza_s2, baking_tray)"],"id":"w1-208","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(make_guacamole_s4, fork)"],"gold_canon":["gap(make_guacamole_s4, fork)"],"id":"w1-209","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(make_smoothie_s4, blender)"],"id":"w1-210","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(make_tea_s2, mug)"],"id":"w1-212","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(jalapeno, spicy)"],"gold_canon":["has_property(jalapeno, spicy)"],"id":"w1-219","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(electric_kettle, spout)"],"gold_canon":["has_part(electric_kettle, spout)"],"id":"w1-220","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(bake_banana_bread_s3, baking_soda)"],"id":"w1-221","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(spider_skimmer, strain)"],"gold_canon":["can_do(spider_skimmer, strain)"],"id":"w1-222","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(sourdough_boule, oven)"],"gold_canon":["can_go_in(sourdough_boule, oven)"],"id":"w1-226","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(zucchini, fridge)"],"gold_canon":["can_go_in(zucchini, fridge)"],"id":"w1-229","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(fork, drawer)"],"gold_canon":["can_go_in(fork, drawer)"],"id":"w2-001","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(lemon, acidic)"],"gold_canon":["has_property(lemon, acidic)"],"id":"w2-005","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(push_broom, sweep)"],"gold_canon":["can_do(push_broom, sweep)"],"id":"w2-007","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: is_a(dish_soap, cleaning_product)"],"gold_canon":["is_a(dish_soap, cleaning_product)"],"id":"w2-009","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(newspaper, recycling_bin)"],"gold_canon":["can_go_in(newspaper, recycling_bin)"],"id":"w2-010","ms":14}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(handheld_vacuum, filter)"],"gold_canon":["has_part(handheld_vacuum, filter)"],"id":"w2-011","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(washing_machine, electric)"],"gold_canon":["has_property(washing_machine, electric)"],"id":"w2-014","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: is_a(teaspoon, tableware)"],"gold_canon":["is_a(teaspoon, tableware)"],"id":"w2-025","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(wine_bottle, recycling_bin)"],"gold_canon":["can_go_in(wine_bottle, recycling_bin)"],"id":"w2-027","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(plant_mister, spring)"],"gold_canon":["has_part(plant_mister, spring)"],"id":"w2-028","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(steam_iron, electric)"],"gold_canon":["has_property(steam_iron, electric)"],"id":"w2-030","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(scrub_sponge, closet)"],"gold_canon":["can_go_in(scrub_sponge, closet)"],"id":"w2-037","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(fan_oven, hinge_pin)"],"gold_canon":["has_part(fan_oven, hinge_pin)"],"id":"w2-040","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(cooker, hinge_pin)"],"gold_canon":["has_part(cooker, hinge_pin)"],"id":"w2-041","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(mini_fridge, hinge_pin)"],"gold_canon":["has_part(mini_fridge, hinge_pin)"],"id":"w2-049","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_window_s3, squeegee, bath_towel)"],"gaps":[],"gold_canon":["stand_in(clean_window_s3, squeegee, newspaper)"],"id":"w2-053","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(polish_shoes_s3, brush, wire_brush)"],"gaps":[],"gold_canon":["stand_in(polish_shoes_s3, brush, sponge)"],"id":"w2-063","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_fridge_s2, cool_box, box)"],"gaps":[],"gold_canon":["stand_in(clean_fridge_s2, cool_box, cooler_bag)"],"id":"w2-064","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(dust_shelves_s2, cloth, paper_towel)"],"gaps":[],"gold_canon":["stand_in(dust_shelves_s2, cloth, microfiber_cloth)"],"id":"w2-067","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(remove_wine_stain_s1, paper_towel, baking_soda)"],"gaps":[],"gold_canon":["stand_in(remove_wine_stain_s1, paper_towel, paper_napkin)"],"id":"w2-070","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s6, spray_bottle, aerosol_can)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s6, spray_bottle, plant_mister)"],"id":"w2-072","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_window_s4, cloth, scrub_sponge)"],"gaps":[],"gold_canon":["stand_in(clean_window_s4, cloth, sponge)"],"id":"w2-076","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s7, sponge, steel_wool)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s7, sponge, cloth)"],"id":"w2-077","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s2, bowl, colander)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s2, bowl, jug)"],"id":"w2-081","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_window_s2, sponge, steel_wool)"],"gaps":[],"gold_canon":["stand_in(clean_window_s2, sponge, microfiber_cloth)"],"id":"w2-086","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_fridge_s5, dish_soap, floor_cleaner)"],"gaps":[],"gold_canon":["stand_in(clean_fridge_s5, dish_soap, lime)"],"id":"w2-093","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_microwave_s4, cloth, scrub_sponge)"],"gaps":[],"gold_canon":["stand_in(clean_microwave_s4, cloth, kitchen_sponge)"],"id":"w2-094","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s5, sponge, cloth)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s5, sponge, green_scourer)"],"id":"w2-095","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(iron_shirt_s5, ironing_board, plastic_tray)"],"gaps":[],"gold_canon":["stand_in(iron_shirt_s5, ironing_board, tea_towel)"],"id":"w2-098","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(foil, microwave)"],"gold_canon":["not can_go_in(foil, microwave)"],"id":"w2-101","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s2, bowl, colander)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s2, bowl, saucepan)"],"id":"w2-105","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_oven_s3, sponge, putty_knife)"],"gaps":[],"gold_canon":["stand_in(clean_oven_s3, sponge, paintbrush)"],"id":"w2-106","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_bird_bath_s2, vinegar, bleach)"],"gaps":["gap(clean_bird_bath_s2, vinegar)"],"gold_canon":["stand_in(clean_bird_bath_s2, vinegar, baking_soda)"],"id":"w2-108","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_bird_bath_s1, stiff_brush, paper_towel)"],"gaps":["gap(clean_bird_bath_s1, stiff_brush)"],"gold_canon":["stand_in(clean_bird_bath_s1, stiff_brush, dish_brush)"],"id":"w2-109","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_greenhouse_glass_s2, squeegee, paper_towel)"],"gaps":["gap(clean_greenhouse_glass_s2, squeegee)"],"gold_canon":["stand_in(clean_greenhouse_glass_s2, squeegee, microfiber_cloth)"],"id":"w2-110","ms":12}
+{"asks":[],"claims":[{"claim":"swap(prune_roses_s2, secateurs, knife)","hops":1,"kind":"deduced"}],"excluded_canon":["stand_in(prune_roses_s2, secateurs, butter_knife)"],"gaps":[],"gold_canon":["stand_in(prune_roses_s2, secateurs, knife)"],"id":"w2-111","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(water_plants_s1, watering_can, colander)"],"gaps":["gap(water_plants_s1, watering_can)"],"gold_canon":["stand_in(water_plants_s1, watering_can, mug)"],"id":"w2-118","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_bird_bath_s2, vinegar, bleach)"],"gaps":["gap(clean_bird_bath_s2, vinegar)"],"gold_canon":["stand_in(clean_bird_bath_s2, vinegar, lemon)"],"id":"w2-119","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_fridge_s7, towel, hair_dryer)"],"gaps":[],"gold_canon":["stand_in(clean_fridge_s7, towel, paper_towel)"],"id":"w2-120","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(wash_plant_pots_s1, bucket, laundry_basket)"],"gaps":["gap(wash_plant_pots_s1, bucket)"],"gold_canon":["stand_in(wash_plant_pots_s1, bucket, basin)"],"id":"w2-121","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_garden_tools_s1, wire_brush, cloth)"],"gaps":["gap(clean_garden_tools_s1, wire_brush)"],"gold_canon":["stand_in(clean_garden_tools_s1, wire_brush, green_scourer)"],"id":"w2-124","ms":16}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(water_plants_s1, watering_can, colander)"],"gaps":["gap(water_plants_s1, watering_can)"],"gold_canon":["stand_in(water_plants_s1, watering_can, jug)"],"id":"w2-126","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(wash_garden_furniture_s2, sponge, steel_wool)"],"gaps":["gap(wash_garden_furniture_s2, sponge)"],"gold_canon":["stand_in(wash_garden_furniture_s2, sponge, dish_cloth)"],"id":"w2-129","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(wooden_spoon, dishwasher)"],"gold_canon":["not can_go_in(wooden_spoon, dishwasher)"],"id":"w2-135","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(plimsoll, machine_washable)"],"gold_canon":["has_property(plimsoll, machine_washable)"],"id":"w2-137","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(olive_wood_spoon, dishwasher)"],"gold_canon":["not can_go_in(olive_wood_spoon, dishwasher)"],"id":"w2-144","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(wine_glass, recycling_bin)"],"gold_canon":["not can_go_in(wine_glass, recycling_bin)"],"id":"w2-146","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(gilded_teacup, microwave)"],"gold_canon":["not can_go_in(gilded_teacup, microwave)"],"id":"w2-149","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(red_wine_glass, recycling_bin)"],"gold_canon":["not can_go_in(red_wine_glass, recycling_bin)"],"id":"w2-151","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(gyuto, dishwasher)"],"gold_canon":["not can_go_in(gyuto, dishwasher)"],"id":"w2-152","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(mop_floor_s3, bucket)"],"gold_canon":["replace_step(mop_floor_s3, rinse)"],"id":"w2-156","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(clean_window_s3, air_dry)"],"id":"w2-162","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(wash_dishes_s3, sponge)"],"gold_canon":["replace_step(wash_dishes_s3, wipe)"],"id":"w2-164","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(wash_dishes_s3, sponge)"],"gold_canon":["replace_step(wash_dishes_s3, scrub)"],"id":"w2-165","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(high_top_sneaker, aglet)"],"gold_canon":["has_part(high_top_sneaker, aglet)"],"id":"w2-175","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(leather_wallet, machine_washable)"],"gold_canon":["not has_property(leather_wallet, machine_washable)"],"id":"w2-179","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(glass_teapot, fragile)"],"gold_canon":["has_property(glass_teapot, fragile)"],"id":"w2-182","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(cast_iron_wok, dishwasher)"],"gold_canon":["not can_go_in(cast_iron_wok, dishwasher)"],"id":"w2-183","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(silver_teapot, tarnishable)"],"gold_canon":["has_property(silver_teapot, tarnishable)"],"id":"w2-185","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(iron_hook, rusts)"],"gold_canon":["has_property(iron_hook, rusts)"],"id":"w2-194","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(clean_oven_s2, bowl)"],"id":"w2-198","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(dust_shelves_s1, step_stool)"],"id":"w2-200","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(polish_shoes_s3, brush)"],"id":"w2-201","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(salad_plate, dishwasher)"],"gold_canon":["can_go_in(salad_plate, dishwasher)"],"id":"w2-204","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(upright_vacuum, filter)"],"gold_canon":["has_part(upright_vacuum, filter)"],"id":"w2-209","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(clean_fridge_s7, towel)"],"id":"w2-220","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(jeans, machine_washable)"],"gold_canon":["has_property(jeans, machine_washable)"],"id":"w2-222","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(wooden_ladle, dishwasher)"],"gold_canon":["not can_go_in(wooden_ladle, dishwasher)"],"id":"w2-223","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_fridge_s3, bin_bag, paper_bag)"],"gaps":[],"gold_canon":["stand_in(clean_fridge_s3, bin_bag, pedal_bin_liner)"],"id":"w2-228","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_garden_tools_s3, rag, squeegee)"],"gaps":["gap(clean_garden_tools_s3, rag)"],"gold_canon":["stand_in(clean_garden_tools_s3, rag, dish_cloth)"],"id":"w2-230","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(water_plants_s1, watering_can, wicker_basket)"],"gaps":["gap(water_plants_s1, watering_can)"],"gold_canon":["stand_in(water_plants_s1, watering_can, jerrycan)"],"id":"w2-233","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(clean_fridge_s5, sponge, steel_wool)"],"gaps":[],"gold_canon":["stand_in(clean_fridge_s5, sponge, dishrag)"],"id":"w2-236","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(wet_and_dry_paper, abrasive)"],"gold_canon":["has_property(wet_and_dry_paper, abrasive)"],"id":"w3-004","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(sanitary_silicone, waterproof)"],"gold_canon":["has_property(sanitary_silicone, waterproof)"],"id":"w3-010","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(aa_battery, power)"],"gold_canon":["can_do(aa_battery, power)"],"id":"w3-011","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(wood_glue, bind)"],"gold_canon":["can_do(wood_glue, bind)"],"id":"w3-013","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(snap_off_knife, sharp)"],"gold_canon":["has_property(snap_off_knife, sharp)"],"id":"w3-017","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(junior_hacksaw, cut)"],"gold_canon":["can_do(junior_hacksaw, cut)"],"id":"w3-018","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: is_a(orbital_sander, tool)"],"gold_canon":["is_a(orbital_sander, tool)"],"id":"w3-020","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(floor_pump, inflate)"],"gold_canon":["can_do(floor_pump, inflate)"],"id":"w3-025","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(matt_emulsion, water_based)"],"gold_canon":["has_property(matt_emulsion, water_based)"],"id":"w3-026","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(cotton_rag, absorbent)"],"gold_canon":["has_property(cotton_rag, absorbent)"],"id":"w3-028","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(framing_hammer, strike)"],"gold_canon":["can_do(framing_hammer, strike)"],"id":"w3-035","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: is_a(club_hammer, hand_tool)"],"gold_canon":["is_a(club_hammer, hand_tool)"],"id":"w3-040","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(combi_drill, jaw)"],"gold_canon":["has_part(combi_drill, jaw)"],"id":"w3-041","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(curved_jaw_locking_pliers, grip)"],"gold_canon":["can_do(curved_jaw_locking_pliers, grip)"],"id":"w3-042","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(vinyl_silk_emulsion, water_based)"],"gold_canon":["has_property(vinyl_silk_emulsion, water_based)"],"id":"w3-043","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(rubber_mallet, striking_face)"],"gold_canon":["has_part(rubber_mallet, striking_face)"],"id":"w3-044","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_part(pocket_door, hinge)"],"gold_canon":["not has_part(pocket_door, hinge)"],"id":"w3-053","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_part(oil_filled_radiator, bleed_valve)"],"gold_canon":["not has_part(oil_filled_radiator, bleed_valve)"],"id":"w3-054","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(graphite_powder, greasy)"],"gold_canon":["not has_property(graphite_powder, greasy)"],"id":"w3-056","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(nimh_aa_battery, rechargeable)"],"gold_canon":["has_property(nimh_aa_battery, rechargeable)"],"id":"w3-057","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(ten_year_optical_alarm, battery_replaceable)"],"gold_canon":["not has_property(ten_year_optical_alarm, battery_replaceable)"],"id":"w3-063","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_part(portable_oil_filled_radiator, bleed_valve)"],"gold_canon":["not has_part(portable_oil_filled_radiator, bleed_valve)"],"id":"w3-064","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_property(alkyd_gloss, water_based)"],"gold_canon":["not has_property(alkyd_gloss, water_based)"],"id":"w3-065","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(fix_dripping_tap_s6, spanner, cable_tie)"],"gaps":[],"gold_canon":["stand_in(fix_dripping_tap_s6, spanner, combination_pliers)"],"id":"w3-073","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s4, radiator_key, rubber_glove)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s4, radiator_key, needle_nose_pliers)"],"id":"w3-078","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s4, radiator_key, rubber_glove)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s4, radiator_key, spanner)"],"id":"w3-079","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s4, radiator_key, rubber_glove)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s4, radiator_key, flathead_screwdriver)"],"id":"w3-081","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s4, radiator_key, rubber_glove)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s4, radiator_key, stubby_screwdriver)"],"id":"w3-082","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s5, radiator_key, cable_tie)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s5, radiator_key, spanner)"],"id":"w3-083","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(bleed_radiator_s5, radiator_key, cable_tie)"],"gaps":["gap(bleed_radiator_s6, radiator_key)","gap(bleed_radiator_s9, radiator_key)"],"gold_canon":["stand_in(bleed_radiator_s5, radiator_key, screwdriver)"],"id":"w3-084","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(assemble_bookshelf_s5, allen_key, screwdriver)"],"gaps":[],"gold_canon":["stand_in(assemble_bookshelf_s5, allen_key, hex_bit_driver)"],"id":"w3-086","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(oil_squeaky_hinge_s2, lubricant, dish_soap)"],"gaps":[],"gold_canon":["stand_in(oil_squeaky_hinge_s2, lubricant, petroleum_jelly)"],"id":"w3-088","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(oil_squeaky_hinge_s4, cloth, squeegee)"],"gaps":[],"gold_canon":["stand_in(oil_squeaky_hinge_s4, cloth, flour_sack_towel)"],"id":"w3-093","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(recaulk_bathtub_s2, cloth, squeegee)"],"gaps":[],"gold_canon":["stand_in(recaulk_bathtub_s2, cloth, flannel)"],"id":"w3-096","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(recaulk_bathtub_s2, rubbing_alcohol, dish_soap)"],"gaps":[],"gold_canon":["stand_in(recaulk_bathtub_s2, rubbing_alcohol, methylated_spirit)"],"id":"w3-097","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(recaulk_bathtub_s1, utility_knife, plastic_knife)"],"gaps":[],"gold_canon":["stand_in(recaulk_bathtub_s1, utility_knife, craft_knife)"],"id":"w3-098","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(patch_drywall_hole_s2, spackle, silicone_sealant)"],"gaps":["gap(patch_drywall_hole_s2, spackle)"],"gold_canon":["stand_in(patch_drywall_hole_s2, spackle, powder_filler)"],"id":"w3-101","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(patch_drywall_hole_s5, sandpaper, iron)"],"gaps":["gap(patch_drywall_hole_s5, sandpaper)","gap(patch_drywall_hole_s6, sandpaper)"],"gold_canon":["stand_in(patch_drywall_hole_s5, sandpaper, medium_sanding_sponge)"],"id":"w3-104","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(hang_picture_s1, tape_measure, kitchen_scale)"],"gaps":[],"gold_canon":["stand_in(hang_picture_s1, tape_measure, folding_rule)"],"id":"w3-108","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(sharpen_kitchen_knife_s3, whetstone, pencil_sharpener)"],"gaps":[],"gold_canon":["stand_in(sharpen_kitchen_knife_s3, whetstone, diamond_plate)"],"id":"w3-113","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(fix_flat_tire_s5, patch_kit, masking_tape)"],"gaps":[],"gold_canon":["stand_in(fix_flat_tire_s5, patch_kit, self_adhesive_patch)"],"id":"w3-118","ms":13}
+{"asks":[],"claims":[{"claim":"swap(prune_rose_s1, secateurs, knife)","hops":1,"kind":"deduced"}],"excluded_canon":["stand_in(prune_rose_s1, secateurs, plastic_knife)"],"gaps":[],"gold_canon":["stand_in(prune_rose_s1, secateurs, knife)"],"id":"w3-121","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(tie_up_tomato_s1, garden_twine, cable_tie)"],"gaps":["gap(tie_up_tomato_s1, garden_twine)"],"gold_canon":["stand_in(tie_up_tomato_s1, garden_twine, old_tights)"],"id":"w3-126","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(tie_up_tomato_s1, garden_twine, cable_tie)"],"gaps":["gap(tie_up_tomato_s1, garden_twine)"],"gold_canon":["stand_in(tie_up_tomato_s1, garden_twine, cotton_yarn)"],"id":"w3-129","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(sow_seeds_s1, dibber, fork)"],"gaps":["gap(sow_seeds_s1, dibber)"],"gold_canon":["stand_in(sow_seeds_s1, dibber, wooden_chopstick)"],"id":"w3-136","ms":14}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(assemble_bookshelf_s6, hammer, slipper)"],"gaps":[],"gold_canon":["stand_in(assemble_bookshelf_s6, hammer, cast_iron_skillet)"],"id":"w3-144","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(patch_drywall_hole_s3, putty_knife, caulk_gun)"],"gaps":["gap(patch_drywall_hole_s3, putty_knife)"],"gold_canon":["stand_in(patch_drywall_hole_s3, putty_knife, offset_spatula)"],"id":"w3-149","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(telescopic_pruning_saw, sharp)"],"gold_canon":["has_property(telescopic_pruning_saw, sharp)"],"id":"w3-154","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(recaulk_bathtub_s1, dissolve)"],"id":"w3-158","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(recaulk_bathtub_s2, wash)"],"id":"w3-160","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(hang_picture_s2, tape)"],"id":"w3-161","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(patch_drywall_hole_s5, sandpaper)","gap(patch_drywall_hole_s6, sandpaper)"],"gold_canon":["replace_step(patch_drywall_hole_s5, wet_sand)"],"id":"w3-163","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(assemble_bookshelf_s6, glue_on)"],"id":"w3-165","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(assemble_bookshelf_s6, staple)"],"id":"w3-167","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(recaulk_bathtub_s1, utility_knife, plastic_knife)"],"gaps":[],"gold_canon":["stand_in(recaulk_bathtub_s1, utility_knife, hobby_knife)"],"id":"w3-174","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(brass_hinge, conductive)"],"gold_canon":["has_property(brass_hinge, conductive)"],"id":"w3-177","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(cast_iron_pan, conductive)"],"gold_canon":["has_property(cast_iron_pan, conductive)"],"id":"w3-179","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(glass_lampshade, fragile)"],"gold_canon":["has_property(glass_lampshade, fragile)"],"id":"w3-184","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(gasket, flexible)"],"gold_canon":["has_property(gasket, flexible)"],"id":"w3-186","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(ceramic_bowl, heat_resistant)"],"gold_canon":["has_property(ceramic_bowl, heat_resistant)"],"id":"w3-189","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(carpet_knife, cut)"],"gold_canon":["can_do(carpet_knife, cut)"],"id":"w3-192","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(cotton_wool, absorb)"],"gold_canon":["can_do(cotton_wool, absorb)"],"id":"w3-194","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(patch_drywall_hole_s2, spackle)"],"gold_canon":["gap(patch_drywall_hole_s2, spackle)"],"id":"w3-199","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(hang_picture_s1, tape_measure)"],"id":"w3-200","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(recaulk_bathtub_s1, utility_knife)"],"id":"w3-203","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(replace_door_handle_s4, screwdriver)"],"id":"w3-205","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(recaulk_bathtub_s1, utility_knife)"],"id":"w3-209","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(sharpen_kitchen_knife_s2, towel)"],"id":"w3-211","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(oil_squeaky_hinge_s10, petroleum_jelly)"],"id":"w3-213","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap(patch_drywall_hole_s7, paintbrush)","gap(patch_drywall_hole_s6, paintbrush)"],"gold_canon":["gap(patch_drywall_hole_s6, paintbrush)"],"id":"w3-215","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(tenon_saw, blade)"],"gold_canon":["has_part(tenon_saw, blade)"],"id":"w3-226","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(bar_clamp, grip)"],"gold_canon":["can_do(bar_clamp, grip)"],"id":"w3-229","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(flush_cut_saw, sharp)"],"gold_canon":["has_property(flush_cut_saw, sharp)"],"id":"w3-231","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(drill_battery_pack, rechargeable)"],"gold_canon":["has_property(drill_battery_pack, rechargeable)"],"id":"w3-234","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: made_of(adjustable_wrench, metal)"],"gold_canon":["made_of(adjustable_wrench, metal)"],"id":"w3-237","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(emery_cloth, smoothen)"],"gold_canon":["can_do(emery_cloth, smoothen)"],"id":"w3-241","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: made_of(open_ended_spanner, metal)"],"gold_canon":["made_of(open_ended_spanner, metal)"],"id":"w3-242","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(birthday_card, envelope)"],"gold_canon":["can_go_in(birthday_card, envelope)"],"id":"w4-001","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(sewing_needle, pierce)"],"gold_canon":["can_do(sewing_needle, pierce)"],"id":"w4-006","ms":14}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(duffel_bag, contain)"],"gold_canon":["can_do(duffel_bag, contain)"],"id":"w4-010","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(road_atlas, navigate)"],"gold_canon":["can_do(road_atlas, navigate)"],"id":"w4-011","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(sunscreen, toiletry_bag)"],"gold_canon":["can_go_in(sunscreen, toiletry_bag)"],"id":"w4-014","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: made_of(christmas_card, paper_material)"],"gold_canon":["made_of(christmas_card, paper_material)"],"id":"w4-016","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(paper_bunting, decorate)"],"gold_canon":["can_do(paper_bunting, decorate)"],"id":"w4-023","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(car, tyre_valve)"],"gold_canon":["has_part(car, tyre_valve)"],"id":"w4-026","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(travel_umbrella, rib)"],"gold_canon":["has_part(travel_umbrella, rib)"],"id":"w4-030","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(crepe_paper, flammable)"],"gold_canon":["has_property(crepe_paper, flammable)"],"id":"w4-032","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(estate_car, tyre_valve)"],"gold_canon":["has_part(estate_car, tyre_valve)"],"id":"w4-039","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(round_brush, bristle)"],"gold_canon":["has_part(round_brush, bristle)"],"id":"w4-045","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not made_of(train_e_ticket, paper_material)"],"gold_canon":["not made_of(train_e_ticket, paper_material)"],"id":"w4-052","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_part(led_tealight, wick)"],"gold_canon":["not has_part(led_tealight, wick)"],"id":"w4-055","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(birthday_e_invite, envelope)"],"gold_canon":["not can_go_in(birthday_e_invite, envelope)"],"id":"w4-058","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not made_of(animated_birthday_e_card, paper_material)"],"gold_canon":["not made_of(animated_birthday_e_card, paper_material)"],"id":"w4-061","ms":12}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not made_of(borrowed_travel_guide_e_book, paper_material)"],"gold_canon":["not made_of(borrowed_travel_guide_e_book, paper_material)"],"id":"w4-070","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(paint_chair_s2, cloth, squeegee)"],"gaps":[],"gold_canon":["stand_in(paint_chair_s2, cloth, kitchen_roll)"],"id":"w4-073","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(ballpen, write)"],"gold_canon":["can_do(ballpen, write)"],"id":"w4-075","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(paint_chair_s2, vacuum)"],"id":"w4-079","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(send_wedding_rsvp_s5, frank)"],"id":"w4-084","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(send_wedding_rsvp_s5, pay)"],"id":"w4-085","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(plan_coffee_catch_up_s1, visit)"],"id":"w4-088","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["replace_step(plan_coffee_catch_up_s1, write)"],"id":"w4-091","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(arrange_pet_sitter_s3, pen, voice_recorder)"],"gaps":[],"gold_canon":["stand_in(arrange_pet_sitter_s3, pen, wax_crayon)"],"id":"w4-097","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(arrange_pet_sitter_s3, paper, whiteboard)"],"gaps":[],"gold_canon":["stand_in(arrange_pet_sitter_s3, paper, notepad)"],"id":"w4-098","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(arrange_pet_sitter_s3, paper, whiteboard)"],"gaps":[],"gold_canon":["stand_in(arrange_pet_sitter_s3, paper, sticky_note)"],"id":"w4-099","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(organise_book_club_meeting_s4, notebook, laptop)"],"gaps":[],"gold_canon":["stand_in(organise_book_club_meeting_s4, notebook, index_card)"],"id":"w4-100","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(organise_book_club_meeting_s4, notebook, laptop)"],"gaps":[],"gold_canon":["stand_in(organise_book_club_meeting_s4, notebook, spiral_notepad)"],"id":"w4-101","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(plan_coffee_catch_up_s3, calendar, plain_notebook)"],"gaps":[],"gold_canon":["stand_in(plan_coffee_catch_up_s3, calendar, desk_planner)"],"id":"w4-103","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(plan_coffee_catch_up_s6, phone, radio)"],"gaps":[],"gold_canon":["stand_in(plan_coffee_catch_up_s6, phone, desktop_computer)"],"id":"w4-107","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(plan_coffee_catch_up_s6, phone, radio)"],"gaps":[],"gold_canon":["stand_in(plan_coffee_catch_up_s6, phone, netbook)"],"id":"w4-108","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(exchange_currency_for_trip_s1, phone, newspaper)"],"gaps":[],"gold_canon":["stand_in(exchange_currency_for_trip_s1, phone, chromebook)"],"id":"w4-109","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(prepare_car_for_road_trip_s5, phone, compass)"],"gaps":[],"gold_canon":["stand_in(prepare_car_for_road_trip_s5, phone, sat_nav)"],"id":"w4-110","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(prepare_car_for_road_trip_s5, phone, compass)"],"gaps":[],"gold_canon":["stand_in(prepare_car_for_road_trip_s5, phone, motorway_atlas)"],"id":"w4-112","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(write_thank_you_note_s1, card, clipboard)"],"gaps":[],"gold_canon":["stand_in(write_thank_you_note_s1, card, postcard)"],"id":"w4-122","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(write_thank_you_note_s1, pen, stylus)"],"gaps":[],"gold_canon":["stand_in(write_thank_you_note_s1, pen, pencil)"],"id":"w4-123","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(organise_potluck_s5, serving_spoon, tongs)"],"gaps":[],"gold_canon":["stand_in(organise_potluck_s5, serving_spoon, soup_spoon)"],"id":"w4-128","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(paint_chair_s1, sandpaper, iron)"],"gaps":[],"gold_canon":["stand_in(paint_chair_s1, sandpaper, foam_emery_board)"],"id":"w4-132","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(paint_chair_s4, paintbrush, painting_knife)"],"gaps":[],"gold_canon":["stand_in(paint_chair_s4, paintbrush, paint_roller)"],"id":"w4-137","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(stake_tomatoes_s3, garden_twine, paper_clip)"],"gaps":[],"gold_canon":["stand_in(stake_tomatoes_s3, garden_twine, old_tights)"],"id":"w4-143","ms":14}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(stake_tomatoes_s3, garden_twine, paper_clip)"],"gaps":[],"gold_canon":["stand_in(stake_tomatoes_s3, garden_twine, wool_yarn)"],"id":"w4-144","ms":14}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(label_seedlings_s2, plant_label, sticky_note)"],"gaps":[],"gold_canon":["stand_in(label_seedlings_s2, plant_label, lolly_stick)"],"id":"w4-145","ms":12}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(repot_plant_s3, trowel, paper_cup)"],"gaps":[],"gold_canon":["stand_in(repot_plant_s3, trowel, metal_serving_spoon)"],"id":"w4-155","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(kneel_weeding_s2, kneeling_pad, cardboard_sheet)"],"gaps":[],"gold_canon":["stand_in(kneel_weeding_s2, kneeling_pad, picnic_blanket)"],"id":"w4-157","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(harvest_tomatoes_s2, trug, bathtub)"],"gaps":[],"gold_canon":["stand_in(harvest_tomatoes_s2, trug, wicker_harvest_basket)"],"id":"w4-165","ms":13}
+{"asks":[],"claims":[],"excluded_canon":["stand_in(shade_seedlings_s2, garden_fleece, bin_bag)"],"gaps":[],"gold_canon":["stand_in(shade_seedlings_s2, garden_fleece, net_curtain)"],"id":"w4-167","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(garden_gloves, protect)"],"gold_canon":["can_do(garden_gloves, protect)"],"id":"w4-171","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(folding_pruning_saw, sharp)"],"gold_canon":["has_property(folding_pruning_saw, sharp)"],"id":"w4-174","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(rain_gauge, measure)"],"gold_canon":["can_do(rain_gauge, measure)"],"id":"w4-175","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(send_wedding_rsvp_s2, pen)"],"id":"w4-178","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(exchange_currency_for_trip_s7, money_belt)"],"id":"w4-184","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(plan_coffee_catch_up_s3, calendar)"],"id":"w4-185","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(prepare_car_for_road_trip_s1, pressure_gauge)"],"id":"w4-187","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(write_thank_you_note_s4, pen)"],"id":"w4-190","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(arrange_pet_sitter_s3, paper)"],"id":"w4-192","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(thank_you_card, envelope)"],"gold_canon":["can_go_in(thank_you_card, envelope)"],"id":"w4-194","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(messenger_bag, contain)"],"gold_canon":["can_do(messenger_bag, contain)"],"id":"w4-196","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(paint_chair_s1, sandpaper)"],"id":"w4-200","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":[],"gold_canon":["gap(paint_chair_s2, cloth)"],"id":"w4-206","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(paper_bag, recycling_bin)"],"gold_canon":["can_go_in(paper_bag, recycling_bin)"],"id":"w4-207","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(meat_cleaver, hand_luggage)"],"gold_canon":["not can_go_in(meat_cleaver, hand_luggage)"],"id":"w4-209","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(glass_bauble, fragile)"],"gold_canon":["has_property(glass_bauble, fragile)"],"id":"w4-210","ms":14}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(craft_scalpel, cut)"],"gold_canon":["can_do(craft_scalpel, cut)"],"id":"w4-217","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(safety_pin, pierce)"],"gold_canon":["can_do(safety_pin, pierce)"],"id":"w4-218","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(flip_flops, suitcase)"],"gold_canon":["can_go_in(flip_flops, suitcase)"],"id":"w4-227","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_go_in(trail_running_shoe, suitcase)"],"gold_canon":["can_go_in(trail_running_shoe, suitcase)"],"id":"w4-229","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_part(contactless_debit_card, chip)"],"gold_canon":["has_part(contactless_debit_card, chip)"],"id":"w4-230","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(camping_lantern, illuminate)"],"gold_canon":["can_do(camping_lantern, illuminate)"],"id":"w4-231","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not has_part(beech_balance_bike, pedal)"],"gold_canon":["not has_part(beech_balance_bike, pedal)"],"id":"w4-232","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: not can_go_in(kids_birthday_e_invite, envelope)"],"gold_canon":["not can_go_in(kids_birthday_e_invite, envelope)"],"id":"w4-233","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: can_do(garden_tool_bag, contain)"],"gold_canon":["can_do(garden_tool_bag, contain)"],"id":"w4-237","ms":13}
+{"asks":[],"claims":[],"excluded_canon":[],"gaps":["gap: has_property(wool_hat, insulating)"],"gold_canon":["has_property(wool_hat, insulating)"],"id":"w4-240","ms":13}
