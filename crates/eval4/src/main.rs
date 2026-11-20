@@ -194,6 +194,40 @@ fn main() {
             }
             let (mut agent, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], true, true);
             let file = arg(&args, "--file").expect("--file");
+            if let Some(out) = arg(&args, "--score") {
+                // per-question answers and proof records for the bench4 scorer (tools/design4/score_bench.py)
+                let mut lines = String::new();
+                let mut proofs = String::new();
+                for q in agent4::kb::read_lines(std::path::Path::new(&file)) {
+                    let query = q["query"].as_str().unwrap_or("");
+                    let t0 = std::time::Instant::now();
+                    let a = agent.respond(query);
+                    let ms = t0.elapsed().as_millis();
+                    let given: Vec<String> = match agent4::msg::parse(query) {
+                        Ok(Some(agent4::msg::Msg::Query { given, .. })) | Ok(Some(agent4::msg::Msg::Request { given, .. })) => {
+                            given.iter().map(|(g, n)| reason4::encode(&agent.canon_atom(g), *n).to_string()).collect()
+                        }
+                        _ => vec![],
+                    };
+                    let claims: Vec<serde_json::Value> = a.claims.iter().map(|(c, rec)| json!({"claim": c, "kind": rec["kind"], "hops": rec["hops"]})).collect();
+                    let golds: Vec<String> = q["gold"]["atoms"].as_array().map(|v| v.iter().filter_map(|x| x.as_str()).map(|x| agent.canonical_goal(x)).collect()).unwrap_or_default();
+                    let excluded: Vec<String> = q["gold"]["excluded"].as_array().map(|v| v.iter().filter_map(|x| x.as_str()).map(|x| agent.canonical_goal(x)).collect()).unwrap_or_default();
+                    lines.push_str(&json!({"id": q["id"], "claims": claims, "gaps": a.gaps, "asks": a.asks, "ms": ms,
+                        "gold_canon": golds, "excluded_canon": excluded}).to_string());
+                    lines.push('\n');
+                    for (c, rec) in &a.claims {
+                        proofs.push_str(&json!({"q": q["id"], "claim": c, "proof": rec, "given": given}).to_string());
+                        proofs.push('\n');
+                    }
+                }
+                std::fs::write(format!("{out}.jsonl"), lines).unwrap();
+                std::fs::write(format!("{out}_proofs.jsonl"), proofs).unwrap();
+                let facts: Vec<String> = agent.engine_facts(&[]).iter().map(|f| f.atom.to_string()).collect();
+                std::fs::write(format!("{out}_proofs.jsonl.facts"), facts.join("\n")).unwrap();
+                std::fs::write(format!("{out}_canon.json"), serde_json::to_string(&agent.canon).unwrap()).unwrap();
+                println!("{}", json!({"from": from, "file": file, "out": out, "facts": agent.facts.len()}));
+                return;
+            }
             // the agent's surface name for a stand-in is swap (design 4.3); golds say stand_in
             let norm = |s: &str| s.split_whitespace().collect::<String>().trim_end_matches('.').replacen("swap(", "stand_in(", 1);
             let (mut known, mut total) = (0usize, 0usize);

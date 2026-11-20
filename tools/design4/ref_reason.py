@@ -149,6 +149,8 @@ def main():
     proofs = a[a.index("--proofs") + 1]
     facts = set(l.strip().replace(" ", "") for l in open(a[a.index("--facts") + 1]) if l.strip())
     rules = load_rules()
+    # --out FILE: one verdict per proof record, for the bench4 scorer
+    per = open(a[a.index("--out") + 1], "w") if "--out" in a else None
     n = bad = 0
     examples = []
     for line in open(proofs):
@@ -165,6 +167,8 @@ def main():
             bad += 1
             if len(examples) < 8:
                 examples.append(errors[0])
+        if per is not None:
+            per.write(json.dumps({"q": rec["q"], "claim": rec["claim"], "ok": not errors, "error": errors[0] if errors else ""}) + "\n")
     print(json.dumps({"proofs": n, "failed": bad, "examples": examples}))
     sys.exit(1 if bad else 0)
 
