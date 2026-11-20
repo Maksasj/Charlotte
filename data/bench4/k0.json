@@ -1,0 +1,11 @@
+{
+ "answerable": 704,
+ "answered_correct": 0,
+ "facts": 0,
+ "file": "data/bench4/pool (answerable deductive: K SUB X EXC STEP NAME)",
+ "from": "stage0_S_v3,stage0_M",
+ "ids": [],
+ "questions_with_rejects": [],
+ "rejected_pieces": 0,
+ "symbols": 553
+}

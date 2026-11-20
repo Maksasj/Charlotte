@@ -106,3 +106,30 @@ fn sealed_deny_entries_match_by_hash_only() {
     assert!(!deny.hits("not can_go_in(muffin_tray, oven).").is_empty());
     assert!(deny.hits("can_go_in(loaf_tin, oven).").is_empty());
 }
+
+#[test]
+fn every_benchmark_answer_is_denied_dev_by_atom_sealed_by_hash() {
+    let b = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../data/bench4");
+    if !b.join("sealed.jsonl").exists() {
+        return;
+    }
+    let dev_only = Deny::load(&b.join("deny.txt"));
+    let mut sealed_only = Deny::default();
+    sealed_only.add_hashed(&b.join("deny_sealed.sha256"));
+    for (file, deny) in [("dev.jsonl", &dev_only), ("sealed.jsonl", &sealed_only)] {
+        let mut n = 0;
+        for l in std::fs::read_to_string(b.join(file)).unwrap().lines().filter(|l| !l.trim().is_empty()) {
+            let q: serde_json::Value = serde_json::from_str(l).unwrap();
+            let golds: Vec<String> = if q["gold"]["kind"] == "answer" {
+                q["gold"]["atoms"].as_array().unwrap().iter().map(|a| a.as_str().unwrap().to_string()).collect()
+            } else {
+                q["gold"]["missing"].as_array().map(|v| v.iter().map(|a| a.as_str().unwrap().to_string()).collect()).unwrap_or_default()
+            };
+            for g in golds {
+                assert!(!deny.hits(&format!("{g}.")).is_empty(), "{file} {}: {g} is not denied", q["id"]);
+                n += 1;
+            }
+        }
+        assert!(n > 0, "{file} had no denied atoms to check");
+    }
+}

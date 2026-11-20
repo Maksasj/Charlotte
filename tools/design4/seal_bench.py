@@ -42,13 +42,20 @@ def main():
     for q in qs:
         strata[(q["type"], q.get("hops"), q.get("kb_scope"))].append(q)
     rnd = random.Random(seed)
+    keys = sorted(strata, key=str)
+    for k in keys:
+        rnd.shuffle(strata[k])
+    # largest remainder: each stratum gets floor(n/3) dev places; the rest go to the largest
+    # remainders (ties broken by the seed) until dev is exactly a third of the pool
+    target = len(qs) // 3
+    n_dev = {k: len(strata[k]) // 3 for k in keys}
+    tie = {k: rnd.random() for k in keys}
+    for k in sorted(keys, key=lambda k: (-(len(strata[k]) % 3), tie[k]))[:target - sum(n_dev.values())]:
+        n_dev[k] += 1
     dev, sealed = [], []
-    for k in sorted(strata, key=str):
-        group = strata[k]
-        rnd.shuffle(group)
-        n_dev = round(len(group) / 3)
-        dev.extend(group[:n_dev])
-        sealed.extend(group[n_dev:])
+    for k in keys:
+        dev.extend(strata[k][:n_dev[k]])
+        sealed.extend(strata[k][n_dev[k]:])
     def write(name, rows):
         with open(os.path.join(B, name), "w") as f:
             for r in sorted(rows, key=lambda q: q["id"]):

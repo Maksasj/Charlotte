@@ -44,6 +44,31 @@ def canon(atom, find):
     return (neg, p, tuple(find(a) for a in args))
 
 
+# relations a teacher could state; internal proof nodes (holds, stand_in, ...) are not deny-able text
+SURFACE = {"is_a", "has_part", "made_of", "has_property", "can_do", "can_do_on", "used_for", "can_go_in",
+           "effect", "precondition", "achieves", "requires_state", "demands", "role", "uses"}
+
+
+def canon_rev(atoms):
+    """canonical name -> one surface name, from same_as pieces"""
+    find = canon_map(atoms)
+    out = {}
+    for neg, p, args in atoms:
+        for a in args:
+            out.setdefault(a, find(a))
+    return out
+
+
+def variants(node, inv):
+    """surface spellings of a canonical node: each argument replaced by any of its names"""
+    neg, p, args = node
+    names = [[a] + [k for k, v in inv.items() if v == a and k != a] for a in args]
+    out = [""]
+    for opts in names:
+        out = [o + ("," if o else "") + x for o in out for x in opts]
+    return [f"{p}({o})" for o in out]
+
+
 def pieces_of(q):
     out = []
     for s in q.get("pieces", []):
@@ -84,6 +109,7 @@ def check_question(q):
         else:
             atoms.append(canon(a, find))
     deny = {s.replace(" ", "").rstrip(".") for s in q.get("deny", [])}
+    deny_pos = {d[3:] if d.startswith("not") else d for d in deny}
     for s in gold.get("atoms", []):
         if gold["kind"] != "gap" and s.replace(" ", "").rstrip(".") not in deny:
             errs.append(f"gold atom {s} not in deny")
@@ -95,6 +121,15 @@ def check_question(q):
                 errs.append(f"gold {astr(a)} does not derive from its pieces")
             elif q.get("hops") is not None and pr.cost != q["hops"]:
                 errs.append(f"gold {astr(a)} derives at {pr.cost} hops, labelled {q['hops']}")
+            else:
+                # design 10.1: deny holds the answer and every intermediate node of the proof
+                inv = {v: k for k, v in canon_rev(pieces + list(given)).items()}
+                for node in pr.inner():
+                    if not isinstance(node, tuple) or len(node) != 3 or node[1] not in SURFACE:
+                        continue
+                    k = astr((False, node[1], node[2])).replace(" ", "")
+                    if k not in deny_pos and not any(k2 in deny_pos for k2 in variants(node, inv)):
+                        errs.append(f"intermediate {k} of the gold proof is not in deny")
     elif kind == "gap":
         missing = []
         for s in gold.get("missing", []):
@@ -166,6 +201,38 @@ def main(paths):
         if c > limit:
             errors += 1
             print(f"piece {s} appears in {c} questions (limit {limit})")
+    # one sort per symbol across all questions: registry, `new` fields and argument positions
+    POS = {("made_of", 1): "material", ("has_property", 1): "property", ("can_go_in", 1): "place",
+           ("can_do", 1): "function", ("used_for", 1): "function", ("can_do_on", 1): "function",
+           ("effect", 0): "action", ("effect", 2): "state", ("precondition", 0): "action", ("precondition", 2): "state"}
+    reg = {}
+    rp = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "bench4", "registry.jsonl")
+    if os.path.exists(rp):
+        for l in open(rp):
+            r = json.loads(l)
+            reg[r["sym"]] = r["sort"]
+    seen = defaultdict(lambda: defaultdict(set))  # sym -> sort -> question ids
+    compatible = {frozenset(("item", "place")), frozenset(("action", "function"))}
+    for q in qs:
+        for d in q.get("new", []):
+            if ":" in d:
+                sym, srt = d.split(":", 1)
+                seen[sym.strip()][srt.strip()].add(q.get("id"))
+        try:
+            atoms = pieces_of(q)
+        except ValueError:
+            atoms = []
+        for neg, pr, args in atoms:
+            for i, a in enumerate(args):
+                if (pr, i) in POS:
+                    seen[a][POS[(pr, i)]].add(q.get("id"))
+    for sym, by in sorted(seen.items()):
+        sorts = set(by) | ({reg[sym]} if sym in reg else set())
+        clash = [frozenset((x, y)) for x in sorts for y in sorts if x < y and frozenset((x, y)) not in compatible]
+        if clash:
+            errors += 1
+            where = "; ".join(f"{k}: {sorted(v)[:4]}" for k, v in sorted(by.items()))
+            print(f"symbol {sym} has sorts {sorted(sorts)}{' (registry ' + reg[sym] + ')' if sym in reg else ''}: {where}")
     dup = Counter(q["query"].replace(" ", "") for q in qs)
     for k, c in dup.items():
         if c > 1:
