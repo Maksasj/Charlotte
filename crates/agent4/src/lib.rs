@@ -230,7 +230,8 @@ impl Agent {
             .facts
             .iter()
             .filter(|(_, s)| s.retracted_by.is_none())
-            .map(|(a, s)| FactInput { atom: encode(a, s.negated), conf: s.conf, source: format!("raw:{}.{}", self.session, s.msg) })
+            // a same_as taught after a fact still renames it (canonical names at reasoning time)
+            .map(|(a, s)| FactInput { atom: encode(&self.canon_atom(a), s.negated), conf: s.conf, source: format!("raw:{}.{}", self.session, s.msg) })
             .collect();
         for (a, neg) in extra {
             out.push(FactInput { atom: encode(&self.canon_atom(a), *neg), conf: 1.0, source: "given".into() });
@@ -537,7 +538,14 @@ pub fn internal_goal(goal: &str) -> Result<(sla_core::Atom, bool, String), Strin
     let p = a.pred.clone();
     let mut args = a.args.clone();
     let lit = |s: &str| sla_core::term::Term::Val(Value::Sym(s.to_string()));
-    let (pred, args) = if reason4::INHERITABLE.contains(&p.as_str()) && args.len() == 2 {
+    // B6 (design 4.4): roles, used_for and can_do_on imply can_do; `can` holds all of them
+    // together with taught and inherited can_do, so a positive can_do question asks `can`
+    let (pred, args) = if p == "can_do" && !neg && args.len() == 2 {
+        ("can".to_string(), args)
+    } else if p == "has_part" && !neg && args.len() == 2 {
+        // B5: has_part is transitive; `part` holds the closure over taught and inherited parts
+        ("part".to_string(), args)
+    } else if reason4::INHERITABLE.contains(&p.as_str()) && args.len() == 2 {
         let o = args.remove(1);
         (if neg { "holdsn" } else { "holds" }.to_string(), vec![args.remove(0), lit(&p), o])
     } else if reason4::INHERITABLE3.contains(&p.as_str()) && args.len() == 3 {
@@ -564,6 +572,8 @@ fn claim_surface(g: &GroundAtom, asked_pred: &str) -> String {
     }
     match surface(g) {
         Some((s, neg)) => if neg { format!("not {s}") } else { s.to_string() },
+        None if g.pred == "part" => format!("has_part({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
+        None if g.pred == "can" => format!("can_do({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
         None if g.pred == "stand_in" && asked_pred == "swap" => format!("swap({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
         None => g.to_string(),
     }

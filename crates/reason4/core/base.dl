@@ -56,17 +56,23 @@ can(X, F) :- holds3(X, can_do_on, F, O), not holdsn(X, can_do, F).
 %% B7 stand-in by function, with the demands check and an honest question
 can(X, F) :- holds(X, can_do, F).
 cand(S, I, J, F)  :- lacks(user, I), role(S, I, F), has(user, J), can(J, F), J != I.
+% a demand is met by the relation itself; a can_do demand also by B6's bridges (design 4.4)
+sat(J, P, Y)      :- holds(J, P, Y).
+sat(J, can_do, F) :- can(J, F).
 unfit_known(S, J) :- cand(S, I, J, F), demands(S, F, P, Y), holdsn(J, P, Y).
-fit_open(S, J)    :- cand(S, I, J, F), demands(S, F, P, Y), not holds(J, P, Y), not holdsn(J, P, Y).
+fit_open(S, J)    :- cand(S, I, J, F), demands(S, F, P, Y), not sat(J, P, Y), not holdsn(J, P, Y).
 stand_in(S, I, J) :- cand(S, I, J, F), not unfit_known(S, J), not fit_open(S, J).
 ask_fit(S, J)     :- cand(S, I, J, F), not unfit_known(S, J), fit_open(S, J).
 some_stand_in(S, I) :- stand_in(S, I, J).
 
 %% B8 step replacement by effect
-needed_state(S1, Z) :- before(S1, S2), requires_state(S2, Z), achieves(S1, Z).
+% a step achieves a state when taught so, or by its action's effect on its object (design 4.2, table row 3)
+ach(S, Z)           :- achieves(S, Z).
+ach(S, Z)           :- action(S, A), object_of(S, O), holds_effect(A, O, Z).
+needed_state(S1, Z) :- before(S1, S2), requires_state(S2, Z), ach(S1, Z).
 blocked(S1)         :- uses(S1, I), lacks(user, I), not some_stand_in(S1, I).
 lacks_for(A, O)     :- holds_pre(A, O, Z), not state_of(O, Z).
-replace_step(S1, A2) :- blocked(S1), needed_state(S1, Z), object_of(S1, O), holds_effect(A2, O, Z), action(S1, A1), A2 != A1, not lacks_for(A2, O).
+replace_step(S1, A2) :- blocked(S1), needed_state(S1, Z), object_of(S1, O), holds_effect(A2, O, Z), not action(S1, A2), not lacks_for(A2, O).
 replaced(S1) :- replace_step(S1, A2).
 
 %% B9 gap: a lacked item with no stand-in and no replacement

@@ -182,8 +182,11 @@ fn main() {
             }
             let (mut agent, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], true, true);
             let file = arg(&args, "--file").expect("--file");
-            let norm = |s: &str| s.split_whitespace().collect::<String>().trim_end_matches('.').to_string();
+            // the agent's surface name for a stand-in is swap (design 4.3); golds say stand_in
+            let norm = |s: &str| s.split_whitespace().collect::<String>().trim_end_matches('.').replacen("swap(", "stand_in(", 1);
             let (mut known, mut total) = (0usize, 0usize);
+            let mut rejected_pieces = 0usize;
+            let mut with_rejects: Vec<serde_json::Value> = Vec::new();
             let mut hits = Vec::new();
             for q in agent4::kb::read_lines(std::path::Path::new(&file)) {
                 let kind = q["gold"]["kind"].as_str().unwrap_or("");
@@ -191,15 +194,53 @@ fn main() {
                     continue;
                 }
                 total += 1;
-                let ans = agent.respond(q["query"].as_str().unwrap_or(""));
+                // --teach-pieces: a copy of the agent is taught this question's declarations and
+                // pieces through the conversation path first (the ceiling: perfect teaching)
+                let mut local = None;
+                if args.iter().any(|a| a == "--teach-pieces") {
+                    struct Mute;
+                    impl agent4::Teacher for Mute {
+                        fn answer(&mut self, _q: &str) -> String { "unknown".into() }
+                    }
+                    let (mut a, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], true, true);
+                    let rj0 = a.stats.rejected;
+                    for d in q["new"].as_array().into_iter().flatten().filter_map(|v| v.as_str()) {
+                        if let Some((sym, sort)) = d.split_once(':') {
+                            a.hear(&format!("new({}, {}).", sym.trim(), sort.trim()), "bench", &mut Mute);
+                        }
+                    }
+                    let trace = arg(&args, "--trace").map(|t| q["id"] == t.as_str()).unwrap_or(false);
+                    for p in q["pieces"].as_array().into_iter().flatten().filter_map(|v| v.as_str()) {
+                        let r = a.hear(p, "bench", &mut Mute);
+                        if trace {
+                            eprintln!("T: {p}");
+                            eprintln!("A: {}", r.join(" | "));
+                        }
+                    }
+                    if trace {
+                        let ans = a.respond(q["query"].as_str().unwrap_or(""));
+                        eprintln!("Q: {}", q["query"]);
+                        eprintln!("claims {:?}", ans.claims.iter().map(|c| &c.0).collect::<Vec<_>>());
+                        eprintln!("gaps {:?} asks {:?}", ans.gaps, ans.asks);
+                    }
+                    rejected_pieces += a.stats.rejected - rj0;
+                    if a.stats.rejected > rj0 {
+                        with_rejects.push(json!({"id": q["id"], "rejects": a.rejects.iter().skip(agent.rejects.len()).take(3).collect::<Vec<_>>()}));
+                    }
+                    local = Some(a);
+                }
+                let ans = match local.as_mut() { Some(a) => a.respond(q["query"].as_str().unwrap_or("")), None => agent.respond(q["query"].as_str().unwrap_or("")) };
                 let claims: std::collections::BTreeSet<String> = ans.claims.iter().map(|(c, _)| norm(c)).collect();
-                let golds: Vec<String> = q["gold"]["atoms"].as_array().map(|v| v.iter().filter_map(|a| a.as_str()).map(|a| norm(a)).collect()).unwrap_or_default();
+                // golds are read through the agent's own names (same_as canonicalisation), as the spike scorer does
+                let canon_of = |g: &str| match local.as_ref() { Some(a) => a.canonical_goal(g), None => agent.canonical_goal(g) };
+                let golds: Vec<String> = q["gold"]["atoms"].as_array().map(|v| v.iter().filter_map(|a| a.as_str()).map(|a| norm(&canon_of(a))).collect()).unwrap_or_default();
                 if !golds.is_empty() && golds.iter().all(|g| claims.contains(g)) {
                     known += 1;
                     hits.push(q["id"].clone());
                 }
             }
-            println!("{}", json!({"from": from, "file": file, "facts": agent.facts.len(), "symbols": agent.sorts.len(), "answerable": total, "answered_correct": known, "ids": hits}));
+            println!("{}", json!({"from": from, "file": file, "facts": agent.facts.len(), "symbols": agent.sorts.len(), "answerable": total, "answered_correct": known, "ids": hits,
+                "rejected_pieces": rejected_pieces, "questions_with_rejects": with_rejects}));
         }
         Some("drift") => {
             let every: usize = arg(&args, "--every").and_then(|v| v.parse().ok()).unwrap_or(7);
