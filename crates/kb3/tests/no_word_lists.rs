@@ -27,8 +27,10 @@ fn formal() -> Vec<String> {
               "isa", "part", "stand_in", "ask_fit", "ask_conflict", "not", "new", "query", "retract", "yes", "no",
               "withdrawn", "because", "taught", "support", "counter", "hypothesis", "given", "stored", "question",
               "teacher", "who", "text", "channel", "conf", "negated", "msg", "kind", "fact", "event", "via", "confirming", "can", "case", "cases", "tasks", "subsumed", "status", "shared", "induce_cases", "unknown", "name", "spike", "summary",
+              // curriculum protocol events (milestone 36)
+              "block", "block_end",
               // benchmark record keys and harness options (milestone 35, bench4/1)
-              "gold", "atoms", "trace", "rejects", "claims", "gaps", "asks",
+              "gold", "atoms", "trace", "rejects", "claims", "gaps", "asks", "archive", "blocks", "claim", "excluded", "group", "hops", "plan", "procedure", "proof", "situation", "stage",
               // teacher-channel CLI options and record keys (milestone 34)
               "pilot", "size", "sorts", "stages", "unit",
               // kb4 record fields and conversation events (Design 4.0 section 8.2)
