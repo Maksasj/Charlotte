@@ -1,0 +1,64 @@
+{
+ "questions": 300,
+ "classes": {
+  "gap_just": 253,
+  "hyp": 3,
+  "wrong": 2,
+  "correct": 2,
+  "gap_correct": 40
+ },
+ "correct": 2,
+ "correct_ci": [
+  0.0018301100329710777,
+  0.02397807423146144
+ ],
+ "claims": 8,
+ "invalid_claims": 0,
+ "proof_validity": 1.0,
+ "invented_questions": 0,
+ "answerable": 235,
+ "covered": 2,
+ "coverage": 0.00851063829787234,
+ "conditional_accuracy": 0.5,
+ "two_hop": [
+  1,
+  101
+ ],
+ "s_scope_coverage": [
+  2,
+  127
+ ],
+ "by_type": {
+  "EXC": {
+   "gap_just": 29
+  },
+  "GAP": {
+   "gap_correct": 40
+  },
+  "IND": {
+   "correct": 1,
+   "gap_just": 24
+  },
+  "K": {
+   "gap_just": 63,
+   "hyp": 2
+  },
+  "NAME": {
+   "gap_just": 10
+  },
+  "STEP": {
+   "gap_just": 21
+  },
+  "SUB": {
+   "gap_just": 64,
+   "wrong": 1
+  },
+  "X": {
+   "gap_just": 42,
+   "hyp": 1,
+   "wrong": 1,
+   "correct": 1
+  }
+ },
+ "p95_ms": 1455
+}
