@@ -192,7 +192,21 @@ fn main() {
             for s in from.split(',') {
                 rows.extend(agent4::kb::read_lines(&root().join("data/kb4/raw/sessions").join(format!("{s}.jsonl"))));
             }
-            let (mut agent, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], true, true);
+            // a curve snapshot: the raw prefix through the k-th quarter block's end
+            if let Some(k) = arg(&args, "--upto-block").and_then(|v| v.parse::<usize>().ok()) {
+                let mut seen = 0;
+                if let Some(cut) = rows.iter().position(|r| {
+                    if r["speaker"] == "agent" && r["channel"] == "block_end" {
+                        seen += 1;
+                    }
+                    seen == k
+                }) {
+                    rows.truncate(cut + 1);
+                }
+            }
+            // K1: base rules only (learned rules off), D4 10.7
+            let learn = !args.iter().any(|a| a == "--no-learn");
+            let (mut agent, _) = agent4::kb::replay(&rows, "bench", &Default::default(), &[], learn, true);
             let file = arg(&args, "--file").expect("--file");
             if let Some(out) = arg(&args, "--score") {
                 // per-question answers and proof records for the bench4 scorer (tools/design4/score_bench.py)
@@ -305,6 +319,7 @@ fn main() {
             let mut queue = eval4::teach::Queue::default();
             queue.deny = agent4::deny::Deny::load(&root().join("data/bench4/deny.txt"));
             queue.deny.add_hashed(&root().join("data/bench4/deny_sealed.sha256"));
+            queue.salt = arg(&args, "--replicate").map(|n| format!("r{n}"));
             let calls0 = teach3::Teacher::live_calls_at(&root().join("data/training/calls4"));
             let mut log = Vec::new();
             let mut history: Vec<String> = Vec::new();

@@ -49,6 +49,8 @@ pub struct Queue {
     pub pending: Vec<(usize, String)>,
     pub dropped: usize,
     pub deny: Deny,
+    /// a replicate run marker appended to every prompt, so a teacher-variance run samples afresh
+    pub salt: Option<String>,
     next: usize,
 }
 
@@ -125,6 +127,9 @@ pub fn teach_unit(agent: &mut Agent, haiku: &teach3::Teacher, queue: &mut Queue,
     let p1 = queue.deny.hits(&prompt);
     if !p1.is_empty() {
         return Err(format!("P1 leak in prompt: {p1:?}"));
+    }
+    if let Some(salt) = &queue.salt {
+        prompt.push_str(&format!("Run: {salt}.\n"));
     }
     if std::env::var("SLA4_SHOW_PROMPT").is_ok() {
         eprintln!("--- prompt stage {} {}\n{prompt}", u.stage, u.unit);
