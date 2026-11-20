@@ -233,6 +233,38 @@ def main(paths):
             errors += 1
             where = "; ".join(f"{k}: {sorted(v)[:4]}" for k, v in sorted(by.items()))
             print(f"symbol {sym} has sorts {sorted(sorts)}{' (registry ' + reg[sym] + ')' if sym in reg else ''}: {where}")
+    # kb_scope by the scope rule (BENCH_SPEC.md, D4.17): query, situation items and gold atoms
+    bdir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "bench4")
+    if os.path.exists(os.path.join(bdir, "registry_S.jsonl")):
+        reg_s = {json.loads(l)["sym"] for l in open(os.path.join(bdir, "registry_S.jsonl"))}
+        reg_a = set(reg)
+        proc = {l.strip() for l in open(os.path.join(bdir, "procedure_ids.txt")) if l.strip()}
+        common = {"metal", "plastic", "glass_material", "paper_material", "wood", "ceramic", "sharp", "heat_resistant", "absorbent", "fragile", "user"}
+        for q in qs:
+            goal, given = parse_query(q.get("query", ""))
+            if goal is None:
+                continue
+            sy = set()
+            if goal[0] == "request":
+                sy.add(goal[1])
+            else:
+                sy |= set(goal[2])
+            given_syms = set()
+            for g in given or []:
+                if g[1] in ("has", "lacks", "state_of"):
+                    sy |= set(g[2])
+                else:
+                    given_syms |= set(g[2])
+            for s_ in q.get("gold", {}).get("atoms", []):
+                a_ = parse_atom(s_.strip().rstrip("."))
+                if a_:
+                    sy |= set(a_[2])
+            sy = {x for x in sy - common - proc if not (x in given_syms and x not in reg_a)}
+            want = "S" if sy <= reg_s else ("M" if sy <= reg_a else "L")
+            if q.get("kb_scope") != want:
+                errors += 1
+                outside = sorted(sy - (reg_s if q.get("kb_scope") == "S" else reg_a))[:6]
+                print(f"{q['_src']} {q.get('id')}: kb_scope {q.get('kb_scope')} but the scope rule gives {want} (outside: {outside})")
     dup = Counter(q["query"].replace(" ", "") for q in qs)
     for k, c in dup.items():
         if c > 1:

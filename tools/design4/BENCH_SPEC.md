@@ -1,12 +1,14 @@
-# Spec: the Design 4.0 derivation benchmark (milestone 35, decision D4.9)
+# Spec: the Design 4.0 derivation benchmark, version 2 (milestone 35, decisions D4.9 and D4.17)
+
+Version 2 replaces the first benchmark, which was withdrawn because almost every question needed entities beyond the registry (D4.17). The changes are the **scope rule** below, binding registry sorts, and a scope check in `check_bench.py`.
 
 You write derivation questions for a symbolic agent that learns household knowledge from formal teaching and answers by deriving new facts with proofs. **Read only** these sources:
 - this spec;
 - `research/Symbolic Learning Agent – Design 4.0.md`, sections 4.1-4.4 (relations, sorts, base rules B1-B9) and 10.1-10.3 (the benchmark);
-- `data/bench4/registry.jsonl` (symbol names and sorts);
-- for procedures, the ground-truth blocks of `data/curriculum3/train/*.md` and `data/curriculum3/dev/*.md` (step ids, actions, roles).
+- `data/bench4/registry.jsonl` (all symbol names and sorts: the full registry), `data/bench4/registry_S.jsonl` (the S registry: cooking, cleaning, repair), and `data/bench4/procedure_ids.txt` (task and step ids that the curriculum teaches);
+- for procedures, the ground-truth blocks of `data/curriculum3/train/*.md`, `data/curriculum3/dev/*.md` and `data/dataset3/*.md` (step ids, actions, roles). Read only the `## ground truth` block of a dataset3 file, never its variants.
 
-**Do not read** `crates/`, `data/spike4/`, `data/heldout3/`, `data/kb4/` or `data/training/`. The benchmark must be written without sight of the agent, its teaching or its outputs.
+**Do not read** `crates/`, `data/spike4/`, `data/heldout3/`, `data/kb4/`, `data/training/` or `data/bench4_v1/`. The benchmark must be written without sight of the agent, its teaching or its outputs.
 
 ## What a question is
 
@@ -16,12 +18,13 @@ A question states a goal the agent should be able to derive from **pieces**: fac
 
 ```json
 {"id": "w1-001", "schema": "bench4/1", "type": "K", "hops": 2, "kb_scope": "S", "domains": ["cooking"],
- "query": "query: can_go_in(muffin_tray, oven).",
- "gold": {"kind": "answer", "atoms": ["can_go_in(muffin_tray, oven)"]},
- "pieces": ["is_a(muffin_tray, baking_tin).", "can_go_in(baking_tin, oven)."],
- "gold_proof": "can_go_in(muffin_tray, oven) <- B2 inherits can_go_in(baking_tin, oven) via is_a(muffin_tray, baking_tin)",
+ "query": "query: can_go_in(loaf_tin, oven).",
+ "gold": {"kind": "answer", "atoms": ["can_go_in(loaf_tin, oven)"]},
+ "pieces": ["is_a(loaf_tin, bakeware).", "is_a(bakeware, cookware).", "can_go_in(cookware, oven)."],
+ "new": ["bakeware:item", "cookware:item"],
+ "gold_proof": "can_go_in(loaf_tin, oven) <- B2 inherits can_go_in(cookware, oven) via is_a(loaf_tin, bakeware), is_a(bakeware, cookware)",
  "rules_needed": ["B1", "B2"],
- "deny": ["can_go_in(muffin_tray, oven)"]}
+ "deny": ["can_go_in(loaf_tin, oven)", "can_go_in(bakeware, oven)", "is_a(loaf_tin, cookware)"]}
 ```
 
 - `query`: either `query: <atom>.` (a ground atom, or `not <atom>` for a negative), with optional `given: <facts>.`, or `request(<task>). <situation facts>.` for substitution and step questions. Situation facts are `lacks(user, I)`, `has(user, J)` and `state_of(I, S)`.
@@ -31,8 +34,18 @@ A question states a goal the agent should be able to derive from **pieces**: fac
   - `hyp` with `atoms` and `min_support` (IND: no base-rule proof, but a pattern over at least 3 taught examples from at least 2 kinds supports the rule).
 - `pieces`: every fact the proof rests on, as teaching statements. For requests, include the procedure facts needed (`task`, `step`, `uses`, `role`, `demands`, `before`, `requires_state`, `achieves`, `action`, `object_of`) using real step ids from the 3.0 ground truth, or invent a short procedure for gardening (X) questions and put it in `given`.
 - `deny`: the gold atoms and every intermediate atom of the proof (not the pieces). The curriculum will never teach these.
-- `kb_scope`: `S` (cooking, cleaning, repair), `M` (planning, errands, travel, crafts) or `L` (a deeper question that needs entities beyond the registry).
-- Symbols: use registry symbols where they exist. Common materials and properties (`metal`, `plastic`, `glass`, `wood`, `ceramic`, `sharp`, `heat_resistant`, `absorbent`, `fragile`, ...) may be used freely. Any other new symbol must be listed in a top-level field `"new": ["sym:sort", ...]`.
+- `kb_scope` follows the **scope rule** (checked by `check_bench.py`):
+  - The scope symbols are:
+    - the symbols of the query goal;
+    - for a request, the items in `lacks`, `has` and `state_of`;
+    - the symbols of the gold atoms.
+  - These do not count as scope symbols:
+    - task and step ids listed in `procedure_ids.txt`;
+    - symbols introduced only by the question's own `given` facts (an X question's gardening procedure);
+    - the common materials and properties listed below.
+  - `S`: every scope symbol is in `registry_S.jsonl`. `M`: every scope symbol is in `registry.jsonl`. `L`: anything else.
+  - **Pieces may use other symbols**, such as kinds the registry lacks (`cookware`, `hand_tool`). The pieces are one valid proof, and the agent may derive the gold another way from what it was taught (design 10.1: any other valid proof is accepted). Prefer registry symbols wherever they fit.
+- Symbols: a registry symbol keeps its registry sort; a second sense needs a distinct symbol (`glass` is an item, the material is `glass_material`). Common materials and properties (`metal`, `plastic`, `glass_material`, `paper_material`, `wood`, `ceramic`, `sharp`, `heat_resistant`, `absorbent`, `fragile`) may be used freely. Any other symbol not in the registry must be listed in a top-level field `"new": ["sym:sort", ...]`, and must have one sort across the whole benchmark.
 
 ## Types (design 10.1)
 
@@ -73,7 +86,7 @@ Composition per writer:
 | IND | 19 | | | |
 | GAP | 30 (8 near-miss, `"near_miss": true`) | | | |
 
-`kb_scope`: w1-w3 about 70% S and 30% L; w4 all M.
+`kb_scope` per writer: w1, w2 and w3 each write **120 S, 15 M (a registry symbol from the M domains or from another S domain's group), 90 L**; w4 writes **225 M**. Overall that is 360 S, 270 M and 270 L (40/30/30, design 10.1). Spread each type over the scopes in proportion.
 
 ## Rules
 
