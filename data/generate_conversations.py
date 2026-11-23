@@ -112,12 +112,8 @@ def clean(text):
     return text
 
 
-class Stop(Exception):
-    """Ollama cannot be used; no point going on."""
-
-
 def chat(args, system, turns, seed, max_tokens):
-    """One call to Ollama's chat endpoint. `turns` is a list of (role, text)."""
+    """One call to Ollama's chat endpoint. Retries indefinitely if Ollama fails."""
     body = {
         "model": args.model,
         "messages": [{"role": "system", "content": system}] + [{"role": r, "content": t} for r, t in turns],
@@ -126,9 +122,15 @@ def chat(args, system, turns, seed, max_tokens):
     }
     if not args.think and not args.no_think_option:
         body["think"] = False  # reasoning models: skip the thinking, it is slow and not wanted here
-    last = None
-    for attempt in range(3):
-        req = urllib.request.Request(args.host.rstrip("/") + "/api/chat", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+
+    url = args.host.rstrip("/") + "/api/chat"
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+
+    while True:
         try:
             with urllib.request.urlopen(req, timeout=args.timeout) as r:
                 reply = json.loads(r.read().decode())
@@ -144,16 +146,22 @@ def chat(args, system, turns, seed, max_tokens):
             if "think" in body and "think" in detail.lower():
                 del body["think"]  # this model or this Ollama version does not take the option
                 args.no_think_option = True
+                req = urllib.request.Request(
+                    url,
+                    data=json.dumps(body).encode(),
+                    headers={"Content-Type": "application/json"},
+                )
                 continue
-            if e.code == 404:
-                raise Stop(f"Ollama does not have the model '{args.model}': {detail}\nPull it (`ollama pull {args.model}`) or pass another with --model; `ollama list` shows what is there.")
-            last = f"Ollama answered {e.code}: {detail}"
+            reason = f"HTTP {e.code}: {detail}"
         except (urllib.error.URLError, ConnectionError) as e:
-            raise Stop(f"cannot reach Ollama at {args.host}: {e}\nIs it running (`ollama serve`)?")
+            reason = f"connection error ({e})"
         except TimeoutError:
-            last = f"no reply within {args.timeout} seconds"
-        time.sleep(2)
-    raise Stop(last or "no reply from Ollama")
+            reason = f"timed out after {args.timeout}s"
+        except (json.JSONDecodeError, KeyError, OSError) as e:
+            reason = f"unexpected response error ({e})"
+
+        print(f"\n    [Ollama error: {reason}] waiting {args.retry_wait}s before retrying...", flush=True)
+        time.sleep(args.retry_wait)
 
 
 def shorten(text, max_words):
@@ -212,6 +220,7 @@ def main():
     p.add_argument("--max-tokens", type=int, default=90, help="limit on one message, in model tokens (default 90)")
     p.add_argument("--max-words", type=int, default=40, help="a longer message is cut back to its first sentences (default 40)")
     p.add_argument("--timeout", type=int, default=300, help="seconds to wait for one reply")
+    p.add_argument("--retry-wait", type=int, default=120, help="seconds to wait after an Ollama error before retrying (default 120)")
     p.add_argument("--seed", type=int, default=1, help="makes the run repeatable as far as the model allows")
     p.add_argument("--think", action="store_true", help="let a reasoning model think first (slower)")
     p.add_argument("--quiet", action="store_true", help="show one progress line per conversation instead of every message")
@@ -305,7 +314,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Stop as e:
-        sys.exit(f"\n{e}")
     except KeyboardInterrupt:
         print("\nstopped; run the same command again to carry on")
