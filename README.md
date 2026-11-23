@@ -56,6 +56,7 @@ holds. Results, defects and open problems are in
 
 | Path | What |
 |---|---|
+| [`research/report-2026-11-23.md`](research/report-2026-11-23.md) | Report: what was discovered, built and fixed so far, and what is still wrong |
 | [`research/findings.md`](research/findings.md) | What held up, what did not, open problems, candidate next steps |
 | [`research/journey.md`](research/journey.md) | How the idea developed |
 | [`research/v5-architecture.md`](research/v5-architecture.md) | How the v5 prototype works |
