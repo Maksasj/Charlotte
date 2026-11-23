@@ -125,7 +125,7 @@ vault starts with atoms, procedures, records and a lexicon, and **no
 patterns**.
 
 **Pretraining.** 80 conversations of each shape, 240 in all, seed fixed before
-the run (`data/pretrain-80-per-shape.jsonl`), 24 held out:
+the run (`data/processed/pretrain-80-per-shape.jsonl`), 24 held out:
 
 | Learned | Held-out conversations reproduced | Outcome |
 |---|---|---|
@@ -191,6 +191,23 @@ source. Held out, none of 13 messages found a similar remembered one. The
 messages in these chats are long and specific, so two of them rarely share
 enough words. Whether that changes with thousands of shorter chats is not
 known yet. Nothing measures whether a reused reply fits the conversation.
+
+## Public datasets as plain chats
+
+Tried on scratch copies of the vault on 23 November 2026, not taught to the
+real one. Both sets were learned as plain chats; their labels are not used.
+
+| Set | Replies remembered | Held-out messages with a similar remembered one | Time |
+|---|---|---|---|
+| DailyDialog | 49,188 | 75% (3,573 of 4,753) | 1.9 s |
+| Schema-Guided Dialogue | 231,640 | 99% (22,942 of 23,258), but only 19% from the same topic | 103 s |
+
+"Similar" means a remembered message was found above the threshold, not that
+its reply fits. SGD shows why the difference matters: its messages are so
+alike across services that almost anything finds a match, usually from another
+domain, and its agent replies quote search results that only made sense in the
+original dialogue. DailyDialog has no topic labels in this release, so it
+becomes one 6 MB note.
 
 ## Candidate next steps
 

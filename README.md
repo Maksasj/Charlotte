@@ -84,7 +84,7 @@ charlotte serve                      # API and web interface on http://127.0.0.1
 Learning:
 
 ```sh
-charlotte learn data/pretrain-80-per-shape.jsonl       # prints a report; --review keeps everything as candidates
+charlotte learn data/processed/pretrain-80-per-shape.jsonl       # prints a report; --review keeps everything as candidates
 charlotte promote check-a-rule-candidate               # trust a candidate by hand
 charlotte check                                        # lint the vault
 

@@ -75,7 +75,7 @@ pub fn parse_chats(body: &str) -> Vec<Vec<(char, String)>> {
     let mut out: Vec<Vec<(char, String)>> = Vec::new();
     for line in body.lines() {
         let l = line.trim();
-        if l.len() > 6 && l[..6].eq_ignore_ascii_case("entry ") && l[6..].trim().chars().all(|c| c.is_ascii_digit()) {
+        if l.get(..6).is_some_and(|h| h.eq_ignore_ascii_case("entry ")) && l.len() > 6 && l[6..].trim().chars().all(|c| c.is_ascii_digit()) {
             out.push(Vec::new());
         } else if let (Some(conv), Some(who)) = (out.last_mut(), l.chars().next().filter(|c| (*c == 'U' || *c == 'A') && l[1..].starts_with(": "))) {
             conv.push((who, l[3..].trim().to_string()));

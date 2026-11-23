@@ -81,7 +81,7 @@ items, runs learning jobs and reviews the candidates, and compares what is on
 screen with what the API returns. **It changes the server's state** (it
 restores the items it edits, but conversations, jobs and trust changes stay),
 so point it at a scratch copy of the vault. It expects the seed vault and
-`data/pretrain-80-per-shape.jsonl` in the server's working directory.
+`data/processed/pretrain-80-per-shape.jsonl` in the server's working directory.
 
 ## Layout
 

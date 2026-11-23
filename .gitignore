@@ -4,3 +4,7 @@ dist/
 .DS_Store
 .obsidian/
 __pycache__/
+data/raw/dailydialog/
+data/raw/sgd/
+data/processed/dailydialog.jsonl
+data/processed/sgd.jsonl

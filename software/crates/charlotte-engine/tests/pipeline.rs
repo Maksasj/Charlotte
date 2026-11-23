@@ -30,6 +30,7 @@ fn untrained(name: &str) -> PathBuf {
     copy(&repo().join("vault"), &dir);
     let _ = std::fs::remove_dir_all(dir.join("patterns"));
     let _ = std::fs::remove_dir_all(dir.join("candidates"));
+    let _ = std::fs::remove_dir_all(dir.join("chats"));
     dir
 }
 fn corpus(vault: &Path, n: usize) -> Corpus {

@@ -6,7 +6,26 @@
 | `processed/` | The same dialogues converted for training: one JSON-lines file per source, written by `chats_to_corpus.py` |
 
 The scripts and their inputs (`topics.txt`, `paraphrases.yaml`) sit beside these
-two folders, as does the simulated-teacher corpus `pretrain-80-per-shape.jsonl`.
+two folders.
+
+## Public datasets
+
+`public_datasets.py` downloads two public sets into `raw/` and converts them
+into `processed/`:
+
+| Set | Size | Licence | Converted file |
+|---|---|---|---|
+| DailyDialog | 13,118 everyday dialogues, 102,979 messages | CC BY-NC-SA 4.0 (non-commercial) | `processed/dailydialog.jsonl` (15 MB) |
+| Schema-Guided Dialogue | 22,825 task dialogues, 463,284 messages | CC BY-SA 4.0 | `processed/sgd.jsonl` (144 MB) |
+
+```sh
+python3 data/public_datasets.py          # both; or name one: dailydialog, sgd
+```
+
+Neither the originals nor the converted files are kept in git (SGD is about
+590 MB), so run the script on each machine that needs them. Each turn keeps the
+dataset's own annotations under `labels`; the engine ignores that field and
+learns both sets as plain chats.
 
 Conversations the engine learns from. One file per batch, one conversation per
 line of JSON:
@@ -103,12 +122,13 @@ one, answers with that reply.
 
 | File | What |
 |---|---|
-| `pretrain-80-per-shape.jsonl` | The 240 simulated conversations the vault was pretrained on |
+| `processed/pretrain-80-per-shape.jsonl` | The 240 simulated conversations the vault was pretrained on |
 | `paraphrases.yaml` | Extra wordings the simulated user draws on (`charlotte simulate --paraphrases`) |
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
 | `raw/friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
 | `raw/friendly-chats-handwritten-gemini-4-neon/` | 100 sample dialogues written directly by the assistant model (not simulated) in the target style: 10 topics, 10 dialogues each, same form |
+| `public_datasets.py` | Downloads DailyDialog and Schema-Guided Dialogue and converts them |
 | `chats_to_corpus.py` | Turns each folder in `raw/` into `processed/<folder>.jsonl`, ready for `charlotte learn` |
 
 A run with another model (`--model`) gets its own folder, and other teaching
