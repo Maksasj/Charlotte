@@ -63,6 +63,13 @@ python3 data/generate_conversations.py --total 20 --topics 4    # a small trial 
 python3 data/generate_conversations.py                          # 10,000 over the topics in topics.txt
 ```
 
+It goes through the topics in rounds: one chat for each topic, then the next
+round. Stopped early, every topic has about the same number of chats.
+
+Messages are kept short, as people text: the prompt asks for 3 to 12 words, each
+message is limited to 60 model tokens, and one that still runs past 25 words is
+cut back to its first sentences (`--max-tokens`, `--max-words`).
+
 While it runs it prints every message as it is generated, and after each
 conversation a line with how many are done, the time passed, the estimated
 time left and the speed. `--quiet` keeps only that line.

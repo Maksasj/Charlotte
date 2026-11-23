@@ -17,8 +17,9 @@ Each file holds the conversations for that topic in this form:
     Entry 2
     ...
 
-The script walks through the topics in data/topics.txt until every topic has its share of the
-total. It can be stopped and started again: it counts what each file already holds and carries on.
+The script goes through the topics in data/topics.txt in rounds: one conversation for each topic,
+then the next round, until the total is reached. Stopped early, every topic has about the same
+number. It can be started again: it counts what each file already holds and carries on.
 
     python3 data/generate_conversations.py --total 20 --topics 4    # a small trial first
     python3 data/generate_conversations.py                          # 10,000 conversations
@@ -39,15 +40,26 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 # Both agents get this. Neither is told it is talking to a model.
-CHAT_SYSTEM = """You are a friendly person chatting with someone by text. Be as natural as possible: this should read like a real chat between two people.
+CHAT_SYSTEM = """You are texting with a friend on your phone. Be as natural as possible: this must read like real text messages between two people.
 
-- Write the way people really text: simple everyday words, contractions, short messages. Most are one or two sentences; a few words is fine too.
-- Sound like a person, not like an assistant. No "How can I help you?", no "Great question!", no summing up, no offers of further help.
-- Be warm and relaxed. React to what the other person just said before adding your own bit.
-- Share what you know or think the way you would tell a friend, not as an explanation or a lecture. If you do not know something, just say so.
-- Do not end every message with a question. Ask one only when you are actually curious.
-- Let your messages vary in length and tone, as they would in a real chat.
-- Plain text only. No lists, no markdown, no quotation marks around your message. Write only your next message."""
+Keep it SHORT. Real texts are short.
+- Most of your messages are 3 to 12 words. Never more than two short sentences.
+- One thought per message. No stories, no long explanations, no piling up details.
+- A reply can be just a few words: "lol same", "oh nice", "no idea tbh", "wait really?".
+
+These lines only show the length and tone to aim for. Do not copy them:
+hey! how's your day going
+not bad, just got home. you?
+ugh, long one. finally on the couch
+oh nice, what did you make?
+honestly no clue, never tried it
+haha fair enough
+
+- Simple everyday words and contractions. Skipping capital letters or the final full stop is fine.
+- Sound like a person, not like an assistant: no "How can I help", no "Great question", no summing up.
+- React to what they just said. Do not end every message with a question; ask only when you are curious.
+- If you do not know something, just say so.
+- Plain text only. No lists, no markdown, no dashes for effect, no quotation marks around your message. Write only your next message."""
 
 # Added for the one who opens.
 OPENER = """
@@ -118,7 +130,14 @@ def chat(args, system, turns, seed, max_tokens):
         req = urllib.request.Request(args.host.rstrip("/") + "/api/chat", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=args.timeout) as r:
-                return json.loads(r.read().decode())["message"]["content"]
+                reply = json.loads(r.read().decode())
+            text = reply["message"]["content"]
+            if reply.get("done_reason") == "length":
+                # Cut off by the token limit: drop the sentence that was left unfinished.
+                ends = [m.end() for m in re.finditer(r"[.!?](?=\s|$)", text)]
+                if ends:
+                    text = text[: ends[-1]]
+            return text
         except urllib.error.HTTPError as e:
             detail = e.read().decode(errors="replace").strip()[:300]
             if "think" in body and "think" in detail.lower():
@@ -134,6 +153,18 @@ def chat(args, system, turns, seed, max_tokens):
             last = f"no reply within {args.timeout} seconds"
         time.sleep(2)
     raise Stop(last or "no reply from Ollama")
+
+
+def shorten(text, max_words):
+    """A message that ran long, cut back to its first sentences. Models overshoot; people texting do not."""
+    if len(text.split()) <= max_words:
+        return text
+    kept = []
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        if kept and len(" ".join(kept + [sentence]).split()) > max_words:
+            break
+        kept.append(sentence)
+    return " ".join(kept)
 
 
 def clock(seconds):
@@ -152,13 +183,13 @@ def simulate(args, topic, rng, recent, show):
     for _ in range(min(rng.choice(LENGTHS), args.max_turns)):
         # Each agent sees its own lines as "assistant" and the other's as "user".
         as_first = [("user", opening)] + [("assistant" if who == "U" else "user", said) for who, said in conv]
-        said = clean(chat(args, CHAT_SYSTEM + OPENER.format(topic=topic), as_first, rng.randrange(2**31), args.max_tokens))
+        said = shorten(clean(chat(args, CHAT_SYSTEM + OPENER.format(topic=topic), as_first, rng.randrange(2**31), args.max_tokens)), args.max_words)
         if not said:
             break
         conv.append(("U", said))
         show("U", said)
         as_second = [("user" if who == "U" else "assistant", said) for who, said in conv]
-        reply = clean(chat(args, CHAT_SYSTEM, as_second, rng.randrange(2**31), args.max_tokens))
+        reply = shorten(clean(chat(args, CHAT_SYSTEM, as_second, rng.randrange(2**31), args.max_tokens)), args.max_words)
         if not reply:
             conv.pop()
             break
@@ -177,7 +208,8 @@ def main():
     p.add_argument("--host", default="http://127.0.0.1:11434", help="where Ollama listens")
     p.add_argument("--max-turns", type=int, default=6, help="most exchanges in one conversation; the length is drawn at random up to this (default 6)")
     p.add_argument("--temperature", type=float, default=0.9)
-    p.add_argument("--max-tokens", type=int, default=200, help="limit on one message")
+    p.add_argument("--max-tokens", type=int, default=60, help="limit on one message, in model tokens (default 60)")
+    p.add_argument("--max-words", type=int, default=25, help="a longer message is cut back to its first sentences (default 25)")
     p.add_argument("--timeout", type=int, default=300, help="seconds to wait for one reply")
     p.add_argument("--seed", type=int, default=1, help="makes the run repeatable as far as the model allows")
     p.add_argument("--think", action="store_true", help="let a reasoning model think first (slower)")
@@ -201,7 +233,7 @@ def main():
     todo = args.total - before
     print(f"model          {args.model} at {args.host}")
     print(f"saving to      {out}")
-    print(f"plan           {args.total} conversations over {len(topics)} topics, about {share} each")
+    print(f"plan           {args.total} conversations over {len(topics)} topics in rounds: one per topic, then again, about {share} each")
     print(f"already there  {before}" + ("  (carrying on from a previous run)" if before else ""))
     print(f"to do          {todo}")
     if todo <= 0:
@@ -218,41 +250,51 @@ def main():
         if not args.quiet:
             print(f"    {who}: {said}", flush=True)
 
-    for ti, (topic, path) in enumerate(zip(topics, files)):
-        convs = read_file(path)
+    all_convs = [read_file(f) for f in files]
+    seen = [{" ".join(x.lower() for _, x in c) for c in convs} for convs in all_convs]
+    given_up = set()
+    for path, topic in zip(files, topics):
         if not path.exists():
             path.write_text(f"# {topic}\n", encoding="utf-8")
-        seen = {" ".join(s.lower() for _, s in c) for c in convs}
-        failures = 0
-        while len(convs) < wanted[ti]:
-            if not args.quiet:
-                print(f"  topic {ti + 1}/{len(topics)} \"{topic}\", conversation {len(convs) + 1} of {wanted[ti]}", flush=True)
-            # Seeded by topic and position, so a restarted run draws the same lengths and seeds.
-            rng = random.Random(f"{args.seed}/{topic}/{len(convs)}/{failures}")
-            conv = simulate(args, topic, rng, [c[0][1] for c in convs[-6:]], show)
-            key = " ".join(s.lower() for _, s in conv) if conv else None
-            if conv is None or key in seen:
-                dropped += 1
-                failures += 1
-                print("    (not kept: " + ("empty" if conv is None else "same as an earlier one") + ")", flush=True)
-                if failures >= 8:
-                    print(f"  giving up on \"{topic}\" after 8 unusable conversations in a row; {len(convs)} of {wanted[ti]} written")
-                    break
+
+    # Rounds: one conversation per topic, then the next round. A topic that already has its
+    # conversation for a round (from an earlier run) is passed over.
+    rounds = max(wanted)
+    for rnd in range(rounds):
+        for ti, topic in enumerate(topics):
+            convs = all_convs[ti]
+            if rnd >= wanted[ti] or len(convs) > rnd or ti in given_up:
                 continue
             failures = 0
-            convs.append(conv)
-            seen.add(key)
-            with path.open("a", encoding="utf-8") as f:
-                f.write(f"\nEntry {len(convs)}\n" + "".join(f"{who}: {said}\n" for who, said in conv))
-            made += 1
-            passed = time.time() - started
-            done = before + made
-            left = (todo - made) * passed / made
-            status = (f"[{done}/{args.total}  {100 * done / args.total:.1f}%]  passed {clock(passed)}  about {clock(left)} left  "
-                      f"{made / passed * 60:.1f} conversations/min  {passed / max(messages, 1):.1f} s per message")
-            if args.quiet:
-                status += f"  topic {ti + 1}/{len(topics)} \"{topic[:30]}\""
-            print(status + ("" if args.quiet else "\n"), flush=True)
+            while len(convs) <= rnd:
+                if not args.quiet:
+                    print(f"  round {rnd + 1}/{rounds}, topic {ti + 1}/{len(topics)} \"{topic}\"", flush=True)
+                # Seeded by topic and position, so a restarted run draws the same lengths and seeds.
+                rng = random.Random(f"{args.seed}/{topic}/{len(convs)}/{failures}")
+                conv = simulate(args, topic, rng, [c[0][1] for c in convs[-6:]], show)
+                key = " ".join(x.lower() for _, x in conv) if conv else None
+                if conv is None or key in seen[ti]:
+                    dropped += 1
+                    failures += 1
+                    print("    (not kept: " + ("empty" if conv is None else "same as an earlier one") + ")", flush=True)
+                    if failures >= 8:
+                        print(f"  leaving out \"{topic}\" after 8 unusable conversations in a row; it has {len(convs)} of {wanted[ti]}")
+                        given_up.add(ti)
+                        break
+                    continue
+                convs.append(conv)
+                seen[ti].add(key)
+                with files[ti].open("a", encoding="utf-8") as f:
+                    f.write(f"\nEntry {len(convs)}\n" + "".join(f"{who}: {said}\n" for who, said in conv))
+                made += 1
+                passed = time.time() - started
+                done = before + made
+                left = (todo - made) * passed / made
+                status = (f"[{done}/{args.total}  {100 * done / args.total:.1f}%]  passed {clock(passed)}  about {clock(left)} left  "
+                          f"{made / passed * 60:.1f} conversations/min  {passed / max(messages, 1):.1f} s per message")
+                if args.quiet:
+                    status += f"  round {rnd + 1}/{rounds}, topic {ti + 1}/{len(topics)} \"{topic[:30]}\""
+                print(status + ("" if args.quiet else "\n"), flush=True)
 
     written = sum(len(read_file(f)) for f in files)
     print(f"finished in {clock(time.time() - started)}: {made} conversations and {messages} messages this run"
