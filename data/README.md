@@ -1,5 +1,13 @@
 # Teaching data
 
+| Folder | What |
+|---|---|
+| `raw/` | Dialogues as they were produced: Markdown, one folder per source, one file per topic |
+| `processed/` | The same dialogues converted for training: one JSON-lines file per source, written by `chats_to_corpus.py` |
+
+The scripts and their inputs (`topics.txt`, `paraphrases.yaml`) sit beside these
+two folders, as does the simulated-teacher corpus `pretrain-80-per-shape.jsonl`.
+
 Conversations the engine learns from. One file per batch, one conversation per
 line of JSON:
 
@@ -40,7 +48,7 @@ its lines are `U:` and the other's are `A:`. Everything it produces goes into
 one folder named after the model, with one Markdown file per topic:
 
 ```
-data/friendly-chats-qwen3.5-4b/
+data/raw/friendly-chats-qwen3.5-4b/
   001-saying-hello-and-how-the-day-is-going.md
   002-weekend-plans.md
   ...
@@ -82,8 +90,8 @@ carries on where it left off. Topics are in `topics.txt`, one per line.
 To teach these chats to the engine, turn them into a corpus file first:
 
 ```sh
-python3 data/chats_to_corpus.py                       # writes data/friendly-chats-<model>.jsonl
-software/target/release/charlotte learn data/friendly-chats-qwen3.5-4b.jsonl
+python3 data/chats_to_corpus.py                       # writes data/processed/friendly-chats-<model>.jsonl
+software/target/release/charlotte learn data/processed/friendly-chats-qwen3.5-4b.jsonl
 ```
 
 The chats carry no labels, so no pattern or wording is learned from them. The
@@ -99,9 +107,9 @@ one, answers with that reply.
 | `paraphrases.yaml` | Extra wordings the simulated user draws on (`charlotte simulate --paraphrases`) |
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
-| `friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
-| `friendly-chats-handwritten-claude-fable-5.2/` | 100 sample dialogues written directly by the assistant model (not simulated) in the target style: 10 topics, 10 dialogues each, same form |
-| `chats_to_corpus.py` | Turns that folder into `friendly-chats-<model>.jsonl`, ready for `charlotte learn` |
+| `raw/friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
+| `raw/friendly-chats-handwritten-claude-fable-5.2/` | 100 sample dialogues written directly by the assistant model (not simulated) in the target style: 10 topics, 10 dialogues each, same form |
+| `chats_to_corpus.py` | Turns each folder in `raw/` into `processed/<folder>.jsonl`, ready for `charlotte learn` |
 
 A run with another model (`--model`) gets its own folder, and other teaching
 material added later sits beside these.

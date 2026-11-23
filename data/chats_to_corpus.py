@@ -7,12 +7,12 @@ Reads the Markdown files written by generate_conversations.py (one per topic, "E
     {"id": "weekend-plans-1", "domain": "weekend plans",
      "turns": [{"role": "user", "text": "..."}, {"role": "agent", "text": "..."}]}
 
-    python3 data/chats_to_corpus.py                                  # every data/friendly-chats-* folder
-    python3 data/chats_to_corpus.py data/friendly-chats-qwen3.5-4b   # one folder
+    python3 data/chats_to_corpus.py                                  # every data/raw/friendly-chats-* folder
+    python3 data/chats_to_corpus.py data/raw/friendly-chats-qwen3.5-4b   # one folder
 
-The result is written next to the folder, as data/<folder>.jsonl. Teach it with:
+The result is written to data/processed/<folder>.jsonl. Teach it with:
 
-    software/target/release/charlotte learn data/<folder>.jsonl
+    software/target/release/charlotte learn data/processed/<folder>.jsonl
 """
 
 import json
@@ -56,7 +56,8 @@ def convert(folder):
     if not files:
         print(f"{folder}: no Markdown files")
         return
-    out = folder.parent / (folder.name + ".jsonl")
+    out = HERE / "processed" / (folder.name + ".jsonl")
+    out.parent.mkdir(parents=True, exist_ok=True)
     kept = dropped = topics = messages = 0
     with out.open("w", encoding="utf-8") as f:
         for path in files:
@@ -84,9 +85,9 @@ def convert(folder):
 
 
 def main():
-    folders = [Path(a) for a in sys.argv[1:]] or sorted(p for p in HERE.glob("friendly-chats-*") if p.is_dir())
+    folders = [Path(a) for a in sys.argv[1:]] or sorted(p for p in (HERE / "raw").glob("friendly-chats-*") if p.is_dir())
     if not folders:
-        sys.exit("no data/friendly-chats-* folder found; run generate_conversations.py first, or give a folder")
+        sys.exit("no data/raw/friendly-chats-* folder found; run generate_conversations.py first, or give a folder")
     for folder in folders:
         if not folder.is_dir():
             sys.exit(f"not a folder: {folder}")

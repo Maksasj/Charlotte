@@ -2,7 +2,7 @@
 kind: chats
 topic: saying hello and how the day is going
 conversations: 6
-learned_from: data/friendly-chats-qwen3.5-4b.jsonl
+learned_from: data/processed/friendly-chats-qwen3.5-4b.jsonl
 trust: 0.8
 status: trusted
 ---
