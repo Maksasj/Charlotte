@@ -100,6 +100,7 @@ one, answers with that reply.
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
 | `friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
+| `friendly-chats-handwritten/` | Ten sample dialogues written by hand in the target style, one per topic, same form |
 | `chats_to_corpus.py` | Turns that folder into `friendly-chats-<model>.jsonl`, ready for `charlotte learn` |
 
 A run with another model (`--model`) gets its own folder, and other teaching
