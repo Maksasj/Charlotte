@@ -108,7 +108,7 @@ one, answers with that reply.
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
 | `raw/friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
-| `raw/friendly-chats-handwritten-claude-fable-5.2/` | 100 sample dialogues written directly by the assistant model (not simulated) in the target style: 10 topics, 10 dialogues each, same form |
+| `raw/friendly-chats-handwritten-gemini-4-neon/` | 100 sample dialogues written directly by the assistant model (not simulated) in the target style: 10 topics, 10 dialogues each, same form |
 | `chats_to_corpus.py` | Turns each folder in `raw/` into `processed/<folder>.jsonl`, ready for `charlotte learn` |
 
 A run with another model (`--model`) gets its own folder, and other teaching
