@@ -82,7 +82,7 @@ STYLES = [
     "brief and matter-of-fact",
     "friendly and chatty",
     "in a hurry, very short messages",
-    "a bit grumpy but civil",
+    "relaxed and easygoing",
     "unsure and hesitant",
     "enthusiastic",
     "casual with the odd typo",
