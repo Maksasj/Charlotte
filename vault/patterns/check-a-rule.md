@@ -51,8 +51,7 @@ seen_with:
 - '[[warranty]]'
 learned_from: uploaded
 trust: 0.8
-status: candidate
-promotes_to: check-a-rule
+status: trusted
 ---
 Learned from 71 conversations. First rule that fits wins.
 

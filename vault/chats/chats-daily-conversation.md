@@ -3,7 +3,7 @@ kind: chats
 topic: daily conversation
 conversations: 12179
 learned_from: data/processed/dailydialog.jsonl
-trust: 0.8
+trust: 0.45
 status: trusted
 ---
 Entry 1

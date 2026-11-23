@@ -29,16 +29,16 @@ into
   original`), with no dialogue logic;
 - a **lexicon** — the phrases that mean each intent and each fact.
 
-The vault was pretrained on 240 simulated conversations. It answers step-by-step
-procedures and record lookups. The pattern for rule checks (refunds, warranty
-and the like) reproduced 8 of 9 held-out conversations, one short of the bar,
-so it waits as a candidate and the agent declines those requests until it is
-promoted or more is learned. From a few hundred conversations all three
-patterns reach 100%.
+The vault was pretrained on 240 simulated conversations and answers
+step-by-step procedures, record lookups and rule checks (refunds, warranty and
+the like). It has also been taught about 36,000 plain chats, which it stores
+and replays when a new message resembles a remembered one.
 
-The limiter is understanding: the engine only reads wordings its lexicon
-holds. Results, defects and open problems are in
-[`research/findings.md`](research/findings.md).
+The limiters are understanding (the engine only reads wordings its lexicon
+holds) and the lack of any generalisation from chats. The current state,
+including how the formal system works, is in
+[`research/report-2026-11-23.md`](research/report-2026-11-23.md); results and
+defects in detail are in [`research/findings.md`](research/findings.md).
 
 ## Software
 
