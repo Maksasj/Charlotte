@@ -125,7 +125,7 @@ vault starts with atoms, procedures, records and a lexicon, and **no
 patterns**.
 
 **Pretraining.** 80 conversations of each shape, 240 in all, seed fixed before
-the run (`software/corpus/pretrain-80-per-shape.jsonl`), 24 held out:
+the run (`data/pretrain-80-per-shape.jsonl`), 24 held out:
 
 | Learned | Held-out conversations reproduced | Outcome |
 |---|---|---|

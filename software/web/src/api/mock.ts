@@ -479,7 +479,7 @@ const report: Report = {
 };
 
 const jobs: Job[] = [
-  { id: "j1", state: "done", stage: "done", source: "corpus/pretrain-80.jsonl", report, error: null },
+  { id: "j1", state: "done", stage: "done", source: "data/pretrain-80.jsonl", report, error: null },
 ];
 
 // ---- Handlers ----

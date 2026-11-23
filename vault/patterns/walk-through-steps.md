@@ -23,7 +23,7 @@ seen_with:
 - '[[export-data]]'
 - '[[pair-device]]'
 - '[[reset-password]]'
-learned_from: corpus/pretrain-80-per-shape.jsonl
+learned_from: data/pretrain-80-per-shape.jsonl
 trust: 0.8
 status: trusted
 ---

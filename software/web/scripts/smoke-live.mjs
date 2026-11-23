@@ -7,7 +7,7 @@
 //
 // IT CHANGES THE SERVER'S STATE: it holds and closes conversations, edits
 // knowledge items (and restores them), runs learning jobs over
-// corpus/pretrain-80-per-shape.jsonl and rejects/promotes the candidates they
+// data/pretrain-80-per-shape.jsonl and rejects/promotes the candidates they
 // produce. Point it at a scratch vault only.
 //
 // Fails on any uncaught exception, unhandled promise rejection or
@@ -18,8 +18,8 @@ import { join } from "node:path";
 import { fail, openPage, root, run, sleep } from "./harness.mjs";
 
 const BASE = (process.argv[2] ?? "http://127.0.0.1:7899").replace(/\/$/, "");
-const CORPUS_ON_SERVER = "corpus/pretrain-80-per-shape.jsonl";
-const CORPUS_FILE = join(root, "..", CORPUS_ON_SERVER);
+const CORPUS_ON_SERVER = "data/pretrain-80-per-shape.jsonl";
+const CORPUS_FILE = join(root, "..", "..", CORPUS_ON_SERVER);
 const KINDS = ["pattern", "atom", "procedure", "intent", "slot", "records", "move", "lexicon", "phrases"];
 
 const enc = encodeURIComponent;

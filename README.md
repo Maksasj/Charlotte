@@ -9,8 +9,14 @@ This branch starts empty on purpose. The first line of research (a symbolic
 agent on a Datalog vault, designs 1 to 4) lives on `main` and `design-2` to
 `design-4` and is not carried over here.
 
-The repository has two parts: [`software/`](software) is what runs, and
-[`research/`](research) is how it got there and what was found.
+The repository has four parts:
+
+| Folder | What |
+|---|---|
+| [`software/`](software) | The engine and the web interface |
+| [`vault/`](vault) | The knowledge the agent answers from; open it in Obsidian to browse it |
+| [`data/`](data) | Conversations to learn from |
+| [`research/`](research) | How it got here and what was found |
 
 ## Where things stand
 
@@ -43,8 +49,6 @@ holds. Results, defects and open problems are in
 | `software/crates/charlotte-engine` | Default layers, the turn pipeline, the learners, the simulated teacher |
 | `software/crates/charlotte` | The binary: terminal commands and the HTTP server |
 | `software/web/` | Web interface (TypeScript, React, Vite) over the HTTP API |
-| `software/vault/` | The knowledge vault; open it in Obsidian to browse it |
-| `software/corpus/` | The pretraining corpus and the wordings the simulated user draws on |
 | [`software/docs/design.md`](software/docs/design.md) | Engine design, and what was built against it |
 | [`software/docs/api.md`](software/docs/api.md) | The HTTP API |
 
@@ -61,32 +65,31 @@ holds. Results, defects and open problems are in
 
 ## Running
 
-Needs a Rust toolchain; the web interface also needs Node. All commands run
-from `software/`.
+Needs a Rust toolchain; the web interface also needs Node. Build inside
+`software/`, then run from the repository root.
 
 ```sh
-cd software
-cargo build --release
-alias charlotte=target/release/charlotte
+(cd software && cargo build --release)
+alias charlotte=software/target/release/charlotte
 
 charlotte chat                       # talk to it in the terminal; :trace, :close resolved, :quit
 charlotte ask --trace "I forgot my password" "done"
 
-(cd web && npm install && npm run build)
+(cd software/web && npm install && npm run build)
 charlotte serve                      # API and web interface on http://127.0.0.1:7878
 
-cargo test                           # the build-order checks
+(cd software && cargo test)          # the build-order checks
 ```
 
 Learning:
 
 ```sh
-charlotte learn corpus/pretrain-80-per-shape.jsonl     # prints a report; --review keeps everything as candidates
+charlotte learn data/pretrain-80-per-shape.jsonl       # prints a report; --review keeps everything as candidates
 charlotte promote check-a-rule-candidate               # trust a candidate by hand
 charlotte check                                        # lint the vault
 
 # more simulated conversations, for example 400 of each shape
-charlotte simulate --n 400 --per-shape --seed 2 --paraphrases corpus/paraphrases.yaml --out corpus/sim-400.jsonl
+charlotte simulate --n 400 --per-shape --seed 2 --paraphrases data/paraphrases.yaml --out data/sim-400.jsonl
 ```
 
 The corpus format is one conversation per line of JSON, with optional labels;

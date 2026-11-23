@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 fn repo() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..")
 }
 fn copy(from: &Path, to: &Path) {
     std::fs::create_dir_all(to).unwrap();
@@ -34,7 +34,7 @@ fn untrained(name: &str) -> PathBuf {
 }
 fn corpus(vault: &Path, n: usize) -> Corpus {
     let v = Vault::open(vault).unwrap();
-    let para = paraphrases_from_yaml(&std::fs::read_to_string(repo().join("corpus/paraphrases.yaml")).unwrap()).unwrap();
+    let para = paraphrases_from_yaml(&std::fs::read_to_string(repo().join("data/paraphrases.yaml")).unwrap()).unwrap();
     let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape: true, seed: 11, corrections: 0.3 });
     let jsonl: String = convs.iter().map(|c| serde_json::to_string(c).unwrap() + "\n").collect();
     Corpus::parse("test", &jsonl)

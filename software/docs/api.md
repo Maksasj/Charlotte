@@ -95,7 +95,7 @@ Statuses: `candidate trusted retired`.
 
 | Method and path | Body | Returns |
 |---|---|---|
-| `POST /v1/learn` | `{"path": "corpus/file.jsonl"}` or `{"jsonl": "..."}` (the path wins if both are given), optional `"auto_promote"`, true by default | `202 {"job": "j1"}` |
+| `POST /v1/learn` | `{"path": "data/file.jsonl"}` or `{"jsonl": "..."}` (the path wins if both are given), optional `"auto_promote"`, true by default | `202 {"job": "j1"}` |
 | `GET /v1/learn` | — | `[Job]`, newest first |
 | `GET /v1/learn/{job}` | — | `Job` |
 
@@ -103,7 +103,7 @@ Statuses: `candidate trusted retired`.
 // Job
 { "id": "j1", "state": "running",                  // running | done | failed
   "stage": "validate",                              // ingest | induce | validate | write | done
-  "source": "corpus/pretrain-80.jsonl",
+  "source": "data/pretrain-80.jsonl",
   "report": null,                                   // Report when done
   "error": null }
 

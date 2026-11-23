@@ -11,7 +11,7 @@ TypeScript, React and Vite. No other runtime dependencies.
 Start the engine, then the app:
 
 ```sh
-charlotte serve --vault vault/ --port 7878    # in software/
+software/target/release/charlotte serve      # in the repository root
 
 cd web
 npm install
@@ -81,7 +81,7 @@ items, runs learning jobs and reviews the candidates, and compares what is on
 screen with what the API returns. **It changes the server's state** (it
 restores the items it edits, but conversations, jobs and trust changes stay),
 so point it at a scratch copy of the vault. It expects the seed vault and
-`corpus/pretrain-80-per-shape.jsonl` in the server's working directory.
+`data/pretrain-80-per-shape.jsonl` in the server's working directory.
 
 ## Layout
 

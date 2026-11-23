@@ -285,7 +285,7 @@ export function LearnView({ id }: { id: string | null }) {
               type="text"
               className="mono"
               aria-label="Corpus path on the server"
-              placeholder="corpus/pretrain-80.jsonl"
+              placeholder="data/pretrain-80.jsonl"
               value={path}
               disabled={source !== "path"}
               onChange={(event) => setPath(event.target.value)}

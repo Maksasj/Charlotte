@@ -170,7 +170,7 @@ await run(async () => {
     await waitFor(has(".job", "j1"));
     const text = await evaluate("__t.text('.job')");
     for (const want of [
-      "done", "corpus/pretrain-80.jsonl", "Read80", "Skipped1", "Train64", "Held out16",
+      "done", "data/pretrain-80.jsonl", "Read80", "Skipped1", "Train64", "Held out16",
       "act100%", "intent97.5%", "facts90%", "0% → 94%", "71% → 90%",
       "check-a-rule", "51", "95%", "yes", "5 rules for gated requests", "warranty-claim-v2", "no",
       "teacher deny, engine offer", "2", "Took 0.4 seconds",
@@ -180,7 +180,7 @@ await run(async () => {
   });
 
   await check("learn: start a job from a path and poll it to completion", async () => {
-    await evaluate("__t.set('.learn-form input[type=text]', 'corpus/batch-01.jsonl')");
+    await evaluate("__t.set('.learn-form input[type=text]', 'data/batch-01.jsonl')");
     await evaluate("__t.click('.learn-form button', 'Start learning')");
     await waitFor("location.hash === '#/learn/j2'");
     await waitFor(has(".job", "Running — checking every second"));
@@ -198,10 +198,10 @@ await run(async () => {
     await waitFor("location.hash === '#/learn/j3'");
     await waitFor(has("table.selectable tbody tr.selected", "uploaded"));
     await evaluate("__t.all('.learn-form input[type=radio]')[0].click(), true");
-    await evaluate("__t.set('.learn-form input[type=text]', 'corpus/missing.jsonl')");
+    await evaluate("__t.set('.learn-form input[type=text]', 'data/missing.jsonl')");
     await evaluate("__t.click('.learn-form button', 'Start learning')");
     await waitFor("location.hash === '#/learn/j4'");
-    await waitFor(has(".job .notice.error", "cannot open corpus/missing.jsonl"), 8000);
+    await waitFor(has(".job .notice.error", "cannot open data/missing.jsonl"), 8000);
     await waitFor(has("table.selectable tbody tr.selected", "failed"), 1000);
   });
 

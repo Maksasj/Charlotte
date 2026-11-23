@@ -19,7 +19,7 @@ support: 74
 validated: 1.0
 seen_with:
 - '[[status]]'
-learned_from: corpus/pretrain-80-per-shape.jsonl
+learned_from: data/pretrain-80-per-shape.jsonl
 trust: 0.8
 status: trusted
 ---

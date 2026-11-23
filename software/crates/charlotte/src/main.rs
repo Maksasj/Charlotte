@@ -9,7 +9,7 @@ use charlotte_engine::{default_layers, Engine, Verdict};
 use charlotte_vault::Vault;
 use std::io::{BufRead, Write};
 
-const USAGE: &str = "charlotte [--vault DIR] <command>
+const USAGE: &str = "charlotte [--vault DIR] <command>      (the vault defaults to ./vault, then ../vault)
 
   chat                          talk to the agent; :trace shows the last trace, :close <verdict>, :quit
   ask [--trace] \"text\" ...      hold one conversation with the given messages and print the replies
@@ -44,7 +44,8 @@ impl Args {
 
 fn main() {
     let mut args = Args(std::env::args().skip(1).collect());
-    let vault = args.opt("--vault").unwrap_or_else(|| "vault".into());
+    // Defaults work from the repository root and from software/.
+    let vault = args.opt("--vault").unwrap_or_else(|| first_existing(&["vault", "../vault"]));
     if args.0.is_empty() {
         println!("{USAGE}");
         return;
@@ -54,6 +55,11 @@ fn main() {
         eprintln!("error: {e}");
         std::process::exit(1);
     }
+}
+
+/// The first of these paths that exists, else the first.
+fn first_existing(paths: &[&str]) -> String {
+    paths.iter().find(|p| std::path::Path::new(p).exists()).unwrap_or(&paths[0]).to_string()
 }
 
 fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
@@ -125,7 +131,7 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
         }
         "serve" => {
             let port: u16 = args.opt("--port").and_then(|p| p.parse().ok()).unwrap_or(7878);
-            let web = args.opt("--web").unwrap_or_else(|| "web/dist".into());
+            let web = args.opt("--web").unwrap_or_else(|| first_existing(&["software/web/dist", "web/dist"]));
             http::serve(Engine::open(vault)?, vault, port, &web)
         }
         "learn" => {

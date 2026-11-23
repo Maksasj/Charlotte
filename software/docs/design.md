@@ -140,7 +140,7 @@ phrases:
 ```
 
 Raw conversations are **not** vault notes. Ten thousand of them would bury the
-knowledge. They live in a corpus folder as JSON lines; a learned item records
+knowledge. They live in `data/` as JSON lines; a learned item records
 how many conversations support it and can list a few by id.
 
 ## API
@@ -156,7 +156,7 @@ println!("{}", reply.text);
 println!("{:#?}", reply.trace);          // reading, state, pattern, atom, rule fired
 conv.close(Verdict::Resolved)?;          // feedback: adjusts trust
 
-let report = engine.learn(Corpus::open("corpus/batch-01.jsonl")?, LearnOptions::default())?;
+let report = engine.learn(Corpus::open("data/batch-01.jsonl")?, LearnOptions::default())?;
 println!("{report}");                    // what was proposed, validated, rejected
 ```
 
@@ -180,7 +180,7 @@ println!("{report}");                    // what was proposed, validated, reject
 ```
 charlotte chat  --vault vault/                 talk to it, :trace shows the last trace
 charlotte serve --vault vault/ --port 7878
-charlotte learn corpus/batch-01.jsonl          prints the report
+charlotte learn data/batch-01.jsonl            prints the report
 charlotte check                                lint the vault: broken links, unknown slots
 ```
 
@@ -348,6 +348,13 @@ The tests are in `crates/charlotte-engine/tests/pipeline.rs`.
 - Trust rising a little on every use. Trust changes only when a conversation
   is closed with a verdict.
 - Mining articles into atoms.
+
+### Where things live
+
+The vault and the teaching data sit at the repository root (`vault/`, `data/`),
+beside `software/` and `research/`, because they are what the software works
+on, not part of it. The binary looks for `./vault` and then `../vault`, so it
+runs from the root or from `software/`.
 
 ## Open decisions
 
