@@ -49,7 +49,7 @@ seen_with:
 - '[[trial-extension]]'
 - '[[upgrade]]'
 - '[[warranty]]'
-learned_from: data/pretrain-80-per-shape.jsonl
+learned_from: uploaded
 trust: 0.8
 status: candidate
 promotes_to: check-a-rule

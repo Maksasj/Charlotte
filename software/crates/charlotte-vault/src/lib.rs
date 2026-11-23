@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub const KINDS: [&str; 9] = ["pattern", "atom", "procedure", "intent", "slot", "records", "move", "lexicon", "phrases"];
+pub const KINDS: [&str; 10] = ["pattern", "atom", "procedure", "intent", "slot", "records", "move", "lexicon", "phrases", "chats"];
 
 #[derive(Clone, Debug)]
 pub struct Note {
@@ -70,6 +70,25 @@ fn collect_links(v: &Json, out: &mut Vec<String>) {
     }
 }
 
+/// The conversations in a chats note: "Entry N" headings followed by "U: " and "A: " lines.
+pub fn parse_chats(body: &str) -> Vec<Vec<(char, String)>> {
+    let mut out: Vec<Vec<(char, String)>> = Vec::new();
+    for line in body.lines() {
+        let l = line.trim();
+        if l.len() > 6 && l[..6].eq_ignore_ascii_case("entry ") && l[6..].trim().chars().all(|c| c.is_ascii_digit()) {
+            out.push(Vec::new());
+        } else if let (Some(conv), Some(who)) = (out.last_mut(), l.chars().next().filter(|c| (*c == 'U' || *c == 'A') && l[1..].starts_with(": "))) {
+            conv.push((who, l[3..].trim().to_string()));
+        }
+    }
+    out.retain(|c| !c.is_empty());
+    out
+}
+/// The same conversations as a note body.
+pub fn render_chats(convs: &[Vec<(char, String)>]) -> String {
+    convs.iter().enumerate().map(|(i, c)| format!("Entry {}\n{}", i + 1, c.iter().map(|(w, t)| format!("{w}: {t}\n")).collect::<String>())).collect::<Vec<_>>().join("\n").trim_end().to_string()
+}
+
 impl Note {
     pub fn parse(path: &str, text: &str) -> Result<Note, String> {
         let id = Path::new(path).file_stem().and_then(|s| s.to_str()).unwrap_or("").to_string();
@@ -127,6 +146,7 @@ impl Note {
             "pattern" => format!("{} requests", s("applies_to").unwrap_or_default()),
             "procedure" | "move" => s("intent").unwrap_or_else(|| self.id.clone()),
             "phrases" => format!("phrases for {}", s("intent").or_else(|| s("slot")).unwrap_or_default()),
+            "chats" => s("topic").unwrap_or_else(|| self.id.clone()),
             _ => self.id.clone(),
         }
     }
@@ -145,6 +165,7 @@ struct Typed {
     patterns: Vec<Pattern>,
     moves: Vec<Move>,
     lexicon: Lexicon,
+    replies: Vec<ReplyCase>,
 }
 
 #[derive(Clone)]
@@ -249,6 +270,16 @@ impl Vault {
                     }
                     "lexicon" => t.lexicon = n.typed()?,
                     "phrases" => {}
+                    "chats" => {
+                        for (e, conv) in parse_chats(&n.body).iter().enumerate() {
+                            for i in 0..conv.len().saturating_sub(1) {
+                                if conv[i].0 == 'U' && conv[i + 1].0 == 'A' {
+                                    let previous = if i > 0 { Some(conv[i - 1].1.clone()) } else { None };
+                                    t.replies.push(ReplyCase { source: n.id.clone(), entry: e + 1, previous, message: conv[i].1.clone(), reply: conv[i + 1].1.clone() });
+                                }
+                            }
+                        }
+                    }
                     other => return Err(format!("{}: unknown kind '{other}'", n.path)),
                 }
                 Ok(())
@@ -272,7 +303,7 @@ impl Vault {
             "pattern" => note.typed::<Pattern>().map(|_| ()),
             "move" => note.typed::<Move>().map(|_| ()),
             "lexicon" => note.typed::<Lexicon>().map(|_| ()),
-            "phrases" => Ok(()),
+            "phrases" | "chats" => Ok(()),
             other => Err(format!("unknown kind '{other}'")),
         }
     }
@@ -387,5 +418,8 @@ impl Memory for Vault {
     }
     fn moves(&self) -> Vec<&Move> {
         self.typed.moves.iter().collect()
+    }
+    fn replies(&self) -> &[ReplyCase] {
+        &self.typed.replies
     }
 }

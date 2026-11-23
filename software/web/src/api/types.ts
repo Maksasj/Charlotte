@@ -167,7 +167,8 @@ export type ItemKind =
   | "records"
   | "move"
   | "lexicon"
-  | "phrases";
+  | "phrases"
+  | "chats";
 
 export const ITEM_KINDS: readonly ItemKind[] = [
   "pattern",
@@ -179,6 +180,7 @@ export const ITEM_KINDS: readonly ItemKind[] = [
   "move",
   "lexicon",
   "phrases",
+  "chats",
 ];
 
 export type ItemStatus = "candidate" | "trusted" | "retired";

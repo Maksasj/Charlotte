@@ -4,6 +4,7 @@ pub mod decide;
 pub mod engine;
 pub mod learn;
 pub mod realize;
+pub mod recall;
 pub mod sim;
 pub mod track;
 pub mod understand;

@@ -540,6 +540,26 @@ pub struct Lexicon {
     pub signals: BTreeMap<String, Vec<String>>,
 }
 
+/// One exchange remembered from a taught chat: the message, what came just before it, and the reply.
+#[derive(Clone, Debug)]
+pub struct ReplyCase {
+    /// The note it is in, and the entry number there.
+    pub source: String,
+    pub entry: usize,
+    pub previous: Option<String>,
+    pub message: String,
+    pub reply: String,
+}
+/// A remembered reply found for a new message.
+#[derive(Clone, Debug)]
+pub struct Recalled {
+    pub source: String,
+    pub entry: usize,
+    pub message: String,
+    pub reply: String,
+    pub score: f64,
+}
+
 // ---------- the five layers ----------
 
 /// Layer 5. Everything the other layers may ask of the knowledge store. Only trusted items are returned.
@@ -555,6 +575,8 @@ pub trait Memory: Send + Sync {
     fn records(&self) -> Vec<&Records>;
     fn pattern(&self, kind: ReqKind) -> Option<&Pattern>;
     fn moves(&self) -> Vec<&Move>;
+    /// Exchanges from taught chats.
+    fn replies(&self) -> &[ReplyCase];
 }
 
 /// Layer 1. Text to requests.
@@ -569,6 +591,11 @@ pub trait Track: Send + Sync {
 /// Layer 3. Chooses the next act for a frame. No wording.
 pub trait Decide: Send + Sync {
     fn decide(&self, frame: &Frame, mem: &dyn Memory) -> Decision;
+}
+/// Beside the layers: finds a remembered reply for a message nothing else answers.
+/// `previous` is what the agent said just before, if anything.
+pub trait Recall: Send + Sync {
+    fn recall(&self, text: &str, previous: Option<&str>) -> Option<Recalled>;
 }
 /// Layer 4. Words for an act.
 pub trait Realize: Send + Sync {

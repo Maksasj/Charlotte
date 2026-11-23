@@ -79,8 +79,17 @@ It needs only Python 3 and a running Ollama with the model pulled (default
 `qwen3.5:4b`, change with `--model`). It can be stopped and started again and
 carries on where it left off. Topics are in `topics.txt`, one per line.
 
-These files are plain text with no labels and are not in the JSON-lines form
-above, so `charlotte learn` cannot read them as they are.
+To teach these chats to the engine, turn them into a corpus file first:
+
+```sh
+python3 data/chats_to_corpus.py                       # writes data/friendly-chats-<model>.jsonl
+software/target/release/charlotte learn data/friendly-chats-qwen3.5-4b.jsonl
+```
+
+The chats carry no labels, so no pattern or wording is learned from them. The
+engine remembers each message with the reply that followed (one note per topic
+in `vault/chats/`) and, when a new message is similar enough to a remembered
+one, answers with that reply.
 
 ## What is here
 
@@ -91,6 +100,7 @@ above, so `charlotte learn` cannot read them as they are.
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
 | `friendly-chats-<model>/` | The generator's output, one file per topic, once it has been run |
+| `chats_to_corpus.py` | Turns that folder into `friendly-chats-<model>.jsonl`, ready for `charlotte learn` |
 
 A run with another model (`--model`) gets its own folder, and other teaching
 material added later sits beside these.

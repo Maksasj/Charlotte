@@ -65,6 +65,11 @@ the item is not a candidate).
 Operations (`op`): `ask grant offer deny confirm lookup report instruct repeat
 finish escalate say teach_me`.
 
+`say` carries the id of what was said: a stock reply (`greeting-reply`), or a
+reply remembered from a taught chat as `<note>#<entry>`
+(`chats-weekend-plans#1`). For a remembered reply, `trace.notes` names the
+note, the entry, the similarity and the remembered message that matched.
+
 ## Knowledge
 
 | Method and path | Body | Returns |
@@ -88,7 +93,7 @@ finish escalate say teach_me`.
   "links": ["refund", "days"], "backlinks": ["check-a-rule"] }
 ```
 
-Kinds: `pattern atom procedure intent slot records move lexicon phrases`.
+Kinds: `pattern atom procedure intent slot records move lexicon phrases chats`.
 Statuses: `candidate trusted retired`.
 
 ## Learning

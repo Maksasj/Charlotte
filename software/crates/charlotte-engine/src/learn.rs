@@ -5,7 +5,7 @@ use crate::decide::{class_to_act, run_rules};
 use crate::engine::{Engine, Layers};
 use crate::view::{features, selectors, view};
 use charlotte_core::*;
-use charlotte_vault::{Note, Vault};
+use charlotte_vault::{parse_chats, render_chats, Note, Vault};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value as Json};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -529,7 +529,12 @@ pub fn run(vault: &Vault, rebuild: &dyn Fn(&Vault) -> Layers, corpus: &Corpus, o
     let (mut train, mut test) = (Vec::new(), Vec::new());
     let stop: HashSet<&str> = mem.lexicon().stopwords.iter().map(String::as_str).collect();
     let (mut train_s, mut test_s) = (Vec::new(), Vec::new());
+    // A conversation with no labels at all is a plain chat: nothing to induce from, only replies to remember.
+    let plain = |c: &CorpusConv| !c.turns.iter().any(|t| t.act.is_some() || t.acts.is_some() || t.intent.is_some() || t.facts.is_some() || t.signal.is_some());
     for (ci, c) in corpus.convs.iter().enumerate() {
+        if plain(c) {
+            continue;
+        }
         let is_held = held_set.contains(&ci);
         (if is_held { &mut test } else { &mut train }).extend(replay(ci, c, mem, &l));
         for t in c.turns.iter().filter(|t| t.role == "user" && !t.text.is_empty() && (t.intent.is_some() || t.facts.is_some())) {
@@ -611,6 +616,82 @@ pub fn run(vault: &Vault, rebuild: &dyn Fn(&Vault) -> Layers, corpus: &Corpus, o
         }
         if promoted {
             notes.extend(changed.into_values());
+        }
+    }
+    // Plain chats: remember every exchange, one note per topic. Checked by asking the memory built from
+    // the conversations to learn from for a reply to each held-out message.
+    let chats: Vec<(usize, &CorpusConv)> = corpus.convs.iter().enumerate().filter(|(_, c)| plain(c)).collect();
+    if !chats.is_empty() {
+        let slug = |s: &str| s.to_lowercase().split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).collect::<Vec<_>>().join("-");
+        let topic = |c: &CorpusConv| c.domain.clone().filter(|d| !d.trim().is_empty()).unwrap_or_else(|| "general".to_string());
+        let note_id = |c: &CorpusConv| format!("chats-{}", slug(&topic(c)));
+        let lines = |c: &CorpusConv| -> Vec<(char, String)> {
+            c.turns.iter().filter(|t| !t.text.trim().is_empty()).map(|t| (if t.role == "user" { 'U' } else { 'A' }, t.text.split_whitespace().collect::<Vec<_>>().join(" "))).collect()
+        };
+        let pairs = |conv: &[(char, String)]| (0..conv.len().saturating_sub(1)).filter(|&i| conv[i].0 == 'U' && conv[i + 1].0 == 'A').count();
+        let build = |with_held: bool| -> Vec<Note> {
+            let mut by: BTreeMap<String, (String, Vec<Vec<(char, String)>>)> = BTreeMap::new();
+            for (ci, c) in &chats {
+                if with_held || !held_set.contains(ci) {
+                    by.entry(note_id(c)).or_insert_with(|| (topic(c), Vec::new())).1.push(lines(c));
+                }
+            }
+            by.into_iter()
+                .map(|(id, (topic, new))| {
+                    let old = vault.notes.get(&id).filter(|n| n.kind() == "chats");
+                    let mut convs = old.map(|n| parse_chats(&n.body)).unwrap_or_default();
+                    for c in new {
+                        if !convs.contains(&c) {
+                            convs.push(c);
+                        }
+                    }
+                    let mut front = Map::new();
+                    front.insert("kind".into(), "chats".into());
+                    front.insert("topic".into(), topic.into());
+                    front.insert("conversations".into(), convs.len().into());
+                    front.insert("learned_from".into(), corpus.source.clone().into());
+                    front.insert("trust".into(), json!(old.map(|n| n.trust()).unwrap_or(0.8)));
+                    Note { path: old.map(|n| n.path.clone()).unwrap_or_else(|| format!("chats/{id}.md")), id, front, body: render_chats(&convs) }
+                })
+                .collect()
+        };
+        let mut trial = vault.clone();
+        for n in build(false) {
+            let _ = trial.put_mem(n);
+        }
+        let memory = rebuild(&trial).recall;
+        let (mut asked, mut found, mut same) = (0usize, 0usize, 0usize);
+        for (_, c) in chats.iter().filter(|(ci, _)| held_set.contains(ci)) {
+            let conv = lines(c);
+            for i in 0..conv.len().saturating_sub(1) {
+                if conv[i].0 == 'U' && conv[i + 1].0 == 'A' {
+                    asked += 1;
+                    if let Some(r) = memory.recall(&conv[i].1, if i > 0 { Some(conv[i - 1].1.as_str()) } else { None }) {
+                        found += 1;
+                        if r.source == note_id(c) {
+                            same += 1;
+                        }
+                    }
+                }
+            }
+        }
+        let all = build(true);
+        let replies: usize = chats.iter().map(|(_, c)| pairs(&lines(c))).sum();
+        let summary = format!(
+            "{} replies remembered from {} conversations on {} topics; for {} of {} held-out messages a similar remembered message was found ({} of them on the same topic). This measures whether something is found, not whether the reply fits",
+            replies, chats.len(), all.len(), found, asked, same
+        );
+        report.candidates.push(CandidateReport { id: "chats".into(), kind: "chats".into(), support: chats.len(), validated: if asked > 0 { found as f64 / asked as f64 } else { 0.0 }, promoted: opts.auto_promote, summary });
+        for mut n in all {
+            if opts.auto_promote {
+                n.front.insert("status".into(), "trusted".into());
+            } else {
+                n.front.insert("status".into(), "candidate".into());
+                n.front.insert("promotes_to".into(), n.id.clone().into());
+                n.id = format!("{}-candidate", n.id);
+                n.path = format!("candidates/{}.md", n.id);
+            }
+            notes.push(n);
         }
     }
     let mut m: Vec<Mistake> = mistakes.into_iter().map(|(what, count)| Mistake { what, count }).collect();

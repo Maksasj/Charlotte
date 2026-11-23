@@ -337,6 +337,25 @@ The tests are in `crates/charlotte-engine/tests/pipeline.rs`.
   conversations over whatever is in the vault and is the source of the
   pretraining corpus.
 
+### Added later: remembering plain chats
+
+Conversations with no labels at all (plain text, as written by
+`data/generate_conversations.py`) teach nothing to the pattern and lexicon
+learners. For them `charlotte learn` stores every exchange in the vault, one
+note per topic under `vault/chats/`, in the same `Entry` / `U:` / `A:` form the
+generator writes.
+
+At answer time, a message that is not a request the vault knows is compared
+with every remembered user message (shared words, weighted by rarity, with a
+fifth of the weight on what the agent said just before). If one is similar
+enough (0.45), the reply that followed it is given as it is. Requests the vault
+knows keep going through patterns; a remembered reply only goes before the
+stock small-talk replies. This is retrieve and reuse with no adaptation, and
+nothing judges whether the reply fits.
+
+It sits beside the five layers as a sixth replaceable piece (`Recall` in the
+core crate, `ReplyMemory` in the engine).
+
 ### Not carried over from v5
 
 - Learning the connectors that divide a message. They are a fixed list in

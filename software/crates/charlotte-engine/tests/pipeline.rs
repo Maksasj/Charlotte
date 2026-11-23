@@ -130,3 +130,36 @@ fn step2_conversations_over_several_turns() {
     assert!(c.say("didn't work").text.starts_with("Let's try that step once more"));
     assert!(c.say("didn't work").text.contains("teammate"));
 }
+
+#[test]
+fn plain_chats_are_remembered_and_reused() {
+    let dir = untrained("chats");
+    let engine = Engine::open(&dir).unwrap();
+    let before = engine.conversation().say("any plans for the weekend?").text;
+    assert_eq!(before, "I don't know how to help with that yet.");
+
+    let line = |id: &str, topic: &str, turns: &[(&str, &str)]| {
+        let t: Vec<String> = turns.iter().map(|(r, x)| format!(r#"{{"role":"{r}","text":"{x}"}}"#)).collect();
+        format!(r#"{{"id":"{id}","domain":"{topic}","turns":[{}]}}"#, t.join(","))
+    };
+    let jsonl = [
+        line("w1", "weekend plans", &[("user", "Hey! Any plans for the weekend?"), ("agent", "Not really, I might just stay in and read."), ("user", "That sounds relaxing. Which book?"), ("agent", "A detective novel a friend lent me.")]),
+        line("c1", "coffee and tea", &[("user", "Do you prefer coffee or tea in the morning?"), ("agent", "Coffee, always. Tea is for the afternoon.")]),
+    ]
+    .join("\n");
+    let report = engine.learn(&Corpus::parse("test-chats", &jsonl), &LearnOptions::default(), &|_| {}).unwrap();
+    assert!(report.candidates.iter().any(|c| c.kind == "chats" && c.promoted), "{report}");
+    assert!(dir.join("chats/chats-weekend-plans.md").is_file());
+
+    // A similar message gets the remembered reply, and the trace says where it came from.
+    let reply = engine.conversation().say("any plans for the weekend?");
+    assert_eq!(reply.text, "Not really, I might just stay in and read.");
+    assert!(reply.trace.notes.iter().any(|n| n.contains("chats-weekend-plans")), "{:?}", reply.trace.notes);
+    assert_eq!(engine.conversation().say("coffee or tea in the morning?").text, "Coffee, always. Tea is for the afternoon.");
+    // Something it never saw is still declined, and a request the vault knows is not hijacked.
+    assert_eq!(engine.conversation().say("what is the capital of Peru?").text, "I don't know how to help with that yet.");
+    // Teaching the same chats again adds nothing.
+    engine.learn(&Corpus::parse("test-chats", &jsonl), &LearnOptions::default(), &|_| {}).unwrap();
+    let note = std::fs::read_to_string(dir.join("chats/chats-weekend-plans.md")).unwrap();
+    assert_eq!(note.matches("Entry ").count(), 1, "{note}");
+}

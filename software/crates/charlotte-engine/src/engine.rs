@@ -17,12 +17,19 @@ pub struct Layers {
     pub track: Box<dyn Track>,
     pub decide: Box<dyn Decide>,
     pub realize: Box<dyn Realize>,
+    pub recall: Box<dyn Recall>,
 }
 /// Builds the layers for a vault. Replace one layer by passing a factory that returns a different one.
 pub type LayerFactory = Box<dyn Fn(&Vault) -> Layers + Send + Sync>;
 
 pub fn default_layers(vault: &Vault) -> Layers {
-    Layers { understand: Box::new(LexiconReader::new(vault)), track: Box::new(FrameTracker), decide: Box::new(RuleDecide), realize: Box::new(TemplateRealize) }
+    Layers {
+        understand: Box::new(LexiconReader::new(vault)),
+        track: Box::new(FrameTracker),
+        decide: Box::new(RuleDecide),
+        realize: Box::new(TemplateRealize),
+        recall: Box::new(crate::recall::ReplyMemory::new(vault)),
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -118,6 +125,7 @@ fn folder(kind: &str) -> &'static str {
         "slot" => "lexicon/slots",
         "records" => "records",
         "move" => "moves",
+        "chats" => "chats",
         _ => "lexicon",
     }
 }
@@ -149,7 +157,16 @@ impl Engine {
     pub fn say(&self, conv: &mut ConvState, text: &str) -> Reply {
         let inner = self.inner.read().unwrap();
         let (mem, l): (&dyn Memory, &Layers) = (&inner.vault, &inner.layers);
+        // What the agent said last, for recalling replies in context.
+        let previous = conv.messages.last().filter(|m| m.role == "agent").map(|m| m.text.clone());
         conv.messages.push(Message { role: "user".into(), text: text.to_string(), trace: None });
+        let remembered = |clause: &str, trace: &mut Trace, used: &mut BTreeSet<String>| {
+            l.recall.recall(clause, previous.as_deref()).map(|r| {
+                trace.notes.push(format!("recalled from [[{}]] entry {}, similarity {:.2}: \"{}\"", r.source, r.entry, r.score, r.message));
+                used.insert(r.source.clone());
+                (Act::with(Op::Say, format!("{}#{}", r.source, r.entry)), r.reply)
+            })
+        };
         let ctx = ReadContext { asked: conv.state.frames.iter().rev().filter_map(|f| f.last_asked.clone()).collect() };
         let reading = l.understand.read(text, &ctx);
         let touches = l.track.user(&mut conv.state, &reading, mem);
@@ -197,10 +214,32 @@ impl Engine {
                     }
                     rt.text = l.realize.realize(&conv.state.frames[fi], &last, mem);
                     rt.frame = Some(conv.state.frames[fi].clone());
+                    // Small talk and the like: a reply remembered from a taught chat goes before the stock one.
+                    if rt.kind == ReqKind::Move {
+                        if let Some((act, reply)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                            rt.text = reply;
+                            if let Some(s) = rt.steps.last_mut() {
+                                s.act = act.clone();
+                            }
+                            last = act;
+                        }
+                    }
                     last
                 }
                 None => {
-                    // Not understood. A cached reply may still fit the wording.
+                    // Not understood as a request. A reply remembered from a taught chat may fit.
+                    if let Some((act, reply)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                        rt.kind = ReqKind::Move;
+                        rt.text = reply.clone();
+                        rt.steps.push(StepTrace { features: Vec::new(), rule: None, act: act.clone() });
+                        if !parts.contains(&reply) {
+                            parts.push(reply);
+                        }
+                        acts.push(act);
+                        trace.requests.push(rt);
+                        continue;
+                    }
+                    // Else a stock reply may still fit the wording.
                     let w = words(&r.clause);
                     let best = mem
                         .moves()
