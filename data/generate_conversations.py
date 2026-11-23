@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """Simulate conversations with a local Ollama model, one Markdown file per topic.
 
-Nothing is asked to "write a conversation". Each conversation is held live, turn by turn:
-
-  - the agent is the model chatting as a friendly general assistant, seeing only what the user wrote;
-  - the user is the same model in a separate chat, playing a person who texts about something on their mind.
+Nothing is asked to "write a conversation". Each conversation is held live, turn by turn, by two
+friendly agents: the same model in two separate chats, each seeing only what the other wrote. One of
+them is given a topic and opens; in the files its lines are "U:" and the other's are "A:".
 
 Each file holds the conversations for one topic in this form:
 
     Entry 1
-    U: user text
-    A: agent answer
+    U: first agent
+    A: second agent
     U: ...
 
     Entry 2
@@ -36,58 +35,22 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-END = "[END]"
 
-AGENT_SYSTEM = """You are a friendly chat companion. Someone is texting with you.
+# Both agents get this. Neither is told it is talking to a model.
+CHAT_SYSTEM = """You are a friendly person chatting with someone by text.
 
-- Talk like a warm, easygoing person would in a chat: natural, kind, and to the point, usually one to three sentences.
-- Help with whatever comes up: questions, advice, ideas, explanations, or just a chat. Share what you know in plain words.
-- If you are not sure what they mean, ask. If you do not know something, say so.
-- Show interest in the person: react to what they say, and ask something back when it fits.
-- Plain text only. No lists, no markdown, no headings. Write only your reply."""
+- Write the way people really text: simple everyday words, short messages, one to three sentences.
+- Be warm and natural. React to what the other person says, share what you know or think, and ask something back when it fits.
+- If you do not know something, say so.
+- Plain text only. No lists, no markdown, no quotation marks around your message. Write only your next message."""
 
-USER_SYSTEM = """You are a regular person texting with a friendly chat assistant. This is what is on your mind:
+# Added for the one who opens.
+OPENER = """
 
-Topic: {topic}
-What is going on: {situation}
-How you write: {style}
+You start the conversation. The topic is: {topic}. Bring it up the way a person would, with a question, a thought or something from your day."""
 
-- Write the way people really text: simple everyday words, short messages, one or two sentences.
-- Only say what a real person would say at this point. Do not explain everything at once unless your situation says so.
-- React to what the assistant says: answer its questions, ask a follow-up, agree, push back, or change your mind, as a person would.
-- Make up ordinary details about your own life when you need them, and stick to them.
-- Never write as the assistant, never describe what you are doing, no quotation marks.
-- When you have what you wanted, or the chat has run its course, close it naturally (a thanks or a goodbye) if that feels right. Once there is nothing more to say, reply with exactly {end} and nothing else."""
-
-# What kind of exchange the user is about to have. The assistant is not told any of this.
-SITUATIONS = [
-    "you open with a greeting and a bit of small talk before getting to it",
-    "you have one simple question and want a quick answer",
-    "you want advice and are not sure what to do",
-    "you ask something and then want it explained more simply",
-    "you want a few ideas or suggestions to choose from",
-    "you have an opinion already and want to see if the assistant agrees",
-    "you realise partway through that you said something wrong, and you correct it",
-    "you want to be walked through how to do something, one step at a time",
-    "you tried what was suggested and it did not work, and you say so",
-    "you have two things on your mind and mention both",
-    "you start on one thing and drift to a related one",
-    "you are just in the mood to chat about it and have no real question",
-    "you are curious why something is the way it is",
-    "you are comparing two options and cannot decide",
-]
-STYLES = [
-    "polite and a little formal, full sentences",
-    "casual, lowercase, hardly any punctuation",
-    "brief and matter-of-fact",
-    "friendly and chatty",
-    "in a hurry, very short messages",
-    "relaxed and easygoing",
-    "unsure and hesitant",
-    "enthusiastic",
-    "casual with the odd typo",
-    "direct, no greeting",
-]
+# How many exchanges a conversation runs for; short ones are more common.
+LENGTHS = [1, 2, 2, 3, 3, 3, 4, 4, 5, 6]
 
 ENTRY = re.compile(r"^\s*entry\s+\d+\s*$", re.IGNORECASE)
 TURN = re.compile(r"^([UA]): (.*)$")
@@ -170,21 +133,19 @@ def chat(args, system, turns, seed, max_tokens):
 
 def simulate(args, topic, rng, recent):
     """Hold one conversation. Returns its turns, or None if it did not come out usable."""
-    system = USER_SYSTEM.format(topic=topic, situation=rng.choice(SITUATIONS), style=rng.choice(STYLES), end=END)
-    opening = "You have just opened the chat. Send your first message."
+    opening = "Send your first message."
     if recent:
-        opening += " Other people opened with the lines below; you are a different person with something else on your mind, so do not start like them:\n" + "\n".join(f"- {r}" for r in recent)
-    conv = []  # (speaker, text), speaker is "U" or "A"
-    for turn in range(args.max_turns):
-        # The user's side of the chat: its own lines are "assistant", the agent's are "user".
-        as_user = [("user", opening)] + [("assistant" if who == "U" else "user", said) for who, said in conv]
-        said = clean(chat(args, system, as_user, rng.randrange(2**31), args.user_tokens))
-        if END in said.upper() or not said:
+        opening += " Earlier chats on this topic opened with the lines below; start differently:\n" + "\n".join(f"- {r}" for r in recent)
+    conv = []  # (speaker, text): "U" opens, "A" replies
+    for _ in range(min(rng.choice(LENGTHS), args.max_turns)):
+        # Each agent sees its own lines as "assistant" and the other's as "user".
+        as_first = [("user", opening)] + [("assistant" if who == "U" else "user", said) for who, said in conv]
+        said = clean(chat(args, CHAT_SYSTEM + OPENER.format(topic=topic), as_first, rng.randrange(2**31), args.max_tokens))
+        if not said:
             break
         conv.append(("U", said))
-        # The agent's side: an ordinary chat in which it only sees what the user wrote.
-        as_agent = [("user" if who == "U" else "assistant", said) for who, said in conv]
-        reply = clean(chat(args, AGENT_SYSTEM, as_agent, rng.randrange(2**31), args.agent_tokens))
+        as_second = [("user" if who == "U" else "assistant", said) for who, said in conv]
+        reply = clean(chat(args, CHAT_SYSTEM, as_second, rng.randrange(2**31), args.max_tokens))
         if not reply:
             conv.pop()
             break
@@ -200,12 +161,11 @@ def main():
     p.add_argument("--out", default=str(HERE / "conversations"), help="folder for the Markdown files (default data/conversations)")
     p.add_argument("--model", default="qwen3.5:4b", help="Ollama model tag (default qwen3.5:4b; `ollama list` shows what is installed)")
     p.add_argument("--host", default="http://127.0.0.1:11434", help="where Ollama listens")
-    p.add_argument("--max-turns", type=int, default=6, help="most user messages in one conversation (default 6)")
+    p.add_argument("--max-turns", type=int, default=6, help="most exchanges in one conversation; the length is drawn at random up to this (default 6)")
     p.add_argument("--temperature", type=float, default=0.9)
-    p.add_argument("--user-tokens", type=int, default=120, help="limit on one user message")
-    p.add_argument("--agent-tokens", type=int, default=250, help="limit on one agent reply")
+    p.add_argument("--max-tokens", type=int, default=200, help="limit on one message")
     p.add_argument("--timeout", type=int, default=300, help="seconds to wait for one reply")
-    p.add_argument("--seed", type=int, default=1, help="makes the situations and styles repeatable")
+    p.add_argument("--seed", type=int, default=1, help="makes the run repeatable as far as the model allows")
     p.add_argument("--think", action="store_true", help="let a reasoning model think first (slower)")
     args = p.parse_args()
     args.no_think_option = False
@@ -232,7 +192,7 @@ def main():
         seen = {" ".join(s.lower() for _, s in c) for c in convs}
         failures = 0
         while len(convs) < wanted[ti]:
-            # Seeded by topic and position, so a restarted run asks for the same situations.
+            # Seeded by topic and position, so a restarted run draws the same lengths and seeds.
             rng = random.Random(f"{args.seed}/{topic}/{len(convs)}/{failures}")
             conv = simulate(args, topic, rng, [c[0][1] for c in convs[-6:]])
             key = " ".join(s.lower() for _, s in conv) if conv else None

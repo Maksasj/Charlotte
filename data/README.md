@@ -34,16 +34,15 @@ software/target/release/charlotte learn data/your-batch.jsonl      # from the re
 ## Generating conversations with a local model
 
 `generate_conversations.py` holds conversations live with a model served by
-Ollama. The model is the agent, a friendly general chat partner that sees only
-what the user wrote; the same
-model in a separate chat plays a person texting about something on their mind.
-It writes
+Ollama: two friendly agents (the same model in two separate chats) text each
+other, each seeing only what the other wrote. One is given a topic and opens;
+its lines are `U:` and the other's are `A:`. It writes
 one Markdown file per topic into `data/conversations/`:
 
 ```
 Entry 1
-U: user text
-A: agent answer
+U: first agent
+A: second agent
 U: ...
 
 Entry 2
