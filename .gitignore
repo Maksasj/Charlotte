@@ -2,4 +2,4 @@ target/
 node_modules/
 dist/
 .DS_Store
-vault/.obsidian/workspace*.json
+.obsidian/
