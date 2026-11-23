@@ -3,8 +3,8 @@
 Status: built on 23 November 2026. The section "As built" at the end lists the results of the
 build-order checks and where the code differs from this design.
 
-A Rust engine that replaces the two scripts (`prototypes/caseforge-v5` and
-`experiments/pattern-learning`). It holds conversations, keeps all knowledge
+A Rust engine that replaces the two research scripts
+(`research/prototypes/caseforge-v5` and `research/experiments/pattern-learning`). It holds conversations, keeps all knowledge
 in a Markdown vault, and learns from conversations in bulk. A separate web
 app gives a convenient interface to it.
 
@@ -360,4 +360,5 @@ Defaults were taken to build with; each is still open.
    It is the weakest layer (step 5), and the one a model would replace.
 3. **Automatic promotion.** Validated candidates are promoted by default
    (`--review` or `"auto_promote": false` turns that off). Learned phrases can
-   be spurious in ways the validation cannot see; see `findings.md`.
+   be spurious in ways the validation cannot see; see
+   [`research/findings.md`](../../research/findings.md).

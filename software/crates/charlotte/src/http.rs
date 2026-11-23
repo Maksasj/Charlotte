@@ -1,4 +1,4 @@
-//! The HTTP API described in docs/api.md.
+//! The HTTP API described in software/docs/api.md.
 
 use axum::extract::rejection::JsonRejection;
 use axum::extract::{Path, Query, State};

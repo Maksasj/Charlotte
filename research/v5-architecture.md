@@ -1,6 +1,6 @@
 # CaseForge v5 architecture
 
-Describes [`prototypes/caseforge-v5/index.html`](../prototypes/caseforge-v5/index.html)
+Describes [`prototypes/caseforge-v5/index.html`](prototypes/caseforge-v5/index.html)
 as it is written, read from the code. Function names in `code font` are the
 ones in that file.
 

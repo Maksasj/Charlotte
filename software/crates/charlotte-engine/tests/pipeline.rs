@@ -1,4 +1,4 @@
-//! The pass/fail checks from the build order in docs/design.md.
+//! The pass/fail checks from the build order in software/docs/design.md.
 //! They run on scratch copies of the vault, trained from simulated conversations, so they do not
 //! depend on what the committed vault happens to have learned.
 

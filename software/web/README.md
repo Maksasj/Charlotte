@@ -11,7 +11,7 @@ TypeScript, React and Vite. No other runtime dependencies.
 Start the engine, then the app:
 
 ```sh
-charlotte serve --vault vault/ --port 7878    # in the repository root
+charlotte serve --vault vault/ --port 7878    # in software/
 
 cd web
 npm install

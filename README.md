@@ -9,6 +9,9 @@ This branch starts empty on purpose. The first line of research (a symbolic
 agent on a Datalog vault, designs 1 to 4) lives on `main` and `design-2` to
 `design-4` and is not carried over here.
 
+The repository has two parts: [`software/`](software) is what runs, and
+[`research/`](research) is how it got there and what was found.
+
 ## Where things stand
 
 A Rust engine with a web interface. Knowledge lives in a Markdown vault, split
@@ -29,33 +32,40 @@ patterns reach 100%.
 
 The limiter is understanding: the engine only reads wordings its lexicon
 holds. Results, defects and open problems are in
-[`docs/findings.md`](docs/findings.md).
+[`research/findings.md`](research/findings.md).
 
-## Layout
+## Software
 
 | Path | What |
 |---|---|
-| `crates/charlotte-core` | Data types and the five layer traits |
-| `crates/charlotte-vault` | Reading and writing vault notes |
-| `crates/charlotte-engine` | Default layers, the turn pipeline, the learners, the simulated teacher |
-| `crates/charlotte` | The binary: terminal commands and the HTTP server |
-| `web/` | Web interface (TypeScript, React, Vite) over the HTTP API |
-| `vault/` | The knowledge vault; open it in Obsidian to browse it |
-| `corpus/` | The pretraining corpus and the wordings the simulated user draws on |
-| [`docs/design.md`](docs/design.md) | Engine design, and what was built against it |
-| [`docs/api.md`](docs/api.md) | The HTTP API |
-| [`docs/findings.md`](docs/findings.md) | What held up, what did not, open problems, candidate next steps |
-| [`docs/architecture.md`](docs/architecture.md) | How the v5 prototype works |
-| [`docs/journey.md`](docs/journey.md) | How the idea developed |
-| [`experiments/pattern-learning/`](experiments/pattern-learning/README.md) | Experiment: can solution shapes be learned from labelled conversations? |
-| [`prototypes/caseforge-v5/`](prototypes/caseforge-v5/index.html) | The v5 prototype page and a headless probe of its engine |
-| [`archive/`](archive/2026-11-22-design-conversation.txt) | The raw conversation the prototype came out of |
+| `software/crates/charlotte-core` | Data types and the five layer traits |
+| `software/crates/charlotte-vault` | Reading and writing vault notes |
+| `software/crates/charlotte-engine` | Default layers, the turn pipeline, the learners, the simulated teacher |
+| `software/crates/charlotte` | The binary: terminal commands and the HTTP server |
+| `software/web/` | Web interface (TypeScript, React, Vite) over the HTTP API |
+| `software/vault/` | The knowledge vault; open it in Obsidian to browse it |
+| `software/corpus/` | The pretraining corpus and the wordings the simulated user draws on |
+| [`software/docs/design.md`](software/docs/design.md) | Engine design, and what was built against it |
+| [`software/docs/api.md`](software/docs/api.md) | The HTTP API |
+
+## Research
+
+| Path | What |
+|---|---|
+| [`research/findings.md`](research/findings.md) | What held up, what did not, open problems, candidate next steps |
+| [`research/journey.md`](research/journey.md) | How the idea developed |
+| [`research/v5-architecture.md`](research/v5-architecture.md) | How the v5 prototype works |
+| [`research/experiments/pattern-learning/`](research/experiments/pattern-learning/README.md) | Experiment: can solution shapes be learned from labelled conversations? |
+| [`research/prototypes/caseforge-v5/`](research/prototypes/caseforge-v5/index.html) | The v5 prototype page and a headless probe of its engine |
+| [`research/archive/`](research/archive/2026-11-22-design-conversation.txt) | The raw conversation the prototype came out of |
 
 ## Running
 
-Needs a Rust toolchain; the web interface also needs Node.
+Needs a Rust toolchain; the web interface also needs Node. All commands run
+from `software/`.
 
 ```sh
+cd software
 cargo build --release
 alias charlotte=target/release/charlotte
 
@@ -80,7 +90,14 @@ charlotte simulate --n 400 --per-shape --seed 2 --paraphrases corpus/paraphrases
 ```
 
 The corpus format is one conversation per line of JSON, with optional labels;
-see "Learning" in [`docs/design.md`](docs/design.md).
+see "Learning" in [`software/docs/design.md`](software/docs/design.md).
+
+The research scripts run from the repository root:
+
+```sh
+node research/prototypes/caseforge-v5/probe.mjs
+node research/experiments/pattern-learning/run.mjs
+```
 
 ## Relation to the first line
 

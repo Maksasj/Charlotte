@@ -1,7 +1,7 @@
 # Findings on CaseForge v5
 
 Status as of 23 November 2026. Items marked **probe** are reproduced by
-`node prototypes/caseforge-v5/probe.mjs`; items marked **code** were
+`node research/prototypes/caseforge-v5/probe.mjs`; items marked **code** were
 established by reading the prototype. Nothing here was measured on real
 conversations: every input is a hand-written sentence.
 
@@ -102,7 +102,7 @@ conversations".
 
 Run on 23 November 2026, with understanding taken as solved (labelled
 conversations from a simulated teacher). Full account in
-[`experiments/pattern-learning/README.md`](../experiments/pattern-learning/README.md).
+[`experiments/pattern-learning/README.md`](experiments/pattern-learning/README.md).
 
 - Against a pass mark set in advance (95% of unseen conversations reproduced
   from 20 training conversations), only the multi-step procedure passed. The
@@ -125,7 +125,7 @@ vault starts with atoms, procedures, records and a lexicon, and **no
 patterns**.
 
 **Pretraining.** 80 conversations of each shape, 240 in all, seed fixed before
-the run (`corpus/pretrain-80-per-shape.jsonl`), 24 held out:
+the run (`software/corpus/pretrain-80-per-shape.jsonl`), 24 held out:
 
 | Learned | Held-out conversations reproduced | Outcome |
 |---|---|---|

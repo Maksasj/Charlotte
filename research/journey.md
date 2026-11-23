@@ -1,7 +1,7 @@
 # How the idea developed
 
 A condensed account of the conversation in
-[`archive/2026-11-22-design-conversation.txt`](../archive/2026-11-22-design-conversation.txt)
+[`archive/2026-11-22-design-conversation.txt`](archive/2026-11-22-design-conversation.txt)
 (22 to 23 November 2026 by its timestamps). Each step lists the question that drove it and what
 it added. Only the last prototype (v5) was kept as code; the earlier ones are
 known from the conversation alone.

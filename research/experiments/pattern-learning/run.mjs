@@ -11,7 +11,7 @@
 //   - pass mark: median over 10 seeds of unseen conversations reproduced exactly >= 95%
 //     when trained on 20 conversations.
 //
-// Run: node experiments/pattern-learning/run.mjs [--rules] [--errors] [--more]
+// Run: node research/experiments/pattern-learning/run.mjs [--rules] [--errors] [--more]
 //   --rules   print the rule list learned from 20 conversations (seed 0)
 //   --errors  print the commonest mistakes at 20 conversations
 //   --more    train on 20 to 320 conversations instead of 5 to 40

@@ -1,6 +1,6 @@
 // Headless probe of the CaseForge v5 engine: loads the engine functions out of index.html
-// (no DOM, no UI) and replays the behaviours recorded in docs/findings.md.
-// Run: node prototypes/caseforge-v5/probe.mjs
+// (no DOM, no UI) and replays the behaviours recorded in research/findings.md.
+// Run: node research/prototypes/caseforge-v5/probe.mjs
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
