@@ -98,7 +98,7 @@ pub fn surface(a: &GroundAtom) -> Option<(GroundAtom, bool)> {
         }
         "holds3" | "holdsn3" | "pos3" | "neg3" if a.args.len() == 4 => Some((
             GroundAtom::new(&name(&a.args[1]), vec![a.args[0].clone(), a.args[2].clone(), a.args[3].clone()]),
-            a.pred.ends_with('n') || a.pred == "neg3",
+            a.pred == "holdsn3" || a.pred == "neg3",
         )),
         "isa" => Some((GroundAtom::new("is_a", a.args.clone()), false)),
         _ => None,

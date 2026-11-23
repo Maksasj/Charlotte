@@ -1,0 +1,68 @@
+{"id": "w4-004", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-020", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-022", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-025", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-035", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_go_in(valuable, money_belt) is overgeneral (laptops, cameras, jewellery boxes are valuables that do not fit); is_a(means_of_payment, valuable) also loose"}
+{"id": "w4-038", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-039", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "is_a(travel_document, identity_document) false in general: tickets, boarding passes and itineraries are travel documents but not identity documents"}
+{"id": "w4-075", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-085", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-086", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-087", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": false, "note": "replacement action note still needs something to write on (the lacked notebook) and is likely the step's own action, so it does not replace the blocked step"}
+{"id": "w4-091", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-092", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": false, "note": "replacement action note still needs something to write on (the lacked notebook) and is likely the step's own action, so it does not replace the blocked step"}
+{"id": "w4-093", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-098", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece or an excluded look-alike; used_for(paper, protect) is not paper's designed function"}
+{"id": "w4-100", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece; key is excluded by can_do, not by failing a demand"}
+{"id": "w4-102", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-121", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece or an excluded look-alike"}
+{"id": "w4-122", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece or an excluded look-alike"}
+{"id": "w4-125", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-127", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece or an excluded look-alike"}
+{"id": "w4-132", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": false, "note": "SUB without a demands piece or look-alike; a toiletry bag is a poor stand-in for a money belt (not worn, not secure)"}
+{"id": "w4-133", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": false, "note": "SUB without a demands piece or look-alike; a suitcase is a poor stand-in for a camping backpack"}
+{"id": "w4-136", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece; key excluded by can_do, not a demand; role(calendar, hold) and can_do(writing_surface, hold) are odd"}
+{"id": "w4-141", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "SUB without a demands piece; key excluded by can_do, not by failing a demand"}
+{"id": "w4-142", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-143", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-146", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-147", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-149", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-150", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": false, "note": "a cool box is a poor stand-in for a seed envelope (bulky, seeds loose, not labelled); no demands or look-alike"}
+{"id": "w4-153", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-155", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "used_for(paper, protect) is not paper's designed function"}
+{"id": "w4-159", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-160", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-163", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-164", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-166", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "is_a(box, cardboard_carton) overgeneral (plastic, wooden, metal boxes); has_property(paper_based_item, breathable) doubtful"}
+{"id": "w4-167", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-168", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-170", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-171", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-173", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-174", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "is_a(phone, smartphone) is backwards: a smartphone is a phone, not every phone a smartphone"}
+{"id": "w4-178", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-179", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-195", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-196", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-199", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-203", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-204", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-207", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-208", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-209", "verdict": "disagree", "pieces_ok": true, "gold_ok": true, "type_ok": false, "note": "IND support is 3 examples of one kind (all packaging); needs at least 2 kinds"}
+{"id": "w4-210", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-211", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-212", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-213", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-214", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-215", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-216", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-217", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-218", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-219", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-220", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-222", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-223", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w4-224", "verdict": "disagree", "pieces_ok": false, "gold_ok": false, "type_ok": true, "note": "false in the world: only liquids over 100 ml are barred at airport security; travel-size mouthwash and drinks bought airside go in hand luggage"}

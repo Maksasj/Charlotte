@@ -1,0 +1,152 @@
+{"id": "w2-001", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-002", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-003", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-004", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-006", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-007", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-008", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-009", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-010", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-012", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-013", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-014", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-018", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-020", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "has_part(airflow_appliance, air_duct) is not typical: fans and many airflow appliances have no air duct"}
+{"id": "w2-022", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-023", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-025", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-026", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-027", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-028", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-029", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-030", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-032", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-037", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-038", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-039", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-041", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-044", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-045", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-047", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-049", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-050", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-051", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_go_in(baking_ware, microwave) is false for typical baking ware (mostly metal tins and trays)"}
+{"id": "w2-053", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-054", "verdict": "disagree", "pieces_ok": false, "gold_ok": false, "type_ok": true, "note": "not can_go_in(sharp_metal_object, recycling_bin) and the gold for a grater are uncertain; many schemes accept small metal items"}
+{"id": "w2-057", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_go_in(baking_ware, microwave) is false for typical baking ware"}
+{"id": "w2-059", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-060", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_go_in(baking_ware, microwave) is false for typical baking ware"}
+{"id": "w2-062", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-063", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-064", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-066", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-067", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-069", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-070", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_go_in(glass_article, recycling_bin) is false for typical glass articles (drinking glasses, ovenware, bulbs are not accepted; only bottles and jars)"}
+{"id": "w2-071", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "is_a(ovenproof_glassware, glass_drinkware) is false: a roasting dish is not drinkware"}
+{"id": "w2-072", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-074", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-075", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "is_a(flow_control_fitting, hand_operated_fitting) is false in general (float valves, thermostatic and sensor fittings)"}
+{"id": "w2-076", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-077", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-078", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-084", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-087", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-089", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-094", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-095", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-097", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-098", "verdict": "disagree", "pieces_ok": false, "gold_ok": false, "type_ok": false, "note": "salt is a standard wine-stain absorber, so excluding it via demand scratch_free is wrong; the demand does not fit blotting"}
+{"id": "w2-099", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-100", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-101", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-102", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-103", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-104", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-105", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-106", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-107", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-109", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-110", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-111", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": true, "note": "a fixed sink is not a sensible stand-in for a mop bucket (not portable; dunking a dirty mop in the sink); leakproof alone does not make it fit"}
+{"id": "w2-112", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-113", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-114", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-116", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-117", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-118", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-119", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-120", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-121", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-122", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-123", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-124", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-125", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-126", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-127", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-128", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-129", "verdict": "disagree", "pieces_ok": false, "gold_ok": false, "type_ok": true, "note": "demand reusable for dusting a fan is invented; a paper towel dusts a fan fine, so the excluded look-alike is wrongly excluded"}
+{"id": "w2-130", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-131", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-132", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-133", "verdict": "disagree", "pieces_ok": false, "gold_ok": true, "type_ok": true, "note": "can_do(sandpaper, buff_shine) is false: sandpaper abrades, it does not buff to a shine"}
+{"id": "w2-134", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-135", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-136", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-137", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-138", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-139", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-140", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-141", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-142", "verdict": "disagree", "pieces_ok": false, "gold_ok": false, "type_ok": true, "note": "demands(clean_baseboards_s3, scrub_clean, has_property, stiff_bristled) is false: the step's own tool, a sponge, fails it"}
+{"id": "w2-143", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-144", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-145", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-146", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-147", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-148", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-150", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-152", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-153", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-155", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-156", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-157", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-158", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-159", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-160", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-161", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-162", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-163", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-164", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-165", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-167", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-168", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-170", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-171", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-172", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-173", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-174", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-175", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-176", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-179", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-180", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-183", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-184", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-189", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-190", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-191", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-192", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-196", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-200", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-203", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-205", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-207", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-208", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-210", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-211", "verdict": "disagree", "pieces_ok": true, "gold_ok": false, "type_ok": true, "note": "has_property(screw, sharp) is doubtful: a screw is pointed but not ordinarily called sharp"}
+{"id": "w2-212", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-213", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-215", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-216", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-217", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}
+{"id": "w2-221", "verdict": "agree", "pieces_ok": true, "gold_ok": true, "type_ok": true, "note": ""}

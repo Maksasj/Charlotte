@@ -285,19 +285,28 @@ def main():
             out |= set(at[2])
         out = {x for x in out - common if not x.rsplit("_s", 1)[-1].isdigit()}
         return "S" if out <= regS else ("M" if out <= regA else "L")
+    mismatch = 0
     for split in ("dev", "sealed"):
         cnt = Counter(_scope(json.loads(l)) for l in open(J("data/bench4", f"{split}.jsonl")))
         w(f"- {split}: S {cnt.get('S', 0)}, M {cnt.get('M', 0)}, L {cnt.get('L', 0)} (recomputed from registry membership of every piece symbol).")
+    v2 = os.path.isdir(J("data/bench4_v1"))
     w("")
-    w("Design 10.1 defines L scope as a question that needs entities beyond the registry, with targets of about 40/30/30. "
+    if v2:
+        w("This is benchmark version 2 (D4.17). Its `kb_scope` labels follow the scope rule of BENCH_SPEC.md v2: the query, situation items and gold atoms are within the registry. check_bench.py verifies every label, so the labels above are correct. "
+          "The count from all piece symbols, just above, is stricter: pieces may use kinds the registry lacks, because the agent may prove the gold another way. "
+          "Version 1 was withdrawn: by the definition it was almost entirely L. It is kept in `data/bench4_v1/` and never used for results.\n")
+    if not v2:
+        w("Design 10.1 defines L scope as a question that needs entities beyond the registry, with targets of about 40/30/30. "
       "The benchmark spec let writers add entities freely and label scope by domain, and no check tested scope against the registry, "
       "so the `kb_scope` line above is **wrong**: by the definition the benchmark is almost entirely L. This was not one of the G0 criteria, "
       "but it makes the benchmark unable to measure the S curriculum (dev coverage 1% after the first S run; research/M36_FINDINGS.md). "
       "The sealed part was never read. Per D4.17 the benchmark is re-authored with registry-bound scope enforced by a check, and G0 is re-reported for it.\n")
     w("## Gate G0\n")
     all_met = m33_ok and pilot_ok and sizes_ok and chk_ok and max_dev <= 5 and max_dev_d <= 5 and agree_rate >= 90 and k0_ok and bool(c["manifest_ok"])
-    w(f"**G0's listed criteria were {'met' if all_met else 'not met'} for this benchmark, but the benchmark is withdrawn** for the scope error above (D4.17). "
-      "Milestone 36's first S run was made under the advance approval (D4.15, D4.16) and is kept as data only. Work stops for the user's go-ahead on re-authoring.")
+    if v2:
+        w(f"**G0 is {'met' if all_met else 'not met'} for benchmark v2.** Curriculum S is re-taught under the v2 deny lists next (D4.17).")
+    else:
+        w(f"**G0's listed criteria were {'met' if all_met else 'not met'} for this benchmark, but the benchmark is withdrawn** for the scope error above (D4.17).")
     os.makedirs(J("research"), exist_ok=True)
     open(J("research/PHASEB_G0.md"), "w").write("\n".join(out) + "\n")
     print(json.dumps({"m33": m33_ok, "pilot": pilot_ok, "agree": agree_rate, "mix_max_dev": [max_dev_d, max_dev], "k0_ok": k0_ok, "check_ok": chk_ok, "sizes_ok": sizes_ok}))

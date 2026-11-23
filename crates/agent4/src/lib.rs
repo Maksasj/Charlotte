@@ -593,6 +593,8 @@ fn claim_surface(g: &GroundAtom, asked_pred: &str) -> String {
     }
     match surface(g) {
         Some((s, neg)) => if neg { format!("not {s}") } else { s.to_string() },
+        None if g.pred == "holds_effect" => format!("effect({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
+        None if g.pred == "holds_pre" => format!("precondition({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
         None if g.pred == "part" => format!("has_part({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
         None if g.pred == "can" => format!("can_do({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),
         None if g.pred == "stand_in" && asked_pred == "swap" => format!("swap({})", g.args.iter().map(sym_of).collect::<Vec<_>>().join(", ")),

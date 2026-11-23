@@ -1,0 +1,577 @@
+% learned rules: id, layer, status; compiled layer form
+% learn/L1/1  layer 1  status suspended  conf 0.75  support 3  rule has_property(X, heat_resistant) :- made_of(X, metal)
+lholds(X, has_property, heat_resistant) :- hh(X, made_of, metal), not holds(X, has_property, heat_resistant), not holdsn(X, has_property, heat_resistant).
+% learn/L1/2  layer 1  status suspended  conf 0.75  support 3  rule made_of(X, metal) :- made_of(X, plastic)
+lholds(X, made_of, metal) :- hh(X, made_of, plastic), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/3  layer 1  status hypothesis  conf 0.75  support 3  rule can_go_in(X, drawer) :- not can_go_in(X, oven)
+lholds(X, can_go_in, drawer) :- hhn(X, can_go_in, oven), not holds(X, can_go_in, drawer), not holdsn(X, can_go_in, drawer).
+% learn/L2/4  layer 2  status suspended  conf 0.80  support 5  rule has_part(X, handle) :- made_of(X, metal)
+lholds(X, has_part, handle) :- hh(X, made_of, metal), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L1/5  layer 1  status suspended  conf 0.80  support 4  rule made_of(X, metal) :- has_part(X, blade)
+lholds(X, made_of, metal) :- hh(X, has_part, blade), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/6  layer 1  status hypothesis  conf 0.75  support 4  rule can_do(X, absorb_water) :- has_property(X, absorbent)
+lholds(X, can_do, absorb_water) :- hh(X, has_property, absorbent), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/7  layer 1  status hypothesis  conf 0.75  support 4  rule can_do(X, absorb_water) :- made_of(X, fabric)
+lholds(X, can_do, absorb_water) :- hh(X, made_of, fabric), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/8  layer 1  status specialised  conf 0.75  support 3  rule has_property(X, absorbent) :- made_of(X, fabric)
+lholds(X, has_property, absorbent) :- hh(X, made_of, fabric), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/9  layer 1  status hypothesis  conf 0.75  support 3  rule has_property(X, absorbent) :- made_of(X, fabric), can_do(X, absorb_water)
+lholds(X, has_property, absorbent) :- hh(X, made_of, fabric), hh(X, can_do, absorb_water), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/10  layer 1  status suspended  conf 0.75  support 3  rule has_property(X, fragile) :- made_of(X, ceramic)
+lholds(X, has_property, fragile) :- hh(X, made_of, ceramic), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L2/11  layer 2  status hypothesis  conf 0.75  support 3  rule made_of(X, glass_material) :- has_property(X, fragile)
+lholds(X, made_of, glass_material) :- hh(X, has_property, fragile), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L1/12  layer 1  status hypothesis  conf 0.75  support 4  rule can_go_in(X, closet) :- not can_go_in(X, oven)
+lholds(X, can_go_in, closet) :- hhn(X, can_go_in, oven), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/13  layer 1  status hypothesis  conf 0.75  support 4  rule can_go_in(X, closet) :- has_property(X, fragile)
+lholds(X, can_go_in, closet) :- hh(X, has_property, fragile), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/14  layer 1  status hypothesis  conf 0.80  support 5  rule can_go_in(X, fridge) :- can_go_in(X, microwave)
+lholds(X, can_go_in, fridge) :- hh(X, can_go_in, microwave), not holds(X, can_go_in, fridge), not holdsn(X, can_go_in, fridge).
+% learn/L2/15  layer 2  status hypothesis  conf 0.75  support 4  rule can_go_in(X, oven) :- has_property(X, heat_resistant)
+lholds(X, can_go_in, oven) :- hh(X, has_property, heat_resistant), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/16  layer 1  status suspended  conf 0.75  support 3  rule can_go_in(X, oven) :- made_of(X, aluminum)
+lholds(X, can_go_in, oven) :- hh(X, made_of, aluminum), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/17  layer 1  status hypothesis  conf 0.75  support 4  rule not can_go_in(X, oven) :- made_of(X, metal)
+lholdsn(X, can_go_in, oven) :- hh(X, made_of, metal), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/18  layer 1  status waiting  conf 0.75  support 3  rule can_go_in(X, toolbox) :- made_of(X, metal)
+lholds(X, can_go_in, toolbox) :- hh(X, made_of, metal), not holds(X, can_go_in, toolbox), not holdsn(X, can_go_in, toolbox).
+% learn/L1/19  layer 1  status hypothesis  conf 0.75  support 4  rule not has_property(X, absorbent) :- has_property(X, fragile)
+lholdsn(X, has_property, absorbent) :- hh(X, has_property, fragile), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L2/20  layer 2  status hypothesis  conf 0.75  support 4  rule can_go_in(X, closet) :- not has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hhn(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/21  layer 1  status suspended  conf 0.75  support 3  rule has_part(X, handle) :- has_part(X, blade)
+lholds(X, has_part, handle) :- hh(X, has_part, blade), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L2/22  layer 2  status suspended  conf 0.75  support 3  rule has_part(X, handle) :- has_property(X, heat_resistant)
+lholds(X, has_part, handle) :- hh(X, has_property, heat_resistant), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L1/23  layer 1  status suspended  conf 0.75  support 3  rule has_part(X, stem) :- can_go_in(X, microwave)
+lholds(X, has_part, stem) :- hh(X, can_go_in, microwave), not holds(X, has_part, stem), not holdsn(X, has_part, stem).
+% learn/L3/24  layer 3  status hypothesis  conf 0.75  support 4  rule not has_property(X, absorbent) :- can_go_in(X, closet), has_property(X, fragile)
+lholdsn(X, has_property, absorbent) :- hh(X, can_go_in, closet), hh(X, has_property, fragile), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L3/25  layer 3  status hypothesis  conf 0.75  support 3  rule made_of(X, aluminum) :- can_go_in(X, oven)
+lholds(X, made_of, aluminum) :- hh(X, can_go_in, oven), not holds(X, made_of, aluminum), not holdsn(X, made_of, aluminum).
+% learn/L4/26  layer 4  status suspended  conf 0.80  support 4  rule can_go_in(X, closet) :- not has_property(X, absorbent), has_property(X, fragile)
+lholds(X, can_go_in, closet) :- hhn(X, has_property, absorbent), hh(X, has_property, fragile), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/27  layer 1  status suspended  conf 0.75  support 3  rule has_property(X, heat_resistant) :- has_part(X, handle)
+lholds(X, has_property, heat_resistant) :- hh(X, has_part, handle), not holds(X, has_property, heat_resistant), not holdsn(X, has_property, heat_resistant).
+% learn/L1/28  layer 1  status hypothesis  conf 0.80  support 4  rule made_of(X, metal) :- has_property(X, heat_resistant)
+lholds(X, made_of, metal) :- hh(X, has_property, heat_resistant), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/29  layer 1  status specialised  conf 0.75  support 4  rule can_do(X, absorb) :- not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L2/30  layer 2  status specialised  conf 0.75  support 4  rule can_do(X, absorb) :- can_do(X, absorb_water)
+lholds(X, can_do, absorb) :- hh(X, can_do, absorb_water), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L4/31  layer 4  status specialised  conf 0.75  support 3  rule can_do(X, absorb) :- has_property(X, absorbent)
+lholds(X, can_do, absorb) :- hh(X, has_property, absorbent), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/32  layer 1  status specialised  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_do(X, abrade)
+lholds(X, can_do, absorb_water) :- hhn(X, can_do, abrade), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/33  layer 1  status hypothesis  conf 0.90  support 9  rule can_do(X, absorb_water) :- not can_do(X, abrade), not can_do(X, hold)
+lholds(X, can_do, absorb_water) :- hhn(X, can_do, abrade), hhn(X, can_do, hold), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/34  layer 1  status specialised  conf 0.86  support 6  rule has_property(X, absorbent) :- not can_do(X, abrade)
+lholds(X, has_property, absorbent) :- hhn(X, can_do, abrade), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/35  layer 1  status hypothesis  conf 0.90  support 9  rule has_property(X, absorbent) :- not can_do(X, abrade), can_do(X, absorb_water)
+lholds(X, has_property, absorbent) :- hhn(X, can_do, abrade), hh(X, can_do, absorb_water), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L2/36  layer 2  status waiting  conf 0.75  support 3  rule not has_property(X, fragile) :- made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L1/37  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- not can_do(X, abrade), can_do(X, absorb_water)
+lholds(X, can_do, absorb) :- hhn(X, can_do, abrade), hh(X, can_do, absorb_water), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L2/38  layer 2  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- can_do(X, absorb_water), not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hh(X, can_do, absorb_water), hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L4/39  layer 4  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- has_property(X, absorbent), not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hh(X, has_property, absorbent), hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L4/40  layer 4  status hypothesis  conf 0.80  support 5  rule can_do(X, absorb) :- can_do(X, absorb_water), has_property(X, absorbent)
+lholds(X, can_do, absorb) :- hh(X, can_do, absorb_water), hh(X, has_property, absorbent), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/41  layer 1  status hypothesis  conf 0.75  support 4  rule made_of(X, metal) :- not has_property(X, fragile)
+lholds(X, made_of, metal) :- hhn(X, has_property, fragile), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/42  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- made_of(X, fabric)
+lholds(X, can_do, absorb) :- hh(X, made_of, fabric), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/43  layer 1  status hypothesis  conf 0.80  support 5  rule can_go_in(X, closet) :- made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L3/44  layer 3  status hypothesis  conf 0.75  support 4  rule not has_property(X, absorbent) :- can_go_in(X, oven)
+lholdsn(X, has_property, absorbent) :- hh(X, can_go_in, oven), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/45  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- has_part(X, handle)
+lholdsn(X, has_property, absorbent) :- hh(X, has_part, handle), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/46  layer 1  status hypothesis  conf 0.75  support 4  rule not has_property(X, absorbent) :- made_of(X, ceramic)
+lholdsn(X, has_property, absorbent) :- hh(X, made_of, ceramic), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L2/47  layer 2  status hypothesis  conf 0.75  support 4  rule not has_property(X, absorbent) :- made_of(X, metal)
+lholdsn(X, has_property, absorbent) :- hh(X, made_of, metal), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L4/48  layer 4  status suspended  conf 0.80  support 4  rule has_property(X, fragile) :- can_go_in(X, closet), not has_property(X, absorbent)
+lholds(X, has_property, fragile) :- hh(X, can_go_in, closet), hhn(X, has_property, absorbent), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L1/49  layer 1  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- can_go_in(X, toolbox)
+lholdsn(X, has_property, fragile) :- hh(X, can_go_in, toolbox), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L1/50  layer 1  status specialised  conf 0.75  support 3  rule has_property(X, waterproof) :- made_of(X, plastic)
+lholds(X, has_property, waterproof) :- hh(X, made_of, plastic), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L1/51  layer 1  status suspended  conf 0.75  support 4  rule not has_property(X, waterproof) :- not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/52  layer 2  status specialised  conf 0.75  support 4  rule not has_property(X, waterproof) :- can_do(X, absorb_water)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L4/53  layer 4  status specialised  conf 0.75  support 4  rule not has_property(X, waterproof) :- has_property(X, absorbent)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L1/54  layer 1  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- made_of(X, fabric)
+lholdsn(X, has_property, waterproof) :- hh(X, made_of, fabric), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/55  layer 2  status hypothesis  conf 0.75  support 4  rule not made_of(X, glass_material) :- made_of(X, metal)
+lholdsn(X, made_of, glass_material) :- hh(X, made_of, metal), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L4/56  layer 4  status hypothesis  conf 0.75  support 4  rule not made_of(X, metal) :- has_property(X, absorbent)
+lholdsn(X, made_of, metal) :- hh(X, has_property, absorbent), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/57  layer 1  status hypothesis  conf 0.83  support 5  rule can_do(X, absorb) :- not can_do(X, hold)
+lholds(X, can_do, absorb) :- hhn(X, can_do, hold), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/58  layer 1  status specialised  conf 0.75  support 3  rule can_do(X, absorb) :- can_do(X, spread)
+lholds(X, can_do, absorb) :- hh(X, can_do, spread), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/59  layer 1  status hypothesis  conf 0.88  support 7  rule can_do(X, absorb) :- can_do(X, spread), not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hh(X, can_do, spread), hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L2/60  layer 2  status specialised  conf 0.83  support 5  rule can_do(X, absorb) :- can_go_in(X, drawer)
+lholds(X, can_do, absorb) :- hh(X, can_go_in, drawer), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L2/61  layer 2  status hypothesis  conf 0.90  support 9  rule can_do(X, absorb) :- can_go_in(X, drawer), not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hh(X, can_go_in, drawer), hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L5/62  layer 5  status hypothesis  conf 0.83  support 5  rule can_do(X, absorb) :- not can_do(X, abrade), not has_property(X, waterproof)
+lholds(X, can_do, absorb) :- hhn(X, can_do, abrade), hhn(X, has_property, waterproof), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L5/63  layer 5  status hypothesis  conf 0.83  support 5  rule can_do(X, absorb) :- can_do(X, absorb_water), not has_property(X, waterproof)
+lholds(X, can_do, absorb) :- hh(X, can_do, absorb_water), hhn(X, has_property, waterproof), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L2/64  layer 2  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- can_do(X, absorb_water), made_of(X, fabric)
+lholds(X, can_do, absorb) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L4/65  layer 4  status hypothesis  conf 0.83  support 6  rule can_do(X, absorb) :- not can_go_in(X, oven), has_property(X, absorbent)
+lholds(X, can_do, absorb) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L6/66  layer 6  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb_water) :- can_do(X, absorb)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/67  layer 1  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_do(X, hold)
+lholds(X, can_do, absorb_water) :- hhn(X, can_do, hold), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L2/68  layer 2  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_go_in(X, drawer)
+lholds(X, can_do, absorb_water) :- hh(X, can_go_in, drawer), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L3/69  layer 3  status waiting  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_go_in(X, oven)
+lholds(X, can_do, absorb_water) :- hhn(X, can_go_in, oven), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L5/70  layer 5  status suspended  conf 0.80  support 4  rule can_do(X, absorb_water) :- has_property(X, absorbent), not has_property(X, waterproof)
+lholds(X, can_do, absorb_water) :- hh(X, has_property, absorbent), hhn(X, has_property, waterproof), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L4/71  layer 4  status hypothesis  conf 0.80  support 4  rule can_do(X, contain) :- not has_property(X, absorbent)
+lholds(X, can_do, contain) :- hhn(X, has_property, absorbent), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L1/72  layer 1  status hypothesis  conf 0.75  support 3  rule can_do(X, hold) :- has_property(X, heat_resistant)
+lholds(X, can_do, hold) :- hh(X, has_property, heat_resistant), not holds(X, can_do, hold), not holdsn(X, can_do, hold).
+% learn/L6/73  layer 6  status hypothesis  conf 0.80  support 4  rule can_go_in(X, closet) :- can_do(X, absorb)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L2/74  layer 2  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_go_in(X, drawer)
+lholds(X, can_go_in, closet) :- hh(X, can_go_in, drawer), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L5/75  layer 5  status hypothesis  conf 0.75  support 4  rule can_go_in(X, closet) :- not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L3/76  layer 3  status waiting  conf 0.75  support 3  rule can_go_in(X, fridge) :- not can_go_in(X, oven)
+lholds(X, can_go_in, fridge) :- hhn(X, can_go_in, oven), not holds(X, can_go_in, fridge), not holdsn(X, can_go_in, fridge).
+% learn/L6/77  layer 6  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, absorb)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, absorb), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L4/78  layer 4  status hypothesis  conf 0.75  support 4  rule not can_go_in(X, oven) :- has_property(X, absorbent)
+lholdsn(X, can_go_in, oven) :- hh(X, has_property, absorbent), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L5/79  layer 5  status hypothesis  conf 0.75  support 4  rule not can_go_in(X, oven) :- not has_property(X, waterproof)
+lholdsn(X, can_go_in, oven) :- hhn(X, has_property, waterproof), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/80  layer 1  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- made_of(X, fabric)
+lholdsn(X, can_go_in, oven) :- hh(X, made_of, fabric), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/81  layer 1  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- made_of(X, plastic)
+lholdsn(X, can_go_in, oven) :- hh(X, made_of, plastic), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L1/82  layer 1  status waiting  conf 0.83  support 5  rule can_go_in(X, pantry) :- can_go_in(X, microwave)
+lholds(X, can_go_in, pantry) :- hh(X, can_go_in, microwave), not holds(X, can_go_in, pantry), not holdsn(X, can_go_in, pantry).
+% learn/L1/83  layer 1  status hypothesis  conf 0.80  support 4  rule can_go_in(X, pantry) :- used_for(X, add_flavor)
+lholds(X, can_go_in, pantry) :- hh(X, used_for, add_flavor), not holds(X, can_go_in, pantry), not holdsn(X, can_go_in, pantry).
+% learn/L2/84  layer 2  status hypothesis  conf 0.75  support 3  rule has_part(X, handle) :- not has_property(X, fragile)
+lholds(X, has_part, handle) :- hhn(X, has_property, fragile), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L4/85  layer 4  status waiting  conf 0.75  support 3  rule has_part(X, rim) :- not has_property(X, absorbent)
+lholds(X, has_part, rim) :- hhn(X, has_property, absorbent), not holds(X, has_part, rim), not holdsn(X, has_part, rim).
+% learn/L6/86  layer 6  status hypothesis  conf 0.89  support 8  rule has_property(X, absorbent) :- can_do(X, absorb)
+lholds(X, has_property, absorbent) :- hh(X, can_do, absorb), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L2/87  layer 2  status hypothesis  conf 0.86  support 6  rule has_property(X, absorbent) :- not can_do(X, hold)
+lholds(X, has_property, absorbent) :- hhn(X, can_do, hold), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L7/88  layer 7  status hypothesis  conf 0.83  support 5  rule has_property(X, absorbent) :- can_do(X, spread), not can_go_in(X, oven)
+lholds(X, has_property, absorbent) :- hh(X, can_do, spread), hhn(X, can_go_in, oven), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L7/89  layer 7  status hypothesis  conf 0.86  support 6  rule has_property(X, absorbent) :- not can_go_in(X, oven), made_of(X, fabric)
+lholds(X, has_property, absorbent) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L2/90  layer 2  status hypothesis  conf 0.80  support 4  rule not has_property(X, absorbent) :- not has_property(X, fragile)
+lholdsn(X, has_property, absorbent) :- hhn(X, has_property, fragile), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/91  layer 1  status hypothesis  conf 0.80  support 4  rule not has_property(X, absorbent) :- made_of(X, plastic)
+lholdsn(X, has_property, absorbent) :- hh(X, made_of, plastic), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L3/92  layer 3  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- not made_of(X, glass_material)
+lholdsn(X, has_property, fragile) :- hhn(X, made_of, glass_material), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L5/93  layer 5  status specialised  conf 0.75  support 3  rule not has_property(X, fragile) :- can_go_in(X, toolbox), made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hh(X, can_go_in, toolbox), hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L5/94  layer 5  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- has_part(X, handle), made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hh(X, has_part, handle), hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L8/95  layer 8  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- not has_property(X, absorbent), made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hhn(X, has_property, absorbent), hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L2/96  layer 2  status suspended  conf 0.75  support 3  rule not has_property(X, sharp) :- can_go_in(X, drawer)
+lholdsn(X, has_property, sharp) :- hh(X, can_go_in, drawer), not holds(X, has_property, sharp), not holdsn(X, has_property, sharp).
+% learn/L6/97  layer 6  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/98  layer 2  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_do(X, hold)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, hold), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/99  layer 2  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- can_go_in(X, drawer)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, drawer), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/100  layer 8  status suspended  conf 0.80  support 4  rule not has_property(X, waterproof) :- can_do(X, absorb_water), has_property(X, absorbent)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), hh(X, has_property, absorbent), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/101  layer 7  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- can_do(X, absorb_water), made_of(X, fabric)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/102  layer 8  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_go_in(X, oven), has_property(X, absorbent)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/103  layer 7  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_go_in(X, oven), made_of(X, fabric)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/104  layer 8  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- has_property(X, absorbent), made_of(X, fabric)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), hh(X, made_of, fabric), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/105  layer 7  status hypothesis  conf 0.75  support 3  rule not made_of(X, glass_material) :- can_go_in(X, oven)
+lholdsn(X, made_of, glass_material) :- hh(X, can_go_in, oven), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L7/106  layer 7  status waiting  conf 0.75  support 3  rule not made_of(X, glass_material) :- not can_go_in(X, oven)
+lholdsn(X, made_of, glass_material) :- hhn(X, can_go_in, oven), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L7/107  layer 7  status waiting  conf 0.75  support 3  rule made_of(X, paper_material) :- not can_go_in(X, oven)
+lholds(X, made_of, paper_material) :- hhn(X, can_go_in, oven), not holds(X, made_of, paper_material), not holdsn(X, made_of, paper_material).
+% learn/L5/108  layer 5  status hypothesis  conf 0.75  support 3  rule made_of(X, plastic) :- can_do(X, contain)
+lholds(X, made_of, plastic) :- hh(X, can_do, contain), not holds(X, made_of, plastic), not holdsn(X, made_of, plastic).
+% learn/L1/109  layer 1  status waiting  conf 0.75  support 3  rule used_for(X, add_flavor) :- can_go_in(X, microwave)
+lholds(X, used_for, add_flavor) :- hh(X, can_go_in, microwave), not holds(X, used_for, add_flavor), not holdsn(X, used_for, add_flavor).
+% learn/L2/110  layer 2  status suspended  conf 0.91  support 10  rule not has_property(X, waterproof) :- can_do(X, absorb_water), has_property(X, absorbent)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), hh(X, has_property, absorbent), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L4/111  layer 4  status specialised  conf 0.91  support 10  rule not has_property(X, waterproof) :- has_property(X, absorbent), not can_go_in(X, oven)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), hhn(X, can_go_in, oven), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L1/112  layer 1  status specialised  conf 0.89  support 8  rule not has_property(X, waterproof) :- made_of(X, fabric), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, made_of, fabric), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L6/113  layer 6  status specialised  conf 0.90  support 9  rule not has_property(X, waterproof) :- can_do(X, absorb), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/114  layer 2  status specialised  conf 0.90  support 9  rule not has_property(X, waterproof) :- not can_do(X, hold), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, hold), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/115  layer 2  status specialised  conf 0.90  support 9  rule not has_property(X, waterproof) :- can_go_in(X, drawer), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, drawer), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/116  layer 7  status specialised  conf 0.89  support 8  rule not has_property(X, waterproof) :- can_do(X, absorb_water), made_of(X, fabric), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/117  layer 8  status specialised  conf 0.90  support 9  rule not has_property(X, waterproof) :- not can_go_in(X, oven), has_property(X, absorbent), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/118  layer 7  status specialised  conf 0.89  support 8  rule not has_property(X, waterproof) :- not can_go_in(X, oven), made_of(X, fabric), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/119  layer 8  status specialised  conf 0.89  support 8  rule not has_property(X, waterproof) :- has_property(X, absorbent), made_of(X, fabric), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), hh(X, made_of, fabric), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L5/120  layer 5  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- can_go_in(X, toolbox), made_of(X, metal), has_property(X, sharp)
+lholdsn(X, has_property, fragile) :- hh(X, can_go_in, toolbox), hh(X, made_of, metal), hh(X, has_property, sharp), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L1/121  layer 1  status hypothesis  conf 0.75  support 3  rule has_property(X, waterproof) :- made_of(X, plastic), has_part(X, handle)
+lholds(X, has_property, waterproof) :- hh(X, made_of, plastic), hh(X, has_part, handle), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/122  layer 7  status specialised  conf 0.83  support 5  rule can_do(X, absorb) :- can_go_in(X, drawer), not can_go_in(X, oven)
+lholds(X, can_do, absorb) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L7/123  layer 7  status hypothesis  conf 0.90  support 9  rule can_do(X, absorb) :- can_go_in(X, drawer), not can_go_in(X, oven), not can_do(X, abrade)
+lholds(X, can_do, absorb) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), hhn(X, can_do, abrade), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L8/124  layer 8  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_do(X, absorb), not can_go_in(X, oven)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), hhn(X, can_go_in, oven), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L8/125  layer 8  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb_water) :- can_do(X, absorb), has_property(X, absorbent)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), hh(X, has_property, absorbent), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L8/126  layer 8  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_do(X, absorb), made_of(X, fabric)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), hh(X, made_of, fabric), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L7/127  layer 7  status specialised  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_go_in(X, drawer), not can_go_in(X, oven)
+lholds(X, can_do, absorb_water) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L7/128  layer 7  status hypothesis  conf 0.90  support 9  rule can_do(X, absorb_water) :- can_go_in(X, drawer), not can_go_in(X, oven), not can_do(X, abrade)
+lholds(X, can_do, absorb_water) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), hhn(X, can_do, abrade), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/129  layer 1  status hypothesis  conf 0.86  support 7  rule can_do(X, contain) :- has_part(X, lid)
+lholds(X, can_do, contain) :- hh(X, has_part, lid), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L3/130  layer 3  status hypothesis  conf 0.80  support 5  rule can_do(X, hold) :- has_part(X, handle)
+lholds(X, can_do, hold) :- hh(X, has_part, handle), not holds(X, can_do, hold), not holdsn(X, can_do, hold).
+% learn/L1/131  layer 1  status hypothesis  conf 0.75  support 4  rule can_do(X, hold) :- has_part(X, lid)
+lholds(X, can_do, hold) :- hh(X, has_part, lid), not holds(X, can_do, hold), not holdsn(X, can_do, hold).
+% learn/L8/132  layer 8  status hypothesis  conf 0.75  support 4  rule can_go_in(X, closet) :- not can_do(X, absorb)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, absorb), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L8/133  layer 8  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hh(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L8/134  layer 8  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb), not can_go_in(X, oven)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hhn(X, can_go_in, oven), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L8/135  layer 8  status hypothesis  conf 0.80  support 4  rule can_go_in(X, closet) :- can_do(X, absorb), made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L7/136  layer 7  status hypothesis  conf 0.75  support 4  rule can_go_in(X, fridge) :- can_go_in(X, microwave), not can_go_in(X, oven)
+lholds(X, can_go_in, fridge) :- hh(X, can_go_in, microwave), hhn(X, can_go_in, oven), not holds(X, can_go_in, fridge), not holdsn(X, can_go_in, fridge).
+% learn/L8/137  layer 8  status suspended  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_go_in(X, fridge)
+lholdsn(X, can_go_in, oven) :- hh(X, can_go_in, fridge), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L3/138  layer 3  status waiting  conf 0.80  support 4  rule not can_go_in(X, oven) :- has_part(X, handle)
+lholdsn(X, can_go_in, oven) :- hh(X, has_part, handle), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L5/139  layer 5  status hypothesis  conf 0.75  support 4  rule not can_go_in(X, oven) :- not made_of(X, metal)
+lholdsn(X, can_go_in, oven) :- hhn(X, made_of, metal), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L8/140  layer 8  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, absorb), has_property(X, absorbent)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, absorb), hh(X, has_property, absorbent), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L8/141  layer 8  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, absorb), made_of(X, fabric)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, absorb), hh(X, made_of, fabric), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L9/142  layer 9  status specialised  conf 0.75  support 3  rule not can_go_in(X, oven) :- has_property(X, absorbent), not has_property(X, waterproof)
+lholdsn(X, can_go_in, oven) :- hh(X, has_property, absorbent), hhn(X, has_property, waterproof), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L6/143  layer 6  status hypothesis  conf 0.80  support 4  rule can_go_in(X, toolbox) :- not has_property(X, fragile)
+lholds(X, can_go_in, toolbox) :- hhn(X, has_property, fragile), not holds(X, can_go_in, toolbox), not holdsn(X, can_go_in, toolbox).
+% learn/L1/144  layer 1  status hypothesis  conf 0.75  support 3  rule has_part(X, bottle) :- has_part(X, cap)
+lholds(X, has_part, bottle) :- hh(X, has_part, cap), not holds(X, has_part, bottle), not holdsn(X, has_part, bottle).
+% learn/L1/145  layer 1  status hypothesis  conf 0.83  support 5  rule has_part(X, handle) :- has_part(X, lid)
+lholds(X, has_part, handle) :- hh(X, has_part, lid), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L6/146  layer 6  status hypothesis  conf 0.75  support 3  rule has_part(X, handle) :- made_of(X, plastic)
+lholds(X, has_part, handle) :- hh(X, made_of, plastic), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L6/147  layer 6  status hypothesis  conf 0.75  support 3  rule has_part(X, handle) :- not has_property(X, fragile), made_of(X, metal)
+lholds(X, has_part, handle) :- hhn(X, has_property, fragile), hh(X, made_of, metal), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L9/148  layer 9  status hypothesis  conf 0.88  support 7  rule has_property(X, absorbent) :- can_do(X, absorb), not can_go_in(X, oven)
+lholds(X, has_property, absorbent) :- hh(X, can_do, absorb), hhn(X, can_go_in, oven), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L8/149  layer 8  status hypothesis  conf 0.88  support 7  rule has_property(X, absorbent) :- can_do(X, absorb), made_of(X, fabric)
+lholds(X, has_property, absorbent) :- hh(X, can_do, absorb), hh(X, made_of, fabric), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/150  layer 1  status hypothesis  conf 0.80  support 4  rule not has_property(X, absorbent) :- has_part(X, lid)
+lholdsn(X, has_property, absorbent) :- hh(X, has_part, lid), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/151  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- has_part(X, rim)
+lholdsn(X, has_property, absorbent) :- hh(X, has_part, rim), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L6/152  layer 6  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- not has_property(X, fragile), made_of(X, metal)
+lholdsn(X, has_property, absorbent) :- hhn(X, has_property, fragile), hh(X, made_of, metal), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L8/153  layer 8  status suspended  conf 0.75  support 3  rule not has_property(X, fragile) :- not made_of(X, glass_material), made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hhn(X, made_of, glass_material), hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L7/154  layer 7  status waiting  conf 0.75  support 3  rule has_property(X, waterproof) :- has_part(X, handle)
+lholds(X, has_property, waterproof) :- hh(X, has_part, handle), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L9/155  layer 9  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- can_go_in(X, drawer), not can_go_in(X, oven)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L9/156  layer 9  status hypothesis  conf 0.75  support 3  rule not made_of(X, glass_material) :- not has_property(X, fragile)
+lholdsn(X, made_of, glass_material) :- hhn(X, has_property, fragile), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L9/157  layer 9  status hypothesis  conf 0.75  support 3  rule made_of(X, metal) :- not can_go_in(X, oven), has_part(X, handle)
+lholds(X, made_of, metal) :- hhn(X, can_go_in, oven), hh(X, has_part, handle), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L7/158  layer 7  status hypothesis  conf 0.75  support 3  rule made_of(X, metal) :- has_part(X, handle), has_property(X, heat_resistant)
+lholds(X, made_of, metal) :- hh(X, has_part, handle), hh(X, has_property, heat_resistant), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L8/159  layer 8  status hypothesis  conf 0.75  support 4  rule not made_of(X, metal) :- can_do(X, absorb)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L10/160  layer 10  status hypothesis  conf 0.75  support 4  rule not made_of(X, metal) :- not can_go_in(X, oven), has_property(X, absorbent)
+lholdsn(X, made_of, metal) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/161  layer 1  status hypothesis  conf 0.80  support 4  rule made_of(X, plastic) :- has_part(X, lid)
+lholds(X, made_of, plastic) :- hh(X, has_part, lid), not holds(X, made_of, plastic), not holdsn(X, made_of, plastic).
+% learn/L10/162  layer 10  status hypothesis  conf 0.75  support 3  rule made_of(X, plastic) :- has_property(X, waterproof)
+lholds(X, made_of, plastic) :- hh(X, has_property, waterproof), not holds(X, made_of, plastic), not holdsn(X, made_of, plastic).
+% learn/L10/163  layer 10  status hypothesis  conf 0.83  support 5  rule can_do(X, absorb) :- not can_do(X, hold), not has_property(X, waterproof)
+lholds(X, can_do, absorb) :- hhn(X, can_do, hold), hhn(X, has_property, waterproof), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L10/164  layer 10  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- not has_property(X, waterproof), made_of(X, fabric)
+lholds(X, can_do, absorb) :- hhn(X, has_property, waterproof), hh(X, made_of, fabric), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L11/165  layer 11  status hypothesis  conf 0.80  support 5  rule can_do(X, absorb_water) :- can_do(X, absorb), not has_property(X, waterproof)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), hhn(X, has_property, waterproof), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L10/166  layer 10  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_do(X, hold), not has_property(X, waterproof)
+lholds(X, can_do, absorb_water) :- hhn(X, can_do, hold), hhn(X, has_property, waterproof), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L10/167  layer 10  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_go_in(X, drawer), not has_property(X, waterproof)
+lholds(X, can_do, absorb_water) :- hh(X, can_go_in, drawer), hhn(X, has_property, waterproof), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L10/168  layer 10  status hypothesis  conf 0.75  support 4  rule can_do(X, contain) :- has_part(X, lid), not has_property(X, absorbent)
+lholds(X, can_do, contain) :- hh(X, has_part, lid), hhn(X, has_property, absorbent), not holds(X, can_do, contain), not holdsn(X, can_do, contain).
+% learn/L11/169  layer 11  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, absorb), not can_go_in(X, oven)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, absorb), hhn(X, can_go_in, oven), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L10/170  layer 10  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_go_in(X, oven), has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L10/171  layer 10  status hypothesis  conf 0.80  support 4  rule can_go_in(X, closet) :- not can_go_in(X, oven), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hhn(X, can_go_in, oven), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L11/172  layer 11  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_go_in(X, oven), not made_of(X, metal)
+lholds(X, can_go_in, closet) :- hhn(X, can_go_in, oven), hhn(X, made_of, metal), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L10/173  layer 10  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- has_property(X, absorbent), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hh(X, has_property, absorbent), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L11/174  layer 11  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- has_property(X, absorbent), not made_of(X, metal)
+lholds(X, can_go_in, closet) :- hh(X, has_property, absorbent), hhn(X, made_of, metal), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L11/175  layer 11  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not has_property(X, waterproof), not made_of(X, metal)
+lholds(X, can_go_in, closet) :- hhn(X, has_property, waterproof), hhn(X, made_of, metal), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/176  layer 1  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- has_part(X, lid)
+lholdsn(X, can_go_in, oven) :- hh(X, has_part, lid), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L11/177  layer 11  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, absorb), not has_property(X, waterproof)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, absorb), hhn(X, has_property, waterproof), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L11/178  layer 11  status hypothesis  conf 0.75  support 3  rule can_go_in(X, toolbox) :- not has_property(X, fragile), made_of(X, metal)
+lholds(X, can_go_in, toolbox) :- hhn(X, has_property, fragile), hh(X, made_of, metal), not holds(X, can_go_in, toolbox), not holdsn(X, can_go_in, toolbox).
+% learn/L12/179  layer 12  status waiting  conf 0.80  support 4  rule has_part(X, handle) :- not can_go_in(X, oven)
+lholds(X, has_part, handle) :- hhn(X, can_go_in, oven), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L10/180  layer 10  status hypothesis  conf 0.86  support 6  rule has_property(X, absorbent) :- not can_do(X, hold), not has_property(X, waterproof)
+lholds(X, has_property, absorbent) :- hhn(X, can_do, hold), hhn(X, has_property, waterproof), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L12/181  layer 12  status hypothesis  conf 0.80  support 4  rule has_property(X, absorbent) :- not can_go_in(X, oven), not made_of(X, metal)
+lholds(X, has_property, absorbent) :- hhn(X, can_go_in, oven), hhn(X, made_of, metal), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L10/182  layer 10  status hypothesis  conf 0.88  support 7  rule has_property(X, absorbent) :- not has_property(X, waterproof), made_of(X, fabric)
+lholds(X, has_property, absorbent) :- hhn(X, has_property, waterproof), hh(X, made_of, fabric), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L1/183  layer 1  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- has_property(X, sharp)
+lholdsn(X, has_property, absorbent) :- hh(X, has_property, sharp), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L12/184  layer 12  status waiting  conf 0.75  support 3  rule not has_property(X, fragile) :- not can_go_in(X, oven)
+lholdsn(X, has_property, fragile) :- hhn(X, can_go_in, oven), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L11/185  layer 11  status hypothesis  conf 0.75  support 3  rule not has_property(X, fragile) :- made_of(X, plastic)
+lholdsn(X, has_property, fragile) :- hh(X, made_of, plastic), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L12/186  layer 12  status hypothesis  conf 0.75  support 3  rule has_property(X, heat_resistant) :- has_property(X, fragile)
+lholds(X, has_property, heat_resistant) :- hh(X, has_property, fragile), not holds(X, has_property, heat_resistant), not holdsn(X, has_property, heat_resistant).
+% learn/L11/187  layer 11  status hypothesis  conf 0.75  support 3  rule has_property(X, waterproof) :- has_part(X, handle), made_of(X, plastic)
+lholds(X, has_property, waterproof) :- hh(X, has_part, handle), hh(X, made_of, plastic), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L11/188  layer 11  status specialised  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L11/189  layer 11  status specialised  conf 0.80  support 4  rule not has_property(X, waterproof) :- not made_of(X, metal)
+lholdsn(X, has_property, waterproof) :- hhn(X, made_of, metal), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L12/190  layer 12  status hypothesis  conf 0.75  support 3  rule not made_of(X, glass_material) :- not has_property(X, fragile), made_of(X, metal)
+lholdsn(X, made_of, glass_material) :- hhn(X, has_property, fragile), hh(X, made_of, metal), not holds(X, made_of, glass_material), not holdsn(X, made_of, glass_material).
+% learn/L1/191  layer 1  status hypothesis  conf 0.75  support 3  rule made_of(X, metal) :- has_property(X, sharp)
+lholds(X, made_of, metal) :- hh(X, has_property, sharp), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L13/192  layer 13  status hypothesis  conf 0.75  support 3  rule made_of(X, metal) :- not has_property(X, absorbent), not has_property(X, fragile)
+lholds(X, made_of, metal) :- hhn(X, has_property, absorbent), hhn(X, has_property, fragile), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L12/193  layer 12  status hypothesis  conf 0.75  support 4  rule not made_of(X, metal) :- can_do(X, absorb), not can_go_in(X, oven)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hhn(X, can_go_in, oven), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L13/194  layer 13  status hypothesis  conf 0.80  support 5  rule not made_of(X, metal) :- can_do(X, absorb), has_property(X, absorbent)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hh(X, has_property, absorbent), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L12/195  layer 12  status hypothesis  conf 0.75  support 4  rule not made_of(X, metal) :- can_do(X, absorb), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L13/196  layer 13  status hypothesis  conf 0.80  support 5  rule not made_of(X, metal) :- has_property(X, absorbent), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hh(X, has_property, absorbent), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L11/197  layer 11  status hypothesis  conf 0.75  support 3  rule made_of(X, plastic) :- can_do(X, contain), has_part(X, lid)
+lholds(X, made_of, plastic) :- hh(X, can_do, contain), hh(X, has_part, lid), not holds(X, made_of, plastic), not holdsn(X, made_of, plastic).
+% learn/L9/198  layer 9  status hypothesis  conf 0.91  support 10  rule not can_go_in(X, oven) :- has_property(X, absorbent), not has_property(X, waterproof), can_go_in(X, closet)
+lholdsn(X, can_go_in, oven) :- hh(X, has_property, absorbent), hhn(X, has_property, waterproof), hh(X, can_go_in, closet), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L12/199  layer 12  status hypothesis  conf 0.80  support 4  rule can_do(X, absorb) :- can_go_in(X, closet), made_of(X, fabric)
+lholds(X, can_do, absorb) :- hh(X, can_go_in, closet), hh(X, made_of, fabric), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L13/200  layer 13  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_do(X, absorb), can_go_in(X, closet)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, absorb), hh(X, can_go_in, closet), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L12/201  layer 12  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_go_in(X, closet), can_go_in(X, drawer)
+lholds(X, can_do, absorb_water) :- hh(X, can_go_in, closet), hh(X, can_go_in, drawer), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L12/202  layer 12  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_go_in(X, oven), made_of(X, fabric)
+lholds(X, can_do, absorb_water) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L1/203  layer 1  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, abrade)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, abrade), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L14/204  layer 14  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L4/205  layer 4  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, hold)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, hold), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L1/206  layer 1  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, spread)
+lholds(X, can_go_in, closet) :- hh(X, can_do, spread), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L13/207  layer 13  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb), has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hh(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L13/208  layer 13  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L14/209  layer 14  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb), not made_of(X, metal)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hhn(X, made_of, metal), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L12/210  layer 12  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_go_in(X, drawer), not can_go_in(X, oven)
+lholds(X, can_go_in, closet) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L12/211  layer 12  status hypothesis  conf 0.83  support 5  rule can_go_in(X, closet) :- not can_go_in(X, oven), made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L13/212  layer 13  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- has_property(X, absorbent), made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hh(X, has_property, absorbent), hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L12/213  layer 12  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not has_property(X, waterproof), made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hhn(X, has_property, waterproof), hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L12/214  layer 12  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- has_property(X, waterproof)
+lholdsn(X, can_go_in, oven) :- hh(X, has_property, waterproof), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L14/215  layer 14  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, absorb_water), made_of(X, fabric)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L15/216  layer 15  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_go_in(X, closet), made_of(X, fabric)
+lholdsn(X, can_go_in, oven) :- hh(X, can_go_in, closet), hh(X, made_of, fabric), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L15/217  layer 15  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_go_in(X, closet), not made_of(X, metal)
+lholdsn(X, can_go_in, oven) :- hh(X, can_go_in, closet), hhn(X, made_of, metal), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L12/218  layer 12  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- not has_property(X, waterproof), made_of(X, fabric)
+lholdsn(X, can_go_in, oven) :- hhn(X, has_property, waterproof), hh(X, made_of, fabric), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L15/219  layer 15  status hypothesis  conf 0.86  support 6  rule has_property(X, absorbent) :- can_do(X, absorb), can_go_in(X, closet)
+lholds(X, has_property, absorbent) :- hh(X, can_do, absorb), hh(X, can_go_in, closet), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L15/220  layer 15  status hypothesis  conf 0.83  support 5  rule has_property(X, absorbent) :- can_do(X, spread), can_go_in(X, closet)
+lholds(X, has_property, absorbent) :- hh(X, can_do, spread), hh(X, can_go_in, closet), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L16/221  layer 16  status hypothesis  conf 0.75  support 3  rule not has_property(X, fragile) :- not can_go_in(X, oven), made_of(X, metal)
+lholdsn(X, has_property, fragile) :- hhn(X, can_go_in, oven), hh(X, made_of, metal), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L16/222  layer 16  status hypothesis  conf 0.75  support 3  rule not has_property(X, fragile) :- not has_property(X, absorbent), made_of(X, plastic)
+lholdsn(X, has_property, fragile) :- hhn(X, has_property, absorbent), hh(X, made_of, plastic), not holds(X, has_property, fragile), not holdsn(X, has_property, fragile).
+% learn/L15/223  layer 15  status suspended  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_do(X, absorb), can_go_in(X, closet)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, absorb), hh(X, can_go_in, closet), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L15/224  layer 15  status specialised  conf 0.80  support 4  rule not has_property(X, waterproof) :- can_go_in(X, closet), not made_of(X, metal)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, closet), hhn(X, made_of, metal), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L16/225  layer 16  status specialised  conf 0.83  support 5  rule not has_property(X, waterproof) :- not can_go_in(X, oven), not made_of(X, metal)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hhn(X, made_of, metal), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L1/226  layer 1  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- not can_do(X, abrade)
+lholdsn(X, made_of, metal) :- hhn(X, can_do, abrade), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L14/227  layer 14  status hypothesis  conf 0.80  support 4  rule not made_of(X, metal) :- can_do(X, absorb_water)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb_water), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L4/228  layer 4  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- not can_do(X, hold)
+lholdsn(X, made_of, metal) :- hhn(X, can_do, hold), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L1/229  layer 1  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L15/230  layer 15  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_do(X, absorb), can_go_in(X, closet)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hh(X, can_go_in, closet), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L15/231  layer 15  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_go_in(X, closet), can_go_in(X, drawer)
+lholdsn(X, made_of, metal) :- hh(X, can_go_in, closet), hh(X, can_go_in, drawer), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/232  layer 17  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_go_in(X, drawer), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hh(X, can_go_in, drawer), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L4/233  layer 4  status hypothesis  conf 0.91  support 10  rule not has_property(X, waterproof) :- has_property(X, absorbent), not can_go_in(X, oven), can_go_in(X, closet)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), hhn(X, can_go_in, oven), hh(X, can_go_in, closet), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L1/234  layer 1  status hypothesis  conf 0.89  support 8  rule not has_property(X, waterproof) :- made_of(X, fabric), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hh(X, made_of, fabric), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L6/235  layer 6  status hypothesis  conf 0.90  support 9  rule not has_property(X, waterproof) :- can_do(X, absorb), not can_do(X, abrade), can_do(X, absorb_water)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb), hhn(X, can_do, abrade), hh(X, can_do, absorb_water), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/236  layer 2  status hypothesis  conf 0.90  support 9  rule not has_property(X, waterproof) :- not can_do(X, hold), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, hold), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L2/237  layer 2  status hypothesis  conf 0.90  support 9  rule not has_property(X, waterproof) :- can_go_in(X, drawer), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, drawer), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/238  layer 7  status hypothesis  conf 0.89  support 8  rule not has_property(X, waterproof) :- can_do(X, absorb_water), made_of(X, fabric), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/239  layer 8  status hypothesis  conf 0.90  support 9  rule not has_property(X, waterproof) :- not can_go_in(X, oven), has_property(X, absorbent), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, has_property, absorbent), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L7/240  layer 7  status hypothesis  conf 0.89  support 8  rule not has_property(X, waterproof) :- not can_go_in(X, oven), made_of(X, fabric), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L8/241  layer 8  status hypothesis  conf 0.89  support 8  rule not has_property(X, waterproof) :- has_property(X, absorbent), made_of(X, fabric), not can_do(X, abrade), can_do(X, absorb)
+lholdsn(X, has_property, waterproof) :- hh(X, has_property, absorbent), hh(X, made_of, fabric), hhn(X, can_do, abrade), hh(X, can_do, absorb), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L9/242  layer 9  status hypothesis  conf 0.90  support 9  rule not has_property(X, waterproof) :- can_go_in(X, drawer), not can_go_in(X, oven), not can_do(X, abrade)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, drawer), hhn(X, can_go_in, oven), hhn(X, can_do, abrade), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L11/243  layer 11  status hypothesis  conf 0.75  support 3  rule not has_property(X, waterproof) :- not can_do(X, absorb), can_go_in(X, closet)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_do, absorb), hh(X, can_go_in, closet), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L11/244  layer 11  status hypothesis  conf 0.92  support 11  rule not has_property(X, waterproof) :- not made_of(X, metal), not can_go_in(X, oven)
+lholdsn(X, has_property, waterproof) :- hhn(X, made_of, metal), hhn(X, can_go_in, oven), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L15/245  layer 15  status hypothesis  conf 0.91  support 10  rule not has_property(X, waterproof) :- can_go_in(X, closet), not made_of(X, metal), not can_go_in(X, oven)
+lholdsn(X, has_property, waterproof) :- hh(X, can_go_in, closet), hhn(X, made_of, metal), hhn(X, can_go_in, oven), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L16/246  layer 16  status hypothesis  conf 0.92  support 11  rule not has_property(X, waterproof) :- not can_go_in(X, oven), not made_of(X, metal), has_property(X, absorbent)
+lholdsn(X, has_property, waterproof) :- hhn(X, can_go_in, oven), hhn(X, made_of, metal), hh(X, has_property, absorbent), not holds(X, has_property, waterproof), not holdsn(X, has_property, waterproof).
+% learn/L16/247  layer 16  status hypothesis  conf 0.83  support 5  rule can_do(X, absorb) :- not can_do(X, hold), has_property(X, absorbent)
+lholds(X, can_do, absorb) :- hhn(X, can_do, hold), hh(X, has_property, absorbent), not holds(X, can_do, absorb), not holdsn(X, can_do, absorb).
+% learn/L1/248  layer 1  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- can_do(X, wipe)
+lholds(X, can_do, absorb_water) :- hh(X, can_do, wipe), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L16/249  layer 16  status hypothesis  conf 0.75  support 3  rule can_do(X, absorb_water) :- not can_do(X, hold), has_property(X, absorbent)
+lholds(X, can_do, absorb_water) :- hhn(X, can_do, hold), hh(X, has_property, absorbent), not holds(X, can_do, absorb_water), not holdsn(X, can_do, absorb_water).
+% learn/L17/250  layer 17  status hypothesis  conf 0.75  support 3  rule not can_do(X, hold) :- not has_property(X, waterproof)
+lholdsn(X, can_do, hold) :- hhn(X, has_property, waterproof), not holds(X, can_do, hold), not holdsn(X, can_do, hold).
+% learn/L1/251  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- not can_do(X, abrade)
+lholds(X, can_do, wipe) :- hhn(X, can_do, abrade), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L17/252  layer 17  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- can_do(X, absorb)
+lholds(X, can_do, wipe) :- hh(X, can_do, absorb), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L18/253  layer 18  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- not can_do(X, hold)
+lholds(X, can_do, wipe) :- hhn(X, can_do, hold), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L15/254  layer 15  status waiting  conf 0.80  support 4  rule can_do(X, wipe) :- can_go_in(X, closet)
+lholds(X, can_do, wipe) :- hh(X, can_go_in, closet), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L2/255  layer 2  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- can_go_in(X, drawer)
+lholds(X, can_do, wipe) :- hh(X, can_go_in, drawer), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L16/256  layer 16  status waiting  conf 0.80  support 4  rule can_do(X, wipe) :- not can_go_in(X, oven)
+lholds(X, can_do, wipe) :- hhn(X, can_go_in, oven), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L16/257  layer 16  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- has_property(X, absorbent)
+lholds(X, can_do, wipe) :- hh(X, has_property, absorbent), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L17/258  layer 17  status hypothesis  conf 0.83  support 5  rule can_do(X, wipe) :- not has_property(X, waterproof)
+lholds(X, can_do, wipe) :- hhn(X, has_property, waterproof), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L1/259  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- made_of(X, fabric)
+lholds(X, can_do, wipe) :- hh(X, made_of, fabric), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L18/260  layer 18  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- not made_of(X, metal)
+lholds(X, can_do, wipe) :- hhn(X, made_of, metal), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L1/261  layer 1  status hypothesis  conf 0.80  support 4  rule can_do(X, wipe) :- used_for(X, absorb)
+lholds(X, can_do, wipe) :- hh(X, used_for, absorb), not holds(X, can_do, wipe), not holdsn(X, can_do, wipe).
+% learn/L7/262  layer 7  status waiting  conf 0.75  support 3  rule can_go_in(X, closet) :- has_part(X, handle)
+lholds(X, can_go_in, closet) :- hh(X, has_part, handle), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/263  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, abrade), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, abrade), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/264  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb), can_do(X, absorb_water)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb), hh(X, can_do, absorb_water), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/265  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water), not can_go_in(X, oven)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), hhn(X, can_go_in, oven), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/266  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water), has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), hh(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/267  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L17/268  layer 17  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water), made_of(X, fabric)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L18/269  layer 18  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- can_do(X, absorb_water), not made_of(X, metal)
+lholds(X, can_go_in, closet) :- hh(X, can_do, absorb_water), hhn(X, made_of, metal), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L18/270  layer 18  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, hold), has_property(X, absorbent)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, hold), hh(X, has_property, absorbent), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L18/271  layer 18  status hypothesis  conf 0.75  support 3  rule can_go_in(X, closet) :- not can_do(X, hold), not has_property(X, waterproof)
+lholds(X, can_go_in, closet) :- hhn(X, can_do, hold), hhn(X, has_property, waterproof), not holds(X, can_go_in, closet), not holdsn(X, can_go_in, closet).
+% learn/L11/272  layer 11  status hypothesis  conf 0.75  support 3  rule not can_go_in(X, oven) :- can_do(X, contain), has_part(X, lid)
+lholdsn(X, can_go_in, oven) :- hh(X, can_do, contain), hh(X, has_part, lid), not holds(X, can_go_in, oven), not holdsn(X, can_go_in, oven).
+% learn/L17/273  layer 17  status hypothesis  conf 0.75  support 3  rule has_part(X, handle) :- has_property(X, waterproof)
+lholds(X, has_part, handle) :- hh(X, has_property, waterproof), not holds(X, has_part, handle), not holdsn(X, has_part, handle).
+% learn/L12/274  layer 12  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- can_go_in(X, toolbox)
+lholdsn(X, has_property, absorbent) :- hh(X, can_go_in, toolbox), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L16/275  layer 16  status hypothesis  conf 0.75  support 3  rule not has_property(X, absorbent) :- not can_go_in(X, oven), made_of(X, plastic)
+lholdsn(X, has_property, absorbent) :- hhn(X, can_go_in, oven), hh(X, made_of, plastic), not holds(X, has_property, absorbent), not holdsn(X, has_property, absorbent).
+% learn/L17/276  layer 17  status hypothesis  conf 0.80  support 4  rule not made_of(X, metal) :- not can_do(X, abrade), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hhn(X, can_do, abrade), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/277  layer 17  status hypothesis  conf 0.83  support 5  rule not made_of(X, metal) :- can_do(X, absorb), can_do(X, absorb_water)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hh(X, can_do, absorb_water), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/278  layer 17  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_do(X, absorb), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/279  layer 17  status hypothesis  conf 0.83  support 5  rule not made_of(X, metal) :- can_do(X, absorb_water), not can_go_in(X, oven)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb_water), hhn(X, can_go_in, oven), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/280  layer 17  status hypothesis  conf 0.83  support 5  rule not made_of(X, metal) :- can_do(X, absorb_water), has_property(X, absorbent)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb_water), hh(X, has_property, absorbent), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/281  layer 17  status hypothesis  conf 0.83  support 5  rule not made_of(X, metal) :- can_do(X, absorb_water), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb_water), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/282  layer 17  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_do(X, absorb_water), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hh(X, can_do, absorb_water), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L18/283  layer 18  status hypothesis  conf 0.80  support 4  rule not made_of(X, metal) :- not can_do(X, hold), has_property(X, absorbent)
+lholdsn(X, made_of, metal) :- hhn(X, can_do, hold), hh(X, has_property, absorbent), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L18/284  layer 18  status hypothesis  conf 0.80  support 4  rule not made_of(X, metal) :- not can_do(X, hold), not has_property(X, waterproof)
+lholdsn(X, made_of, metal) :- hhn(X, can_do, hold), hhn(X, has_property, waterproof), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L19/285  layer 19  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- can_go_in(X, closet), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hh(X, can_go_in, closet), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L16/286  layer 16  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- not can_go_in(X, oven), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hhn(X, can_go_in, oven), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/287  layer 17  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- has_property(X, absorbent), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hh(X, has_property, absorbent), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
+% learn/L17/288  layer 17  status hypothesis  conf 0.75  support 3  rule not made_of(X, metal) :- not has_property(X, waterproof), made_of(X, fabric)
+lholdsn(X, made_of, metal) :- hhn(X, has_property, waterproof), hh(X, made_of, fabric), not holds(X, made_of, metal), not holdsn(X, made_of, metal).
