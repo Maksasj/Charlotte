@@ -63,6 +63,10 @@ python3 data/generate_conversations.py --total 20 --topics 4    # a small trial 
 python3 data/generate_conversations.py                          # 10,000 over the topics in topics.txt
 ```
 
+While it runs it prints every message as it is generated, and after each
+conversation a line with how many are done, the time passed, the estimated
+time left and the speed. `--quiet` keeps only that line.
+
 It needs only Python 3 and a running Ollama with the model pulled (default
 `qwen3.5:4b`, change with `--model`). It can be stopped and started again and
 carries on where it left off. Topics are in `topics.txt`, one per line.
