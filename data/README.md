@@ -66,9 +66,10 @@ python3 data/generate_conversations.py                          # 10,000 over th
 It goes through the topics in rounds: one chat for each topic, then the next
 round. Stopped early, every topic has about the same number of chats.
 
-Messages are kept short, as people text: the prompt asks for 3 to 12 words, each
-message is limited to 60 model tokens, and one that still runs past 25 words is
-cut back to its first sentences (`--max-tokens`, `--max-words`).
+Messages are kept to a sentence or two in a friendly, polite tone, halfway
+between casual and formal: the prompt asks for 10 to 25 words, each message is
+limited to 90 model tokens, and one that still runs past 40 words is cut back
+to its first sentences (`--max-tokens`, `--max-words`).
 
 While it runs it prints every message as it is generated, and after each
 conversation a line with how many are done, the time passed, the estimated

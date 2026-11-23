@@ -40,26 +40,27 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 
 # Both agents get this. Neither is told it is talking to a model.
-CHAT_SYSTEM = """You are texting with a friend on your phone. Be as natural as possible: this must read like real text messages between two people.
+CHAT_SYSTEM = """You are chatting with someone by text message. Be natural: this should read like a real chat between two people who are friendly and polite with each other.
 
-Keep it SHORT. Real texts are short.
-- Most of your messages are 3 to 12 words. Never more than two short sentences.
-- One thought per message. No stories, no long explanations, no piling up details.
-- A reply can be just a few words: "lol same", "oh nice", "no idea tbh", "wait really?".
+Length:
+- One or two sentences per message, usually 10 to 25 words.
+- Not just a word or two, and never a paragraph. One thought per message, no stories and no piling up of details.
+
+Tone:
+- Friendly and polite, halfway between casual and formal: how you would write to a colleague you like or a friendly acquaintance.
+- Full sentences with normal capital letters and punctuation.
+- No slang and no chat abbreviations (no "lol", "tbh", "u", "gonna"). Nothing stiff or official either.
 
 These lines only show the length and tone to aim for. Do not copy them:
-hey! how's your day going
-not bad, just got home. you?
-ugh, long one. finally on the couch
-oh nice, what did you make?
-honestly no clue, never tried it
-haha fair enough
+Hi! My day has been quite good so far, thank you. How is yours going?
+That sounds nice. I have not tried it myself, but I have heard good things about it.
+I am not sure, to be honest. I usually just follow the recipe and hope for the best.
+Oh, that is a good point. I had not thought about it that way.
 
-- Simple everyday words and contractions. Skipping capital letters or the final full stop is fine.
 - Sound like a person, not like an assistant: no "How can I help", no "Great question", no summing up.
 - React to what they just said. Do not end every message with a question; ask only when you are curious.
 - If you do not know something, just say so.
-- Plain text only. No lists, no markdown, no dashes for effect, no quotation marks around your message. Write only your next message."""
+- Plain text only. No lists, no markdown, no quotation marks around your message. Write only your next message."""
 
 # Added for the one who opens.
 OPENER = """
@@ -208,8 +209,8 @@ def main():
     p.add_argument("--host", default="http://127.0.0.1:11434", help="where Ollama listens")
     p.add_argument("--max-turns", type=int, default=6, help="most exchanges in one conversation; the length is drawn at random up to this (default 6)")
     p.add_argument("--temperature", type=float, default=0.9)
-    p.add_argument("--max-tokens", type=int, default=60, help="limit on one message, in model tokens (default 60)")
-    p.add_argument("--max-words", type=int, default=25, help="a longer message is cut back to its first sentences (default 25)")
+    p.add_argument("--max-tokens", type=int, default=90, help="limit on one message, in model tokens (default 90)")
+    p.add_argument("--max-words", type=int, default=40, help="a longer message is cut back to its first sentences (default 40)")
     p.add_argument("--timeout", type=int, default=300, help="seconds to wait for one reply")
     p.add_argument("--seed", type=int, default=1, help="makes the run repeatable as far as the model allows")
     p.add_argument("--think", action="store_true", help="let a reasoning model think first (slower)")
