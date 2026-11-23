@@ -1,0 +1,102 @@
+# One topic per line. Lines starting with # and empty lines are ignored.
+# The first block matches what the vault already knows; the rest is new ground.
+refunds for physical orders
+refunds for subscriptions
+warranty claims and replacements for devices
+expense reimbursement
+leave and time-off requests
+enabling advanced features on an account
+upgrading a plan
+cancelling a subscription
+compensation for late deliveries
+student discounts
+trial extensions
+an app that crashes or freezes
+wifi that keeps dropping
+tracking an order
+status of a support ticket
+resetting a password
+pairing a bluetooth device
+exporting personal data
+pricing questions
+opening hours
+asking to speak to a person
+pausing a subscription
+changing a delivery address
+damaged items on arrival
+missing items in an order
+wrong item delivered
+exchanging an item for another size
+gift cards and vouchers
+promo codes that do not work
+double charges on a card
+failed payments
+changing the payment method
+invoices and receipts
+VAT and tax questions
+updating account details
+changing the email on an account
+two-factor authentication problems
+suspected account compromise
+deleting an account
+privacy and data requests
+notification settings
+unsubscribing from emails
+downgrading a plan
+adding and removing team seats
+user roles and permissions
+single sign-on setup
+API keys and rate limits
+webhooks that fail
+importing data from another tool
+syncing between devices
+slow performance
+error messages after an update
+installing the desktop app
+mobile app login problems
+browser compatibility
+accessibility features
+language and region settings
+booking an appointment
+rescheduling an appointment
+cancelling a booking
+restaurant reservations
+hotel bookings and changes
+flight changes and delays
+lost luggage
+train tickets and refunds
+car rental questions
+event tickets
+parking permits
+internet installation
+moving internet service to a new address
+mobile phone plans
+roaming charges
+SIM card activation
+phone number transfers
+electricity bills
+meter readings
+gas safety concerns
+water service interruptions
+home insurance claims
+car insurance claims
+travel insurance
+health insurance coverage
+bank transfers
+blocked bank cards
+loan applications
+mortgage questions
+opening a bank account
+currency exchange
+library memberships
+gym memberships
+course enrolment
+exam registration
+tuition fees
+job application status
+payroll questions
+appliance repair
+furniture assembly help
+product availability
+pre-orders
+loyalty points
