@@ -1,0 +1,95 @@
+# Extra wordings for the simulated user, beyond what the lexicon already knows.
+# {subject} is replaced by a reference ("order 7741") or by "my order".
+intents:
+  refund:
+    - "I'd like to return {subject}"
+    - "can I send {subject} back?"
+    - "I want my money back for {subject}"
+    - "please refund {subject}"
+  warranty:
+    - "{subject} stopped working, is it covered?"
+    - "{subject} is faulty, can I get a replacement?"
+    - "{subject} broke down, I need a new one"
+    - "warranty claim for {subject}"
+  reimburse:
+    - "can you reimburse {subject}?"
+    - "I paid for this out of pocket, please pay me back for {subject}"
+    - "submitting {subject} for reimbursement"
+  leave:
+    - "I'd like to take leave, {subject}"
+    - "booking time off, {subject}"
+    - "I need a few days off, {subject}"
+  enable:
+    - "please enable advanced features on {subject}"
+    - "can you switch on the advanced features for {subject}?"
+    - "turn on the feature flag for {subject}"
+  upgrade:
+    - "I want to upgrade {subject}"
+    - "move {subject} up to the pro plan"
+    - "can we upgrade {subject} mid-cycle?"
+  cancel:
+    - "I want to cancel {subject}"
+    - "please stop {subject}, I don't need it any more"
+    - "how do I unsubscribe, {subject}"
+  compensation:
+    - "{subject} arrived late, can I get compensation?"
+    - "my delivery was late, {subject}"
+    - "{subject} came days after the promised date, I'd like something back"
+  student-discount:
+    - "can I get the student discount on {subject}?"
+    - "I'm a student, is there cheaper pricing for {subject}?"
+    - "education pricing for {subject} please"
+  trial-extension:
+    - "can you extend my trial on {subject}?"
+    - "I need more trial time for {subject}"
+    - "my trial on {subject} is running out, can I have longer?"
+  fix:
+    - "{subject} keeps crashing"
+    - "{subject} freezes on the start screen"
+    - "{subject} keeps dropping"
+    - "{subject} won't open any more"
+  status:
+    - "where is my order, {subject}"
+    - "any update on {subject}?"
+    - "what's the status of {subject}"
+    - "has it shipped? {subject}"
+  reset-password:
+    - "I forgot my password"
+    - "I'm locked out of my account"
+    - "I can't log in, I need to reset my password"
+  pair-device:
+    - "how do I pair my device?"
+    - "I can't connect my headphones"
+    - "help me with bluetooth pairing"
+  export-data:
+    - "I want to export my data"
+    - "how can I download my data?"
+    - "I need a copy of everything you have on me"
+values:
+  packaging:
+    original: ["still sealed", "haven't opened it", "it's unopened", "the box is still shut"]
+    opened: ["I opened it", "already unboxed it", "I've used it"]
+  misuse:
+    "true": ["I dropped it", "it fell off the desk", "it got wet"]
+    "false": ["never dropped it", "it was never damaged", "no drops or spills"]
+  activated:
+    "true": ["I've been using it", "it's already active"]
+    "false": ["I never started using it", "haven't activated it"]
+  receipt:
+    "true": ["I have the receipt", "receipt is attached"]
+    "false": ["I lost the receipt", "there's no receipt"]
+  coverage:
+    "true": ["a colleague is covering for me", "cover is arranged"]
+    "false": ["nobody is covering", "I haven't arranged cover"]
+  verified:
+    "true": ["the account is verified", "I verified with my school email"]
+    "false": ["it's not verified yet", "I haven't verified"]
+  extended:
+    "true": ["I already had an extension", "it was extended before"]
+    "false": ["this is my first extension", "I've never had one"]
+  platform:
+    ios: ["on my iphone", "I'm on ios"]
+    android: ["on my pixel", "I'm on android"]
+  symptom:
+    evening: ["only in the evening", "mostly at night"]
+    allday: ["all day long", "it's constant"]

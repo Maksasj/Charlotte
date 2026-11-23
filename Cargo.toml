@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/charlotte-core", "crates/charlotte-vault", "crates/charlotte-engine", "crates/charlotte"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml = "0.9"
+regex = "1"
+charlotte-core = { path = "crates/charlotte-core" }
+charlotte-vault = { path = "crates/charlotte-vault" }
+charlotte-engine = { path = "crates/charlotte-engine" }
+
+[profile.release]
+debug = 1

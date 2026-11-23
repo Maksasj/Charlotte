@@ -1,0 +1,191 @@
+//! The `charlotte` binary: chat in a terminal, serve the HTTP API, learn from a corpus, check the
+//! vault, and produce simulated conversations.
+
+mod http;
+
+use charlotte_engine::learn::{Corpus, LearnOptions};
+use charlotte_engine::sim::{simulate, Paraphrases, SimOptions};
+use charlotte_engine::{default_layers, Engine, Verdict};
+use charlotte_vault::Vault;
+use std::io::{BufRead, Write};
+
+const USAGE: &str = "charlotte [--vault DIR] <command>
+
+  chat                          talk to the agent; :trace shows the last trace, :close <verdict>, :quit
+  ask [--trace] \"text\" ...      hold one conversation with the given messages and print the replies
+  serve [--port 7878] [--web DIR]
+  learn FILE [--review]         learn from a corpus (JSON lines); --review leaves everything as candidates
+  check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
+  simulate [--n 80] [--per-shape] [--seed 1] [--paraphrases FILE] [--out FILE]
+                                write conversations held by a simulated teacher over the vault;
+                                --per-shape gives --n of each shape (rule check, procedure, lookup)";
+
+struct Args(Vec<String>);
+impl Args {
+    fn flag(&mut self, name: &str) -> bool {
+        match self.0.iter().position(|a| a == name) {
+            Some(i) => {
+                self.0.remove(i);
+                true
+            }
+            None => false,
+        }
+    }
+    fn opt(&mut self, name: &str) -> Option<String> {
+        let i = self.0.iter().position(|a| a == name)?;
+        if i + 1 >= self.0.len() {
+            return None;
+        }
+        self.0.remove(i);
+        Some(self.0.remove(i))
+    }
+}
+
+fn main() {
+    let mut args = Args(std::env::args().skip(1).collect());
+    let vault = args.opt("--vault").unwrap_or_else(|| "vault".into());
+    if args.0.is_empty() {
+        println!("{USAGE}");
+        return;
+    }
+    let cmd = args.0.remove(0);
+    if let Err(e) = run(&cmd, &vault, args) {
+        eprintln!("error: {e}");
+        std::process::exit(1);
+    }
+}
+
+fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
+    match cmd {
+        "chat" => {
+            let engine = Engine::open(vault)?;
+            let mut conv = engine.conversation();
+            let mut last = None;
+            let stdin = std::io::stdin();
+            print!("> ");
+            std::io::stdout().flush().ok();
+            for line in stdin.lock().lines() {
+                let line = line.map_err(|e| e.to_string())?;
+                let line = line.trim();
+                match line {
+                    "" => {}
+                    ":quit" | ":q" => break,
+                    ":trace" => println!("{}", last.as_ref().map(|t| serde_json::to_string_pretty(t).unwrap()).unwrap_or_else(|| "no reply yet".into())),
+                    l if l.starts_with(":close") => {
+                        let verdict = match l.split_whitespace().nth(1) {
+                            Some("partial") => Verdict::Partial,
+                            Some("failed") => Verdict::Failed,
+                            _ => Verdict::Resolved,
+                        };
+                        for c in conv.close(verdict)? {
+                            println!("  {}: trust {:.2} -> {:.2}", c.id, c.before, c.after);
+                        }
+                        conv = engine.conversation();
+                    }
+                    l => {
+                        let reply = conv.say(l);
+                        println!("{}", reply.text);
+                        last = Some(reply.trace);
+                    }
+                }
+                print!("> ");
+                std::io::stdout().flush().ok();
+            }
+            Ok(())
+        }
+        "ask" => {
+            let trace = args.flag("--trace");
+            let engine = Engine::open(vault)?;
+            let mut conv = engine.conversation();
+            for m in &args.0 {
+                let reply = conv.say(m);
+                println!("user:  {m}\nagent: {}", reply.text);
+                if trace {
+                    for r in &reply.trace.requests {
+                        let acts: Vec<String> = r.steps.iter().map(|s| format!("{}{}", s.act.op.name(), s.act.arg.as_ref().map(|a| format!("({a})")).unwrap_or_default())).collect();
+                        let rule = r.steps.last().and_then(|s| s.rule.as_ref()).map(|x| format!("rule {} [{}]", x.index, x.when.join(", "))).unwrap_or_else(|| "no rule".into());
+                        println!(
+                            "       intent {} · facts {} · {} · pattern {} · atom {} · {} · {}",
+                            r.intent.as_deref().unwrap_or("?"),
+                            serde_json::to_string(&r.facts).unwrap(),
+                            r.kind.name(),
+                            r.pattern.as_deref().unwrap_or("-"),
+                            r.atom.as_deref().unwrap_or("-"),
+                            rule,
+                            acts.join(" > ")
+                        );
+                    }
+                    for n in &reply.trace.notes {
+                        println!("       note: {n}");
+                    }
+                }
+            }
+            Ok(())
+        }
+        "serve" => {
+            let port: u16 = args.opt("--port").and_then(|p| p.parse().ok()).unwrap_or(7878);
+            let web = args.opt("--web").unwrap_or_else(|| "web/dist".into());
+            http::serve(Engine::open(vault)?, vault, port, &web)
+        }
+        "learn" => {
+            let review = args.flag("--review");
+            let file = args.0.first().ok_or("learn needs a corpus file")?;
+            let engine = Engine::open(vault)?;
+            let corpus = Corpus::open(file)?;
+            let report = engine.learn(&corpus, &LearnOptions { auto_promote: !review, ..Default::default() }, &|_| {})?;
+            println!("{report}");
+            Ok(())
+        }
+        "check" => {
+            let v = Vault::open(vault)?;
+            if args.flag("--fix") {
+                println!("{} notes rewritten", v.normalize()?);
+            }
+            let problems = v.lint();
+            for p in &problems {
+                println!("{p}");
+            }
+            let mut kinds = std::collections::BTreeMap::new();
+            for n in v.notes.values() {
+                *kinds.entry(format!("{} {}", n.status(), n.kind())).or_insert(0) += 1;
+            }
+            println!("{} notes: {}", v.notes.len(), kinds.iter().map(|(k, n)| format!("{n} {k}")).collect::<Vec<_>>().join(", "));
+            if problems.is_empty() {
+                println!("no problems");
+                Ok(())
+            } else {
+                Err(format!("{} problems", problems.len()))
+            }
+        }
+        "simulate" => {
+            let n = args.opt("--n").and_then(|x| x.parse().ok()).unwrap_or(80);
+            let seed = args.opt("--seed").and_then(|x| x.parse().ok()).unwrap_or(1);
+            let per_shape = args.flag("--per-shape");
+            let para: Paraphrases = match args.opt("--paraphrases") {
+                Some(f) => serde_yaml_from(&f)?,
+                None => Paraphrases::default(),
+            };
+            let out = args.opt("--out");
+            let v = Vault::open(vault)?;
+            let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape, seed, corrections: 0.3 });
+            let text: String = convs.iter().map(|c| serde_json::to_string(c).unwrap() + "\n").collect();
+            match out {
+                Some(f) => {
+                    if let Some(dir) = std::path::Path::new(&f).parent() {
+                        std::fs::create_dir_all(dir).ok();
+                    }
+                    std::fs::write(&f, text).map_err(|e| e.to_string())?;
+                    println!("{} conversations written to {f}", convs.len());
+                }
+                None => print!("{text}"),
+            }
+            Ok(())
+        }
+        _ => Err(format!("unknown command '{cmd}'\n\n{USAGE}")),
+    }
+}
+
+fn serde_yaml_from(file: &str) -> Result<Paraphrases, String> {
+    let text = std::fs::read_to_string(file).map_err(|e| format!("{file}: {e}"))?;
+    charlotte_engine::sim::paraphrases_from_yaml(&text).map_err(|e| format!("{file}: {e}"))
+}

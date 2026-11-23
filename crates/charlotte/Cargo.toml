@@ -1,0 +1,14 @@
+[package]
+name = "charlotte"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+charlotte-core.workspace = true
+charlotte-vault.workspace = true
+charlotte-engine.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal"] }
+axum = "0.8"
+tower-http = { version = "0.6", features = ["fs"] }

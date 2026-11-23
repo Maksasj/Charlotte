@@ -1,0 +1,10 @@
+[package]
+name = "charlotte-vault"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+charlotte-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
