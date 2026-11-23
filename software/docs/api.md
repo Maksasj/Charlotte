@@ -50,7 +50,11 @@ the item is not a candidate).
                "rule": { "index": 1, "when": ["p_unbound", "not p_viol"], "do": "ask(p_first_unbound)" },  // null if no rule fired
                "act": { "op": "ask", "arg": "packaging" } } ],
   "text": "Is it still in the original packaging, unopened?",
-  "frame": Frame }
+  "frame": Frame,
+  "recalled": null }                                // or, when the reply was reused from a taught chat:
+                                                    // { "source": "chats-weekend-plans", "entry": 1,
+                                                    //   "message": "the remembered message it matched",
+                                                    //   "score": 0.73, "threshold": 0.45 }
 
 // Frame: the engine's state for one open request
 { "id": 1, "intent": "refund", "facts": { "subject": "7741", "days": 5 },

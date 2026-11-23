@@ -267,6 +267,17 @@ pub struct StepTrace {
     pub rule: Option<RuleTrace>,
     pub act: Act,
 }
+/// Where a remembered reply came from, and how close the match was.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RecalledTrace {
+    pub source: String,
+    pub entry: usize,
+    /// The remembered message that the new one was matched with.
+    pub message: String,
+    pub score: f64,
+    /// The score a match has to reach.
+    pub threshold: f64,
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RequestTrace {
     pub clause: String,
@@ -281,6 +292,8 @@ pub struct RequestTrace {
     pub steps: Vec<StepTrace>,
     pub text: String,
     pub frame: Option<Frame>,
+    /// Set when the reply was reused from a taught chat.
+    pub recalled: Option<RecalledTrace>,
 }
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Trace {

@@ -8,7 +8,7 @@ import {
 } from "../api/client";
 import type { Conversation, TrustChange, Verdict } from "../api/types";
 import { Badge, ErrorNotice, KnowledgeLink, Loading } from "../components/common";
-import { FrameView, TraceView } from "../components/TraceView";
+import { FrameView, sourceLabel, TraceView } from "../components/TraceView";
 import { list, percent } from "../format";
 import { useLoad } from "../hooks";
 import { href, navigate } from "../router";
@@ -217,6 +217,7 @@ export function ChatView({ id }: { id: string | null }) {
                     >
                       <span className="who">agent</span>
                       <span className="text">{message.text}</span>
+                      <span className="source">{sourceLabel(message.trace)}</span>
                     </button>
                   ) : (
                     <div key={index} className="message user">

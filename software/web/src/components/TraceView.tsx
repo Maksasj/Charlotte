@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Act, Facts, Frame, RequestTrace, Step, Trace } from "../api/types";
-import { list, scalar } from "../format";
+import { list, percent, scalar } from "../format";
 import { Badge, KnowledgeLink } from "./common";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -127,6 +127,214 @@ function Layer({ number, name, children }: { number: number; name: string; child
   );
 }
 
+const KIND_WORDS: Record<string, string> = {
+  gated: "a rule check",
+  procedure: "a step-by-step procedure",
+  lookup: "a record lookup",
+};
+
+/** Why the last act was chosen, in a sentence. */
+function reason(request: RequestTrace, act: Act | null | undefined): string {
+  switch (act?.op) {
+    case "ask":
+      return act.arg === "subject"
+        ? "A reference is needed to look this up, and none was given, so it asks for one."
+        : `The rule depends on “${act.arg ?? "something"}”, which is not known yet, so it asks.`;
+    case "grant":
+      return "Every condition of the rule holds, so the request is granted.";
+    case "offer":
+      return "The main rule does not apply, but the alternative does, so that is offered instead.";
+    case "deny":
+      return "A condition of the rule is not met and no alternative applies, so the request is refused.";
+    case "confirm":
+      return "A fact was corrected, but the earlier decision still stands, so it is confirmed.";
+    case "report":
+      return "The record was found, so its state is reported.";
+    case "instruct":
+      return "This is the next step of the procedure that is not done yet.";
+    case "repeat":
+      return "The last step did not work, so it is given once more.";
+    case "finish":
+      return "All steps of the procedure are done.";
+    case "escalate":
+      return request.frame?.fetched && !request.frame.found
+        ? "The record could not be found, so it hands over."
+        : "Nothing further can be tried here, so it hands over.";
+    case "teach_me":
+      return request.intent || request.frame
+        ? "The request was understood, but the vault has no trusted pattern or knowledge to answer it."
+        : "No phrase the agent knows matched, and no remembered message was similar enough.";
+    default:
+      return "";
+  }
+}
+
+/** A one-line label for where a reply came from, shown under the message. */
+export function sourceLabel(trace: Trace | null | undefined): string {
+  return list(trace?.requests)
+    .map((r) => {
+      const last = list(r.steps).at(-1);
+      if (r.recalled) return `remembered reply · ${percent(r.recalled.score)} match`;
+      if (r.pattern && last?.rule) return `${r.pattern} · rule ${last.rule.index} · ${actText(last.act)}`;
+      if (last?.act?.op === "say") return "stock reply";
+      if (last?.act?.op === "teach_me") return r.intent || r.frame ? "no pattern for this" : "not understood";
+      return actText(last?.act);
+    })
+    .join("  +  ");
+}
+
+function WhyView({ request }: { request: RequestTrace }) {
+  const steps = list(request.steps);
+  const last = steps.at(-1);
+  const intentPhrases = list(request.matched).filter((m) => m.kind === "intent");
+  const facts = request.frame?.facts ?? request.facts;
+  const intent = request.intent ?? request.frame?.intent ?? null;
+
+  if (request.recalled) {
+    const r = request.recalled;
+    const width = `${Math.max(0, Math.min(100, Math.round(r.score * 100)))}%`;
+    const mark = `${Math.round(r.threshold * 100)}%`;
+    return (
+      <section className="why why-recalled">
+        <h4>Why this answer</h4>
+        <p className="why-head">It reused a reply it remembered from a taught chat.</p>
+        <ol className="why-steps">
+          <li>
+            {request.intent ? (
+              <>
+                The message was read as small talk (<code>{request.intent}</code>), which no rule or procedure covers.
+              </>
+            ) : (
+              <>The message was not recognised as a request the vault has a rule or procedure for.</>
+            )}
+          </li>
+          <li>
+            The closest message it remembers is <q>{r.message}</q>, from <KnowledgeLink id={r.source} />, entry{" "}
+            {r.entry}.
+          </li>
+          <li>
+            <span className="meter" title={`needs ${mark}`}>
+              <span className="meter-fill" style={{ width }} />
+              <span className="meter-mark" style={{ left: mark }} />
+            </span>{" "}
+            <strong>{percent(r.score)}</strong> similar by shared words; {mark} is enough to reuse a reply.
+          </li>
+          <li>The reply that followed that message is given unchanged. Nothing checks that it fits this conversation.</li>
+        </ol>
+      </section>
+    );
+  }
+
+  if (last?.act?.op === "say") {
+    return (
+      <section className="why">
+        <h4>Why this answer</h4>
+        <p className="why-head">It gave a stock reply.</p>
+        <ol className="why-steps">
+          <li>
+            The message was read as <code>{intent ?? "small talk"}</code>
+            {intentPhrases.length > 0 ? (
+              <>
+                {" "}
+                because of <q>{intentPhrases[0]?.phrase}</q>
+              </>
+            ) : null}
+            .
+          </li>
+          <li>
+            The vault has a fixed reply for that: <KnowledgeLink id={last.act.arg} />. No remembered chat message was
+            similar enough to use instead.
+          </li>
+        </ol>
+      </section>
+    );
+  }
+
+  if (!request.pattern) {
+    return (
+      <section className="why why-none">
+        <h4>Why this answer</h4>
+        <p className="why-head">It had nothing to answer with.</p>
+        <ol className="why-steps">
+          {intent ? (
+            <li>
+              The message was read as <code>{intent}</code>
+              {KIND_WORDS[request.kind] ? <>, {KIND_WORDS[request.kind]}</> : null}.
+            </li>
+          ) : null}
+          <li>{reason(request, last?.act)}</li>
+        </ol>
+      </section>
+    );
+  }
+
+  return (
+    <section className="why">
+      <h4>Why this answer</h4>
+      <p className="why-head">
+        It followed the learned pattern <KnowledgeLink id={request.pattern} /> for {KIND_WORDS[request.kind] ?? request.kind}.
+      </p>
+      <ol className="why-steps">
+        <li>
+          {request.intent ? (
+            <>
+              The message was read as <code>{request.intent}</code>
+              {intentPhrases.length > 0 ? (
+                <>
+                  {" "}
+                  because of <q>{intentPhrases[0]?.phrase}</q>
+                </>
+              ) : null}
+              .
+            </>
+          ) : (
+            <>
+              The message continues the open request <code>{intent ?? "?"}</code>
+              {request.user_act ? (
+                <>
+                  {" "}
+                  (<code>{request.user_act}</code>)
+                </>
+              ) : null}
+              .
+            </>
+          )}
+        </li>
+        <li>
+          What it knows about this request: <FactsView facts={facts} />
+        </li>
+        {request.atom ? (
+          <li>
+            The rule that applies is <KnowledgeLink id={request.atom} />
+            {request.alternative ? (
+              <>
+                , with <KnowledgeLink id={request.alternative} /> as the alternative
+              </>
+            ) : null}
+            .
+          </li>
+        ) : null}
+        {steps.map((step, i) => (
+          <li key={i}>
+            {step.rule ? (
+              <>
+                Rule {step.rule.index} of the pattern matched (<Chips values={list(step.rule.when)} />) and says{" "}
+                <code>{step.rule.do}</code>, which here means <code className="act">{actText(step.act)}</code>.
+              </>
+            ) : (
+              <>
+                No rule of the pattern matched; it chose <code className="act">{actText(step.act)}</code>.
+              </>
+            )}
+            {step.act?.op === "lookup" ? " The record was looked up silently, then the pattern was asked again." : null}
+          </li>
+        ))}
+        <li>{reason(request, last?.act)}</li>
+      </ol>
+    </section>
+  );
+}
+
 function RequestView({ request, number, total }: { request: RequestTrace; number: number; total: number }) {
   const matched = list(request.matched);
   const steps = list(request.steps);
@@ -135,6 +343,10 @@ function RequestView({ request, number, total }: { request: RequestTrace; number
       <h3>
         Request {number} of {total}
       </h3>
+
+      <WhyView request={request} />
+
+      <h4 className="detail-head">Detail by layer</h4>
 
       <Layer number={1} name="Understand">
         <dl className="kv">
@@ -154,6 +366,8 @@ function RequestView({ request, number, total }: { request: RequestTrace; number
                   </>
                 ) : null}
               </None>
+            ) : request.recalled ? (
+              <None>none — not a request; answered from a remembered chat</None>
             ) : (
               <Badge tone="bad">not understood</Badge>
             )}
@@ -179,7 +393,13 @@ function RequestView({ request, number, total }: { request: RequestTrace; number
       </Layer>
 
       <Layer number={2} name="Track">
-        {request.frame ? <FrameView frame={request.frame} /> : <None>no frame — the request was not understood</None>}
+        {request.frame ? (
+          <FrameView frame={request.frame} />
+        ) : request.recalled ? (
+          <None>no frame — a remembered reply needs no state</None>
+        ) : (
+          <None>no frame — the request was not understood</None>
+        )}
       </Layer>
 
       <Layer number={3} name="Decide">

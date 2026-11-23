@@ -126,6 +126,19 @@ export interface RequestTrace {
   text: string;
   /** null when the request was not understood. */
   frame: Frame | null;
+  /** Set when the reply was reused from a taught chat; null or absent otherwise. */
+  recalled?: Recalled | null;
+}
+
+export interface Recalled {
+  /** The chats note the reply came from, and the entry in it. */
+  source: string;
+  entry: number;
+  /** The remembered message the new one was matched with. */
+  message: string;
+  score: number;
+  /** The score a match has to reach. */
+  threshold: number;
 }
 
 export interface Frame {

@@ -164,7 +164,8 @@ impl Engine {
             l.recall.recall(clause, previous.as_deref()).map(|r| {
                 trace.notes.push(format!("recalled from [[{}]] entry {}, similarity {:.2}: \"{}\"", r.source, r.entry, r.score, r.message));
                 used.insert(r.source.clone());
-                (Act::with(Op::Say, format!("{}#{}", r.source, r.entry)), r.reply)
+                let why = RecalledTrace { source: r.source.clone(), entry: r.entry, message: r.message, score: r.score, threshold: crate::recall::THRESHOLD };
+                (Act::with(Op::Say, format!("{}#{}", r.source, r.entry)), r.reply, why)
             })
         };
         let ctx = ReadContext { asked: conv.state.frames.iter().rev().filter_map(|f| f.last_asked.clone()).collect() };
@@ -186,6 +187,7 @@ impl Engine {
                 steps: Vec::new(),
                 text: String::new(),
                 frame: None,
+                recalled: None,
             };
             let act = match t.frame {
                 Some(fi) => {
@@ -216,7 +218,8 @@ impl Engine {
                     rt.frame = Some(conv.state.frames[fi].clone());
                     // Small talk and the like: a reply remembered from a taught chat goes before the stock one.
                     if rt.kind == ReqKind::Move {
-                        if let Some((act, reply)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                        if let Some((act, reply, why)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                            rt.recalled = Some(why);
                             rt.text = reply;
                             if let Some(s) = rt.steps.last_mut() {
                                 s.act = act.clone();
@@ -228,7 +231,8 @@ impl Engine {
                 }
                 None => {
                     // Not understood as a request. A reply remembered from a taught chat may fit.
-                    if let Some((act, reply)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                    if let Some((act, reply, why)) = remembered(&r.clause, &mut trace, &mut conv.used) {
+                        rt.recalled = Some(why);
                         rt.kind = ReqKind::Move;
                         rt.text = reply.clone();
                         rt.steps.push(StepTrace { features: Vec::new(), rule: None, act: act.clone() });

@@ -781,3 +781,76 @@ h2.mono {
 .change strong {
   font-size: 15px;
 }
+
+/* ---- Why this answer ---- */
+.why {
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  padding: 10px 14px;
+  margin: 8px 0 14px;
+}
+.why.why-recalled {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+}
+.why.why-none {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}
+.why h4 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.why-head {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.why-steps {
+  margin: 0;
+  padding-left: 20px;
+}
+.why-steps li {
+  margin: 4px 0;
+}
+.meter {
+  position: relative;
+  display: inline-block;
+  width: 120px;
+  height: 10px;
+  vertical-align: middle;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--warn);
+}
+.meter-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--text);
+}
+.detail-head {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.message .source {
+  display: block;
+  margin-top: 4px;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+}
