@@ -9,7 +9,8 @@
     "build:mock": "tsc -b && vite build --mode mock --outDir dist-mock",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:live": "node scripts/smoke-live.mjs"
   },
   "dependencies": {
     "react": "^19.3.1",

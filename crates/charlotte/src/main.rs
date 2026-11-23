@@ -15,6 +15,7 @@ const USAGE: &str = "charlotte [--vault DIR] <command>
   ask [--trace] \"text\" ...      hold one conversation with the given messages and print the replies
   serve [--port 7878] [--web DIR]
   learn FILE [--review]         learn from a corpus (JSON lines); --review leaves everything as candidates
+  promote ID | reject ID        trust a candidate, or discard it
   check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
   simulate [--n 80] [--per-shape] [--seed 1] [--paraphrases FILE] [--out FILE]
                                 write conversations held by a simulated teacher over the vault;
@@ -134,6 +135,18 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
             let corpus = Corpus::open(file)?;
             let report = engine.learn(&corpus, &LearnOptions { auto_promote: !review, ..Default::default() }, &|_| {})?;
             println!("{report}");
+            Ok(())
+        }
+        "promote" | "reject" => {
+            let id = args.0.first().ok_or("give the candidate's id")?;
+            let engine = Engine::open(vault)?;
+            if cmd == "promote" {
+                let item = engine.promote(id)?;
+                println!("{} is now trusted ({})", item.id, item.path);
+            } else {
+                engine.reject(id)?;
+                println!("{id} discarded");
+            }
             Ok(())
         }
         "check" => {

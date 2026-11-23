@@ -1,5 +1,6 @@
 // Hand-written mirror of docs/api.md. Field names and null semantics follow
-// that file; where it is silent, the comment on the field says what is assumed.
+// that file and were checked against the responses of a running `charlotte serve`;
+// comments say what the engine was seen to send where the doc is silent.
 
 export type FactValue = string | number | boolean | null;
 export type Facts = Record<string, FactValue>;
@@ -36,9 +37,11 @@ export interface ConversationSummary {
   turns: number;
   closed: boolean;
   verdict: Verdict | null;
-  last: string;
+  /** Text of the last message; null while the conversation has no messages. */
+  last: string | null;
 }
 
+/** User messages carry no `trace` key at all. */
 export interface UserMessage {
   role: "user";
   text: string;
@@ -66,8 +69,8 @@ export interface SendMessageRequest {
 
 export interface Act {
   op: Op;
-  // Assumed: absent or null for operations that take no argument.
-  arg?: string | null;
+  /** Omitted (not null) when the operation takes no argument. Always a string, e.g. "0" for a step number. */
+  arg?: string;
 }
 
 export interface Reply {
@@ -83,24 +86,34 @@ export interface Trace {
 
 export interface Matched {
   phrase: string;
+  /** Seen from the engine: intent | fact | answer | signal. */
   kind: string;
   target: string;
 }
 
 export interface Rule {
+  /** 1-based position in the pattern's rule list; the fall-through rule is the number of rules + 1. */
   index: number;
+  /** ["otherwise"] when the pattern's fall-through rule fired. */
   when: string[];
   do: string;
 }
 
 export interface Step {
   features: string[];
+  /** null when no rule fired (not-understood requests and cached replies). */
   rule: Rule | null;
   act: Act;
 }
 
 export interface RequestTrace {
   clause: string;
+  /**
+   * The intent read from this clause. null when the request was not understood
+   * (then `frame` is null too), and also null for a clause that only continues
+   * an open request ("5 days ago", "yes", "done"); the request's intent is
+   * then in `frame.intent`.
+   */
   intent: string | null;
   matched: Matched[];
   facts: Facts;
@@ -111,18 +124,17 @@ export interface RequestTrace {
   alternative: string | null;
   steps: Step[];
   text: string;
-  // Assumed: may be null when no frame was opened for the request.
+  /** null when the request was not understood. */
   frame: Frame | null;
 }
 
 export interface Frame {
   id: number;
-  // Assumed: null when the request was not understood.
-  intent: string | null;
+  intent: string;
   facts: Facts;
   agent_acts: string[];
   user_acts: string[];
-  // Assumed: null when nothing has been asked yet.
+  /** null when nothing has been asked. */
   last_asked: string | null;
   standing: Standing | null;
   fetched: boolean;
@@ -228,6 +240,7 @@ export interface Job {
   id: string;
   state: JobState;
   stage: JobStage;
+  /** The corpus path, or "uploaded" for a `jsonl` upload. */
   source: string;
   report: Report | null;
   error: string | null;

@@ -43,7 +43,7 @@ export function FactsView({ facts }: { facts: Facts | null | undefined }) {
 
 export function actText(act: Act | null | undefined): string {
   if (!act) return "—";
-  return act.arg === null || act.arg === undefined ? act.op : `${act.op}(${scalar(act.arg)})`;
+  return act.arg === undefined || act.arg === null ? act.op : `${act.op}(${scalar(act.arg)})`;
 }
 
 export function FrameView({ frame }: { frame: Frame }) {
@@ -52,7 +52,7 @@ export function FrameView({ frame }: { frame: Frame }) {
       <Row label="Frame">
         <code>#{frame.id}</code>
       </Row>
-      <Row label="Intent">{frame.intent === null ? <None>none</None> : <code>{frame.intent}</code>}</Row>
+      <Row label="Intent">{frame.intent ? <code>{frame.intent}</code> : <None>none</None>}</Row>
       <Row label="Facts">
         <FactsView facts={frame.facts} />
       </Row>
@@ -142,10 +142,20 @@ function RequestView({ request, number, total }: { request: RequestTrace; number
             <q>{request.clause}</q>
           </Row>
           <Row label="Intent">
-            {request.intent === null || request.intent === undefined ? (
-              <Badge tone="bad">not understood</Badge>
-            ) : (
+            {request.intent ? (
               <code>{request.intent}</code>
+            ) : request.frame ? (
+              <None>
+                none in this clause — it continues frame <code>#{request.frame.id}</code>
+                {request.frame.intent ? (
+                  <>
+                    {" "}
+                    (<code>{request.frame.intent}</code>)
+                  </>
+                ) : null}
+              </None>
+            ) : (
+              <Badge tone="bad">not understood</Badge>
             )}
           </Row>
           <Row label="Matched phrases">
@@ -169,7 +179,7 @@ function RequestView({ request, number, total }: { request: RequestTrace; number
       </Layer>
 
       <Layer number={2} name="Track">
-        {request.frame ? <FrameView frame={request.frame} /> : <None>no frame for this request</None>}
+        {request.frame ? <FrameView frame={request.frame} /> : <None>no frame — the request was not understood</None>}
       </Layer>
 
       <Layer number={3} name="Decide">

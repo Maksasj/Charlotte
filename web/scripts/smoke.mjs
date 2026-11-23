@@ -1,237 +1,18 @@
-// Browser smoke test. Starts the Vite dev server, drives a headless Chrome
-// through every view in mock mode (?mock=1) over the DevTools protocol, then
+// Browser smoke test against the MOCK engine. Starts the Vite dev server,
+// drives a headless Chrome through every view in mock mode (?mock=1), then
 // loads the app without the mock and without an engine to check the
 // "cannot reach the engine" banner. Fails on any uncaught exception,
 // unhandled promise rejection or console.error.
 //
-// Needs Node 22+ (built-in WebSocket) and a local Chrome or Edge.
-// Usage: npm run smoke        (CHROME=/path/to/chrome to override the browser)
+// Usage: npm run smoke        (see harness.mjs for the requirements)
+// For the same against a real `charlotte serve`, see smoke-live.mjs.
 
-import { spawn } from "node:child_process";
-import { existsSync, rmSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fail, openPage, run, startVite } from "./harness.mjs";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const PORT = 5179;
-const BASE = `http://127.0.0.1:${PORT}`;
-const profile = join(root, ".smoke-profile");
+await run(async () => {
+  const BASE = await startVite(5179);
+  const { evaluate, waitFor, has, goto, hash, check, networkErrors, close } = await openPage();
 
-const browsers = [
-  process.env.CHROME,
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
-  "/Applications/Chromium.app/Contents/MacOS/Chromium",
-  "/usr/bin/google-chrome",
-  "/usr/bin/chromium",
-  "/usr/bin/chromium-browser",
-].filter(Boolean);
-const browserPath = browsers.find((p) => existsSync(p));
-if (!browserPath) {
-  console.error("No Chrome/Edge found; set CHROME=/path/to/browser");
-  process.exit(2);
-}
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const children = [];
-function cleanup() {
-  for (const child of children) {
-    try {
-      child.kill("SIGTERM");
-    } catch {
-      // already gone
-    }
-  }
-}
-
-async function startVite() {
-  const child = spawn(
-    process.execPath,
-    [join(root, "node_modules/vite/bin/vite.js"), "--port", String(PORT), "--strictPort", "--host", "127.0.0.1"],
-    { cwd: root, stdio: ["ignore", "pipe", "pipe"] },
-  );
-  children.push(child);
-  let log = "";
-  child.stdout.on("data", (d) => (log += d));
-  child.stderr.on("data", (d) => (log += d));
-  for (let i = 0; i < 100; i++) {
-    if (child.exitCode !== null) throw new Error(`vite exited early:\n${log}`);
-    try {
-      const res = await fetch(`${BASE}/`);
-      if (res.ok) return;
-    } catch {
-      // not up yet
-    }
-    await sleep(100);
-  }
-  throw new Error(`vite did not start:\n${log}`);
-}
-
-async function startBrowser() {
-  rmSync(profile, { recursive: true, force: true });
-  const child = spawn(
-    browserPath,
-    [
-      "--headless=new",
-      "--remote-debugging-port=0",
-      `--user-data-dir=${profile}`,
-      "--no-first-run",
-      "--no-default-browser-check",
-      "--disable-extensions",
-      "--window-size=1500,1000",
-      "about:blank",
-    ],
-    { stdio: ["ignore", "ignore", "pipe"] },
-  );
-  children.push(child);
-  return await new Promise((resolve, reject) => {
-    let err = "";
-    const timer = setTimeout(() => reject(new Error(`browser did not start:\n${err}`)), 20000);
-    child.stderr.on("data", (d) => {
-      err += d;
-      const match = /DevTools listening on (ws:\/\/\S+)/.exec(err);
-      if (match) {
-        clearTimeout(timer);
-        resolve(match[1]);
-      }
-    });
-    child.on("exit", () => reject(new Error(`browser exited:\n${err}`)));
-  });
-}
-
-class Cdp {
-  constructor(ws) {
-    this.ws = ws;
-    this.next = 1;
-    this.pending = new Map();
-    this.handlers = [];
-    ws.addEventListener("message", (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.id && this.pending.has(msg.id)) {
-        const { resolve, reject } = this.pending.get(msg.id);
-        this.pending.delete(msg.id);
-        if (msg.error) reject(new Error(msg.error.message));
-        else resolve(msg.result);
-      } else if (msg.method) {
-        for (const handler of this.handlers) handler(msg);
-      }
-    });
-  }
-  static async connect(url) {
-    const ws = new WebSocket(url);
-    await new Promise((resolve, reject) => {
-      ws.addEventListener("open", resolve);
-      ws.addEventListener("error", () => reject(new Error("cannot connect to the browser")));
-    });
-    return new Cdp(ws);
-  }
-  send(method, params = {}, sessionId) {
-    const id = this.next++;
-    this.ws.send(JSON.stringify({ id, method, params, sessionId }));
-    return new Promise((resolve, reject) => this.pending.set(id, { resolve, reject }));
-  }
-}
-
-const HELPERS = `
-window.__t = {
-  all: (sel) => [...document.querySelectorAll(sel)],
-  byText: (sel, text) => [...document.querySelectorAll(sel)].find((e) => e.textContent.includes(text)),
-  click: (sel, text) => {
-    const el = text === undefined ? document.querySelector(sel) : window.__t.byText(sel, text);
-    if (!el) throw new Error('no element ' + sel + (text === undefined ? '' : ' with text ' + text));
-    if (el.disabled) throw new Error('element is disabled: ' + sel + ' ' + (text ?? ''));
-    el.click();
-    return true;
-  },
-  set: (sel, value) => {
-    const el = document.querySelector(sel);
-    if (!el) throw new Error('no element ' + sel);
-    const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype
-      : el instanceof HTMLSelectElement ? HTMLSelectElement.prototype : HTMLInputElement.prototype;
-    Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, value);
-    el.dispatchEvent(new Event(el instanceof HTMLSelectElement ? 'change' : 'input', { bubbles: true }));
-    return true;
-  },
-  text: (sel) => (document.querySelector(sel) || { textContent: '' }).textContent,
-};
-`;
-
-let failures = 0;
-let checks = 0;
-
-async function main() {
-  await startVite();
-  const wsUrl = await startBrowser();
-  const cdp = await Cdp.connect(wsUrl);
-  const { targetId } = await cdp.send("Target.createTarget", { url: "about:blank" });
-  const { sessionId } = await cdp.send("Target.attachToTarget", { targetId, flatten: true });
-  const send = (method, params) => cdp.send(method, params, sessionId);
-
-  const problems = [];
-  const networkErrors = [];
-  cdp.handlers.push((msg) => {
-    if (msg.sessionId !== sessionId) return;
-    if (msg.method === "Runtime.exceptionThrown") {
-      const d = msg.params.exceptionDetails;
-      problems.push(`uncaught: ${d.exception?.description ?? d.text}`);
-    } else if (msg.method === "Runtime.consoleAPICalled" && msg.params.type === "error") {
-      problems.push(`console.error: ${msg.params.args.map((a) => a.value ?? a.description).join(" ")}`);
-    } else if (msg.method === "Log.entryAdded" && msg.params.entry.level === "error") {
-      const entry = msg.params.entry;
-      if (entry.source === "network") networkErrors.push(`${entry.text} ${entry.url ?? ""}`);
-      else problems.push(`log: ${entry.text}`);
-    }
-  });
-  await send("Runtime.enable");
-  await send("Log.enable");
-  await send("Page.enable");
-  await send("Page.addScriptToEvaluateOnNewDocument", { source: HELPERS });
-
-  const evaluate = async (expression) => {
-    const result = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
-    if (result.exceptionDetails) {
-      throw new Error(result.exceptionDetails.exception?.description ?? result.exceptionDetails.text);
-    }
-    return result.result.value;
-  };
-  const waitFor = async (expression, timeout = 5000) => {
-    const start = Date.now();
-    for (;;) {
-      let value;
-      try {
-        value = await evaluate(expression);
-      } catch {
-        value = false;
-      }
-      if (value) return value;
-      if (Date.now() - start > timeout) throw new Error(`timed out waiting for: ${expression}`);
-      await sleep(50);
-    }
-  };
-  const has = (sel, text) => `!!__t.byText(${JSON.stringify(sel)}, ${JSON.stringify(text)})`;
-  const goto = async (url) => {
-    await send("Page.navigate", { url: "about:blank" });
-    await send("Page.navigate", { url });
-    await waitFor("document.readyState === 'complete' && !!document.querySelector('.topbar')");
-  };
-  const hash = async (h) => {
-    await evaluate(`(location.hash = ${JSON.stringify(h)}, true)`);
-  };
-  const check = async (name, fn) => {
-    checks++;
-    const before = problems.length;
-    try {
-      await fn();
-      await sleep(100);
-      if (problems.length > before) throw new Error(problems.slice(before).join("\n      "));
-      console.log(`  ok    ${name}`);
-    } catch (error) {
-      failures++;
-      console.log(`  FAIL  ${name}\n      ${error.message}`);
-    }
-  };
-
-  console.log(`browser: ${browserPath}`);
   console.log("mock mode:");
   await goto(`${BASE}/?mock=1`);
 
@@ -243,6 +24,7 @@ async function main() {
     for (const text of ["not understood", "no rule fired", "teach_me", "Engine notes", "no lexicon phrase matched"]) {
       await waitFor(has(".trace-pane", text), 1000);
     }
+    await waitFor(has(".trace-pane", "no frame — the request was not understood"), 1000);
     await waitFor("__t.all('.trace-pane .layer').length === 4", 1000);
     await waitFor("__t.all('.conversation-list li').length === 2", 1000);
   });
@@ -264,6 +46,16 @@ async function main() {
     }
     const open = await evaluate("__t.all('.trace-pane details.features').some((d) => d.open)");
     if (open) throw new Error("feature lists should start collapsed");
+  });
+
+  await check("chat: a clause that continues a request has no intent but is not marked 'not understood'", async () => {
+    await evaluate("__t.all('button.message.agent')[1].click(), true");
+    await waitFor(has(".trace-pane", "never opened"));
+    await waitFor(has(".trace-pane .layer-1", "none in this clause — it continues frame #1 (refund)"), 1000);
+    if (await evaluate(has(".trace-pane", "not understood"))) throw new Error("marked as not understood");
+    await waitFor(has(".trace-pane", "rule #2 fired"), 1000);
+    await waitFor(has(".trace-pane code.act", "grant"), 1000);
+    if (await evaluate("__t.text('.trace-pane code.act') !== 'grant'")) throw new Error("act without arg should read 'grant'");
   });
 
   await check("chat: sending a message appends the reply and selects its trace", async () => {
@@ -404,7 +196,7 @@ async function main() {
     await evaluate("__t.click('.learn-form label.checkbox input')");
     await evaluate("__t.click('.learn-form button', 'Start learning')");
     await waitFor("location.hash === '#/learn/j3'");
-    await waitFor(has("table.selectable tbody tr.selected", "(uploaded)"));
+    await waitFor(has("table.selectable tbody tr.selected", "uploaded"));
     await evaluate("__t.all('.learn-form input[type=radio]')[0].click(), true");
     await evaluate("__t.set('.learn-form input[type=text]', 'corpus/missing.jsonl')");
     await evaluate("__t.click('.learn-form button', 'Start learning')");
@@ -425,8 +217,7 @@ async function main() {
   });
 
   if (networkErrors.length > 0) {
-    failures++;
-    console.log(`  FAIL  mock mode made network requests that failed:\n      ${networkErrors.join("\n      ")}`);
+    fail(`mock mode made network requests that failed:\n      ${networkErrors.join("\n      ")}`);
   }
 
   console.log("no mock, no engine (requests go to the Vite proxy and fail):");
@@ -446,19 +237,6 @@ async function main() {
   }
   console.log(`  (${networkErrors.length} failed network requests were logged by the browser, as expected)`);
 
-  cdp.ws.close();
-}
 
-try {
-  await main();
-} catch (error) {
-  failures++;
-  console.error(`smoke test aborted: ${error.stack ?? error}`);
-} finally {
-  cleanup();
-  await sleep(300);
-  rmSync(profile, { recursive: true, force: true });
-}
-
-console.log(failures === 0 ? `\nAll ${checks} checks passed.` : `\n${failures} failure(s) in ${checks} checks.`);
-process.exit(failures === 0 ? 0 : 1);
+  close();
+});

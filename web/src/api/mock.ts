@@ -1,7 +1,9 @@
 // Development-only stand-in for the engine, enabled with ?mock=1.
 // It replaces `fetch` underneath the real client, so URL building, JSON
 // handling and error handling in client.ts are exercised unchanged.
-// Every response is shaped per docs/api.md. Nothing here is engine logic:
+// Every response is shaped per docs/api.md and per what the real engine sends
+// (omitted `arg`, null `frame` for a request that was not understood, null
+// `intent` on a clause that continues an open request). Nothing here is engine logic:
 // replies to new messages are canned.
 
 import type {
@@ -66,19 +68,6 @@ const refundFrameGranted: Frame = {
   steps_done: 0,
 };
 
-const unknownFrame: Frame = {
-  id: 3,
-  intent: null,
-  facts: {},
-  agent_acts: ["teach_me"],
-  user_acts: [],
-  last_asked: null,
-  standing: null,
-  fetched: false,
-  found: false,
-  steps_done: 0,
-};
-
 const traceFirst: Trace = {
   requests: [
     {
@@ -135,7 +124,7 @@ const traceFirst: Trace = {
         {
           features: ["req_lookup", "key_bound", "fetched", "found", "last_user=request"],
           rule: { index: 2, when: ["fetched", "found"], do: "report" },
-          act: { op: "report", arg: null },
+          act: { op: "report" },
         },
       ],
       text: "Order 8802 shipped on Tuesday and is due on Friday.",
@@ -149,7 +138,7 @@ const traceSecond: Trace = {
   requests: [
     {
       clause: "yes, never opened",
-      intent: "refund",
+      intent: null,
       matched: [{ phrase: "never opened", kind: "fact", target: "packaging" }],
       facts: { packaging: "original" },
       user_act: "provide",
@@ -171,7 +160,7 @@ const traceSecond: Trace = {
   notes: [],
 };
 
-function unknownRequest(clause: string, frameId: number): RequestTrace {
+function unknownRequest(clause: string): RequestTrace {
   return {
     clause,
     intent: null,
@@ -184,18 +173,18 @@ function unknownRequest(clause: string, frameId: number): RequestTrace {
     alternative: null,
     steps: [
       {
-        features: ["req_unknown", "no_intent", "last_agent=grant"],
+        features: [],
         rule: null,
-        act: { op: "teach_me", arg: null },
+        act: { op: "teach_me" },
       },
     ],
     text: "I don't know how to help with that yet. Can you tell me what you need in other words?",
-    frame: { ...unknownFrame, id: frameId },
+    frame: null,
   };
 }
 
 const traceThird: Trace = {
-  requests: [unknownRequest("also my flux capacitor is humming", 3)],
+  requests: [unknownRequest("also my flux capacitor is humming")],
   notes: ["no lexicon phrase matched the clause", "no pattern covers request kind `unknown`; fell back to teach_me"],
 };
 
@@ -220,7 +209,7 @@ const conversations: Conversation[] = [
         trace: traceThird,
       },
     ],
-    frames: [refundFrameGranted, statusFrame, { ...unknownFrame }],
+    frames: [refundFrameGranted, statusFrame],
   },
   {
     id: "c1",
@@ -506,7 +495,7 @@ class HttpError extends Error {
 
 function summaryOf(c: Conversation): ConversationSummary {
   const last = c.messages[c.messages.length - 1];
-  return { id: c.id, turns: c.messages.length, closed: c.closed, verdict: c.verdict, last: last ? last.text : "" };
+  return { id: c.id, turns: c.messages.length, closed: c.closed, verdict: c.verdict, last: last ? last.text : null };
 }
 
 function findConversation(id: string): Conversation {
@@ -590,7 +579,7 @@ function route(method: string, path: string, query: URLSearchParams, body: unkno
         throw new HttpError(400, "text must be a non-empty string");
       }
       const text = body["text"];
-      const request = unknownRequest(text, c.frames.length + 1);
+      const request = unknownRequest(text);
       const reply: Reply = {
         text: request.text,
         acts: request.steps.map((s) => s.act),
@@ -599,7 +588,6 @@ function route(method: string, path: string, query: URLSearchParams, body: unkno
       const user: Message = { role: "user", text };
       const agent: Message = { role: "agent", text: reply.text, trace: reply.trace };
       c.messages.push(user, agent);
-      if (request.frame) c.frames.push(request.frame);
       return { status: 200, body: reply };
     } else if (action === "close" && method === "POST") {
       const c = findConversation(id);
@@ -681,7 +669,7 @@ function route(method: string, path: string, query: URLSearchParams, body: unkno
         typeof body["path"] === "string" && body["path"] !== ""
           ? body["path"]
           : typeof body["jsonl"] === "string" && body["jsonl"].trim() !== ""
-            ? "(uploaded)"
+            ? "uploaded"
             : null;
       if (source === null) throw new HttpError(400, "give either path or jsonl");
       const job: Job = {

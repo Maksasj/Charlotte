@@ -1,7 +1,9 @@
 # HTTP API
 
 Served by `charlotte serve` on `http://127.0.0.1:7878`. JSON in and out.
-Errors are `{"error": "message"}` with a 4xx or 5xx status.
+Errors are `{"error": "message"}` with status 400 (the request is not valid),
+404 (no such conversation, item or job) or 409 (the conversation is closed, or
+the item is not a candidate).
 
 ## Conversations
 
@@ -33,7 +35,9 @@ Errors are `{"error": "message"}` with a 4xx or 5xx status.
 
 // RequestTrace: what each layer did for one request
 { "clause": "can I send back order 7741",          // the part of the message
-  "intent": "refund",                               // null when not understood
+  "intent": "refund",                               // null when the clause names no request: an answer such as
+                                                    // "5 days ago" continues an open frame; if `frame` is null too,
+                                                    // the clause was not understood
   "matched": [ { "phrase": "send back", "kind": "intent", "target": "refund" },
                { "phrase": "order 7741", "kind": "fact", "target": "subject" } ],
   "facts": { "subject": "7741", "days": 5 },        // facts read from this clause
@@ -67,7 +71,7 @@ finish escalate say teach_me`.
 |---|---|---|
 | `GET /v1/knowledge?kind=&status=&q=` | — | `[ItemSummary]` (all filters optional) |
 | `GET /v1/knowledge/{id}` | — | `Item` |
-| `PUT /v1/knowledge/{id}` | `{"front": {...}, "body": "..."}` | `Item`, or `400` if the note is not valid |
+| `PUT /v1/knowledge/{id}` | `{"front": {...}, "body": "..."}`, both required | `Item`, or `400` if the note is not valid |
 | `POST /v1/knowledge/{id}/promote` | — | `Item` (the promoted item) |
 | `POST /v1/knowledge/{id}/reject` | — | `{"ok": true}` |
 
@@ -91,7 +95,7 @@ Statuses: `candidate trusted retired`.
 
 | Method and path | Body | Returns |
 |---|---|---|
-| `POST /v1/learn` | `{"path": "corpus/file.jsonl"}` or `{"jsonl": "..."}`, optional `"auto_promote": true` | `202 {"job": "j1"}` |
+| `POST /v1/learn` | `{"path": "corpus/file.jsonl"}` or `{"jsonl": "..."}` (the path wins if both are given), optional `"auto_promote"`, true by default | `202 {"job": "j1"}` |
 | `GET /v1/learn` | — | `[Job]`, newest first |
 | `GET /v1/learn/{job}` | — | `Job` |
 
@@ -114,6 +118,10 @@ Statuses: `candidate trusted retired`.
   "mistakes": [ { "what": "teacher deny, engine offer", "count": 2 } ],
   "seconds": 0.4 }
 ```
+
+`candidates` lists everything the job learned. An entry that is neither
+promoted nor in the review queue was identical to what is already trusted; its
+summary says so.
 
 ## Status
 

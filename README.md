@@ -11,49 +11,80 @@ agent on a Datalog vault, designs 1 to 4) lives on `main` and `design-2` to
 
 ## Where things stand
 
-One working prototype, **CaseForge v5**: a single HTML page with no model
-calls, where memory is split into
+A Rust engine with a web interface. Knowledge lives in a Markdown vault, split
+into
 
-- **patterns** — a few generic solution shapes (ask for what is missing, grant
-  if the conditions hold, otherwise deny), with no domain content;
-- **atoms** — many formal facts mined from articles (`refund` if `days <= 30`
-  and `packaging == original`), with no dialogue logic;
-- **binding** — the step that joins one pattern with one atom for one message.
+- **patterns** — generic solution shapes as ordered rule lists, learned from
+  conversations, with no domain content;
+- **atoms** — formal facts (`refund` if `days <= 30` and `packaging ==
+  original`), with no dialogue logic;
+- a **lexicon** — the phrases that mean each intent and each fact.
 
-What it shows, reproduced by the probe: one unedited pattern answers requests
-in six domains, and a seventh domain (cancellation) starts working after two
-atoms are mined from a four-sentence article. Its limits are just as concrete:
-patterns are selected from three authored skeletons rather than learned, the
-vocabulary of intents, predicates and slots is hand-written regex, and three
-of its five known defects give wrong answers on ordinary inputs. Details are in
+The vault was pretrained on 240 simulated conversations. It answers step-by-step
+procedures and record lookups. The pattern for rule checks (refunds, warranty
+and the like) reproduced 8 of 9 held-out conversations, one short of the bar,
+so it waits as a candidate and the agent declines those requests until it is
+promoted or more is learned. From a few hundred conversations all three
+patterns reach 100%.
+
+The limiter is understanding: the engine only reads wordings its lexicon
+holds. Results, defects and open problems are in
 [`docs/findings.md`](docs/findings.md).
 
 ## Layout
 
 | Path | What |
 |---|---|
-| [`docs/journey.md`](docs/journey.md) | How the idea developed, step by step, and what each step added |
-| [`docs/architecture.md`](docs/architecture.md) | How v5 works: memory kinds, the turn pipeline, scoring, what learns |
-| [`docs/findings.md`](docs/findings.md) | What held up, what did not, defects, open problems, candidate next steps |
-| [`docs/design.md`](docs/design.md) | Proposed Rust engine and web app: layers, vault format, API, web interface, learning from a corpus. Not built yet |
-| [`prototypes/caseforge-v5/index.html`](prototypes/caseforge-v5/index.html) | The prototype, as produced. Open it in a browser |
-| [`prototypes/caseforge-v5/probe.mjs`](prototypes/caseforge-v5/probe.mjs) | Runs the prototype's engine without a browser and prints the behaviours the findings rely on |
+| `crates/charlotte-core` | Data types and the five layer traits |
+| `crates/charlotte-vault` | Reading and writing vault notes |
+| `crates/charlotte-engine` | Default layers, the turn pipeline, the learners, the simulated teacher |
+| `crates/charlotte` | The binary: terminal commands and the HTTP server |
+| `web/` | Web interface (TypeScript, React, Vite) over the HTTP API |
+| `vault/` | The knowledge vault; open it in Obsidian to browse it |
+| `corpus/` | The pretraining corpus and the wordings the simulated user draws on |
+| [`docs/design.md`](docs/design.md) | Engine design, and what was built against it |
+| [`docs/api.md`](docs/api.md) | The HTTP API |
+| [`docs/findings.md`](docs/findings.md) | What held up, what did not, open problems, candidate next steps |
+| [`docs/architecture.md`](docs/architecture.md) | How the v5 prototype works |
+| [`docs/journey.md`](docs/journey.md) | How the idea developed |
 | [`experiments/pattern-learning/`](experiments/pattern-learning/README.md) | Experiment: can solution shapes be learned from labelled conversations? |
-| [`archive/2026-11-22-design-conversation.txt`](archive/2026-11-22-design-conversation.txt) | The raw conversation the prototype came out of |
+| [`prototypes/caseforge-v5/`](prototypes/caseforge-v5/index.html) | The v5 prototype page and a headless probe of its engine |
+| [`archive/`](archive/2026-11-22-design-conversation.txt) | The raw conversation the prototype came out of |
 
 ## Running
 
+Needs a Rust toolchain; the web interface also needs Node.
+
 ```sh
-open prototypes/caseforge-v5/index.html     # the lab; state is kept in localStorage under cf5.*
-node prototypes/caseforge-v5/probe.mjs      # headless check, needs Node 18+
+cargo build --release
+alias charlotte=target/release/charlotte
+
+charlotte chat                       # talk to it in the terminal; :trace, :close resolved, :quit
+charlotte ask --trace "I forgot my password" "done"
+
+(cd web && npm install && npm run build)
+charlotte serve                      # API and web interface on http://127.0.0.1:7878
+
+cargo test                           # the build-order checks
 ```
 
-The page loads its fonts from a CDN and otherwise works offline.
+Learning:
+
+```sh
+charlotte learn corpus/pretrain-80-per-shape.jsonl     # prints a report; --review keeps everything as candidates
+charlotte promote check-a-rule-candidate               # trust a candidate by hand
+charlotte check                                        # lint the vault
+
+# more simulated conversations, for example 400 of each shape
+charlotte simulate --n 400 --per-shape --seed 2 --paraphrases corpus/paraphrases.yaml --out corpus/sim-400.jsonl
+```
+
+The corpus format is one conversation per line of JSON, with optional labels;
+see "Learning" in [`docs/design.md`](docs/design.md).
 
 ## Relation to the first line
 
 Only one link is recorded here, taken from the `main` README rather than from a
 full review of that work: the symbolic agent checked every input against a
-closed predicate registry, and the same problem reappears in v5 as its
-hand-written intent, predicate and slot tables. Whichever line continues, a
-vocabulary that cannot grow from data is the shared bottleneck.
+closed predicate registry. Here the vocabulary is data in the vault and can
+grow from a corpus, but only as far as that corpus's own words reach.

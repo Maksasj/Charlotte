@@ -132,7 +132,12 @@ async function request<T>(method: "GET" | "POST" | "PUT", path: string, body?: u
     // the proxy in front of a server that is not running.
     if (response.status >= 500) throw unreachable(response.status);
     setReachable(true);
-    throw new ApiError(`${method} ${path} failed with status ${response.status}`, response.status, false);
+    // The engine's framework rejects a malformed body with a plain-text 400/422
+    // instead of {"error": ...}; that text is still the best message to show.
+    const plain = text.trim();
+    const isHtml = (response.headers.get("content-type") ?? "").includes("html") || plain.startsWith("<");
+    const detail = plain !== "" && !isHtml ? `: ${plain.slice(0, 300)}` : "";
+    throw new ApiError(`${method} ${path} failed with status ${response.status}${detail}`, response.status, false);
   }
 
   setReachable(true);

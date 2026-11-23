@@ -117,6 +117,67 @@ conversations from a simulated teacher). Full account in
 - The learner picks rules over a state description that is authored. Learning
   the shape does not remove the closed vocabulary; it moves it.
 
+## Engine: first results
+
+From the Rust engine, 23 November 2026. All conversations are simulated: a
+teacher policy over the vault's own knowledge, with a simulated user. The
+vault starts with atoms, procedures, records and a lexicon, and **no
+patterns**.
+
+**Pretraining.** 80 conversations of each shape, 240 in all, seed fixed before
+the run (`corpus/pretrain-80-per-shape.jsonl`), 24 held out:
+
+| Learned | Held-out conversations reproduced | Outcome |
+|---|---|---|
+| `walk-through-steps` (procedures) | 100% | Trusted |
+| `look-up-a-record` (lookups) | 100% | Trusted |
+| `check-a-rule` (rule checks) | 89%, 8 of 9 | **Candidate**: one conversation short of the 90% bar |
+| Phrase "any update on" for `status` | reading not worse | Trusted |
+
+So the pretrained vault answers procedures and lookups and declines rule
+checks until the candidate is promoted or more is learned. Promoted on a
+scratch copy, the candidate answers the six domains and the four v5 defect
+cases correctly, and has one visible flaw: for a compensation request it asks
+for the order number even when one was given.
+
+A first attempt with 80 conversations in all (not per shape) gave rule checks
+80% or 100% depending on the seed, and lookups only 4 conversations, too few
+to learn from.
+
+**More conversations.** Same vault, other seeds:
+
+| Conversations | Rule checks | Procedures | Lookups | Intents read, before → after | Time |
+|---|---|---|---|---|---|
+| 320 | 100% | 100% | 100% | 88% → 94% | 0.05 s |
+| 1,000 | 100% | 100% | 100% | 85% → 99% | 0.09 s |
+| 10,000 | 100% | 100% | 100% | 88% → 100% | 0.64 s |
+
+**Wording.** The phrase learner finds real wordings at scale ("return" and
+"send" for refund, "broke" for warranty, "haven't opened" for unopened). It
+also finds accidents of the corpus: "don't" for cancel, "few" for leave,
+"desk" for accidental damage, "started" for *not* activated (from "I never
+started using it"). They pass validation because the held-out conversations
+come from the same small set of wordings. A corpus from a real model will be
+more varied, but the weakness is in the method: a word that happens to occur
+with one label looks like a cue.
+
+**The five rewordings that v5 could not read.** On the pretrained vault none
+is understood. After 10,000 simulated conversations two of five intents are
+read; one of those is then answered wrongly, because "haven't taken it out of
+the box" is read as opened. "Monday", "half a year" and "three weeks ahead"
+are never read: ways of saying a number are not learned at all.
+
+What this adds to the picture:
+
+- Shapes are learnable from a few hundred labelled conversations and the
+  engine is fast enough for any corpus size planned.
+- At 80 conversations per shape the result still depends on the draw, as the
+  experiment predicted.
+- Understanding remains the limiter, now measured in the engine itself.
+- Everything above is the engine reproducing a teacher that shares its state
+  description. It says nothing yet about conversations written by a model or
+  by people.
+
 ## Candidate next steps
 
 Not decided. Listed so the choice is explicit.
@@ -130,6 +191,6 @@ Not decided. Listed so the choice is explicit.
   inferable.
 - **Attack the vocabulary** (open problem 1) before adding more learning on
   top of it, since every other step inherits it.
-- **Move the engine out of the page.** `probe.mjs` already runs it headless;
-  an engine module with a test set would give this line the measurement the
-  first one had.
+- **Feed it a corpus from the local model.** The first thing to look at is
+  the label coverage and the held-out score in the report: they show whether
+  the model's conversations are consistent enough to learn from.

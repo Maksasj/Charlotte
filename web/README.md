@@ -55,18 +55,33 @@ The mock is left out of `npm run build`, where `?mock=1` does nothing. To get
 a static build that includes it, use `npm run build:mock` (writes
 `dist-mock/`).
 
-## Smoke test
+## Smoke tests
+
+Both drive a headless Chrome (or Edge) over the DevTools protocol and fail on
+any uncaught exception, unhandled promise rejection or `console.error`. They
+need Node 22+ and a local Chrome; set `CHROME=/path/to/browser` if it is not
+found.
 
 ```sh
 npm run smoke
 ```
 
-Starts the dev server on port 5179, drives a headless Chrome (or Edge) through
-every view in mock mode, then loads the app without the mock to check the
-unreachable-engine banner. It fails on any uncaught exception, unhandled
-promise rejection or `console.error`. Needs Node 22+ and a local Chrome; set
-`CHROME=/path/to/browser` if it is not found. It does not talk to a real
-engine.
+Against the mock. Starts the dev server on port 5179, goes through every view
+with `?mock=1`, then loads the app without the mock and without an engine to
+check the unreachable-engine banner.
+
+```sh
+npm run build
+npm run smoke:live -- http://127.0.0.1:7878     # default: http://127.0.0.1:7899
+```
+
+Against a real `charlotte serve` that also serves `web/dist` at `/`. It holds
+and closes conversations, filters and opens knowledge of every kind, edits
+items, runs learning jobs and reviews the candidates, and compares what is on
+screen with what the API returns. **It changes the server's state** (it
+restores the items it edits, but conversations, jobs and trust changes stay),
+so point it at a scratch copy of the vault. It expects the seed vault and
+`corpus/pretrain-80-per-shape.jsonl` in the server's working directory.
 
 ## Layout
 
@@ -79,4 +94,4 @@ engine.
 | `src/components/TraceView.tsx` | The trace of a reply, layer by layer |
 | `src/components/ItemPanel.tsx` | One knowledge item, with its edit mode |
 | `src/router.ts`, `src/hooks.ts`, `src/format.ts` | Hash navigation, data loading, display helpers |
-| `scripts/smoke.mjs` | The browser smoke test |
+| `scripts/smoke.mjs`, `scripts/smoke-live.mjs`, `scripts/harness.mjs` | The browser smoke tests and what they share |

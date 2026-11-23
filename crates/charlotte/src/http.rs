@@ -1,5 +1,6 @@
 //! The HTTP API described in docs/api.md.
 
+use axum::extract::rejection::JsonRejection;
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::routing::{get, post};
@@ -33,6 +34,11 @@ type Res<T> = Result<Json<T>, Fail>;
 fn fail(code: StatusCode, msg: impl Into<String>) -> Fail {
     (code, Json(json!({ "error": msg.into() })))
 }
+/// A request body that is not the JSON the endpoint expects.
+type Body<T> = Result<Json<T>, JsonRejection>;
+fn body<T>(b: Body<T>) -> Result<T, Fail> {
+    b.map(|Json(x)| x).map_err(|e| fail(StatusCode::BAD_REQUEST, e.body_text()))
+}
 fn bad(msg: String) -> Fail {
     let code = if msg.starts_with("no item") { StatusCode::NOT_FOUND } else { StatusCode::BAD_REQUEST };
     fail(code, msg)
@@ -58,7 +64,8 @@ async fn get_conv(State(app): S, Path(id): Path<String>) -> Res<ConvState> {
 struct Say {
     text: String,
 }
-async fn say(State(app): S, Path(id): Path<String>, Json(body): Json<Say>) -> Res<charlotte_core::Reply> {
+async fn say(State(app): S, Path(id): Path<String>, b: Body<Say>) -> Res<charlotte_core::Reply> {
+    let body = body(b)?;
     let mut convs = app.convs.lock().unwrap();
     let conv = convs.iter_mut().find(|c| c.id == id).ok_or_else(|| fail(StatusCode::NOT_FOUND, format!("no conversation '{id}'")))?;
     if conv.closed {
@@ -73,7 +80,8 @@ async fn say(State(app): S, Path(id): Path<String>, Json(body): Json<Say>) -> Re
 struct Close {
     verdict: Verdict,
 }
-async fn close(State(app): S, Path(id): Path<String>, Json(body): Json<Close>) -> Res<Value> {
+async fn close(State(app): S, Path(id): Path<String>, b: Body<Close>) -> Res<Value> {
+    let body = body(b)?;
     let mut convs = app.convs.lock().unwrap();
     let conv = convs.iter_mut().find(|c| c.id == id).ok_or_else(|| fail(StatusCode::NOT_FOUND, format!("no conversation '{id}'")))?;
     let updated = app.engine.close(conv, body.verdict).map_err(|e| fail(StatusCode::CONFLICT, e))?;
@@ -90,10 +98,10 @@ async fn item(State(app): S, Path(id): Path<String>) -> Res<charlotte_engine::It
 #[derive(Deserialize)]
 struct Edit {
     front: Map<String, Value>,
-    #[serde(default)]
     body: String,
 }
-async fn edit(State(app): S, Path(id): Path<String>, Json(body): Json<Edit>) -> Res<charlotte_engine::Item> {
+async fn edit(State(app): S, Path(id): Path<String>, b: Body<Edit>) -> Res<charlotte_engine::Item> {
+    let body = body(b)?;
     app.engine.edit(&id, body.front, body.body).map(Json).map_err(bad)
 }
 async fn promote(State(app): S, Path(id): Path<String>) -> Res<charlotte_engine::Item> {
@@ -109,7 +117,8 @@ struct Learn {
     jsonl: Option<String>,
     auto_promote: Option<bool>,
 }
-async fn learn(State(app): S, Json(body): Json<Learn>) -> Result<(StatusCode, Json<Value>), Fail> {
+async fn learn(State(app): S, b: Body<Learn>) -> Result<(StatusCode, Json<Value>), Fail> {
+    let body = body(b)?;
     let corpus = match (&body.path, &body.jsonl) {
         (Some(p), _) if !p.trim().is_empty() => Corpus::open(p.trim()).map_err(|e| fail(StatusCode::BAD_REQUEST, e))?,
         (_, Some(j)) if !j.trim().is_empty() => Corpus::parse("uploaded", j),

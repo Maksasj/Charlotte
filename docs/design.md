@@ -1,6 +1,7 @@
 # Engine design
 
-Status: proposal, 23 November 2026. Nothing here is built yet.
+Status: built on 23 November 2026. The section "As built" at the end lists the results of the
+build-order checks and where the code differs from this design.
 
 A Rust engine that replaces the two scripts (`prototypes/caseforge-v5` and
 `experiments/pattern-learning`). It holds conversations, keeps all knowledge
@@ -281,8 +282,7 @@ one stays small until something forces a split.
 | `charlotte` | The binary: `chat`, `serve`, `learn`, `check` |
 
 The web app sits beside the crates in `web/` and shares nothing with them but
-the HTTP API. Its request and response types are generated from the Rust types
-so the two cannot drift.
+the HTTP API, which is written down in [`api.md`](api.md).
 
 ## Build order
 
@@ -298,12 +298,66 @@ Each step ends with one check that passes or fails.
 | 6 | Web app: Chat with trace, Knowledge, Candidates, Learn, Status | The scripted conversation from step 3 can be held in the browser, and a candidate can be promoted from the review queue |
 | 7 | The 10,000-conversation batch | The batch runs to a report without manual steps |
 
+## As built
+
+### Build-order checks
+
+| Step | Result |
+|---|---|
+| 1 Vault round trip | Pass (test) |
+| 2 Six domains, D1 to D4 answered correctly | Pass (test), on a scratch vault trained from 400 simulated conversations per shape |
+| 3 HTTP matches the library | Pass, checked by hand with a three-turn conversation; every endpoint exercised |
+| 4 Learning restores a removed pattern | Pass (test) from 400 conversations per shape. From 80 per shape, as the step was worded, the rule-check pattern reached 89% on held-out conversations and was not promoted |
+| 5 The five rewordings | **Fail.** None is answered correctly. After 10,000 simulated conversations two of five intents are read, and one of those is answered wrongly |
+| 6 Web app | Pass: 34 browser checks against a live server on a scratch vault (`npm run smoke:live`), covering every view. Not checked: a narrow screen, and a job seen while still running (jobs finish in milliseconds) |
+| 7 The 10,000-conversation batch | Runs to a report in 0.6 seconds, on simulated conversations |
+
+The tests are in `crates/charlotte-engine/tests/pipeline.rs`.
+
+### Differences from the design above
+
+- **One pattern per shape.** A pattern says which kind of request it applies to
+  (`applies_to: gated | procedure | lookup`) instead of listing intents. The
+  three are `check-a-rule`, `walk-through-steps` and `look-up-a-record`.
+  A request's kind follows from what the vault holds for its intent: atoms,
+  a procedure, a lookup flag, or a cached reply.
+- **Ids are file names.** A note has no `id` field; `[[links]]` use the file
+  name, as Obsidian does.
+- **Held-out share.** A tenth of the corpus, but at least 16 conversations (or
+  half of a corpus smaller than 32).
+- **Promotion.** A pattern is promoted when it reproduces at least 90% of the
+  held-out conversations of its shape and no fewer than the trusted pattern
+  did. Learned phrases are kept when reading the held-out text does not get
+  worse; a phrase must have been missed at least 5 times, occur with its
+  label in 90% of its uses, and gets half the weight of an authored phrase.
+- **Objects.** What a request is about is a slot like any other (`object`),
+  read from words ("subscription") or from a reference ("order 7741").
+- **Web types** are written by hand against `api.md`, not generated.
+- **A simulated teacher** (`charlotte simulate`) was added. It holds labelled
+  conversations over whatever is in the vault and is the source of the
+  pretraining corpus.
+
+### Not carried over from v5
+
+- Learning the connectors that divide a message. They are a fixed list in
+  `lexicon/lexicon.md`; a message with no connector is cut where the next
+  intent's wording starts.
+- Detecting requests that conflict (cancel and pause).
+- Teaching a reply at a cold start, and keeping replies from resolved
+  conversations as new cached replies.
+- Trust rising a little on every use. Trust changes only when a conversation
+  is closed with a verdict.
+- Mining articles into atoms.
+
 ## Open decisions
+
+Defaults were taken to build with; each is still open.
 
 1. **Labels in the generated conversations.** Can the local model emit the act,
    intent and facts with each turn? The whole learning design leans on it.
-2. **A model inside the engine.** The Understand layer is replaceable either
-   way. The question is whether the first implementation may call a model or
-   must stay lexicon-only.
-3. **Automatic promotion.** Should validated candidates become trusted on
-   their own, or always wait for review?
+   The corpus format treats every label as optional.
+2. **A model inside the engine.** The first Understand layer is lexicon-only.
+   It is the weakest layer (step 5), and the one a model would replace.
+3. **Automatic promotion.** Validated candidates are promoted by default
+   (`--review` or `"auto_promote": false` turns that off). Learned phrases can
+   be spurious in ways the validation cannot see; see `findings.md`.
