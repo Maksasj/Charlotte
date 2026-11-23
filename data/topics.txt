@@ -1,102 +1,101 @@
 # One topic per line. Lines starting with # and empty lines are ignored.
-# The first block matches what the vault already knows; the rest is new ground.
-refunds for physical orders
-refunds for subscriptions
-warranty claims and replacements for devices
-expense reimbursement
-leave and time-off requests
-enabling advanced features on an account
-upgrading a plan
-cancelling a subscription
-compensation for late deliveries
-student discounts
-trial extensions
-an app that crashes or freezes
-wifi that keeps dropping
-tracking an order
-status of a support ticket
-resetting a password
-pairing a bluetooth device
-exporting personal data
-pricing questions
-opening hours
-asking to speak to a person
-pausing a subscription
-changing a delivery address
-damaged items on arrival
-missing items in an order
-wrong item delivered
-exchanging an item for another size
-gift cards and vouchers
-promo codes that do not work
-double charges on a card
-failed payments
-changing the payment method
-invoices and receipts
-VAT and tax questions
-updating account details
-changing the email on an account
-two-factor authentication problems
-suspected account compromise
-deleting an account
-privacy and data requests
-notification settings
-unsubscribing from emails
-downgrading a plan
-adding and removing team seats
-user roles and permissions
-single sign-on setup
-API keys and rate limits
-webhooks that fail
-importing data from another tool
-syncing between devices
-slow performance
-error messages after an update
-installing the desktop app
-mobile app login problems
-browser compatibility
-accessibility features
-language and region settings
-booking an appointment
-rescheduling an appointment
-cancelling a booking
-restaurant reservations
-hotel bookings and changes
-flight changes and delays
-lost luggage
-train tickets and refunds
-car rental questions
-event tickets
-parking permits
-internet installation
-moving internet service to a new address
-mobile phone plans
-roaming charges
-SIM card activation
-phone number transfers
-electricity bills
-meter readings
-gas safety concerns
-water service interruptions
-home insurance claims
-car insurance claims
-travel insurance
-health insurance coverage
-bank transfers
-blocked bank cards
-loan applications
-mortgage questions
-opening a bank account
-currency exchange
-library memberships
-gym memberships
-course enrolment
-exam registration
-tuition fees
-job application status
-payroll questions
-appliance repair
-furniture assembly help
-product availability
-pre-orders
-loyalty points
+saying hello and how the day is going
+weekend plans
+the weather
+what to cook for dinner tonight
+quick breakfast ideas
+baking bread at home
+cooking for one
+meal prep for the week
+coffee and tea
+eating healthier
+getting better sleep
+starting to exercise
+running for beginners
+stretching and back pain from sitting
+staying motivated
+dealing with stress
+feeling tired all the time
+building a morning routine
+breaking a bad habit
+managing time
+procrastination
+learning a new language
+learning to play guitar
+picking up drawing
+reading more books
+book recommendations
+movies to watch tonight
+tv series worth watching
+music for working
+video games
+board games for a group
+planning a birthday party
+gift ideas for a friend
+gift ideas for parents
+planning a weekend trip
+packing for a holiday
+travelling on a budget
+visiting a city for the first time
+long flights
+road trips
+camping
+hiking
+cycling to work
+buying a first car
+public transport
+moving to a new flat
+decorating a small room
+keeping a home tidy
+doing laundry properly
+houseplants that are hard to kill
+starting a small garden
+getting a dog
+cat behaviour
+looking after a pet while travelling
+saving money
+making a monthly budget
+cutting down on spending
+first job interview
+writing a cv
+asking for a raise
+changing careers
+working from home
+getting along with coworkers
+giving a presentation
+studying for exams
+choosing what to study
+writing an essay
+basic maths help
+how computers work
+choosing a laptop
+choosing a phone
+phone battery life
+staying safe online
+passwords
+learning to code
+what artificial intelligence is
+social media habits
+taking better photos
+how the internet works
+space and the planets
+why the sky is blue
+how airplanes fly
+dinosaurs
+the oceans
+climate and recycling
+history of everyday things
+how money and inflation work
+how vaccines work
+common cold remedies
+drinking enough water
+making new friends
+keeping in touch with old friends
+talking to a shy person
+an argument with a friend
+advice on a first date
+family dinners
+raising a toddler
+helping a child with homework
+feeling bored
+random fun facts

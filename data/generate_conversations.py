@@ -3,8 +3,8 @@
 
 Nothing is asked to "write a conversation". Each conversation is held live, turn by turn:
 
-  - the agent is the model answering as a support agent would, seeing only what the user wrote;
-  - the user is the same model in a separate chat, playing a person who texts about a situation.
+  - the agent is the model chatting as a friendly general assistant, seeing only what the user wrote;
+  - the user is the same model in a separate chat, playing a person who texts about something on their mind.
 
 Each file holds the conversations for one topic in this form:
 
@@ -38,15 +38,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 END = "[END]"
 
-AGENT_SYSTEM = """You are a support agent chatting with a customer by text.
+AGENT_SYSTEM = """You are a friendly chat companion. Someone is texting with you.
 
-- Answer the way a helpful person would in a chat: short, plain and to the point, usually one to three sentences.
-- If you need something to help (an order number, a date, a detail), ask for it, one question at a time.
-- You can look up orders, accounts and bookings and you know the company's rules. Decide what they are and stay consistent with what you already said.
-- If a request cannot be granted, say so plainly and offer what you can do instead.
-- Plain text only. No lists, no markdown, no emoji, no signature. Write only your reply."""
+- Talk like a warm, easygoing person would in a chat: natural, kind, and to the point, usually one to three sentences.
+- Help with whatever comes up: questions, advice, ideas, explanations, or just a chat. Share what you know in plain words.
+- If you are not sure what they mean, ask. If you do not know something, say so.
+- Show interest in the person: react to what they say, and ask something back when it fits.
+- Plain text only. No lists, no markdown, no headings. Write only your reply."""
 
-USER_SYSTEM = """You are a regular person texting a company's support chat. This is your situation:
+USER_SYSTEM = """You are a regular person texting with a friendly chat assistant. This is what is on your mind:
 
 Topic: {topic}
 What is going on: {situation}
@@ -54,24 +54,27 @@ How you write: {style}
 
 - Write the way people really text: simple everyday words, short messages, one or two sentences.
 - Only say what a real person would say at this point. Do not explain everything at once unless your situation says so.
-- When the agent asks something, answer it. Make up ordinary details when you need them (a number, a date, a name) and stick to them.
-- Never write as the agent, never describe what you are doing, no quotation marks, no emoji unless it fits how you write.
-- When your matter is settled, or the agent clearly cannot help further, send a short closing like a thank-you if it feels natural. Once there is nothing more to say, reply with exactly {end} and nothing else."""
+- React to what the assistant says: answer its questions, ask a follow-up, agree, push back, or change your mind, as a person would.
+- Make up ordinary details about your own life when you need them, and stick to them.
+- Never write as the assistant, never describe what you are doing, no quotation marks.
+- When you have what you wanted, or the chat has run its course, close it naturally (a thanks or a goodbye) if that feels right. Once there is nothing more to say, reply with exactly {end} and nothing else."""
 
-# What kind of exchange the user is about to have. The agent is not told any of this.
+# What kind of exchange the user is about to have. The assistant is not told any of this.
 SITUATIONS = [
-    "you have a simple request and give only the bare minimum at first",
-    "you have a request and give every detail in your first message",
-    "you are not sure what you are allowed to ask for, so you ask what your options are",
-    "your request is outside the usual rules and you hope for an exception",
-    "you realise partway through that you got one detail wrong, and you correct it",
-    "you need to be walked through how to do something, one step at a time",
-    "something you were told to try did not work, and you say so",
-    "you have two things to sort out and mention both",
-    "you only have a reference number and want to know what is happening",
-    "you just want to know how something works; you do not want anything done",
-    "you are following up on something you asked about before and nothing happened",
-    "you changed your mind about something you asked for earlier",
+    "you open with a greeting and a bit of small talk before getting to it",
+    "you have one simple question and want a quick answer",
+    "you want advice and are not sure what to do",
+    "you ask something and then want it explained more simply",
+    "you want a few ideas or suggestions to choose from",
+    "you have an opinion already and want to see if the assistant agrees",
+    "you realise partway through that you said something wrong, and you correct it",
+    "you want to be walked through how to do something, one step at a time",
+    "you tried what was suggested and it did not work, and you say so",
+    "you have two things on your mind and mention both",
+    "you start on one thing and drift to a related one",
+    "you are just in the mood to chat about it and have no real question",
+    "you are curious why something is the way it is",
+    "you are comparing two options and cannot decide",
 ]
 STYLES = [
     "polite and a little formal, full sentences",
@@ -79,9 +82,9 @@ STYLES = [
     "brief and matter-of-fact",
     "friendly and chatty",
     "in a hurry, very short messages",
-    "a bit annoyed but civil",
-    "unsure and apologetic",
-    "formal, like writing to an office",
+    "a bit grumpy but civil",
+    "unsure and hesitant",
+    "enthusiastic",
     "casual with the odd typo",
     "direct, no greeting",
 ]
@@ -121,7 +124,7 @@ def clean(text):
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
     text = text.split("</think>")[-1]  # a thinking block that was cut off at the start
     text = " ".join(text.split())
-    text = re.sub(r"^\**\s*(?:U|A|User|Customer|Agent|Assistant|Support|Me)\s*\**\s*:\s*\**\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^\**\s*(?:U|A|User|Human|Person|Agent|Assistant|Bot|AI|Me)\s*\**\s*:\s*\**\s*", "", text, flags=re.IGNORECASE)
     text = text.replace("**", "").strip()
     if len(text) >= 2 and text[0] in "\"'“‘" and text[-1] in "\"'”’":
         text = text[1:-1].strip()
@@ -168,9 +171,9 @@ def chat(args, system, turns, seed, max_tokens):
 def simulate(args, topic, rng, recent):
     """Hold one conversation. Returns its turns, or None if it did not come out usable."""
     system = USER_SYSTEM.format(topic=topic, situation=rng.choice(SITUATIONS), style=rng.choice(STYLES), end=END)
-    opening = "You have just opened the support chat. Send your first message."
+    opening = "You have just opened the chat. Send your first message."
     if recent:
-        opening += " Other people opened with the lines below; yours is a different person with a different case, so do not start like them:\n" + "\n".join(f"- {r}" for r in recent)
+        opening += " Other people opened with the lines below; you are a different person with something else on your mind, so do not start like them:\n" + "\n".join(f"- {r}" for r in recent)
     conv = []  # (speaker, text), speaker is "U" or "A"
     for turn in range(args.max_turns):
         # The user's side of the chat: its own lines are "assistant", the agent's are "user".
