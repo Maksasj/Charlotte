@@ -37,6 +37,7 @@ of its five known defects give wrong answers on ordinary inputs. Details are in
 | [`docs/findings.md`](docs/findings.md) | What held up, what did not, defects, open problems, candidate next steps |
 | [`prototypes/caseforge-v5/index.html`](prototypes/caseforge-v5/index.html) | The prototype, as produced. Open it in a browser |
 | [`prototypes/caseforge-v5/probe.mjs`](prototypes/caseforge-v5/probe.mjs) | Runs the prototype's engine without a browser and prints the behaviours the findings rely on |
+| [`experiments/pattern-learning/`](experiments/pattern-learning/README.md) | Experiment: can solution shapes be learned from labelled conversations? |
 | [`archive/2026-11-22-design-conversation.txt`](archive/2026-11-22-design-conversation.txt) | The raw conversation the prototype came out of |
 
 ## Running

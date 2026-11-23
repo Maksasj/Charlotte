@@ -98,6 +98,25 @@ conversations".
 7. **Typed conditions.** Values are compared as numbers or lower-cased
    strings. Dates, durations with units and ordered tiers are not handled.
 
+## Experiment: learning solution shapes
+
+Run on 23 November 2026, with understanding taken as solved (labelled
+conversations from a simulated teacher). Full account in
+[`experiments/pattern-learning/README.md`](../experiments/pattern-learning/README.md).
+
+- Against a pass mark set in advance (95% of unseen conversations reproduced
+  from 20 training conversations), only the multi-step procedure passed. The
+  flat rule check reached 79%, corrections 73%, lookup feeding a rule check
+  71%.
+- The flat and composed shapes are learnable with more examples: 98 to 99%
+  from 80 conversations spread over 24 domains. Variety of domains matters
+  more than the number of conversations.
+- Corrections stay short of the mark (96% at 320 conversations) because the
+  learner needs a memory the state description does not provide.
+- Shapes learned separately do not combine: 3% on a combination never shown.
+- The learner picks rules over a state description that is authored. Learning
+  the shape does not remove the closed vocabulary; it moves it.
+
 ## Candidate next steps
 
 Not decided. Listed so the choice is explicit.
