@@ -4,7 +4,8 @@ Status: proposal, 23 November 2026. Nothing here is built yet.
 
 A Rust engine that replaces the two scripts (`prototypes/caseforge-v5` and
 `experiments/pattern-learning`). It holds conversations, keeps all knowledge
-in a Markdown vault, and learns from conversations in bulk.
+in a Markdown vault, and learns from conversations in bulk. A separate web
+app gives a convenient interface to it.
 
 ## Requirements
 
@@ -16,6 +17,7 @@ in a Markdown vault, and learns from conversations in bulk.
    edit.
 4. Learning through the same API, sized for a batch of 10,000 generated
    conversations.
+5. A web interface (TypeScript, React, Vite) for working with the agent.
 
 Carried over from the findings:
 
@@ -168,6 +170,7 @@ println!("{report}");                    // what was proposed, validated, reject
 | `POST /v1/learn` | Start a learning job over a corpus file or an uploaded batch |
 | `GET /v1/learn/{job}` | Progress and the report |
 | `GET /v1/knowledge?kind=&status=` | List items |
+| `GET /v1/knowledge/{id}` · `PUT /v1/knowledge/{id}` | Read or edit one item; an edit rewrites its note |
 | `POST /v1/knowledge/{id}/promote` · `/reject` | Review a candidate |
 | `GET /v1/health` | Vault path, item counts, index age |
 
@@ -179,6 +182,28 @@ charlotte serve --vault vault/ --port 7878
 charlotte learn corpus/batch-01.jsonl          prints the report
 charlotte check                                lint the vault: broken links, unknown slots
 ```
+
+## Web interface
+
+A separate app in `web/`: TypeScript, React, Vite. It only talks to the HTTP
+API, so it holds no logic of its own and anything it can do is also possible
+from a script.
+
+| View | What it is for | API used |
+|---|---|---|
+| **Chat** | Talk to the agent. Beside each reply, its trace: what was understood, the state, the pattern, the atom and the rule that fired. Close a conversation with a verdict | conversations |
+| **Knowledge** | Browse the vault by kind, status and domain; search; open an item; edit it; follow its links | knowledge |
+| **Candidates** | The review queue: each learned item with its support, its held-out score and the conversations behind it; promote or reject | knowledge, promote, reject |
+| **Learn** | Start a job from a corpus file, watch progress, read the report | learn |
+| **Status** | Vault path, item counts, index age | health |
+
+- In development, Vite serves the app and proxies `/v1` to `charlotte serve`.
+- `npm run build` produces static files that `charlotte serve` can also serve,
+  so one process is enough to use it.
+- The trace panel is the main reason for the app: a wrong answer should be
+  attributable to one layer at a glance.
+- Plain interface first. No animation, sound or theming until the views are
+  useful.
 
 ## Learning
 
@@ -255,6 +280,10 @@ one stays small until something forces a split.
 | `charlotte-engine` | Default layer implementations, the turn pipeline, the learners |
 | `charlotte` | The binary: `chat`, `serve`, `learn`, `check` |
 
+The web app sits beside the crates in `web/` and shares nothing with them but
+the HTTP API. Its request and response types are generated from the Rust types
+so the two cannot drift.
+
 ## Build order
 
 Each step ends with one check that passes or fails.
@@ -266,7 +295,8 @@ Each step ends with one check that passes or fails.
 | 3 | Library API, `chat`, HTTP server | A scripted conversation over HTTP matches the same one through the library |
 | 4 | Pattern learner and the learn pipeline | With the gated pattern removed from the vault, learning from 80 simulated conversations restores it and step 2's check passes again |
 | 5 | Lexicon learner | The five rewordings that v5 could not read are answered after learning from other labelled conversations that use the same words |
-| 6 | The 10,000-conversation batch | The batch runs to a report without manual steps |
+| 6 | Web app: Chat with trace, Knowledge, Candidates, Learn, Status | The scripted conversation from step 3 can be held in the browser, and a candidate can be promoted from the review queue |
+| 7 | The 10,000-conversation batch | The batch runs to a report without manual steps |
 
 ## Open decisions
 
