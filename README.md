@@ -35,6 +35,7 @@ of its five known defects give wrong answers on ordinary inputs. Details are in
 | [`docs/journey.md`](docs/journey.md) | How the idea developed, step by step, and what each step added |
 | [`docs/architecture.md`](docs/architecture.md) | How v5 works: memory kinds, the turn pipeline, scoring, what learns |
 | [`docs/findings.md`](docs/findings.md) | What held up, what did not, defects, open problems, candidate next steps |
+| [`docs/design.md`](docs/design.md) | Proposed Rust engine: layers, vault format, API, learning from a corpus. Not built yet |
 | [`prototypes/caseforge-v5/index.html`](prototypes/caseforge-v5/index.html) | The prototype, as produced. Open it in a browser |
 | [`prototypes/caseforge-v5/probe.mjs`](prototypes/caseforge-v5/probe.mjs) | Runs the prototype's engine without a browser and prints the behaviours the findings rely on |
 | [`experiments/pattern-learning/`](experiments/pattern-learning/README.md) | Experiment: can solution shapes be learned from labelled conversations? |
