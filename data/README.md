@@ -36,8 +36,17 @@ software/target/release/charlotte learn data/your-batch.jsonl      # from the re
 `generate_conversations.py` holds conversations live with a model served by
 Ollama: two friendly agents (the same model in two separate chats) text each
 other, each seeing only what the other wrote. One is given a topic and opens;
-its lines are `U:` and the other's are `A:`. It writes
-one Markdown file per topic into `data/conversations/`:
+its lines are `U:` and the other's are `A:`. Everything it produces goes into
+one folder, `data/friendly-chats/`, with one Markdown file per topic:
+
+```
+data/friendly-chats/
+  001-saying-hello-and-how-the-day-is-going.md
+  002-weekend-plans.md
+  ...
+```
+
+Each file looks like this:
 
 ```
 Entry 1
@@ -69,3 +78,6 @@ above, so `charlotte learn` cannot read them as they are.
 | `paraphrases.yaml` | Extra wordings the simulated user draws on (`charlotte simulate --paraphrases`) |
 | `generate_conversations.py` | Simulates conversations with a local Ollama model |
 | `topics.txt` | The 100 topics the generator walks through |
+| `friendly-chats/` | The generator's output, one file per topic, once it has been run |
+
+Other teaching material added later gets its own folder beside `friendly-chats/`.

@@ -5,7 +5,8 @@ Nothing is asked to "write a conversation". Each conversation is held live, turn
 friendly agents: the same model in two separate chats, each seeing only what the other wrote. One of
 them is given a topic and opens; in the files its lines are "U:" and the other's are "A:".
 
-Each file holds the conversations for one topic in this form:
+Everything it produces goes into one folder, data/friendly-chats/, with one file per topic.
+Each file holds the conversations for that topic in this form:
 
     Entry 1
     U: first agent
@@ -161,7 +162,7 @@ def main():
     p.add_argument("--total", type=int, default=10000, help="conversations in all, spread evenly over the topics (default 10000)")
     p.add_argument("--topics-file", default=str(HERE / "topics.txt"), help="one topic per line (default data/topics.txt)")
     p.add_argument("--topics", type=int, default=0, help="use only the first N topics (for a trial run)")
-    p.add_argument("--out", default=str(HERE / "conversations"), help="folder for the Markdown files (default data/conversations)")
+    p.add_argument("--out", default=str(HERE / "friendly-chats"), help="folder for this material, one Markdown file per topic (default data/friendly-chats)")
     p.add_argument("--model", default="qwen3.5:4b", help="Ollama model tag (default qwen3.5:4b; `ollama list` shows what is installed)")
     p.add_argument("--host", default="http://127.0.0.1:11434", help="where Ollama listens")
     p.add_argument("--max-turns", type=int, default=6, help="most exchanges in one conversation; the length is drawn at random up to this (default 6)")
