@@ -277,3 +277,77 @@ fn a_reference_resolves_to_a_subject_from_earlier_in_the_conversation() {
     let fresh = e.conversation().say("what is the status of that order").text;
     assert!(fresh.to_lowercase().contains("which"), "{fresh}");
 }
+
+fn chat(lines: &[&str]) -> String {
+    let turns: Vec<_> = lines.iter().map(|t| serde_json::json!({ "role": "user", "text": t })).collect();
+    serde_json::json!({ "turns": turns }).to_string() + "\n"
+}
+
+#[test]
+fn split_connectors_are_found_in_chats_and_promoted_to_the_lexicon() {
+    let dir = untrained("connectors");
+    let mut jsonl = String::new();
+    for i in 0..40 {
+        jsonl += &chat(&[&format!("I want a refund for order {}, on top of that cancel my subscription", 1000 + i)]);
+        jsonl += &chat(&["I want a refund and my money back", "please cancel it and also thanks"]);
+    }
+    let mut vault = Vault::open(&dir).unwrap();
+    let found = charlotte_engine::connectors::induce(&vault, &Corpus::parse("test", &jsonl), &Default::default());
+    let phrases: Vec<&str> = found.iter().map(|c| c.phrase.as_str()).collect();
+    assert!(phrases.contains(&"on top of that"), "{phrases:?}");
+    // "and" is everywhere, not between requests; "also" is already a connector.
+    assert!(!phrases.contains(&"and") && !phrases.contains(&"also"), "{phrases:?}");
+    let note = charlotte_engine::connectors::candidate_note(&found, "test").unwrap();
+    vault.put(note).unwrap();
+    let engine = Engine::with_layers(vault, Box::new(default_layers));
+    engine.promote("phrases-connectors").unwrap();
+    assert!(engine.vault(|v| charlotte_core::Memory::lexicon(v).connectors.iter().any(|c| c == "on top of that")));
+}
+
+#[test]
+fn a_user_contradicting_themselves_is_asked_which_value_is_right() {
+    let e = trained();
+    let mut c = e.conversation();
+    let r = c.say("I want a refund for order 7741, it arrived 5 days ago, no wait, 40 days ago");
+    assert!(r.text.contains("two different values for days (5 and 40)"), "{}", r.text);
+    // Settling it removes the conflict; nothing was granted or denied on a guess.
+    let r = c.say("3 days");
+    assert!(!r.text.contains("two different values"), "{}", r.text);
+    assert_eq!(r.trace.requests[0].frame.as_ref().unwrap().facts.get("days").map(|v| v.text()), Some("3".into()));
+}
+
+#[test]
+fn atoms_that_contradict_each_other_are_reported() {
+    let dir = untrained("atoms");
+    let mut v = Vault::open(&dir).unwrap();
+    assert!(v.atom_conflicts().is_empty(), "{:?}", v.atom_conflicts());
+    let atom = |name: &str, result: &str, cond: &str| {
+        let text = format!("---\nkind: atom\nintent: '[[refund]]'\nobject: order\npriority: 9\nresult: {result}\nconditions:\n{cond}\ntrust: 0.8\n---\nok\n");
+        charlotte_vault::Note::parse(&format!("atoms/{name}.md"), &text).unwrap()
+    };
+    let cond = |op: &str, n: u32| format!("- slot: '[[days]]'\n  op: '{op}'\n  value: {n}\n");
+    v.put(atom("x-early", "money_back", &cond("<=", 30))).unwrap();
+    v.put(atom("x-mid", "store_credit", &cond("<=", 60))).unwrap();
+    v.put(atom("x-late", "nothing", &cond(">", 90))).unwrap();
+    v.put(atom("x-never", "nothing", &(cond(">=", 10) + &cond("<=", 5)))).unwrap();
+    let found = v.atom_conflicts();
+    assert!(found.iter().any(|f| f.contains("x-early") && f.contains("x-mid")), "{found:?}");
+    assert!(found.iter().any(|f| f.contains("x-never") && f.contains("never apply")), "{found:?}");
+    // Disjoint conditions do not conflict.
+    assert!(!found.iter().any(|f| f.contains("x-early") && f.contains("x-late")), "{found:?}");
+}
+
+#[test]
+fn a_taught_reply_is_a_candidate_until_promoted() {
+    let dir = untrained("teach");
+    let engine = Engine::open(&dir).unwrap();
+    let mut c = engine.conversation();
+    let first = c.say("do you ship to norway");
+    assert_eq!(first.text, "I don't know how to help with that yet.");
+    let item = c.teach("Yes, we ship to Norway.").unwrap();
+    assert_eq!(item.status, "candidate");
+    assert_eq!(engine.conversation().say("do you ship to norway").text, first.text, "a candidate is not used");
+    engine.promote(&item.id).unwrap();
+    assert_eq!(engine.conversation().say("do you ship to norway").text, "Yes, we ship to Norway.");
+    assert!(engine.conversation().teach("anything").is_err(), "nothing said yet");
+}

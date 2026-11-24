@@ -362,9 +362,34 @@ impl Vault {
                 }
             }
         }
+        out.extend(self.atom_conflicts());
         for p in &self.typed.procedures {
             if !self.typed.intents.contains_key(&p.intent) {
                 out.push(format!("procedure {}: unknown intent '{}'", p.id, p.intent));
+            }
+        }
+        out
+    }
+
+    /// Atoms that contradict themselves or each other. Atoms for one intent and object are tried by
+    /// priority and then by name, so two at the same priority with different results, both satisfiable by
+    /// the same facts, are decided by their names alone.
+    pub fn atom_conflicts(&self) -> Vec<String> {
+        let mut out = Vec::new();
+        let atoms = &self.typed.atoms;
+        for (i, a) in atoms.iter().enumerate() {
+            let own: Vec<&Condition> = a.conditions.iter().collect();
+            if contradictory(&own) {
+                out.push(format!("atom {}: its conditions cannot all hold, so it can never apply", a.id));
+            }
+            for b in &atoms[i + 1..] {
+                if a.intent != b.intent || a.object != b.object || a.priority != b.priority || a.result == b.result {
+                    continue;
+                }
+                let both: Vec<&Condition> = a.conditions.iter().chain(b.conditions.iter()).collect();
+                if !contradictory(&own) && !contradictory(&b.conditions.iter().collect::<Vec<_>>()) && !contradictory(&both) {
+                    out.push(format!("atoms {} and {}: same intent, object and priority, different results ({} / {}), and both can hold at once", a.id, b.id, a.result, b.result));
+                }
             }
         }
         out

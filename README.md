@@ -114,3 +114,9 @@ grow from a corpus, but only as far as that corpus's own words reach.
 
 - **Call/return.** A request that needs a record can `call(record_source)`: a subframe is pushed, runs the plain lookup it already knows (ask for the subject, look up, report), and pops silently; the parent resumes with `returned_from` and `subgoal_failed` set and the record's facts landed. Features: `subgoal_active`, `returned`, `returned_from=…`, `subgoal_failed`. `charlotte simulate --calls` produces such conversations; the learner replays them with the same stack. On 23 composed conversations, a pattern learned without any composed demonstrations reproduced 0%; with 3 it reproduced 100% (small sample; flattened lookup reached 3–7%).
 - **Conversation memory.** The session keeps every subject mentioned. "That order" resolves to the one in focus, "the other one" to the one before it (`same`/`other` signals in the lexicon). With nothing to point at, the agent asks.
+
+## Tier 4 additions
+
+- **Conflict detection.** A message that gives one slot two different values ("5 days ago, no wait, 40 days ago") no longer silently keeps the first: the slot is left unbound and the agent asks which value is right. Atoms that contradict themselves, or two atoms at the same priority for the same intent and object with different results that can both hold, are listed by `charlotte check`.
+- **Teaching a reply.** `charlotte teach "message" "reply"`, or `:teach <reply>` in `chat` after a message the agent could not answer, writes a candidate chat. It is used only once promoted, and then also for rewordings the recall accepts.
+- **Learned split connectors.** `charlotte connectors FILE` proposes the words found between two requests in chats (support, purity, and a held-out check) as a lexicon candidate; promoting adds them to the lexicon's `connectors`. On the chat data in `data/processed` it finds nothing new, since those chats have almost no multi-request messages.

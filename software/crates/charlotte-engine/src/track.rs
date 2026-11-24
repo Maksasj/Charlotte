@@ -2,6 +2,7 @@
 
 use crate::view::view;
 use charlotte_core::*;
+use std::collections::BTreeMap;
 
 pub struct FrameTracker;
 
@@ -16,10 +17,18 @@ fn merge(frame: &mut Frame, facts: &Facts) -> bool {
         }
         frame.facts.insert(k.clone(), v.clone());
     }
+    frame.conflicts.retain(|slot, _| !facts.contains_key(slot));
     if frame.last_asked.as_ref().map(|s| frame.facts.contains_key(s)).unwrap_or(false) {
         frame.last_asked = None;
     }
     changed
+}
+/// Slots the user contradicted themselves on: forget what was known of them and ask which is right.
+fn contradict(frame: &mut Frame, conflicts: &BTreeMap<String, Vec<Value>>) {
+    for (slot, values) in conflicts {
+        frame.facts.remove(slot);
+        frame.conflicts.insert(slot.clone(), values.clone());
+    }
 }
 fn finished(f: &Frame) -> bool {
     f.agent_acts.iter().any(|o| matches!(o, Op::Finish | Op::Escalate | Op::Report))
@@ -97,7 +106,7 @@ impl Track for FrameTracker {
                     }
                     frame = Some(j);
                 }
-            } else if !r.facts.is_empty() {
+            } else if !r.facts.is_empty() || !r.conflicts.is_empty() {
                 // Facts without a request answer the frame that asked for them, else the latest real request.
                 let asked = state.frames.iter().rposition(|f| f.last_asked.as_ref().map(|s| r.facts.contains_key(s)).unwrap_or(false));
                 let real = |f: &Frame| !matches!(view(f, mem).kind, ReqKind::Move | ReqKind::Unknown);
@@ -108,6 +117,7 @@ impl Track for FrameTracker {
                 }
             }
             if let (Some(j), Some(a)) = (frame, act) {
+                contradict(&mut state.frames[j], &r.conflicts);
                 state.frames[j].user_acts.push(a);
             }
             out.push(Touch { request: i, frame, user_act: act });

@@ -108,6 +108,10 @@ impl Conversation<'_> {
     pub fn say(&mut self, text: &str) -> Reply {
         self.engine.say(&mut self.state, text)
     }
+    /// Teach what the agent should have said to the last message.
+    pub fn teach(&self, reply: &str) -> Result<Item, String> {
+        self.engine.teach(&self.state, reply)
+    }
     pub fn close(&mut self, verdict: Verdict) -> Result<Vec<TrustChange>, String> {
         self.engine.close(&mut self.state, verdict)
     }
@@ -360,13 +364,13 @@ impl Engine {
             }
             let link = |k: &str| cand.front.get(k).and_then(|x| x.as_str()).map(|s| s.trim_start_matches("[[").trim_end_matches("]]").to_string());
             let target = if cand.kind() == "phrases" {
-                let target = link("intent").or_else(|| link("slot")).ok_or("the candidate names no intent or slot")?;
+                let target = link("intent").or_else(|| link("slot")).or_else(|| link("lexicon")).ok_or("the candidate names no intent or slot")?;
                 let mut note = v.notes.get(&target).cloned().ok_or_else(|| format!("no note '{target}' to add the phrases to"))?;
                 let phrases = cand.front.get("phrases").and_then(|p| p.as_array()).cloned().unwrap_or_default();
-                if cand.front.get("as").and_then(|x| x.as_str()) == Some("patterns") {
-                    crate::learn::add_patterns(&mut note, phrases);
-                } else {
-                    crate::learn::add_phrases(&mut note, cand.front.get("value").and_then(|x| x.as_str()), phrases);
+                match cand.front.get("as").and_then(|x| x.as_str()) {
+                    Some("patterns") => crate::learn::add_patterns(&mut note, phrases),
+                    Some("connectors") => crate::learn::add_connectors(&mut note, phrases),
+                    _ => crate::learn::add_phrases(&mut note, cand.front.get("value").and_then(|x| x.as_str()), phrases),
                 }
                 v.put(note)?;
                 target
@@ -384,6 +388,41 @@ impl Engine {
                 v.remove(id)?;
             }
             Ok(Engine::item_of(v, &v.notes[&target]))
+        })
+    }
+    /// Teach a reply to the last thing the user said, for when the agent has nothing of its own. It lands as a
+    /// candidate chat, with the agent's previous message as its context; once promoted, a message like it
+    /// draws that reply. Nothing changes before then.
+    pub fn teach(&self, conv: &ConvState, reply: &str) -> Result<Item, String> {
+        let squash = |t: &str| t.split_whitespace().collect::<Vec<_>>().join(" ");
+        let reply = squash(reply);
+        if reply.is_empty() {
+            return Err("give the reply to teach".into());
+        }
+        let at = conv.messages.iter().rposition(|m| m.role == "user").ok_or("nothing has been said yet to teach a reply to")?;
+        let message = squash(&conv.messages[at].text);
+        let mut lines = Vec::new();
+        if let Some(prev) = at.checked_sub(1).map(|i| &conv.messages[i]).filter(|m| m.role == "agent" && !m.text.trim().is_empty()) {
+            lines.push(('A', squash(&prev.text)));
+        }
+        lines.push(('U', message.clone()));
+        lines.push(('A', reply));
+        let base = format!("taught-{}", message.split(|c: char| !c.is_alphanumeric()).filter(|w| !w.is_empty()).take(3).collect::<Vec<_>>().join("-").to_lowercase());
+        self.change(|v| {
+            let mut id = base.clone();
+            let mut n = 1;
+            while v.notes.contains_key(&id) {
+                n += 1;
+                id = format!("{base}-{n}");
+            }
+            let mut front = Map::new();
+            front.insert("kind".into(), "chats".into());
+            front.insert("topic".into(), "taught by hand".into());
+            front.insert("conversations".into(), 1.into());
+            front.insert("learned_from".into(), "teach".into());
+            front.insert("trust".into(), 0.8.into());
+            v.put(Note { id: id.clone(), path: format!("candidates/{id}.md"), front, body: charlotte_vault::render_chats(&[lines]) })?;
+            Ok(Engine::item_of(v, &v.notes[&id]))
         })
     }
     pub fn reject(&self, id: &str) -> Result<(), String> {

@@ -196,6 +196,9 @@ pub struct Request {
     /// "that order", "the other one": the message points back at something said earlier.
     #[serde(default)]
     pub refer: Option<Refer>,
+    /// Slots the message gave two different values for. They are left out of `facts`.
+    #[serde(default)]
+    pub conflicts: BTreeMap<String, Vec<Value>>,
     pub matched: Vec<Match>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -242,6 +245,9 @@ pub struct Frame {
     /// The last subframe ended in `escalate`.
     #[serde(default)]
     pub subgoal_failed: bool,
+    /// Slots the user contradicted themselves on and has not settled; the agent asks which value is right.
+    #[serde(default)]
+    pub conflicts: BTreeMap<String, Vec<Value>>,
 }
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct State {
@@ -513,6 +519,41 @@ impl Condition {
             CmpOp::Ne => !got.same(&self.value),
         }
     }
+}
+
+/// True when no value of the slot can satisfy all of the conditions at once.
+pub fn contradictory(conds: &[&Condition]) -> bool {
+    let mut slots: Vec<&str> = conds.iter().map(|c| c.slot.as_str()).collect();
+    slots.sort();
+    slots.dedup();
+    slots.iter().any(|slot| {
+        let cs: Vec<&&Condition> = conds.iter().filter(|c| c.slot == *slot).collect();
+        // A value that every condition holds for, if one is named outright.
+        if let Some(eq) = cs.iter().find(|c| c.op == CmpOp::Eq) {
+            return !cs.iter().all(|c| c.holds(&eq.value));
+        }
+        // Otherwise the numeric bounds must leave room: (value, strict).
+        let (mut lo, mut hi): (Option<(f64, bool)>, Option<(f64, bool)>) = (None, None);
+        let tighter_lo = |cur: Option<(f64, bool)>, new: (f64, bool)| match cur {
+            Some((v, st)) if v > new.0 || (v == new.0 && st) => cur,
+            _ => Some(new),
+        };
+        let tighter_hi = |cur: Option<(f64, bool)>, new: (f64, bool)| match cur {
+            Some((v, st)) if v < new.0 || (v == new.0 && st) => cur,
+            _ => Some(new),
+        };
+        for c in &cs {
+            let Some(n) = c.value.as_f64() else { continue };
+            match c.op {
+                CmpOp::Ge => lo = tighter_lo(lo, (n, false)),
+                CmpOp::Gt => lo = tighter_lo(lo, (n, true)),
+                CmpOp::Le => hi = tighter_hi(hi, (n, false)),
+                CmpOp::Lt => hi = tighter_hi(hi, (n, true)),
+                _ => {}
+            }
+        }
+        matches!((lo, hi), (Some((l, ls)), Some((h, hs))) if l > h || (l == h && (ls || hs)))
+    })
 }
 
 #[derive(Clone, Debug, Default, Deserialize)]

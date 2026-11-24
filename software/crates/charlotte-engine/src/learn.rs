@@ -164,7 +164,7 @@ pub fn replay(ci: usize, conv: &CorpusConv, mem: &dyn Memory, l: &Layers) -> Vec
     for t in &conv.turns {
         if t.role == "user" {
             let reading = if t.intent.is_some() || t.facts.is_some() || t.signal.is_some() {
-                Reading { requests: vec![Request { clause: t.text.clone(), intent: t.intent.clone(), facts: t.facts.clone().unwrap_or_default(), signal: t.signal, refer: None, matched: vec![] }] }
+                Reading { requests: vec![Request { clause: t.text.clone(), intent: t.intent.clone(), facts: t.facts.clone().unwrap_or_default(), signal: t.signal, refer: None, conflicts: Default::default(), matched: vec![] }] }
             } else {
                 let ctx = ReadContext { asked: state.frames.iter().rev().filter_map(|f| f.last_asked.clone()).collect() };
                 l.understand.read(&t.text, &ctx)
@@ -495,6 +495,16 @@ pub fn add_patterns(note: &mut Note, items: Vec<Json>) {
         let text = p.get("text").and_then(|t| t.as_str()).or_else(|| p.as_str()).unwrap_or_default().to_string();
         if !text.is_empty() && !arr.iter().any(|x| x.get("text").and_then(|t| t.as_str()) == Some(text.as_str())) {
             arr.push(json!({ "text": text }));
+        }
+    }
+}
+/// Add split connectors to the lexicon note. Connectors already there are left alone.
+pub fn add_connectors(note: &mut Note, items: Vec<Json>) {
+    let Some(arr) = note.front.entry("connectors").or_insert_with(|| json!([])).as_array_mut() else { return };
+    for p in items {
+        let text = p.get("text").and_then(|t| t.as_str()).or_else(|| p.as_str()).unwrap_or_default().to_string();
+        if !text.is_empty() && !arr.iter().any(|x| x.as_str() == Some(text.as_str())) {
+            arr.push(json!(text));
         }
     }
 }

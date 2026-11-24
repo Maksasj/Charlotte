@@ -16,8 +16,10 @@ const USAGE: &str = "charlotte [--vault DIR] <command>      (the vault defaults 
   serve [--port 7878] [--web DIR]
   learn FILE [--review]         learn from a corpus (JSON lines); --review leaves everything as candidates
   promote ID | reject ID        trust a candidate, or discard it
+  teach \"message\" \"reply\"      teach a reply to a message, as a candidate chat (in `chat`: :teach <reply> after a message)
   check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
   grow FILE [--intent ID]       find new wordings for the social intents in unlabelled chats (candidates, by reply)
+  connectors FILE               find the words that join two requests in one message (a lexicon candidate)
   vet FILE                      check phrase candidates against the replies in a chat file (cross-source)
   regress FILE                  run the regression set (rewordings and real held-out exchanges) and print the score;
                                 exits 1 on a regression
@@ -81,6 +83,10 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
                 match line {
                     "" => {}
                     ":quit" | ":q" => break,
+                    l if l.starts_with(":teach") => match conv.teach(l[6..].trim()) {
+                        Ok(item) => println!("  taught as candidate {} - `charlotte promote {}` to trust it", item.id, item.id),
+                        Err(e) => println!("  {e}"),
+                    },
                     ":trace" => println!("{}", last.as_ref().map(|t| serde_json::to_string_pretty(t).unwrap()).unwrap_or_else(|| "no reply yet".into())),
                     l if l.starts_with(":close") => {
                         let verdict = match l.split_whitespace().nth(1) {
@@ -157,6 +163,18 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
                 engine.reject(id)?;
                 println!("{id} discarded");
             }
+            Ok(())
+        }
+        "teach" => {
+            let (message, reply) = match (args.0.first(), args.0.get(1)) {
+                (Some(m), Some(r)) => (m.clone(), r.clone()),
+                _ => return Err("teach \"message\" \"reply\"".into()),
+            };
+            let engine = Engine::open(vault)?;
+            let mut conv = engine.conversation();
+            conv.say(&message);
+            let item = conv.teach(&reply)?;
+            println!("taught as candidate {} - `charlotte promote {}` to trust it", item.id, item.id);
             Ok(())
         }
         "check" => {
@@ -267,6 +285,23 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
                 if let Some(n) = numwords::candidate_note(&r, file) {
                     v.put(n)?;
                 }
+            }
+            Ok(())
+        }
+        "connectors" => {
+            use charlotte_engine::connectors;
+            let file = args.0.first().ok_or("give a chat file")?;
+            let corpus = charlotte_engine::Corpus::open(file)?;
+            let mut v = Vault::open(vault)?;
+            let found = connectors::induce(&v, &corpus, &Default::default());
+            if found.is_empty() {
+                println!("no new connectors");
+            }
+            for c in &found {
+                println!("  + {:<22} between requests in {:>4} messages, {:.0}% / held out {:.0}% of {}   e.g. {}", c.phrase, c.support, c.precision * 100.0, c.held_precision * 100.0, c.held_n, c.example);
+            }
+            if let Some(n) = connectors::candidate_note(&found, file) {
+                v.put(n)?;
             }
             Ok(())
         }

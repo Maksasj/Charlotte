@@ -76,6 +76,7 @@ pub struct LexiconReader {
 struct Hit {
     intent: usize,
     pos: usize,
+    end: usize,
     weight: f64,
     phrase: String,
 }
@@ -145,11 +146,22 @@ impl LexiconReader {
         for (i, it) in self.intents.iter().enumerate() {
             for (re, w, phrase) in &it.phrases {
                 if let Some(m) = re.find(text) {
-                    out.push(Hit { intent: i, pos: m.start(), weight: *w, phrase: phrase.clone() });
+                    out.push(Hit { intent: i, pos: m.start(), end: m.end(), weight: *w, phrase: phrase.clone() });
                 }
             }
         }
         out
+    }
+    /// The words between two requests in a message: between a wording of one intent and, right after it, a
+    /// wording of another. What a message says there is what joins its requests.
+    pub fn gaps(&self, text: &str) -> Vec<String> {
+        let mut hits: Vec<Hit> = self.hits(text).into_iter().filter(|h| !self.intents[h.intent].social).collect();
+        hits.sort_by_key(|h| (h.pos, h.end));
+        hits.windows(2).filter(|w| w[0].intent != w[1].intent && w[1].pos >= w[0].end).map(|w| text[w[0].end..w[1].pos].to_string()).collect()
+    }
+    /// Whether the message has a wording of any real intent.
+    pub fn has_intent(&self, text: &str) -> bool {
+        self.hits(text).iter().any(|h| !self.intents[h.intent].social)
     }
     /// The strongest intent among the hits: most phrase weight, then priority, then earliest.
     fn best(&self, hits: &[Hit], social: bool) -> Option<usize> {
@@ -167,7 +179,7 @@ impl LexiconReader {
             .map(|(i, _)| i)
     }
 
-    fn facts(&self, text: &str, matched: &mut Vec<Match>) -> Facts {
+    fn facts(&self, text: &str, matched: &mut Vec<Match>, conflicts: &mut BTreeMap<String, Vec<Value>>) -> Facts {
         let mut cands: Vec<Cand> = Vec::new();
         for v in &self.values {
             for m in v.re.find_iter(text) {
@@ -209,7 +221,14 @@ impl LexiconReader {
         kept.sort_by_key(|c| c.start);
         let mut facts = Facts::new();
         for c in kept {
-            if facts.contains_key(&c.slot) {
+            if let Some(have) = facts.get(&c.slot) {
+                // The same slot twice with different values is the user contradicting themselves, not a repeat.
+                if !have.same(&c.value) {
+                    let seen = conflicts.entry(c.slot.clone()).or_insert_with(|| vec![have.clone()]);
+                    if !seen.iter().any(|v| v.same(&c.value)) {
+                        seen.push(c.value.clone());
+                    }
+                }
                 continue;
             }
             matched.push(Match { phrase: c.phrase, kind: "fact".into(), target: c.slot.clone() });
@@ -217,6 +236,9 @@ impl LexiconReader {
                 facts.entry(k).or_insert(v);
             }
             facts.insert(c.slot, c.value);
+        }
+        for slot in conflicts.keys() {
+            facts.remove(slot);
         }
         facts
     }
@@ -229,7 +251,7 @@ impl LexiconReader {
                 r.matched.push(Match { phrase: h.phrase.clone(), kind: "intent".into(), target: self.intents[i].id.clone() });
             }
         }
-        r.facts = self.facts(text, &mut r.matched);
+        r.facts = self.facts(text, &mut r.matched, &mut r.conflicts);
         if !r.facts.contains_key("subject") {
             if let Some((k, m)) = self.refers.iter().find_map(|(k, re)| re.find(text).map(|m| (*k, m))) {
                 r.refer = Some(k);

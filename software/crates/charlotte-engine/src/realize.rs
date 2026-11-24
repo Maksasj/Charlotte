@@ -38,6 +38,11 @@ impl Realize for TemplateRealize {
         match act.op {
             Op::Ask => {
                 let slot = act.arg.clone().unwrap_or_default();
+                if let Some(values) = frame.conflicts.get(&slot) {
+                    let said: Vec<String> = values.iter().map(|v| v.text()).collect();
+                    let name = mem.slot(&slot).map(|s| s.id.clone()).unwrap_or(slot.clone());
+                    return format!("I read two different values for {name} ({}). Which one is right?", said.join(" and "));
+                }
                 mem.slot(&slot).map(|s| s.ask.clone()).filter(|a| !a.is_empty()).unwrap_or_else(|| format!("Could you tell me the {slot}?"))
             }
             Op::Grant => v.prim.map(|a| fill(&a.payload, &frame.facts)).unwrap_or_default(),

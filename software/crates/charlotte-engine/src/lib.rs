@@ -1,5 +1,6 @@
 //! The Charlotte engine: default implementations of the layers, the turn pipeline, and learning.
 
+pub mod connectors;
 pub mod decide;
 pub mod engine;
 pub mod exchange_types;
