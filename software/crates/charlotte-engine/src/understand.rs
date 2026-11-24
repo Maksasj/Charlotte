@@ -277,6 +277,7 @@ impl LexiconReader {
                 };
                 let bare = match info.ty {
                     SlotType::Number if short && r.facts.is_empty() => self.bare_num.find(text).and_then(|m| number(m.as_str())).map(Value::Num),
+                    SlotType::Text if text.split_whitespace().count() <= 6 && r.facts.is_empty() && r.signal.is_none() => Some(Value::Str(tidy(text))),
                     SlotType::Id if short && r.facts.is_empty() => self.bare_id.find(text).map(|m| Value::Str(m.as_str().to_string())),
                     _ => None,
                 };

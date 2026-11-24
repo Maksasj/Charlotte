@@ -120,3 +120,14 @@ grow from a corpus, but only as far as that corpus's own words reach.
 - **Conflict detection.** A message that gives one slot two different values ("5 days ago, no wait, 40 days ago") no longer silently keeps the first: the slot is left unbound and the agent asks which value is right. Atoms that contradict themselves, or two atoms at the same priority for the same intent and object with different results that can both hold, are listed by `charlotte check`.
 - **Teaching a reply.** `charlotte teach "message" "reply"`, or `:teach <reply>` in `chat` after a message the agent could not answer, writes a candidate chat. It is used only once promoted, and then also for rewordings the recall accepts.
 - **Learned split connectors.** `charlotte connectors FILE` proposes the words found between two requests in chats (support, purity, and a held-out check) as a lexicon candidate; promoting adds them to the lexicon's `connectors`. On the chat data in `data/processed` it finds nothing new, since those chats have almost no multi-request messages.
+
+## Task intents from labelled dialogues
+
+`charlotte tasks data/processed/sgd.jsonl [--promote] [--eval N]` learns task intents from the SGD labels (candidates only; `--promote` is for scratch measurement):
+
+- **wordings** from the user's `INFORM_INTENT` turns, kept by n-gram precision and a held-out check;
+- **required slots and their order** from the agent's `REQUEST` acts, with the agent's own question as the ask text;
+- **slot types** (bool, number, closed set, free text) from the values users gave;
+- **an atom** with "slot given" conditions, so the existing rule asks what is missing and then hands over.
+
+On a clean vault, 1,463 held-out dialogues: intent read from the first request 77%, hand-over reached 72%, 78% of the slots asked were ones the real agent asked (77% the other way). Known gap: values volunteered in the first request are not extracted (free text has no wording patterns), so those slots are asked again.

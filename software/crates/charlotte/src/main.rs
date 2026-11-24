@@ -19,6 +19,7 @@ const USAGE: &str = "charlotte [--vault DIR] <command>      (the vault defaults 
   teach \"message\" \"reply\"      teach a reply to a message, as a candidate chat (in `chat`: :teach <reply> after a message)
   check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
   grow FILE [--intent ID]       find new wordings for the social intents in unlabelled chats (candidates, by reply)
+  tasks FILE [--promote] [--eval N]  learn task intents, slots and their ask order from labelled task dialogues (SGD format)
   connectors FILE               find the words that join two requests in one message (a lexicon candidate)
   vet FILE                      check phrase candidates against the replies in a chat file (cross-source)
   regress FILE                  run the regression set (rewordings and real held-out exchanges) and print the score;
@@ -284,6 +285,45 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
                 }
                 if let Some(n) = numwords::candidate_note(&r, file) {
                     v.put(n)?;
+                }
+            }
+            Ok(())
+        }
+        "tasks" => {
+            use charlotte_engine::tasks;
+            let file = args.0.first().ok_or("give a labelled dialogue file")?;
+            let text = std::fs::read_to_string(file).map_err(|e| format!("{file}: {e}"))?;
+            let dialogues = tasks::parse(&text);
+            let found = tasks::induce(&dialogues, &Default::default());
+            let mut v = Vault::open(vault)?;
+            let notes = tasks::candidate_notes(&found, file, &v);
+            for t in &found {
+                println!("  {:<24} {:>5} dialogues  {} wordings  asks: {}", t.intent, t.dialogues, t.phrases.len(), t.slots.iter().map(|s| s.name.as_str()).collect::<Vec<_>>().join(", "));
+            }
+            let ids: Vec<String> = notes.iter().map(|n| n.id.clone()).collect();
+            for n in notes {
+                v.put(n)?;
+            }
+            println!("{} candidates written", ids.len());
+            let promote = args.flag("--promote");
+            let eval = args.opt("--eval").and_then(|x| x.parse().ok());
+            if promote || eval.is_some() {
+                let engine = Engine::open(vault)?;
+                if promote {
+                    for id in &ids {
+                        engine.promote(id)?;
+                    }
+                    println!("promoted {}", ids.len());
+                }
+                if let Some(n) = eval {
+                    let s = tasks::evaluate(&engine, &dialogues, &found, n);
+                    let pct = |a: usize, b: usize| if b == 0 { 0.0 } else { 100.0 * a as f64 / b as f64 };
+                    println!("held-out dialogues played: {}", s.dialogues);
+                    println!("  intent read from the first request: {:.0}%", pct(s.intent_read, s.dialogues));
+                    println!("  hand-over reached:                  {:.0}%", pct(s.handoff, s.dialogues));
+                    println!("  asked exactly what the agent asked: {:.0}%", pct(s.asked_right, s.dialogues));
+                    println!("  slots asked that the agent asked:   {:.0}%", pct(s.slot_precision.0, s.slot_precision.1));
+                    println!("  slots the agent asked that we did:  {:.0}%", pct(s.slot_recall.0, s.slot_recall.1));
                 }
             }
             Ok(())

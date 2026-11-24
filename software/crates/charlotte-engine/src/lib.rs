@@ -11,6 +11,7 @@ pub mod realize;
 pub mod recall;
 pub mod regress;
 pub mod sim;
+pub mod tasks;
 pub mod track;
 pub mod understand;
 pub mod view;
