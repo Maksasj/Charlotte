@@ -2,8 +2,10 @@
 
 pub mod decide;
 pub mod engine;
+pub mod exchange_types;
 pub mod grow;
 pub mod learn;
+pub mod numwords;
 pub mod realize;
 pub mod recall;
 pub mod regress;

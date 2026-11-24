@@ -477,6 +477,16 @@ pub fn add_phrases(note: &mut Note, value: Option<&str>, phrases: Vec<Json>) {
         }
     }
 }
+/// Add number wordings to a slot note's `patterns`. Wordings already there are left alone.
+pub fn add_patterns(note: &mut Note, items: Vec<Json>) {
+    let Some(arr) = note.front.entry("patterns").or_insert_with(|| json!([])).as_array_mut() else { return };
+    for p in items {
+        let text = p.get("text").and_then(|t| t.as_str()).or_else(|| p.as_str()).unwrap_or_default().to_string();
+        if !text.is_empty() && !arr.iter().any(|x| x.get("text").and_then(|t| t.as_str()) == Some(text.as_str())) {
+            arr.push(json!({ "text": text }));
+        }
+    }
+}
 fn phrase_json(p: &[(String, usize)]) -> Vec<Json> {
     p.iter().map(|(t, n)| json!({ "text": t, "weight": 0.5, "support": n, "learned": true })).collect()
 }

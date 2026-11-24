@@ -200,3 +200,43 @@ fn seed_and_grow_finds_wordings_that_draw_the_same_replies() {
     let note = charlotte_engine::grow::candidate_note(g, "grow-test").unwrap();
     assert!(note.path.starts_with("candidates/"));
 }
+
+#[test]
+fn exchange_types_find_a_new_act_and_ignore_a_topic() {
+    use charlotte_engine::exchange_types::{candidate_notes, induce, TypeOptions};
+    use charlotte_engine::grow::Exchange;
+    let dir = untrained("types");
+    let vault = Vault::open(&dir).unwrap();
+    let names = ["Ann", "Bob", "Carla", "Dev", "Eva", "Finn", "Gus", "Hana", "Ivo", "Jun"];
+    let intro = ["my name is", "i am called", "they call me"];
+    let nice = ["Nice to meet you", "Pleased to meet you", "Lovely to meet you"];
+    let filler = ["it rained", "the bus", "a song", "lunch", "my cat", "the match", "a book", "the shop", "this film", "that road", "our trip", "his car"];
+    let verbs = ["I saw", "Did you hear", "We talked about", "Remember", "Funny how", "Strange that"];
+    let mut ex = Vec::new();
+    let mut seed = 12345u64;
+    let mut pick = |n: usize| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        ((seed >> 33) as usize) % n
+    };
+    for i in 0..1500 {
+        let mut add = |conv: usize, m: String, r: String| ex.push(Exchange { conv, message: m, reply: r, user: true });
+        if i % 12 == 0 {
+            let name = names[pick(10)];
+            add(i * 3, format!("{} {}", intro[pick(3)], name), format!("{}, {}!", nice[pick(3)], name));
+        }
+        // A topic: every reply says "football", each says something else about it.
+        if i % 10 == 0 {
+            add(i * 3 + 1, format!("tell me about {} please", filler[pick(12)]), format!("{} {} and football {}", verbs[pick(6)], filler[pick(12)], filler[pick(12)]));
+        }
+        add(i * 3 + 2, format!("{} {}", filler[pick(12)], filler[pick(12)]), format!("{} {} {}", verbs[pick(6)], filler[pick(12)], filler[pick(12)]));
+    }
+    let types = induce(&vault, &ex, &TypeOptions { min_group: 20, ..Default::default() });
+    let new: Vec<_> = types.iter().filter(|t| t.known.is_none() && t.skipped.is_none()).collect();
+    assert!(new.iter().any(|t| t.skeletons.iter().any(|s| s.phrase.contains("name") || s.phrase.contains("called") || s.phrase.contains("call me"))), "{types:#?}");
+    assert!(!types.iter().any(|t| t.skipped.is_none() && t.skeletons.iter().any(|s| s.phrase.contains("football") || s.phrase.contains("tell me"))), "{types:#?}");
+    let t = new[0];
+    assert!(t.echo.is_some(), "{t:?}");
+    let notes = candidate_notes(t, "test");
+    assert_eq!(notes.len(), 2);
+    assert!(notes.iter().all(|n| n.path.starts_with("candidates/") && n.front["status"] == "candidate"));
+}

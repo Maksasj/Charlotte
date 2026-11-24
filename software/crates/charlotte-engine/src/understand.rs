@@ -5,7 +5,7 @@ use charlotte_core::*;
 use regex::Regex;
 use std::collections::BTreeMap;
 
-const NUM: &str = r"(\d+(?:\.\d+)?|an?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|twenty|thirty)";
+const NUM: &str = r"(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|an?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|twenty|thirty)";
 const ID: &str = r"([A-Za-z]{0,5}-?\d[A-Za-z0-9-]*)";
 
 fn number(s: &str) -> Option<f64> {
@@ -18,7 +18,7 @@ fn number(s: &str) -> Option<f64> {
     if l == "thirty" {
         return Some(30.0);
     }
-    WORDS.iter().find(|(w, _)| *w == l).map(|(_, n)| *n).or_else(|| l.parse().ok())
+    WORDS.iter().find(|(w, _)| *w == l).map(|(_, n)| *n).or_else(|| l.replace(',', "").parse().ok())
 }
 
 /// A phrase from the vault as a pattern: whole words, any spacing, `{n}` a number, `{id}` an identifier.
@@ -131,7 +131,7 @@ impl LexiconReader {
             connectors,
             negated,
             slots,
-            bare_num: Regex::new(r"\b\d+(?:\.\d+)?\b").unwrap(),
+            bare_num: Regex::new(r"\b(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?\b").unwrap(),
             bare_id: Regex::new(&format!(r"\b{ID}\b")).unwrap(),
         }
     }
@@ -244,7 +244,7 @@ impl LexiconReader {
                     _ => None,
                 };
                 let bare = match info.ty {
-                    SlotType::Number if short && r.facts.is_empty() => self.bare_num.find(text).and_then(|m| m.as_str().parse().ok()).map(Value::Num),
+                    SlotType::Number if short && r.facts.is_empty() => self.bare_num.find(text).and_then(|m| number(m.as_str())).map(Value::Num),
                     SlotType::Id if short && r.facts.is_empty() => self.bare_id.find(text).map(|m| Value::Str(m.as_str().to_string())),
                     _ => None,
                 };

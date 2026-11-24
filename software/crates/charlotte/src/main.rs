@@ -219,6 +219,57 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
             }
             Ok(())
         }
+        "types" => {
+            use charlotte_engine::exchange_types as et;
+            let opts = et::TypeOptions { user_only: args.flag("--user-only"), ..Default::default() };
+            let file = args.0.first().ok_or("give a chat corpus file")?;
+            let corpus = charlotte_engine::Corpus::open(file)?;
+            let ex = charlotte_engine::grow::exchanges(&corpus);
+            let mut v = Vault::open(vault)?;
+            println!("{} exchanges from {file}", ex.len());
+            for t in et::induce(&v, &ex, &opts) {
+                let tag = match (&t.known, &t.skipped) {
+                    (Some(k), _) => format!("known: {k}"),
+                    (_, Some(why)) => format!("skipped: {why}"),
+                    _ => "NEW".into(),
+                };
+                println!("{:<18} {:>6} exchanges, {:.0}% explained, replies {:.0}% in top 3   [{tag}]", t.id, t.exchanges, t.coverage * 100.0, t.reply_share * 100.0);
+                println!("    replies like: {}", t.reply_words.join(", "));
+                for s in t.skeletons.iter().take(4) {
+                    println!("    + {:<24} {:>5} msgs, {:.0}% / held out {:.0}% of {}", s.phrase, s.support, s.precision * 100.0, s.held_precision * 100.0, s.held_n);
+                }
+                if let Some(e) = &t.echo {
+                    println!("    echo after \"{}\": {} values ({}), {:.0}% said back", e.after, e.values, e.examples.join(", "), e.share * 100.0);
+                }
+                println!("    reply: {}", t.reply);
+                for n in et::candidate_notes(&t, file) {
+                    v.put(n)?;
+                }
+            }
+            Ok(())
+        }
+        "numbers" => {
+            use charlotte_engine::numwords;
+            let only = args.opt("--slot");
+            let file = args.0.first().ok_or("give a labelled corpus file")?;
+            let corpus = charlotte_engine::Corpus::open(file)?;
+            let mut v = Vault::open(vault)?;
+            for r in numwords::induce(&v, &corpus, &Default::default(), only.as_deref()) {
+                match &r.skipped {
+                    Some(why) => println!("{:<10} skipped: {why}", r.slot),
+                    None => {
+                        println!("{:<10} {} labelled turns", r.slot, r.labelled);
+                        for p in &r.patterns {
+                            println!("  + {:<22} {:>5} numbers, {:.0}% / held out {:.0}% of {}   e.g. {}", p.text, p.support, p.precision * 100.0, p.held_precision * 100.0, p.held_n, p.example);
+                        }
+                    }
+                }
+                if let Some(n) = numwords::candidate_note(&r, file) {
+                    v.put(n)?;
+                }
+            }
+            Ok(())
+        }
         "regress" => {
             let file = args.0.first().ok_or("regress needs a case file")?;
             let text = std::fs::read_to_string(file).map_err(|e| format!("{file}: {e}"))?;

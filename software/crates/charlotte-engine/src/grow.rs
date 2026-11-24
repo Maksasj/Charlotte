@@ -27,6 +27,8 @@ pub struct Exchange {
     pub conv: usize,
     pub message: String,
     pub reply: String,
+    /// The message came from the user side of the corpus.
+    pub user: bool,
 }
 
 /// Every message with the message that followed it, whoever said it.
@@ -35,7 +37,7 @@ pub fn exchanges(corpus: &Corpus) -> Vec<Exchange> {
     for (ci, c) in corpus.convs.iter().enumerate() {
         let said: Vec<&CorpusTurn> = c.turns.iter().filter(|t| !t.text.trim().is_empty()).collect();
         for w in said.windows(2) {
-            out.push(Exchange { conv: ci, message: w[0].text.split_whitespace().collect::<Vec<_>>().join(" "), reply: w[1].text.split_whitespace().collect::<Vec<_>>().join(" ") });
+            out.push(Exchange { conv: ci, message: w[0].text.split_whitespace().collect::<Vec<_>>().join(" "), reply: w[1].text.split_whitespace().collect::<Vec<_>>().join(" "), user: w[0].role == "user" });
         }
     }
     out

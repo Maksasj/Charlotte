@@ -137,6 +137,24 @@ one, answers with that reply.
   counts nothing. Train on simulated or labelled data and judge here, never on
   held-out data from the training source.
 
+## Learning from unlabelled and partly labelled chats
+
+Everything below only writes **candidates** (with support counts and a held-out check); a person promotes them.
+Keep the DailyDialog `test` split out of the corpora you grow from (`grep -v '"split": "test"'`), it is the regression set.
+
+- `python3 data/label_map.py` turns SGD into `data/processed/sgd-labelled.jsonl` using `data/label_map.json`: only
+  acts and slots that exist in the vault are mapped (thanks, bye, `amount`); other turns are `intent: none`
+  (negative examples) or left unlabelled. `charlotte learn` then proposes phrases from it.
+- `charlotte grow FILE [--intent ID]`: new wordings for a social intent, found from the replies the intent's own
+  phrases draw. Skips intents whose replies are a topic, not an act.
+- `charlotte vet FILE`: checks `phrases` candidates from another source against these chats.
+- `charlotte numbers FILE [--slot ID]`: ways of writing a number slot ("$ before it", "{n} to"), from turns labelled
+  with the number. Promoting adds them to the slot's `patterns`.
+- `charlotte types FILE [--user-only]`: kinds of exchange the vault does not know: groups by reply wording, keeps
+  groups a few message wordings explain, and writes an intent and a move candidate. A varying span that the reply
+  says back (a name) is reported as evidence for a slot, not made into one. Use `--user-only` when the corpus roles
+  mean something (SGD).
+
 ## What is here
 
 | File | What |

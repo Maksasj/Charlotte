@@ -342,7 +342,11 @@ impl Engine {
                 let target = link("intent").or_else(|| link("slot")).ok_or("the candidate names no intent or slot")?;
                 let mut note = v.notes.get(&target).cloned().ok_or_else(|| format!("no note '{target}' to add the phrases to"))?;
                 let phrases = cand.front.get("phrases").and_then(|p| p.as_array()).cloned().unwrap_or_default();
-                crate::learn::add_phrases(&mut note, cand.front.get("value").and_then(|x| x.as_str()), phrases);
+                if cand.front.get("as").and_then(|x| x.as_str()) == Some("patterns") {
+                    crate::learn::add_patterns(&mut note, phrases);
+                } else {
+                    crate::learn::add_phrases(&mut note, cand.front.get("value").and_then(|x| x.as_str()), phrases);
+                }
                 v.put(note)?;
                 target
             } else {
