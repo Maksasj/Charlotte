@@ -138,9 +138,17 @@ pub enum UserAct {
     Correct,
     Done,
     Failed,
+    /// The social acts: what an intent marked `social` does in a conversation.
+    Greet,
+    Thank,
+    Agree,
+    AskBack,
+    Bye,
 }
 impl UserAct {
+    /// The acts patterns can test (`last_user=...`). The social acts open no pattern.
     pub const ALL: [UserAct; 5] = [UserAct::Request, UserAct::Provide, UserAct::Correct, UserAct::Done, UserAct::Failed];
+    pub const SOCIAL: [UserAct; 5] = [UserAct::Greet, UserAct::Thank, UserAct::Agree, UserAct::AskBack, UserAct::Bye];
     pub fn name(self) -> &'static str {
         match self {
             UserAct::Request => "request",
@@ -148,6 +156,11 @@ impl UserAct {
             UserAct::Correct => "correct",
             UserAct::Done => "done",
             UserAct::Failed => "failed",
+            UserAct::Greet => "greet",
+            UserAct::Thank => "thank",
+            UserAct::Agree => "agree",
+            UserAct::AskBack => "ask_back",
+            UserAct::Bye => "bye",
         }
     }
 }
@@ -352,6 +365,9 @@ pub struct Intent {
     pub lookup: bool,
     #[serde(default)]
     pub priority: i32,
+    /// What saying this does, for a social intent: greet, thank, agree, ask_back or bye.
+    #[serde(default)]
+    pub act: Option<UserAct>,
     #[serde(default)]
     pub phrases: Vec<PhraseDef>,
 }

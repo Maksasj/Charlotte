@@ -17,6 +17,8 @@ const USAGE: &str = "charlotte [--vault DIR] <command>      (the vault defaults 
   learn FILE [--review]         learn from a corpus (JSON lines); --review leaves everything as candidates
   promote ID | reject ID        trust a candidate, or discard it
   check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
+  grow FILE [--intent ID]       find new wordings for the social intents in unlabelled chats (candidates, by reply)
+  vet FILE                      check phrase candidates against the replies in a chat file (cross-source)
   regress FILE                  run the regression set (rewordings and real held-out exchanges) and print the score;
                                 exits 1 on a regression
   simulate [--n 80] [--per-shape] [--seed 1] [--paraphrases FILE] [--out FILE]
@@ -177,6 +179,45 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
             } else {
                 Err(format!("{} problems", problems.len()))
             }
+        }
+        "grow" | "vet" => {
+            use charlotte_engine::grow::{self, GrowOptions};
+            let only = args.opt("--intent");
+            let file = args.0.first().ok_or("give a chat corpus file")?;
+            let corpus = charlotte_engine::Corpus::open(file)?;
+            let ex = grow::exchanges(&corpus);
+            let opts = GrowOptions::default();
+            let mut v = Vault::open(vault)?;
+            println!("{} exchanges from {file}", ex.len());
+            if cmd == "grow" {
+                for g in grow::grow(&v, &ex, &opts, only.as_deref()) {
+                    match &g.skipped {
+                        Some(why) => println!("{:<10} skipped: {why}", g.intent),
+                        None => {
+                            println!("{:<10} {} seed messages, {:.0}% drew a reply like: {}  (base rate {:.1}%)", g.intent, g.seed_messages, g.coherence * 100.0, g.signature.join(", "), g.base_rate * 100.0);
+                            for x in &g.grown {
+                                println!("  + {:<28} {:>5} msgs, {:.0}% / held out {:.0}% of {}   e.g. {}", x.phrase, x.support, x.precision * 100.0, x.held_precision * 100.0, x.held_n, x.examples.first().cloned().unwrap_or_default());
+                            }
+                        }
+                    }
+                    if let Some(n) = grow::candidate_note(&g, file) {
+                        v.put(n)?;
+                    }
+                }
+            } else {
+                for (id, r) in grow::vet_candidates(&mut v, &ex, &opts, file) {
+                    match r {
+                        Err(e) => println!("{id}: not checked ({e})"),
+                        Ok(list) => {
+                            println!("{id}");
+                            for x in list {
+                                println!("  {:<28} {:>5} msgs, {:.0}% drew the reply (lift {:.1})", x.phrase, x.messages, x.precision * 100.0, x.lift);
+                            }
+                        }
+                    }
+                }
+            }
+            Ok(())
         }
         "regress" => {
             let file = args.0.first().ok_or("regress needs a case file")?;

@@ -1,6 +1,7 @@
 ---
 kind: intent
 social: true
+act: greet
 phrases:
 - hi
 - hello

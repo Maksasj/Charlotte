@@ -41,7 +41,7 @@ impl Track for FrameTracker {
                     None => {
                         let id = state.frames.len() as u32 + 1;
                         state.frames.push(Frame { id, intent: intent.clone(), facts: r.facts.clone(), ..Default::default() });
-                        act = Some(UserAct::Request);
+                        act = Some(mem.intent(intent).and_then(|i| i.act).unwrap_or(UserAct::Request));
                         frame = Some(state.frames.len() - 1);
                     }
                 }

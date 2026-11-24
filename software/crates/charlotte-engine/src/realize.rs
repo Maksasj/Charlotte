@@ -72,7 +72,7 @@ impl Realize for TemplateRealize {
             Op::Finish => "That was the last step — you're all set.".into(),
             Op::Escalate if frame.fetched && !frame.found => format!("I can't find {subject} in our records, so I'm passing this to a teammate."),
             Op::Escalate => "I'm passing this to a teammate, with what we have so far.".into(),
-            Op::Say => act.arg.as_ref().and_then(|id| mem.moves().into_iter().find(|m| &m.id == id)).map(|m| m.reply.clone()).unwrap_or_default(),
+            Op::Say => act.arg.as_ref().and_then(|id| mem.moves().into_iter().find(|m| &m.id == id)).map(|m| fill(&m.reply, &frame.facts)).unwrap_or_default(),
             Op::TeachMe => "I don't know how to help with that yet.".into(),
         }
     }

@@ -538,7 +538,9 @@ pub fn run(vault: &Vault, rebuild: &dyn Fn(&Vault) -> Layers, corpus: &Corpus, o
         let is_held = held_set.contains(&ci);
         (if is_held { &mut test } else { &mut train }).extend(replay(ci, c, mem, &l));
         for t in c.turns.iter().filter(|t| t.role == "user" && !t.text.is_empty() && (t.intent.is_some() || t.facts.is_some())) {
-            let s = Sample { text: t.text.clone(), grams: grams(&t.text, &stop), intent: t.intent.clone(), facts: t.facts.clone().unwrap_or_default() };
+            // `none` marks a message labelled as no known intent: a negative example for every wording.
+            let intent = t.intent.clone().filter(|i| i != "none");
+            let s = Sample { text: t.text.clone(), grams: grams(&t.text, &stop), intent, facts: t.facts.clone().unwrap_or_default() };
             (if is_held { &mut test_s } else { &mut train_s }).push(s);
         }
     }

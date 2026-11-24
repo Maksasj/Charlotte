@@ -1,0 +1,7 @@
+{
+  "_": "Maps a dataset's own labels onto names the vault knows. Only meanings that are the same go here; a wrong entry teaches the vault a wrong wording. Learned items still land as candidates.",
+  "sgd": {
+    "user_acts": {"THANK_YOU": "thanks", "GOODBYE": "bye"},
+    "number_slots": {"amount": "amount"}
+  }
+}

@@ -2,6 +2,7 @@
 
 pub mod decide;
 pub mod engine;
+pub mod grow;
 pub mod learn;
 pub mod realize;
 pub mod recall;

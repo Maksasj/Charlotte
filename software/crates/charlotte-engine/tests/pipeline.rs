@@ -166,3 +166,37 @@ fn plain_chats_are_remembered_and_reused() {
     let note = std::fs::read_to_string(dir.join("chats/chats-weekend-plans.md")).unwrap();
     assert_eq!(note.matches("Entry ").count(), 1, "{note}");
 }
+
+#[test]
+fn seed_and_grow_finds_wordings_that_draw_the_same_replies() {
+    let dir = untrained("grow");
+    let vault = Vault::open(&dir).unwrap();
+    let conv = |a: &str, b: &str| format!(r#"{{"turns":[{{"role":"user","text":"{a}"}},{{"role":"agent","text":"{b}"}}]}}"#);
+    let mut lines = Vec::new();
+    let thanks = ["thanks a lot", "thank you so much", "thanks again", "thank you very much"];
+    let welcome = ["You're welcome!", "You're welcome, anytime.", "My pleasure."];
+    let chatter = ["What a nice day", "Did you see the match", "The bus was late again", "I like that song"];
+    let other = ["Yes it is.", "No, I missed it.", "Typical.", "Which one?", "Me too.", "Really?", "Oh dear."];
+    for i in 0..400 {
+        lines.push(conv(thanks[i % 4], welcome[i % 3]));
+        // A wording of the same act, and a topic that draws all kinds of replies.
+        if i % 4 == 0 || i % 7 == 0 {
+            lines.push(conv(if i % 2 == 0 { "much obliged to you" } else { "much obliged my friend" }, welcome[(i + 1) % 3]));
+        }
+        for k in 0..10 {
+            lines.push(conv(chatter[(i + k) % 4], other[(i * 3 + i / 7 + k) % 7]));
+            lines.push(conv("what is on the menu today", other[(i * 5 + i / 3 + k) % 7]));
+        }
+    }
+    let corpus = Corpus::parse("grow-test", &lines.join("\n"));
+    let ex = charlotte_engine::grow::exchanges(&corpus);
+    let growth = charlotte_engine::grow::grow(&vault, &ex, &Default::default(), Some("thanks"));
+    let g = &growth[0];
+    assert!(g.skipped.is_none(), "{g:?}");
+    let found: Vec<&str> = g.grown.iter().map(|x| x.phrase.as_str()).collect();
+    assert!(found.iter().any(|p| p.contains("obliged")), "{found:?} {g:?}");
+    assert!(!found.iter().any(|p| p.contains("menu") || p.contains("day") || p.contains("match")), "{found:?}");
+    // Nothing is promoted: the result is a candidate note.
+    let note = charlotte_engine::grow::candidate_note(g, "grow-test").unwrap();
+    assert!(note.path.starts_with("candidates/"));
+}
