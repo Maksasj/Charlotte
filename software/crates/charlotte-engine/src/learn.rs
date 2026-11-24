@@ -182,6 +182,17 @@ pub fn replay(ci: usize, conv: &CorpusConv, mem: &dyn Memory, l: &Layers) -> Vec
                     out.push(Example { conv: ci, kind: v.kind, intent: f.intent.clone(), feats: features(f, &v), sels: selectors(f, &v), op: a.op, arg: a.arg.clone(), class: String::new() });
                 }
                 l.track.agent(&mut state.frames[fi], &a, mem);
+                // A call moves to its subframe; a subframe's closing act moves back to the parent. The
+                // examples of the subframe are the callee's own, whoever called it; the conversation stays the unit
+                // they are judged in.
+                match a.op {
+                    Op::Call => cur = Some(l.track.call(&mut state, fi, a.arg.as_deref().unwrap_or_default(), mem)),
+                    _ => {
+                        if let Some(p) = l.track.ret(&mut state, fi, &a, mem) {
+                            cur = Some(p);
+                        }
+                    }
+                }
             }
         }
     }

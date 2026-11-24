@@ -58,7 +58,8 @@ impl Track for FrameTracker {
             } else if !r.facts.is_empty() {
                 // Facts without a request answer the frame that asked for them, else the latest real request.
                 let asked = state.frames.iter().rposition(|f| f.last_asked.as_ref().map(|s| r.facts.contains_key(s)).unwrap_or(false));
-                let latest = || state.frames.iter().rposition(|f| !matches!(view(f, mem).kind, ReqKind::Move | ReqKind::Unknown));
+                let real = |f: &Frame| !matches!(view(f, mem).kind, ReqKind::Move | ReqKind::Unknown);
+                let latest = || state.frames.iter().rposition(|f| real(f) && !finished(f)).or_else(|| state.frames.iter().rposition(|f| real(f)));
                 if let Some(j) = asked.or_else(latest) {
                     act = Some(if merge(&mut state.frames[j], &r.facts) { UserAct::Correct } else { UserAct::Provide });
                     frame = Some(j);
@@ -89,5 +90,39 @@ impl Track for FrameTracker {
             }
             _ => {}
         }
+    }
+
+    fn call(&self, state: &mut State, parent: usize, intent: &str, _mem: &dyn Memory) -> usize {
+        let id = state.frames.len() as u32 + 1;
+        let mut facts = Facts::new();
+        for k in ["subject", "object"] {
+            if let Some(v) = state.frames[parent].facts.get(k) {
+                facts.insert(k.to_string(), v.clone());
+            }
+        }
+        state.frames[parent].subgoal = Some(id);
+        let pid = state.frames[parent].id;
+        state.frames.push(Frame { id, intent: intent.to_string(), facts, parent: Some(pid), ..Default::default() });
+        state.frames.len() - 1
+    }
+
+    fn ret(&self, state: &mut State, child: usize, act: &Act, mem: &dyn Memory) -> Option<usize> {
+        if !matches!(act.op, Op::Report | Op::Finish | Op::Escalate) {
+            return None;
+        }
+        let pid = state.frames[child].parent?;
+        let p = state.frames.iter().position(|f| f.id == pid)?;
+        let c = state.frames[child].clone();
+        let kind = view(&c, mem).kind;
+        let parent = &mut state.frames[p];
+        parent.subgoal = None;
+        parent.returned_from = Some(kind);
+        parent.subgoal_failed = act.op == Op::Escalate;
+        if c.fetched {
+            parent.fetched = true;
+            parent.found = c.found;
+        }
+        merge(parent, &c.facts);
+        Some(p)
     }
 }

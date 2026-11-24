@@ -42,10 +42,12 @@ pub struct View<'a> {
     pub a: Gate,
     pub procedure: Option<&'a Procedure>,
     pub mv: Option<&'a Move>,
+    /// An intent that fetches a record, for a request to call when it needs one.
+    pub record_source: Option<String>,
 }
 
 pub fn view<'a>(frame: &Frame, mem: &'a dyn Memory) -> View<'a> {
-    let mut v = View { kind: ReqKind::Unknown, prim: None, alt: None, p: Gate::default(), a: Gate::default(), procedure: None, mv: None };
+    let mut v = View { kind: ReqKind::Unknown, prim: None, alt: None, p: Gate::default(), a: Gate::default(), procedure: None, mv: None, record_source: mem.intents().into_iter().find(|i| i.lookup).map(|i| i.id.clone()) };
     let mut atoms = mem.atoms(&frame.intent);
     if !atoms.is_empty() {
         atoms.sort_by(|a, b| b.priority.cmp(&a.priority).then(a.id.cmp(&b.id)));
@@ -98,6 +100,12 @@ pub fn features(frame: &Frame, v: &View) -> BTreeMap<String, bool> {
     set("subject_known", frame.facts.contains_key("subject"));
     set("fetched", frame.fetched);
     set("found", frame.found);
+    set("subgoal_active", frame.subgoal.is_some());
+    set("returned", frame.returned_from.is_some());
+    for k in [ReqKind::Gated, ReqKind::Procedure, ReqKind::Lookup] {
+        set(&format!("returned_from={}", k.name()), frame.returned_from == Some(k));
+    }
+    set("subgoal_failed", frame.subgoal_failed);
     let steps = v.procedure.map(|p| p.steps.len()).unwrap_or(0);
     set("steps_left", v.procedure.is_some() && frame.steps_done < steps);
     set("none_done", v.procedure.is_some() && frame.steps_done == 0);
@@ -123,6 +131,9 @@ pub fn features(frame: &Frame, v: &View) -> BTreeMap<String, bool> {
 pub fn selectors(frame: &Frame, v: &View) -> BTreeMap<String, String> {
     let mut s = BTreeMap::new();
     s.insert("subject".to_string(), "subject".to_string());
+    if let Some(r) = &v.record_source {
+        s.insert("record_source".to_string(), r.clone());
+    }
     if let Some(p) = v.prim {
         let slot = |i: &usize| p.conditions[*i].slot.clone();
         if let Some(i) = v.p.unbound.first() {

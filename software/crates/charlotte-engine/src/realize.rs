@@ -62,7 +62,7 @@ impl Realize for TemplateRealize {
                 let standing = frame.standing.map(|op| self.realize(frame, &Act::new(op), mem)).unwrap_or_default();
                 format!("That doesn't change the outcome. {standing}").trim().to_string()
             }
-            Op::Lookup => String::new(),
+            Op::Lookup | Op::Call => String::new(),
             Op::Report => match mem.record(&subject) {
                 Some(r) => format!("{} is {}. {}", r.id, r.state, r.note).trim().to_string(),
                 None => format!("I have nothing on {subject}."),

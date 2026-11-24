@@ -192,9 +192,16 @@ impl Engine {
             let act = match t.frame {
                 Some(fi) => {
                     let mut last = Act::new(Op::Escalate);
-                    // A lookup is silent: apply it and decide again.
-                    for _ in 0..4 {
-                        let d = l.decide.decide(&conv.state.frames[fi], mem);
+                    // The active frame: the touched one, or a subframe it called. Lookups and calls are silent,
+                    // and a subframe's closing act pops it: the parent resumes and decides again.
+                    let mut cur = fi;
+                    let mut closed = false;
+                    for _ in 0..8 {
+                        let mut d = l.decide.decide(&conv.state.frames[cur], mem);
+                        if d.act.op == Op::Call && !d.act.arg.as_deref().map_or(false, |i| mem.intent(i).is_some()) {
+                            d.note = Some("a call named no intent in the vault".into());
+                            d.act = Act::new(Op::Escalate);
+                        }
                         rt.kind = d.kind;
                         rt.pattern = d.pattern.clone();
                         rt.atom = d.atom.clone();
@@ -207,15 +214,29 @@ impl Engine {
                             Op::Say => conv.used.extend(d.act.arg.iter().cloned()),
                             _ => {}
                         }
-                        l.track.agent(&mut conv.state.frames[fi], &d.act, mem);
+                        l.track.agent(&mut conv.state.frames[cur], &d.act, mem);
                         rt.steps.push(StepTrace { features: d.features, rule: d.rule, act: d.act.clone() });
                         last = d.act;
-                        if last.op != Op::Lookup {
-                            break;
+                        match last.op {
+                            Op::Lookup => {}
+                            Op::Call => cur = l.track.call(&mut conv.state, cur, last.arg.as_deref().unwrap_or_default(), mem),
+                            _ => match l.track.ret(&mut conv.state, cur, &last, mem) {
+                                Some(p) => cur = p,
+                                None => {
+                                    closed = true;
+                                    break;
+                                }
+                            },
                         }
                     }
-                    rt.text = l.realize.realize(&conv.state.frames[fi], &last, mem);
-                    rt.frame = Some(conv.state.frames[fi].clone());
+                    if !closed {
+                        // Out of steps while still waiting on something silent: hand over.
+                        last = Act::new(Op::Escalate);
+                        l.track.agent(&mut conv.state.frames[cur], &last, mem);
+                        rt.steps.push(StepTrace { features: Vec::new(), rule: None, act: last.clone() });
+                    }
+                    rt.text = l.realize.realize(&conv.state.frames[cur], &last, mem);
+                    rt.frame = Some(conv.state.frames[cur].clone());
                     last
                 }
                 None => {

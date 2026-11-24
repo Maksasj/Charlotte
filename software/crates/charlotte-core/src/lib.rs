@@ -82,13 +82,15 @@ pub enum Op {
     Repeat,
     Finish,
     Escalate,
+    /// Hand a part of the request to a subframe for another intent; its outcome comes back as facts.
+    Call,
     Say,
     TeachMe,
 }
 impl Op {
     /// Operations a pattern can choose. `say` and `teach_me` are the engine's own fallbacks.
-    pub const LEARNABLE: [Op; 11] = [
-        Op::Ask, Op::Grant, Op::Offer, Op::Deny, Op::Confirm, Op::Lookup, Op::Report, Op::Instruct, Op::Repeat, Op::Finish, Op::Escalate,
+    pub const LEARNABLE: [Op; 12] = [
+        Op::Ask, Op::Grant, Op::Offer, Op::Deny, Op::Confirm, Op::Lookup, Op::Report, Op::Instruct, Op::Repeat, Op::Finish, Op::Escalate, Op::Call,
     ];
     pub fn name(self) -> &'static str {
         match self {
@@ -103,6 +105,7 @@ impl Op {
             Op::Repeat => "repeat",
             Op::Finish => "finish",
             Op::Escalate => "escalate",
+            Op::Call => "call",
             Op::Say => "say",
             Op::TeachMe => "teach_me",
         }
@@ -217,6 +220,18 @@ pub struct Frame {
     pub fetched: bool,
     pub found: bool,
     pub steps_done: usize,
+    /// The frame that called this one, while this one is a subframe.
+    #[serde(default)]
+    pub parent: Option<u32>,
+    /// The subframe this frame is waiting for.
+    #[serde(default)]
+    pub subgoal: Option<u32>,
+    /// What kind of request the last subframe was, once it has returned.
+    #[serde(default)]
+    pub returned_from: Option<ReqKind>,
+    /// The last subframe ended in `escalate`.
+    #[serde(default)]
+    pub subgoal_failed: bool,
 }
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct State {
@@ -616,6 +631,13 @@ pub trait Understand: Send + Sync {
 pub trait Track: Send + Sync {
     fn user(&self, state: &mut State, reading: &Reading, mem: &dyn Memory) -> Vec<Touch>;
     fn agent(&self, frame: &mut Frame, act: &Act, mem: &dyn Memory);
+    /// A `call` by the frame at `parent`: a subframe for `intent` is pushed, seeded with the subject and
+    /// object, and its index returned. The parent waits for it.
+    fn call(&self, state: &mut State, parent: usize, intent: &str, mem: &dyn Memory) -> usize;
+    /// A subframe's closing act (`report`, `finish`, `escalate`) pops it: the parent resumes with the
+    /// outcome landed as facts. Returns the parent's index, or None when `child` is not a subframe
+    /// or `act` does not close it.
+    fn ret(&self, state: &mut State, child: usize, act: &Act, mem: &dyn Memory) -> Option<usize>;
 }
 /// Layer 3. Chooses the next act for a frame. No wording.
 pub trait Decide: Send + Sync {

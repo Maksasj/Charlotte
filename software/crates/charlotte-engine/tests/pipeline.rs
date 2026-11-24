@@ -34,9 +34,12 @@ fn untrained(name: &str) -> PathBuf {
     dir
 }
 fn corpus(vault: &Path, n: usize) -> Corpus {
+    corpus_with(vault, n, false)
+}
+fn corpus_with(vault: &Path, n: usize, calls: bool) -> Corpus {
     let v = Vault::open(vault).unwrap();
     let para = paraphrases_from_yaml(&std::fs::read_to_string(repo().join("data/paraphrases.yaml")).unwrap()).unwrap();
-    let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape: true, seed: 11, corrections: 0.3 });
+    let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape: true, seed: 11, corrections: 0.3, calls });
     let jsonl: String = convs.iter().map(|c| serde_json::to_string(c).unwrap() + "\n").collect();
     Corpus::parse("test", &jsonl)
 }
@@ -239,4 +242,16 @@ fn exchange_types_find_a_new_act_and_ignore_a_topic() {
     let notes = candidate_notes(t, "test");
     assert_eq!(notes.len(), 2);
     assert!(notes.iter().all(|n| n.path.starts_with("candidates/") && n.front["status"] == "candidate"));
+}
+
+#[test]
+fn a_request_that_needs_a_record_calls_a_lookup_subframe() {
+    let dir = untrained("calls");
+    let engine = Engine::open(&dir).unwrap();
+    let report = engine.learn(&corpus_with(&dir, 300, true), &LearnOptions::default(), &|_| {}).unwrap();
+    assert!(report.held_out.after >= 0.95, "{}", report.held_out.after);
+    let mut c = engine.conversation();
+    let reply = c.say("my order 8813 arrived late, can I get compensation?");
+    assert!(reply.trace.requests.iter().flat_map(|r| &r.steps).any(|s| s.act.op == charlotte_core::Op::Call));
+    assert!(reply.text.contains("delay"), "{}", reply.text);
 }

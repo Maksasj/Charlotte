@@ -26,6 +26,8 @@ pub struct SimOptions {
     pub seed: u64,
     /// Share of rule-check conversations in which the user may correct a fact.
     pub corrections: f64,
+    /// A request that needs a record calls a lookup subframe instead of fetching it itself.
+    pub calls: bool,
 }
 
 struct Rng(u32);
@@ -49,7 +51,7 @@ impl Rng {
 }
 
 /// The policy the learner has to recover.
-fn teacher(frame: &Frame, v: &View) -> Act {
+fn teacher(frame: &Frame, v: &View, calls: bool) -> Act {
     let subject = frame.facts.contains_key("subject");
     let fetch = || if subject { Act::new(Op::Lookup) } else { Act::with(Op::Ask, "subject") };
     let d = match v.kind {
@@ -77,7 +79,12 @@ fn teacher(frame: &Frame, v: &View) -> Act {
                     _ => Act::new(Op::Deny),
                 }
             } else if v.p.unbound.iter().any(|&i| p.conditions[i].source == Source::Record) {
-                if !frame.fetched { fetch() } else { Act::new(Op::Escalate) }
+                match (&v.record_source, calls) {
+                    (Some(r), true) if frame.returned_from.is_none() => Act::with(Op::Call, r.clone()),
+                    (_, true) => Act::new(Op::Escalate),
+                    _ if !frame.fetched => fetch(),
+                    _ => Act::new(Op::Escalate),
+                }
             } else {
                 match v.p.unbound.first() {
                     Some(&i) => Act::with(Op::Ask, p.conditions[i].slot.clone()),
@@ -120,6 +127,7 @@ struct Sim<'a> {
     l: &'a Layers,
     para: &'a Paraphrases,
     r: Rng,
+    calls: bool,
 }
 impl Sim<'_> {
     /// How a user would state a fact.
@@ -224,18 +232,28 @@ impl Sim<'_> {
 
         let signals = |name: &str| mem.lexicon().signals.get(name).cloned().unwrap_or_else(|| vec![name.to_string()]);
         let mut corrected = 0;
+        // The active frame: the request itself, or the subframe it called.
+        let mut cur = 0;
         for _ in 0..40 {
-            // The agent's turn: silent lookups, then one spoken act.
+            // The agent's turn: silent lookups and calls, then one spoken act.
             let mut acts = Vec::new();
             let last = loop {
-                let act = teacher(&state.frames[0], &view(&state.frames[0], mem));
-                l.track.agent(&mut state.frames[0], &act, mem);
+                let act = teacher(&state.frames[cur], &view(&state.frames[cur], mem), self.calls);
+                l.track.agent(&mut state.frames[cur], &act, mem);
                 acts.push(act.clone());
-                if act.op != Op::Lookup || acts.len() > 3 {
+                if acts.len() > 6 {
                     break act;
                 }
+                match act.op {
+                    Op::Lookup => {}
+                    Op::Call => cur = l.track.call(&mut state, cur, act.arg.as_deref().unwrap_or_default(), mem),
+                    _ => match l.track.ret(&mut state, cur, &act, mem) {
+                        Some(p) => cur = p,
+                        None => break act,
+                    },
+                }
             };
-            let text = l.realize.realize(&state.frames[0], &last, mem);
+            let text = l.realize.realize(&state.frames[cur], &last, mem);
             turns.push(CorpusTurn { role: "agent".into(), text, acts: Some(acts), ..Default::default() });
 
             // A fact the user already gave, said again with the other value.
@@ -310,7 +328,7 @@ pub fn simulate(vault: &Vault, l: &Layers, para: &Paraphrases, opts: &SimOptions
             lookups.push((i.id.clone(), None, false));
         }
     }
-    let mut sim = Sim { vault, l, para, r: Rng(opts.seed as u32) };
+    let mut sim = Sim { vault, l, para, r: Rng(opts.seed as u32), calls: opts.calls };
     let shuffle = |d: &mut Vec<(String, Option<String>, bool)>, sim: &mut Sim| {
         for i in (1..d.len()).rev() {
             let j = sim.r.below(i + 1);

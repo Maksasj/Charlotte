@@ -290,7 +290,7 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
             };
             let out = args.opt("--out");
             let v = Vault::open(vault)?;
-            let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape, seed, corrections: 0.3 });
+            let convs = simulate(&v, &default_layers(&v), &para, &SimOptions { n, per_shape, seed, corrections: 0.3, calls: args.flag("--calls") });
             let text: String = convs.iter().map(|c| serde_json::to_string(c).unwrap() + "\n").collect();
             match out {
                 Some(f) => {
