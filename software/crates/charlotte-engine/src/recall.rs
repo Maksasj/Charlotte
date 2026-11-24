@@ -7,6 +7,10 @@ use std::collections::{HashMap, HashSet};
 
 /// A message has to be at least this similar to a remembered one for its reply to be reused.
 pub const THRESHOLD: f64 = 0.45;
+/// At least this many content words must be shared, unless the message is nothing but the remembered one's words.
+pub const MIN_SHARED: usize = 2;
+/// When both sides have something before them and none of it is shared, the message alone has to be this similar.
+pub const OFF_CONTEXT: f32 = 0.7;
 
 pub struct ReplyMemory {
     cases: Vec<ReplyCase>,
@@ -20,14 +24,23 @@ pub struct ReplyMemory {
     stop: HashSet<String>,
 }
 
+pub fn normalize(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase()
+}
+
 fn tokens<'a>(text: &'a str, stop: &'a HashSet<String>) -> impl Iterator<Item = String> + 'a {
     text.split(|c: char| !(c.is_alphanumeric() || c == '\'')).map(|w| w.trim_matches('\'').to_lowercase()).filter(move |w| w.len() >= 2 && !stop.contains(w))
 }
 
 impl ReplyMemory {
     pub fn new(mem: &dyn Memory) -> ReplyMemory {
+        ReplyMemory::excluding(mem, &HashSet::new())
+    }
+    /// Without the remembered exchanges whose message is one of `skip` (see `normalize`), so that a
+    /// measurement on real exchanges never finds its own answer in the memory.
+    pub fn excluding(mem: &dyn Memory, skip: &HashSet<String>) -> ReplyMemory {
         let stop: HashSet<String> = mem.lexicon().stopwords.iter().cloned().collect();
-        let cases = mem.replies().to_vec();
+        let cases: Vec<ReplyCase> = mem.replies().iter().filter(|c| !skip.contains(&normalize(&c.message))).cloned().collect();
         let mut words: HashMap<String, u32> = HashMap::new();
         let mut df: Vec<u32> = Vec::new();
         let mut raw: Vec<Vec<u32>> = Vec::new();
@@ -100,10 +113,20 @@ impl Recall for ReplyMemory {
         let mut best: Option<(f32, u32)> = None;
         for c in candidates {
             let i = c as usize;
+            let shared = q.keys().filter(|w| self.message[i].contains_key(w)).count();
+            if shared < MIN_SHARED && !(shared == q.len() && shared == self.message[i].len()) {
+                continue;
+            }
             let msg = dot(&q, &self.message[i]) * known;
             // What came before counts for a fifth when both sides have something before them.
             let score = match (&before, self.previous[i].is_empty()) {
-                (Some(b), false) => 0.8 * msg + 0.2 * dot(b, &self.previous[i]),
+                (Some(b), false) => {
+                    let ctx = dot(b, &self.previous[i]);
+                    if ctx == 0.0 && msg < OFF_CONTEXT {
+                        continue;
+                    }
+                    0.8 * msg + 0.2 * ctx
+                }
                 (None, true) => msg,
                 _ => 0.9 * msg,
             };

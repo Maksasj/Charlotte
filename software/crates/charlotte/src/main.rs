@@ -17,6 +17,8 @@ const USAGE: &str = "charlotte [--vault DIR] <command>      (the vault defaults 
   learn FILE [--review]         learn from a corpus (JSON lines); --review leaves everything as candidates
   promote ID | reject ID        trust a candidate, or discard it
   check [--fix]                 list problems in the vault; --fix rewrites notes in the engine's own format
+  regress FILE                  run the regression set (rewordings and real held-out exchanges) and print the score;
+                                exits 1 on a regression
   simulate [--n 80] [--per-shape] [--seed 1] [--paraphrases FILE] [--out FILE]
                                 write conversations held by a simulated teacher over the vault;
                                 --per-shape gives --n of each shape (rule check, procedure, lookup)";
@@ -175,6 +177,16 @@ fn run(cmd: &str, vault: &str, mut args: Args) -> Result<(), String> {
             } else {
                 Err(format!("{} problems", problems.len()))
             }
+        }
+        "regress" => {
+            let file = args.0.first().ok_or("regress needs a case file")?;
+            let text = std::fs::read_to_string(file).map_err(|e| format!("{file}: {e}"))?;
+            let out = charlotte_engine::regress::run(vault, &charlotte_engine::regress::parse(&text)?)?;
+            println!("{out}");
+            if out.regressions() > 0 {
+                return Err(format!("{} regressions", out.regressions()));
+            }
+            Ok(())
         }
         "simulate" => {
             let n = args.opt("--n").and_then(|x| x.parse().ok()).unwrap_or(80);

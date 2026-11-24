@@ -118,6 +118,25 @@ engine remembers each message with the reply that followed (one note per topic
 in `vault/chats/`) and, when a new message is similar enough to a remembered
 one, answers with that reply.
 
+`vault/chats/` is not kept in git (30 MB). Rebuild it on each machine with
+`charlotte learn data/processed/<file>.jsonl` for each chat corpus.
+
+## Regression set
+
+`regression/cases.jsonl` is what the engine is measured against; run
+`software/target/release/charlotte regress data/regression/cases.jsonl`.
+
+- `reword` cases: requests worded differently from the vault's phrases, with the
+  intent that should be read. Cases marked `known_fail` are the open problems;
+  any other failure is a regression and the command exits 1.
+- `exchange` cases: 150 real exchanges from DailyDialog's test split (sampled by
+  `regression/make_exchanges.py`, which needs `processed/dailydialog.jsonl`),
+  with the preceding turns as history. Remembered exchanges with the same message
+  are left out of the memory. A reply is good when it shares at least 0.2 word F1
+  with the real one; the score is good minus wrong over all exchanges, abstaining
+  counts nothing. Train on simulated or labelled data and judge here, never on
+  held-out data from the training source.
+
 ## What is here
 
 | File | What |

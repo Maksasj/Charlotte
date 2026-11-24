@@ -159,6 +159,8 @@ fn plain_chats_are_remembered_and_reused() {
     assert_eq!(engine.conversation().say("coffee or tea in the morning?").text, "Coffee, always. Tea is for the afternoon.");
     // Something it never saw is still declined, and a request the vault knows is not hijacked.
     assert_eq!(engine.conversation().say("what is the capital of Peru?").text, "I don't know how to help with that yet.");
+    // One shared word is not enough to reuse a reply.
+    assert_eq!(engine.conversation().say("weekend").text, "I don't know how to help with that yet.");
     // Teaching the same chats again adds nothing.
     engine.learn(&Corpus::parse("test-chats", &jsonl), &LearnOptions::default(), &|_| {}).unwrap();
     let note = std::fs::read_to_string(dir.join("chats/chats-weekend-plans.md")).unwrap();

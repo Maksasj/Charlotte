@@ -216,21 +216,10 @@ impl Engine {
                     }
                     rt.text = l.realize.realize(&conv.state.frames[fi], &last, mem);
                     rt.frame = Some(conv.state.frames[fi].clone());
-                    // Small talk and the like: a reply remembered from a taught chat goes before the stock one.
-                    if rt.kind == ReqKind::Move {
-                        if let Some((act, reply, why)) = remembered(&r.clause, &mut trace, &mut conv.used) {
-                            rt.recalled = Some(why);
-                            rt.text = reply;
-                            if let Some(s) = rt.steps.last_mut() {
-                                s.act = act.clone();
-                            }
-                            last = act;
-                        }
-                    }
                     last
                 }
                 None => {
-                    // Not understood as a request. A reply remembered from a taught chat may fit.
+                    // Not understood at all: a reply remembered from a taught chat may fit. An understood request is never overridden.
                     if let Some((act, reply, why)) = remembered(&r.clause, &mut trace, &mut conv.used) {
                         rt.recalled = Some(why);
                         rt.kind = ReqKind::Move;
