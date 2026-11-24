@@ -164,7 +164,7 @@ pub fn replay(ci: usize, conv: &CorpusConv, mem: &dyn Memory, l: &Layers) -> Vec
     for t in &conv.turns {
         if t.role == "user" {
             let reading = if t.intent.is_some() || t.facts.is_some() || t.signal.is_some() {
-                Reading { requests: vec![Request { clause: t.text.clone(), intent: t.intent.clone(), facts: t.facts.clone().unwrap_or_default(), signal: t.signal, matched: vec![] }] }
+                Reading { requests: vec![Request { clause: t.text.clone(), intent: t.intent.clone(), facts: t.facts.clone().unwrap_or_default(), signal: t.signal, refer: None, matched: vec![] }] }
             } else {
                 let ctx = ReadContext { asked: state.frames.iter().rev().filter_map(|f| f.last_asked.clone()).collect() };
                 l.understand.read(&t.text, &ctx)

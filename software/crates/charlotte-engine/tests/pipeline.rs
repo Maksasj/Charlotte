@@ -255,3 +255,25 @@ fn a_request_that_needs_a_record_calls_a_lookup_subframe() {
     assert!(reply.trace.requests.iter().flat_map(|r| &r.steps).any(|s| s.act.op == charlotte_core::Op::Call));
     assert!(reply.text.contains("delay"), "{}", reply.text);
 }
+
+fn subject(r: &charlotte_core::Reply) -> String {
+    match r.trace.requests[0].frame.as_ref().and_then(|f| f.facts.get("subject")) {
+        Some(charlotte_core::Value::Str(s)) => s.clone(),
+        v => format!("{v:?}"),
+    }
+}
+#[test]
+fn a_reference_resolves_to_a_subject_from_earlier_in_the_conversation() {
+    let e = trained();
+    let mut c = e.conversation();
+    c.say("what is the status of order 8813?");
+    c.say("and what about order 4410?");
+    // "that order" is the one in focus; "the other one" is the one before it.
+    let same = c.say("is that order still on time? what is its status");
+    assert_eq!(subject(&same), "4410");
+    let other = c.say("what is the status of the other order");
+    assert_eq!(subject(&other), "8813");
+    // With nothing to point at, it asks instead of guessing.
+    let fresh = e.conversation().say("what is the status of that order").text;
+    assert!(fresh.to_lowercase().contains("which"), "{fresh}");
+}

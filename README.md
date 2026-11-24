@@ -109,3 +109,8 @@ Only one link is recorded here, taken from the `main` README rather than from a
 full review of that work: the symbolic agent checked every input against a
 closed predicate registry. Here the vocabulary is data in the vault and can
 grow from a corpus, but only as far as that corpus's own words reach.
+
+## Composition and conversation memory
+
+- **Call/return.** A request that needs a record can `call(record_source)`: a subframe is pushed, runs the plain lookup it already knows (ask for the subject, look up, report), and pops silently; the parent resumes with `returned_from` and `subgoal_failed` set and the record's facts landed. Features: `subgoal_active`, `returned`, `returned_from=…`, `subgoal_failed`. `charlotte simulate --calls` produces such conversations; the learner replays them with the same stack. On 23 composed conversations, a pattern learned without any composed demonstrations reproduced 0%; with 3 it reproduced 100% (small sample; flattened lookup reached 3–7%).
+- **Conversation memory.** The session keeps every subject mentioned. "That order" resolves to the one in focus, "the other one" to the one before it (`same`/`other` signals in the lexicon). With nothing to point at, the agent asks.

@@ -93,5 +93,21 @@ signals:
   no:
   - no
   - nope
+  same:
+  - that order
+  - that ticket
+  - that one
+  - the same one
+  - the same order
+  - the same ticket
+  - it again
+  other:
+  - the other order
+  - the other ticket
+  - the other one
+  - my other order
+  - my other ticket
+  - the previous order
+  - the previous one
 ---
 Words the reader needs that belong to no single intent or slot.

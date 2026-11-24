@@ -193,7 +193,17 @@ pub struct Request {
     pub intent: Option<String>,
     pub facts: Facts,
     pub signal: Option<Signal>,
+    /// "that order", "the other one": the message points back at something said earlier.
+    #[serde(default)]
+    pub refer: Option<Refer>,
     pub matched: Vec<Match>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Refer {
+    /// The thing in focus.
+    Same,
+    /// The one that was in focus before it.
+    Other,
 }
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Reading {
@@ -236,6 +246,18 @@ pub struct Frame {
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct State {
     pub frames: Vec<Frame>,
+    /// Every subject mentioned in the session, however long ago, for resolving references.
+    #[serde(default)]
+    pub entities: Vec<Entity>,
+    #[serde(default)]
+    pub turn: u32,
+}
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct Entity {
+    pub id: String,
+    pub object: Option<String>,
+    pub last_turn: u32,
+    pub mentions: u32,
 }
 /// Which frame a request went to, and what the user did there.
 #[derive(Clone, Debug)]

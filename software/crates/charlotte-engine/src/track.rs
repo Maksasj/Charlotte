@@ -25,10 +25,52 @@ fn finished(f: &Frame) -> bool {
     f.agent_acts.iter().any(|o| matches!(o, Op::Finish | Op::Escalate | Op::Report))
 }
 
+/// Fill in the subject a reference points at: the one in focus, or the one before it. When there is none,
+/// the request stays as it was and the agent asks.
+fn resolve(state: &State, r: &mut Request) {
+    let Some(refer) = r.refer else { return };
+    if r.facts.contains_key("subject") {
+        return;
+    }
+    let mut ranked: Vec<&Entity> = state.entities.iter().collect();
+    ranked.sort_by(|a, b| (b.last_turn, b.mentions).cmp(&(a.last_turn, a.mentions)));
+    let pick = match refer {
+        Refer::Same => ranked.first(),
+        Refer::Other => ranked.get(1),
+    };
+    if let Some(e) = pick {
+        r.facts.insert("subject".into(), Value::Str(e.id.clone()));
+        if let (Some(o), false) = (&e.object, r.facts.contains_key("object")) {
+            r.facts.insert("object".into(), Value::Str(o.clone()));
+        }
+    }
+}
+fn remember(state: &mut State, facts: &Facts) {
+    let Some(Value::Str(id)) = facts.get("subject") else { return };
+    let object = match facts.get("object") {
+        Some(Value::Str(o)) => Some(o.clone()),
+        _ => None,
+    };
+    let turn = state.turn;
+    match state.entities.iter_mut().find(|e| e.id == *id) {
+        Some(e) => {
+            e.last_turn = turn;
+            e.mentions += 1;
+            e.object = object.or(e.object.take());
+        }
+        None => state.entities.push(Entity { id: id.clone(), object, last_turn: turn, mentions: 1 }),
+    }
+}
+
 impl Track for FrameTracker {
     fn user(&self, state: &mut State, reading: &Reading, mem: &dyn Memory) -> Vec<Touch> {
         let mut out = Vec::new();
+        state.turn += 1;
         for (i, r) in reading.requests.iter().enumerate() {
+            let mut r = r.clone();
+            resolve(state, &mut r);
+            remember(state, &r.facts);
+            let r = &r;
             let (mut frame, mut act) = (None, None);
             if let Some(intent) = &r.intent {
                 // The same request again continues its frame, unless it is finished or about another subject.

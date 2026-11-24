@@ -65,6 +65,7 @@ pub struct LexiconReader {
     values: Vec<ValueRe>,
     patterns: Vec<PatternRe>,
     signals: Vec<(Signal, Regex)>,
+    refers: Vec<(Refer, Regex)>,
     connectors: Option<Regex>,
     negated: Option<Regex>,
     slots: BTreeMap<String, SlotInfo>,
@@ -121,6 +122,8 @@ impl LexiconReader {
         let alt = |words: &[String]| {
             words.iter().map(|w| { let e = regex::escape(w.trim()); if w.chars().all(|c| c.is_alphanumeric() || c == ' ') { format!(r"\b{e}\b") } else { e } }).collect::<Vec<_>>().join("|")
         };
+        let refer = |name: &str, r: Refer| lex.signals.get(name).into_iter().flatten().filter_map(move |p| phrase_re(p).map(|re| (r, re)));
+        let refers = refer("other", Refer::Other).chain(refer("same", Refer::Same)).collect();
         let connectors = if lex.connectors.is_empty() { None } else { Regex::new(&format!(r"(?i)\s*(?:{})\s*", alt(&lex.connectors))).ok() };
         let negated = if lex.negators.is_empty() { None } else { Regex::new(&format!(r"(?i)(?:{}|n't)\s+(?:\w+\s+)?$", alt(&lex.negators))).ok() };
         LexiconReader {
@@ -128,6 +131,7 @@ impl LexiconReader {
             values,
             patterns,
             signals,
+            refers,
             connectors,
             negated,
             slots,
@@ -226,6 +230,12 @@ impl LexiconReader {
             }
         }
         r.facts = self.facts(text, &mut r.matched);
+        if !r.facts.contains_key("subject") {
+            if let Some((k, m)) = self.refers.iter().find_map(|(k, re)| re.find(text).map(|m| (*k, m))) {
+                r.refer = Some(k);
+                r.matched.push(Match { phrase: m.as_str().to_string(), kind: "reference".into(), target: format!("{k:?}").to_lowercase() });
+            }
+        }
         if r.intent.is_none() {
             if let Some((s, m)) = self.signals.iter().find_map(|(s, re)| re.find(text).map(|m| (*s, m))) {
                 r.signal = Some(s);

@@ -202,7 +202,7 @@ impl Sim<'_> {
         let mut state = State::default();
         let mut turns: Vec<CorpusTurn> = Vec::new();
         let user = |state: &mut State, turns: &mut Vec<CorpusTurn>, text: String, intent: Option<&str>, facts: Facts, signal: Option<Signal>| {
-            let reading = Reading { requests: vec![Request { clause: text.clone(), intent: intent.map(str::to_string), facts: facts.clone(), signal, matched: vec![] }] };
+            let reading = Reading { requests: vec![Request { clause: text.clone(), intent: intent.map(str::to_string), facts: facts.clone(), signal, refer: None, matched: vec![] }] };
             l.track.user(state, &reading, mem);
             turns.push(CorpusTurn { role: "user".into(), text, intent: intent.map(str::to_string), facts: Some(facts), signal, ..Default::default() });
         };
