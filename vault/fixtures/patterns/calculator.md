@@ -1,56 +1,17 @@
 # Calculator
 
-## p16: parse-calculate
-- status: active
-- kind: language
-- trust: 0.92
-- support: 5
-- provenance: seed
+## parse-calculate
+when: "calculate ?expr", !want_calc()
+then: +want_calc(expr=?expr)
 
-### when
-- text: calculate ?expr
-- not_fact: want_calc()
+## run-calc-tool
+when: want_calc(expr=?expr), !calc_result(), !calc_error()
+then: @calc(expr=?expr)
 
-### then
-- assert[working]: want_calc(expr=?expr)
+## reply-calc-result
+when: calc_result(expr=?expr, value=?val)
+then: => "?expr = ?val"
 
-## p17: run-calc-tool
-- status: active
-- kind: reasoning
-- trust: 0.92
-- support: 5
-- provenance: seed
-
-### when
-- fact: want_calc(expr=?expr)
-- not_fact: calc_result()
-- not_fact: calc_error()
-
-### then
-- tool: calc(expr=?expr)
-
-## p18: reply-calc-result
-- status: active
-- kind: reply
-- trust: 0.92
-- support: 5
-- provenance: seed
-
-### when
-- fact: calc_result(expr=?expr, value=?val)
-
-### then
-- reply: ?expr = ?val
-
-## p19: reply-calc-error
-- status: active
-- kind: reply
-- trust: 0.9
-- support: 3
-- provenance: seed
-
-### when
-- fact: calc_error(error=?err, expr=?expr)
-
-### then
-- reply: Couldn't evaluate "?expr": ?err.
+## reply-calc-error
+when: calc_error(expr=?expr, error=?err)
+then: => "Couldn't evaluate \"?expr\": ?err."
