@@ -582,6 +582,132 @@ button {
   margin: 4px 0 2px;
 }
 
+/* Dialog mode bar & Voice Dialog */
+.dialog-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.dialog-mode-tabs {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.mode-tab {
+  background: transparent;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.mode-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.voice-composer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.voice-composer.phase-listening {
+  border-color: var(--brand);
+}
+
+.voice-composer.phase-speaking {
+  border-color: var(--ok);
+}
+
+.voice-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.voice-orb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--muted);
+}
+
+.voice-orb.listening {
+  background: var(--brand);
+  animation: voice-pulse 1.2s ease-in-out infinite;
+}
+
+.voice-orb.speaking {
+  background: var(--ok);
+  animation: voice-pulse 0.9s ease-in-out infinite;
+}
+
+.voice-orb.thinking,
+.voice-orb.loading {
+  background: var(--warn);
+  animation: voice-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 0.55;
+  }
+}
+
+.voice-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.voice-phase-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.voice-transcript {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.voice-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 860px) {
   .main-grid {
     grid-template-columns: 1fr;

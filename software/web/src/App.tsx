@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import { isSpeechRecognitionSupported, listenOnce, type ListenHandle } from './speech';
 import { karinVoice, type VoiceStatus } from './voice';
 import type {
   Action,
@@ -84,8 +85,136 @@ export default function App() {
   const [tests, setTests] = useState<SelfTestResult[]>([]);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle');
+  const [dialogMode, setDialogMode] = useState<'text' | 'voice'>('text');
+  const [voiceDialogPhase, setVoiceDialogPhase] = useState<
+    'idle' | 'loading' | 'listening' | 'thinking' | 'speaking'
+  >('idle');
+  const [handsFree, setHandsFree] = useState(true);
+  const [liveTranscript, setLiveTranscript] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const voiceLoopRunId = useRef(0);
+  const listenHandleRef = useRef<ListenHandle | null>(null);
+  const handsFreeRef = useRef(handsFree);
+  handsFreeRef.current = handsFree;
+
+  const speechSupported = isSpeechRecognitionSupported();
+
+  function stopVoiceDialog() {
+    voiceLoopRunId.current += 1;
+    listenHandleRef.current?.stop();
+    listenHandleRef.current = null;
+    karinVoice.stop();
+    setLiveTranscript('');
+    setVoiceDialogPhase('idle');
+  }
+
+  async function startVoiceDialog() {
+    if (!speechSupported) {
+      setErrorMsg('Speech recognition is not supported in this browser (try Chrome or Safari).');
+      return;
+    }
+    stopVoiceDialog();
+    const runId = ++voiceLoopRunId.current;
+    setErrorMsg(null);
+    setStatusMsg(null);
+
+    try {
+      setVoiceDialogPhase('loading');
+      await karinVoice.ensureLoaded();
+    } catch (e) {
+      if (runId === voiceLoopRunId.current) {
+        setErrorMsg(`Voice load failed: ${(e as Error).message}`);
+        setVoiceDialogPhase('idle');
+      }
+      return;
+    }
+
+    while (runId === voiceLoopRunId.current) {
+      setVoiceDialogPhase('listening');
+      setLiveTranscript('');
+
+      const handle = listenOnce({
+        onInterim: (t) => {
+          if (runId === voiceLoopRunId.current) setLiveTranscript(t);
+        },
+      });
+      listenHandleRef.current = handle;
+
+      let heard: string | null = null;
+      try {
+        heard = await handle.promise;
+      } catch (e) {
+        if (runId === voiceLoopRunId.current) {
+          setErrorMsg((e as Error).message);
+          setVoiceDialogPhase('idle');
+        }
+        return;
+      } finally {
+        if (listenHandleRef.current === handle) listenHandleRef.current = null;
+      }
+
+      if (runId !== voiceLoopRunId.current) return;
+
+      if (!heard) {
+        if (!handsFreeRef.current) {
+          setVoiceDialogPhase('idle');
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 250));
+        continue;
+      }
+
+      setLiveTranscript(heard);
+      setVoiceDialogPhase('thinking');
+      setBusy(true);
+      let reply = '';
+      try {
+        const res = await api.chat(heard);
+        if (runId !== voiceLoopRunId.current) return;
+        setState(res.state);
+        setSelectedTrace(res.trace);
+        setTeachReply('');
+        reply = res.trace.reply;
+      } catch (e) {
+        if (runId === voiceLoopRunId.current) {
+          setErrorMsg((e as Error).message);
+          setVoiceDialogPhase('idle');
+        }
+        return;
+      } finally {
+        setBusy(false);
+      }
+
+      if (runId !== voiceLoopRunId.current) return;
+      setLiveTranscript('');
+      setVoiceDialogPhase('speaking');
+      try {
+        await karinVoice.speak(reply);
+      } catch (e) {
+        if (runId === voiceLoopRunId.current) {
+          setErrorMsg((e as Error).message);
+          setVoiceDialogPhase('idle');
+        }
+        return;
+      }
+
+      if (runId !== voiceLoopRunId.current) return;
+      if (!handsFreeRef.current) {
+        setVoiceDialogPhase('idle');
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 200));
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      voiceLoopRunId.current += 1;
+      listenHandleRef.current?.stop();
+      karinVoice.stop();
+    };
+  }, []);
 
   useEffect(() => {
     return karinVoice.subscribe((status, detail) => {
@@ -196,7 +325,7 @@ export default function App() {
   }
 
   async function handleNewChat() {
-    karinVoice.stop();
+    stopVoiceDialog();
     const res = await api.newChat();
     setState(res.state);
     setSelectedTrace(null);
@@ -206,7 +335,7 @@ export default function App() {
   }
 
   async function handleReset() {
-    karinVoice.stop();
+    stopVoiceDialog();
     const res = await api.reset();
     setState(res.state);
     setSelectedTrace(null);
@@ -318,6 +447,35 @@ export default function App() {
 
       <div className="main-grid">
         <section className="chat-pane">
+          <div className="dialog-mode-bar">
+            <div className="dialog-mode-tabs">
+              <button
+                className={`mode-tab ${dialogMode === 'text' ? 'active' : ''}`}
+                onClick={() => {
+                  stopVoiceDialog();
+                  setDialogMode('text');
+                }}
+              >
+                Text Chat
+              </button>
+              <button
+                className={`mode-tab ${dialogMode === 'voice' ? 'active' : ''}`}
+                onClick={() => setDialogMode('voice')}
+              >
+                Voice Dialog
+              </button>
+            </div>
+            {dialogMode === 'voice' && (
+              <label className="muted row" style={{ gap: 6, fontSize: 12 }}>
+                <input
+                  type="checkbox"
+                  checked={handsFree}
+                  onChange={(e) => setHandsFree(e.target.checked)}
+                />
+                Hands-free loop
+              </label>
+            )}
+          </div>
           <div className="messages">
             {!state || state.messages.length === 0 ? (
               <div className="empty-state">
@@ -425,23 +583,80 @@ export default function App() {
           )}
 
           <div className="composer-wrap">
-            <form
-              className="composer"
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage(input);
-              }}
-            >
-              <input
-                type="text"
-                placeholder="Message Karin..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
-              <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>
-                Send
-              </button>
-            </form>
+            {dialogMode === 'text' ? (
+              <form
+                className="composer"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendMessage(input);
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Message Karin..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                />
+                <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>
+                  Send
+                </button>
+              </form>
+            ) : (
+              <div className={`voice-composer phase-${voiceDialogPhase}`}>
+                <div className="voice-status-row">
+                  <span className={`voice-orb ${voiceDialogPhase}`} />
+                  <div className="voice-text">
+                    <div className="voice-phase-label">
+                      {!speechSupported
+                        ? 'Speech recognition unavailable in this browser'
+                        : voiceDialogPhase === 'idle'
+                          ? 'Ready — click Start Talking and speak to Karin'
+                          : voiceDialogPhase === 'loading'
+                            ? 'Loading Karin voice (tiny-voca F2)…'
+                            : voiceDialogPhase === 'listening'
+                              ? 'Listening… speak now'
+                              : voiceDialogPhase === 'thinking'
+                                ? 'Karin is thinking…'
+                                : 'Karin is speaking…'}
+                    </div>
+                    {liveTranscript && (
+                      <div className="voice-transcript">&ldquo;{liveTranscript}&rdquo;</div>
+                    )}
+                  </div>
+                </div>
+                <div className="voice-actions">
+                  {voiceDialogPhase === 'idle' ? (
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      disabled={!speechSupported}
+                      onClick={() => void startVoiceDialog()}
+                    >
+                      Start Talking
+                    </button>
+                  ) : (
+                    <>
+                      {voiceDialogPhase === 'speaking' && (
+                        <button
+                          className="btn btn-ghost"
+                          type="button"
+                          onClick={() => karinVoice.stop()}
+                        >
+                          Interrupt
+                        </button>
+                      )}
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={stopVoiceDialog}
+                      >
+                        Stop
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
