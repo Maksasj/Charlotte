@@ -113,6 +113,22 @@ impl VaultBuilder {
 fn vault_roots(core_dir: &Path) -> Vec<(PathBuf, String)> {
     let mut roots = vec![(core_dir.to_path_buf(), String::new())];
     if let Some(parent) = core_dir.parent() {
+        let mut generated: Vec<(String, PathBuf)> = fs::read_dir(parent)
+            .ok()
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| entry.ok().map(|e| e.path()))
+            .filter(|path| path.is_dir() && path != core_dir)
+            .filter_map(|path| {
+                let name = path.file_name()?.to_str()?.to_string();
+                name.starts_with("generated-").then_some((name, path))
+            })
+            .collect();
+        generated.sort_by(|a, b| a.0.cmp(&b.0));
+        for (name, path) in generated {
+            roots.push((path, format!("{name}/")));
+        }
+
         let episodes_dir = parent.join(".episodes");
         if episodes_dir.is_dir() && episodes_dir != core_dir {
             roots.push((episodes_dir, ".episodes/".to_string()));
