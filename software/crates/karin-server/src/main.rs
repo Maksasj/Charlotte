@@ -5,7 +5,11 @@ use axum::{
     Router,
     routing::{delete, get, post},
 };
-use karin_core::{Engine, store::load_state, vault::default_vault_dir};
+use karin_core::{
+    Engine,
+    store::{load_state, next_chat_id},
+    vault::default_vault_dir,
+};
 use state::AppState;
 use std::{
     net::SocketAddr,
@@ -19,13 +23,21 @@ async fn main() {
     let port = read_port();
     let state_path = read_state_path();
     let vault_dir = default_vault_dir();
+    let chats_dir = vault_dir
+        .parent()
+        .unwrap_or_else(|| Path::new("../vault"))
+        .join(".chats");
+    let chat_id = next_chat_id(&chats_dir);
     println!("Using vault core from {}", vault_dir.display());
+    println!("Saving chats under {}", chats_dir.display());
 
     let engine = load_or_init_engine(&state_path, &vault_dir);
     let shared = Arc::new(AppState {
         engine: Mutex::new(engine),
         state_path,
         vault_dir,
+        chats_dir,
+        chat_id: Mutex::new(chat_id),
     });
 
     let app = build_router(shared);
