@@ -113,7 +113,7 @@ async fn main() {
         .and_then(|v| v.parse().ok())
         .unwrap_or(8080);
     let state_path = PathBuf::from(
-        std::env::var("STATE_PATH").unwrap_or_else(|_| "data/state.json".to_string()),
+        std::env::var("STATE_PATH").unwrap_or_else(|_| "../vault/state.json".to_string()),
     );
 
     let engine = match load_state(&state_path) {
