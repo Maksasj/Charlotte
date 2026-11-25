@@ -1,55 +1,17 @@
 # Notes
 
-## p23: save-note
-- status: active
-- kind: language
-- trust: 0.9
-- support: 4
-- provenance: seed
+## save-note
+when: "remember ?text", !note_saved()
+then: @note_save(text=?text)
 
-### when
-- text: remember ?text
-- not_fact: note_saved()
+## reply-note-saved
+when: note_saved(text=?text)
+then: => "Saved to long-term memory: \"?text\"."
 
-### then
-- tool: note_save(text=?text)
+## list-notes
+when: "my notes", !notes_listing()
+then: @note_list()
 
-## p24: reply-note-saved
-- status: active
-- kind: reply
-- trust: 0.9
-- support: 4
-- provenance: seed
-
-### when
-- fact: note_saved(text=?text)
-
-### then
-- reply: Saved to long-term memory: "?text".
-
-## p25: list-notes
-- status: active
-- kind: language
-- trust: 0.9
-- support: 4
-- provenance: seed
-
-### when
-- text: my notes
-- not_fact: notes_listing()
-
-### then
-- tool: note_list()
-
-## p26: reply-notes-listing
-- status: active
-- kind: reply
-- trust: 0.9
-- support: 4
-- provenance: seed
-
-### when
-- fact: notes_listing(list=?list)
-
-### then
-- reply: Your notes: ?list
+## reply-notes-listing
+when: notes_listing(list=?list)
+then: => "Your notes: ?list"

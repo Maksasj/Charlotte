@@ -1,42 +1,13 @@
 # Meta-Tools
 
-## p27: meta-generalize-command
-- status: active
-- kind: reasoning
-- trust: 0.95
-- support: 3
-- provenance: seed:meta
+## meta-generalize-command
+when: "generalize", !meta_result()
+then: @generalize_episodes()
 
-### when
-- text: generalize
-- not_fact: meta_result()
+## meta-chunk-command
+when: "chunk last", !meta_result()
+then: @chunk_last_chain()
 
-### then
-- tool: generalize_episodes()
-
-## p28: meta-chunk-command
-- status: active
-- kind: reasoning
-- trust: 0.95
-- support: 3
-- provenance: seed:meta
-
-### when
-- text: chunk last
-- not_fact: meta_result()
-
-### then
-- tool: chunk_last_chain()
-
-## p29: reply-meta-result
-- status: active
-- kind: reply
-- trust: 0.95
-- support: 3
-- provenance: seed:meta
-
-### when
-- fact: meta_result(summary=?summary)
-
-### then
-- reply: ?summary
+## reply-meta-result
+when: meta_result(summary=?summary)
+then: => "?summary"
