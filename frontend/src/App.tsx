@@ -197,7 +197,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <h1>Symbolic Core</h1>
+          <h1>Karin</h1>
           <span className="pill ok">Rust Engine</span>
           {state && (
             <span className="muted">
@@ -294,7 +294,7 @@ export default function App() {
                 <input
                   type="text"
                   style={{ flex: 1 }}
-                  placeholder="Type the reply Nova should give..."
+                  placeholder="Type the reply Karin should give..."
                   value={teachReply}
                   onChange={(e) => setTeachReply(e.target.value)}
                 />
@@ -326,7 +326,7 @@ export default function App() {
           >
             <input
               type="text"
-              placeholder="Say something to Nova..."
+              placeholder="Say something to Karin..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />

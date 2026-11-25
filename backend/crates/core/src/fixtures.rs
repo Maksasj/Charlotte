@@ -16,7 +16,7 @@ pub fn initial_state() -> AgentState {
         Fact {
             id: "f1".into(),
             rel: "persona_name".into(),
-            args: map(&[("value", "Nova")]),
+            args: map(&[("value", "Karin")]),
             scope: Scope::LongTerm,
             provenance: "seed:persona".into(),
             turn: 0,

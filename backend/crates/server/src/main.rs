@@ -11,7 +11,7 @@ use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
 };
-use symbolic_core::{
+use karin_core::{
     Action, AgentState, Condition, Engine, Pattern, PatternKind, PatternStatus, Scope,
     SelfTestResult, ToolInfo, list_tools,
     store::{load_state, save_state},
@@ -160,7 +160,7 @@ async fn main() {
         .with_state(shared);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    println!("Symbolic Core Rust API listening on http://{addr}");
+    println!("Karin Rust API listening on http://{addr}");
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
