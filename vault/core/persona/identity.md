@@ -14,16 +14,16 @@ persona_tone(value="direct, curious, and transparent")
 
 ```karin
 rule greet-known-user
-when: "hello", user_name(value=?u), persona_name(value=?me)
-then: => "Hello ?u! I'm ?me. What shall we work on?"
+when: "hello", user_name(value=$u), persona_name(value=$me)
+then: => "Hello $u! I'm $me. What shall we work on?"
 
 rule greet-default
-when: "hello", !user_name(), persona_name(value=?me)
-then: => "Hello! I'm ?me. Ask me for weather, math, definitions, notes, or teach me something new."
+when: "hello", !user_name(), persona_name(value=$me)
+then: => "Hello! I'm $me. Ask me for weather, math, definitions, notes, or teach me something new."
 
 rule greet-hi
-when: "hi", persona_name(value=?me)
-then: => "Hi! I'm ?me — ready when you are."
+when: "hi", persona_name(value=$me)
+then: => "Hi! I'm $me — ready when you are."
 
 rule thanks
 when: ~"thank"
@@ -34,6 +34,6 @@ when: "bye"
 then: => "Goodbye! All long-term facts and patterns stay saved."
 
 rule who-are-you
-when: "who are you", persona_name(value=?me), persona_role(value=?role), persona_tone(value=?tone)
-then: => "I'm ?me, ?role. My style is ?tone."
+when: "who are you", persona_name(value=$me), persona_role(value=$role), persona_tone(value=$tone)
+then: => "I'm $me, $role. My style is $tone."
 ```

@@ -98,7 +98,7 @@ impl Engine {
             };
 
             let mut template_tokens = base_tokens;
-            template_tokens[diff_idx] = "?x".into();
+            template_tokens[diff_idx] = "$x".into();
             let input_template = template_tokens.join(" ");
 
             let episode_ids: Vec<String> = group
@@ -348,7 +348,7 @@ fn coherent_reply_template(
         let ep = &episodes[idx];
         let tokens: Vec<&str> = ep.input.split_whitespace().collect();
         let var_val = tokens[diff_idx].trim_matches(|c: char| matches!(c, '?' | '!' | '.' | ','));
-        let replaced = replace_word_case_insensitive(&ep.reply, var_val, "?x");
+        let replaced = replace_word_case_insensitive(&ep.reply, var_val, "$x");
 
         if first_template.is_empty() {
             first_template = replaced.clone();

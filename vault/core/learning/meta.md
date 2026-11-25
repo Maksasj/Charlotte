@@ -14,6 +14,6 @@ when: "chunk last", !meta_result()
 then: @chunk_last_chain()
 
 rule reply-meta-result
-when: meta_result(summary=?summary)
-then: => "?summary"
+when: meta_result(summary=$summary)
+then: => "$summary"
 ```

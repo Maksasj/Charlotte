@@ -14,14 +14,14 @@ definition(topic="chunking", text="Compiling a successful multi-step chain of pa
 
 ```karin
 rule parse-define
-when: "define ?topic", !definition_result(), !definition_unknown()
-then: @define(topic=?topic)
+when: "define $topic", !definition_result(), !definition_unknown()
+then: @define(topic=$topic)
 
 rule reply-definition
-when: definition_result(topic=?topic, text=?text)
-then: => "?topic: ?text"
+when: definition_result(topic=$topic, text=$text)
+then: => "$topic: $text"
 
 rule reply-definition-unknown
-when: definition_unknown(topic=?topic)
-then: => "I don't have a definition for \"?topic\" yet. Add a definition fact or teach me!"
+when: definition_unknown(topic=$topic)
+then: => "I don't have a definition for \"$topic\" yet. Add a definition fact or teach me!"
 ```
