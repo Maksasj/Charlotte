@@ -180,6 +180,15 @@ export default function App() {
     setTab('tests');
   }
 
+  async function handleNewChat() {
+    const res = await api.newChat();
+    setState(res.state);
+    setSelectedTrace(null);
+    setInput('');
+    setTeachReply('');
+    setStatusMsg('Started a new chat (long-term memory kept).');
+  }
+
   async function handleReset() {
     const res = await api.reset();
     setState(res.state);
@@ -230,6 +239,9 @@ export default function App() {
           )}
         </div>
         <div className="topbar-actions">
+          <button className="btn btn-primary btn-sm" onClick={handleNewChat}>
+            New Chat
+          </button>
           <button
             className="btn btn-ghost btn-sm"
             onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}

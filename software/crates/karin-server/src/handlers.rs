@@ -26,6 +26,11 @@ pub async fn chat(State(app): State<Arc<AppState>>, Json(req): Json<ChatReq>) ->
     Json(json!({ "trace": trace, "state": state }))
 }
 
+pub async fn new_chat(State(app): State<Arc<AppState>>) -> Json<Value> {
+    let (_, state) = app.mutate(Engine::new_chat);
+    Json(json!({ "state": state }))
+}
+
 pub async fn teach(State(app): State<Arc<AppState>>, Json(req): Json<TeachReq>) -> Json<Value> {
     let ((episode, pattern), state) =
         app.mutate(|eng| eng.teach_reply(&req.input, &req.reply, req.promote));
