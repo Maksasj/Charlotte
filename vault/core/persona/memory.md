@@ -35,9 +35,64 @@ then:
 rule learn-user-like
 when: "I like $thing"
 then:
-  -prop(entity="user", attr="favorite")
-  ++prop(entity="user", attr="favorite", value=$thing)
+  ++rel(subj="user", pred="likes", obj=$thing)
   => "Noted — I'll remember you like $thing."
+
+rule learn-user-like-topic
+when: "my favorite $topic is $thing"
+then:
+  -dialogue_topic
+  +dialogue_topic(kind="likes", topic=$topic)
+  ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
+  => "Got it — I'll remember $thing as a $topic you like."
+
+rule learn-user-also-like-topic
+when: "I also like $thing", dialogue_topic(kind="likes", topic=$topic)
+then:
+  ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
+  => "Got it — added $thing to the $topic you like."
+
+rule learn-user-also-like-general
+when: "I also like $thing", !dialogue_topic(kind="likes")
+then:
+  ++rel(subj="user", pred="likes", obj=$thing)
+  => "Got it — added $thing to what you like."
+
+rule ask-user-likes-all
+when: "what do I like", !collected(tag="likes"), !collected_empty(tag="likes")
+then:
+  -dialogue_topic
+  @collect(rel="rel", field="obj", tag="likes", subj="user", pred="likes")
+
+rule reply-user-likes-all
+when: collected(tag="likes", list=$list)
+then: => "You like $list."
+
+rule reply-user-likes-all-empty
+when: collected_empty(tag="likes")
+then: => "I don't know what you like yet. Tell me \"I like ...\" and I'll remember."
+
+rule ask-user-likes-topic-do
+when: "what $topic do I like", !collected(tag="likes_topic"), !collected_empty(tag="likes_topic")
+then:
+  -dialogue_topic
+  +dialogue_topic(kind="likes", topic=$topic)
+  @collect(rel="rel", field="obj", tag="likes_topic", subj="user", pred="likes", topic=$topic)
+
+rule ask-user-likes-topic-short
+when: "what $topic I like", !collected(tag="likes_topic"), !collected_empty(tag="likes_topic")
+then:
+  -dialogue_topic
+  +dialogue_topic(kind="likes", topic=$topic)
+  @collect(rel="rel", field="obj", tag="likes_topic", subj="user", pred="likes", topic=$topic)
+
+rule reply-user-likes-topic
+when: collected(tag="likes_topic", list=$list), dialogue_topic(kind="likes", topic=$topic)
+then: => "Your favorite $topic: $list."
+
+rule reply-user-likes-topic-empty
+when: collected_empty(tag="likes_topic"), dialogue_topic(kind="likes", topic=$topic)
+then: => "I don't know what $topic you like yet. Say \"my favorite $topic is ...\" to tell me."
 
 rule recall-user-profile-full
 when: "what do you know about me", user_name(value=$name), prop(entity="user", attr="city", value=$city)
