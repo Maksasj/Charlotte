@@ -1,0 +1,847 @@
+[
+  {
+    "id": "p1",
+    "kind": "reply",
+    "name": "greet-known-user",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Hello ?u! I'm ?me. What shall we work on?"
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "hello"
+      },
+      {
+        "args": {
+          "value": "?u"
+        },
+        "kind": "fact",
+        "rel": "user_name"
+      },
+      {
+        "args": {
+          "value": "?me"
+        },
+        "kind": "fact",
+        "rel": "persona_name"
+      }
+    ]
+  },
+  {
+    "id": "p2",
+    "kind": "reply",
+    "name": "greet-default",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Hello! I'm ?me. Ask me for weather, math, definitions, notes, or teach me something new."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "hello"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "user_name"
+      },
+      {
+        "args": {
+          "value": "?me"
+        },
+        "kind": "fact",
+        "rel": "persona_name"
+      }
+    ]
+  },
+  {
+    "id": "p3",
+    "kind": "reply",
+    "name": "greet-hi",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Hi! I'm ?me — ready when you are."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "hi"
+      },
+      {
+        "args": {
+          "value": "?me"
+        },
+        "kind": "fact",
+        "rel": "persona_name"
+      }
+    ]
+  },
+  {
+    "id": "p4",
+    "kind": "reply",
+    "name": "thanks",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "You're welcome! Let me know if there's anything else."
+      }
+    ],
+    "trust": 0.85,
+    "when": [
+      {
+        "kind": "contains",
+        "phrase": "thank"
+      }
+    ]
+  },
+  {
+    "id": "p5",
+    "kind": "reply",
+    "name": "goodbye",
+    "provenance": "seed",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Goodbye! All long-term facts and patterns stay saved."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "bye"
+      }
+    ]
+  },
+  {
+    "id": "p6",
+    "kind": "reply",
+    "name": "who-are-you",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "I'm ?me, ?role. My style is ?tone."
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "who are you"
+      },
+      {
+        "args": {
+          "value": "?me"
+        },
+        "kind": "fact",
+        "rel": "persona_name"
+      },
+      {
+        "args": {
+          "value": "?role"
+        },
+        "kind": "fact",
+        "rel": "persona_role"
+      },
+      {
+        "args": {
+          "value": "?tone"
+        },
+        "kind": "fact",
+        "rel": "persona_tone"
+      }
+    ]
+  },
+  {
+    "id": "p7",
+    "kind": "language",
+    "name": "learn-user-name",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "args": null,
+        "kind": "retract",
+        "rel": "user_name"
+      },
+      {
+        "args": {
+          "value": "?name"
+        },
+        "kind": "assert",
+        "rel": "user_name",
+        "scope": "long_term"
+      },
+      {
+        "kind": "reply",
+        "template": "Nice to meet you, ?name! I've stored your name in long-term memory."
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "my name is ?name"
+      }
+    ]
+  },
+  {
+    "id": "p8",
+    "kind": "reply",
+    "name": "recall-user-name",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Your name is ?name."
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "what is my name"
+      },
+      {
+        "args": {
+          "value": "?name"
+        },
+        "kind": "fact",
+        "rel": "user_name"
+      }
+    ]
+  },
+  {
+    "id": "p9",
+    "kind": "reply",
+    "name": "recall-user-name-unknown",
+    "provenance": "seed",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "You haven't told me your name yet. Say \"my name is ...\" and I'll remember it."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "what is my name"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "user_name"
+      }
+    ]
+  },
+  {
+    "id": "p10",
+    "kind": "language",
+    "name": "parse-weather-city",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "args": {
+          "city": "?city"
+        },
+        "kind": "assert",
+        "rel": "want_weather",
+        "scope": "working"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "weather in ?city"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "want_weather"
+      }
+    ]
+  },
+  {
+    "id": "p11",
+    "kind": "language",
+    "name": "parse-weather-no-city",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "args": {
+          "goal": "weather",
+          "slot": "city"
+        },
+        "kind": "assert",
+        "rel": "asked_slot",
+        "scope": "working"
+      },
+      {
+        "kind": "reply",
+        "template": "Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "weather"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "want_weather"
+      }
+    ]
+  },
+  {
+    "id": "p12",
+    "kind": "language",
+    "name": "bind-asked-city-for-weather",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "args": null,
+        "kind": "retract",
+        "rel": "asked_slot"
+      },
+      {
+        "args": {
+          "city": "?city"
+        },
+        "kind": "assert",
+        "rel": "want_weather",
+        "scope": "working"
+      }
+    ],
+    "trust": 0.85,
+    "when": [
+      {
+        "args": {
+          "goal": "weather",
+          "slot": "city"
+        },
+        "kind": "fact",
+        "rel": "asked_slot"
+      },
+      {
+        "kind": "text",
+        "template": "?city"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "want_weather"
+      }
+    ]
+  },
+  {
+    "id": "p13",
+    "kind": "reasoning",
+    "name": "run-weather-tool",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "args": {
+          "city": "?city"
+        },
+        "kind": "tool",
+        "name": "weather"
+      }
+    ],
+    "trust": 0.92,
+    "when": [
+      {
+        "args": {
+          "city": "?city"
+        },
+        "kind": "fact",
+        "rel": "want_weather"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "weather_report"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "weather_unknown"
+      }
+    ]
+  },
+  {
+    "id": "p14",
+    "kind": "reply",
+    "name": "reply-weather-report",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Weather in ?city: ?cond, ?temp."
+      }
+    ],
+    "trust": 0.92,
+    "when": [
+      {
+        "args": {
+          "city": "?city",
+          "condition": "?cond",
+          "temp": "?temp"
+        },
+        "kind": "fact",
+        "rel": "weather_report"
+      }
+    ]
+  },
+  {
+    "id": "p15",
+    "kind": "reply",
+    "name": "reply-weather-unknown",
+    "provenance": "seed",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "I don't have a weather fact for ?city yet. You can add a weather_city fact in the Facts tab."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "args": {
+          "city": "?city"
+        },
+        "kind": "fact",
+        "rel": "weather_unknown"
+      }
+    ]
+  },
+  {
+    "id": "p16",
+    "kind": "language",
+    "name": "parse-calculate",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "args": {
+          "expr": "?expr"
+        },
+        "kind": "assert",
+        "rel": "want_calc",
+        "scope": "working"
+      }
+    ],
+    "trust": 0.92,
+    "when": [
+      {
+        "kind": "text",
+        "template": "calculate ?expr"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "want_calc"
+      }
+    ]
+  },
+  {
+    "id": "p17",
+    "kind": "reasoning",
+    "name": "run-calc-tool",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "args": {
+          "expr": "?expr"
+        },
+        "kind": "tool",
+        "name": "calc"
+      }
+    ],
+    "trust": 0.92,
+    "when": [
+      {
+        "args": {
+          "expr": "?expr"
+        },
+        "kind": "fact",
+        "rel": "want_calc"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "calc_result"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "calc_error"
+      }
+    ]
+  },
+  {
+    "id": "p18",
+    "kind": "reply",
+    "name": "reply-calc-result",
+    "provenance": "seed",
+    "status": "active",
+    "support": 5,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "?expr = ?val"
+      }
+    ],
+    "trust": 0.92,
+    "when": [
+      {
+        "args": {
+          "expr": "?expr",
+          "value": "?val"
+        },
+        "kind": "fact",
+        "rel": "calc_result"
+      }
+    ]
+  },
+  {
+    "id": "p19",
+    "kind": "reply",
+    "name": "reply-calc-error",
+    "provenance": "seed",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Couldn't evaluate \"?expr\": ?err."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "args": {
+          "error": "?err",
+          "expr": "?expr"
+        },
+        "kind": "fact",
+        "rel": "calc_error"
+      }
+    ]
+  },
+  {
+    "id": "p20",
+    "kind": "language",
+    "name": "parse-define",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "args": {
+          "topic": "?topic"
+        },
+        "kind": "tool",
+        "name": "define"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "define ?topic"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "definition_result"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "definition_unknown"
+      }
+    ]
+  },
+  {
+    "id": "p21",
+    "kind": "reply",
+    "name": "reply-definition",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "?topic: ?text"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "args": {
+          "text": "?text",
+          "topic": "?topic"
+        },
+        "kind": "fact",
+        "rel": "definition_result"
+      }
+    ]
+  },
+  {
+    "id": "p22",
+    "kind": "reply",
+    "name": "reply-definition-unknown",
+    "provenance": "seed",
+    "status": "active",
+    "support": 2,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "I don't have a definition for \"?topic\" yet. Add a `definition` fact or teach me!"
+      }
+    ],
+    "trust": 0.85,
+    "when": [
+      {
+        "args": {
+          "topic": "?topic"
+        },
+        "kind": "fact",
+        "rel": "definition_unknown"
+      }
+    ]
+  },
+  {
+    "id": "p23",
+    "kind": "language",
+    "name": "save-note",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "args": {
+          "text": "?text"
+        },
+        "kind": "tool",
+        "name": "note_save"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "remember ?text"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "note_saved"
+      }
+    ]
+  },
+  {
+    "id": "p24",
+    "kind": "reply",
+    "name": "reply-note-saved",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Saved to long-term memory: \"?text\"."
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "args": {
+          "text": "?text"
+        },
+        "kind": "fact",
+        "rel": "note_saved"
+      }
+    ]
+  },
+  {
+    "id": "p25",
+    "kind": "language",
+    "name": "list-notes",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "args": {},
+        "kind": "tool",
+        "name": "note_list"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "kind": "text",
+        "template": "my notes"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "notes_listing"
+      }
+    ]
+  },
+  {
+    "id": "p26",
+    "kind": "reply",
+    "name": "reply-notes-listing",
+    "provenance": "seed",
+    "status": "active",
+    "support": 4,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "Your notes: ?list"
+      }
+    ],
+    "trust": 0.9,
+    "when": [
+      {
+        "args": {
+          "list": "?list"
+        },
+        "kind": "fact",
+        "rel": "notes_listing"
+      }
+    ]
+  },
+  {
+    "id": "p27",
+    "kind": "reasoning",
+    "name": "meta-generalize-command",
+    "provenance": "seed:meta",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "args": {},
+        "kind": "tool",
+        "name": "generalize_episodes"
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "generalize"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "meta_result"
+      }
+    ]
+  },
+  {
+    "id": "p28",
+    "kind": "reasoning",
+    "name": "meta-chunk-command",
+    "provenance": "seed:meta",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "args": {},
+        "kind": "tool",
+        "name": "chunk_last_chain"
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "kind": "text",
+        "template": "chunk last"
+      },
+      {
+        "args": {},
+        "kind": "not_fact",
+        "rel": "meta_result"
+      }
+    ]
+  },
+  {
+    "id": "p29",
+    "kind": "reply",
+    "name": "reply-meta-result",
+    "provenance": "seed:meta",
+    "status": "active",
+    "support": 3,
+    "then": [
+      {
+        "kind": "reply",
+        "template": "?summary"
+      }
+    ],
+    "trust": 0.95,
+    "when": [
+      {
+        "args": {
+          "summary": "?summary"
+        },
+        "kind": "fact",
+        "rel": "meta_result"
+      }
+    ]
+  }
+]

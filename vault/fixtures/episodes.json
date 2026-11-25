@@ -1,0 +1,30 @@
+[
+  {
+    "generalized": false,
+    "id": "e1",
+    "input": "greet Alice",
+    "reply": "Warm greetings, Alice! Glad you're here.",
+    "source": "seed"
+  },
+  {
+    "generalized": false,
+    "id": "e2",
+    "input": "greet Bob",
+    "reply": "Warm greetings, Bob! Glad you're here.",
+    "source": "seed"
+  },
+  {
+    "generalized": false,
+    "id": "e3",
+    "input": "praise Rust",
+    "reply": "Rust is genuinely impressive — clean, fast, and reliable.",
+    "source": "seed"
+  },
+  {
+    "generalized": false,
+    "id": "e4",
+    "input": "praise Prolog",
+    "reply": "Prolog is genuinely impressive — clean, fast, and reliable.",
+    "source": "seed"
+  }
+]
