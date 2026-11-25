@@ -14,16 +14,16 @@ use std::{
 use karin_core::{
     Action, AgentState, Condition, Engine, Pattern, PatternKind, PatternStatus, Scope,
     SelfTestResult, ToolInfo,
-    fixtures::default_fixtures_dir,
     list_tools,
     store::{load_state, save_state},
+    vault::default_vault_dir,
 };
 use tower_http::cors::{Any, CorsLayer};
 
 struct AppState {
     engine: Mutex<Engine>,
     state_path: PathBuf,
-    fixtures_dir: PathBuf,
+    vault_dir: PathBuf,
 }
 
 impl AppState {
@@ -118,8 +118,8 @@ async fn main() {
     let state_path = PathBuf::from(
         std::env::var("STATE_PATH").unwrap_or_else(|_| "../vault/state.json".to_string()),
     );
-    let fixtures_dir = default_fixtures_dir();
-    println!("Using fixtures from {}", fixtures_dir.display());
+    let vault_dir = default_vault_dir();
+    println!("Using vault core from {}", vault_dir.display());
 
     let engine = match load_state(&state_path) {
         Ok(Some(saved)) => {
@@ -127,19 +127,19 @@ async fn main() {
             Engine::from_state(saved)
         }
         Ok(None) => {
-            println!("Initialized fresh symbolic core from {}", fixtures_dir.display());
-            Engine::from_fixtures_dir(&fixtures_dir).expect("failed to load vault fixtures")
+            println!("Initialized fresh symbolic core from {}", vault_dir.display());
+            Engine::from_vault_dir(&vault_dir).expect("failed to load vault core")
         }
         Err(err) => {
-            eprintln!("Failed to load state ({err}); starting from fixtures");
-            Engine::from_fixtures_dir(&fixtures_dir).expect("failed to load vault fixtures")
+            eprintln!("Failed to load state ({err}); starting from vault core");
+            Engine::from_vault_dir(&vault_dir).expect("failed to load vault core")
         }
     };
 
     let shared = Arc::new(AppState {
         engine: Mutex::new(engine),
         state_path,
-        fixtures_dir,
+        vault_dir,
     });
 
     let cors = CorsLayer::new()
@@ -345,8 +345,8 @@ async fn meta_chunk(
 
 async fn reset(State(app): State<Arc<AppState>>) -> Json<serde_json::Value> {
     let mut eng = app.engine.lock().unwrap();
-    if let Err(err) = eng.reset_from_fixtures_dir(&app.fixtures_dir) {
-        eprintln!("warning: failed to reload fixtures: {err}");
+    if let Err(err) = eng.reset_from_vault_dir(&app.vault_dir) {
+        eprintln!("warning: failed to reload vault core: {err}");
     }
     let snapshot = eng.state.clone();
     drop(eng);

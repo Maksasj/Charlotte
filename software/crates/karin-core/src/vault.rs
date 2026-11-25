@@ -5,27 +5,27 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-/// Locate `vault/fixtures` (from `FIXTURES_DIR`, cwd, or relative to crate root).
-pub fn default_fixtures_dir() -> PathBuf {
-    if let Ok(env_dir) = std::env::var("FIXTURES_DIR") {
+/// Locate `vault/core` (from `VAULT_CORE_DIR`, cwd, or relative to crate root).
+pub fn default_vault_dir() -> PathBuf {
+    if let Ok(env_dir) = std::env::var("VAULT_CORE_DIR") {
         return PathBuf::from(env_dir);
     }
     let cwd_candidates = [
-        PathBuf::from("vault/fixtures"),
-        PathBuf::from("../vault/fixtures"),
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../vault/fixtures"),
+        PathBuf::from("vault/core"),
+        PathBuf::from("../vault/core"),
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../vault/core"),
     ];
     for c in cwd_candidates {
         if c.join("patterns").is_dir() {
             return c;
         }
     }
-    PathBuf::from("vault/fixtures")
+    PathBuf::from("vault/core")
 }
 
-/// Load seed facts, patterns, and episodes from Compact Rule DSL Markdown files
-/// under `vault/fixtures/{facts,patterns,episodes}/*.md`.
-pub fn load_fixtures(dir: &Path) -> Result<AgentState, String> {
+/// Load core facts, patterns, and episodes from Compact Rule DSL Markdown files
+/// under `vault/core/{facts,patterns,episodes}/*.md`.
+pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
     let mut facts = Vec::new();
     let mut next_fact = 1usize;
     for path in list_md_files(&dir.join("facts"))? {
@@ -70,9 +70,9 @@ pub fn load_fixtures(dir: &Path) -> Result<AgentState, String> {
 }
 
 pub fn initial_state() -> AgentState {
-    let dir = default_fixtures_dir();
-    load_fixtures(&dir).unwrap_or_else(|err| {
-        panic!("Failed to load Markdown fixtures from {}: {err}", dir.display())
+    let dir = default_vault_dir();
+    load_vault(&dir).unwrap_or_else(|err| {
+        panic!("Failed to load Markdown vault from {}: {err}", dir.display())
     })
 }
 
@@ -497,7 +497,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn loads_compact_dsl_vault_fixtures() {
+    fn loads_compact_dsl_vault_core() {
         let state = initial_state();
         assert_eq!(state.facts.len(), 10);
         assert_eq!(state.patterns.len(), 29);
