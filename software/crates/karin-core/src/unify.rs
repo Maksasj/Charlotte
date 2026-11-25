@@ -25,7 +25,7 @@ pub fn normalize(s: &str) -> String {
 }
 
 pub fn is_var(s: &str) -> bool {
-    s.starts_with('?')
+    s.starts_with('$')
         && s.len() > 1
         && s[1..]
             .chars()
@@ -216,19 +216,19 @@ mod tests {
 
     #[test]
     fn template_matches_multiword_var() {
-        let b = match_text_template("weather in ?city", "Weather in New York?", &Bindings::new())
+        let b = match_text_template("weather in $city", "Weather in New York?", &Bindings::new())
             .expect("should match");
-        assert_eq!(b.get("?city").map(String::as_str), Some("New York"));
+        assert_eq!(b.get("$city").map(String::as_str), Some("New York"));
     }
 
     #[test]
     fn template_matches_middle_var() {
         let b = match_text_template(
-            "say hello in ?lang please",
+            "say hello in $lang please",
             "say hello in Spanish please!",
             &Bindings::new(),
         )
         .expect("should match");
-        assert_eq!(b.get("?lang").map(String::as_str), Some("Spanish"));
+        assert_eq!(b.get("$lang").map(String::as_str), Some("Spanish"));
     }
 }
