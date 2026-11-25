@@ -13,6 +13,7 @@ impl Engine {
             test_data_driven_unit_conversions(),
             test_typed_relations_and_inverses(),
             test_generic_workflows(),
+            test_collect_and_additive_memory(),
         ]
     }
 }
@@ -210,6 +211,25 @@ fn test_generic_workflows() -> SelfTestResult {
     }
 }
 
+fn test_collect_and_additive_memory() -> SelfTestResult {
+    let mut eng = Engine::new();
+    let _ = eng.turn("my favorite drink is black tea");
+    let t1 = eng.turn("what drink I like");
+    let t2 = eng.turn("I also like caramel macchiato");
+    let t3 = eng.turn("what drink do I like");
+
+    let passed = t1.reply.contains("black tea")
+        && t2.reply.contains("caramel macchiato")
+        && t3.reply.contains("black tea")
+        && t3.reply.contains("caramel macchiato");
+
+    SelfTestResult {
+        name: "Generic @collect & additive topic memory".into(),
+        passed,
+        detail: format!("before='{}' | after='{}'", t1.reply, t3.reply),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -217,7 +237,7 @@ mod tests {
     #[test]
     fn all_selftests_pass() {
         let results = Engine::run_selftests();
-        assert_eq!(results.len(), 9);
+        assert_eq!(results.len(), 10);
         for result in &results {
             assert!(
                 result.passed,
