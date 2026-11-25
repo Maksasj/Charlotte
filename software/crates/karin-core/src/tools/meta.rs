@@ -14,5 +14,17 @@ pub fn meta_tools() -> Vec<ToolInfo> {
                 .into(),
             meta: true,
         },
+        ToolInfo {
+            name: "induce_from_correction".into(),
+            description: "Meta-tool: inspect memory after a user correction to induce a candidate rule or ask for missing facts."
+                .into(),
+            meta: true,
+        },
+        ToolInfo {
+            name: "approve_pattern".into(),
+            description: "Meta-tool: promote a pending candidate pattern into active status."
+                .into(),
+            meta: true,
+        },
     ]
 }

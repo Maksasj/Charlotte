@@ -198,6 +198,253 @@ impl Engine {
         );
         (Some(pattern), summary)
     }
+
+    pub fn induce_from_correction(&mut self, item: &str, topic: &str) -> String {
+        let item = item.trim();
+        let topic = topic.trim();
+
+        self.retract_matching("dialogue_confirm", None);
+        self.retract_matching("dialogue_pending_approval", None);
+
+        if has_like_topic_fact(&self.state.facts, item, topic) {
+            self.emit_correction_outcome("already_known", item, topic, None);
+            return format!("already knew {item} is a {topic} you like");
+        }
+
+        let has_like = has_like_fact(&self.state.facts, item);
+        let has_isa = has_isa_path(&self.state.facts, item, topic);
+
+        match (has_like, has_isa) {
+            (true, true) => {
+                if let Some(existing) = self
+                    .state
+                    .patterns
+                    .iter()
+                    .find(|p| p.name == "induced-likes-topic-from-isa")
+                    .cloned()
+                {
+                    if existing.status == PatternStatus::Active {
+                        self.add_fact(
+                            "rel".into(),
+                            BTreeMap::from([
+                                ("subj".into(), "user".into()),
+                                ("pred".into(), "likes".into()),
+                                ("topic".into(), topic.into()),
+                                ("obj".into(), item.into()),
+                            ]),
+                            Scope::LongTerm,
+                            format!("pattern:{}", existing.id),
+                        );
+                        self.emit_correction_outcome(
+                            "already_active",
+                            item,
+                            topic,
+                            Some(&existing.id),
+                        );
+                        return format!("applied active rule {} for {item}", existing.id);
+                    }
+                    self.add_pending_approval(&existing.id, item, topic);
+                    self.emit_correction_outcome("proposed_rule", item, topic, Some(&existing.id));
+                    return format!("re-proposed candidate rule {}", existing.id);
+                }
+
+                let pat = Pattern {
+                    id: self.alloc_id("p"),
+                    name: "induced-likes-topic-from-isa".into(),
+                    status: PatternStatus::Candidate,
+                    when: vec![
+                        Condition::Fact {
+                            rel: "rel".into(),
+                            args: BTreeMap::from([
+                                ("subj".into(), "user".into()),
+                                ("pred".into(), "likes".into()),
+                                ("obj".into(), "$obj".into()),
+                            ]),
+                        },
+                        Condition::Fact {
+                            rel: "is_a".into(),
+                            args: BTreeMap::from([
+                                ("child".into(), "$obj".into()),
+                                ("parent".into(), "$topic".into()),
+                            ]),
+                        },
+                        Condition::NotFact {
+                            rel: "rel".into(),
+                            args: BTreeMap::from([
+                                ("subj".into(), "user".into()),
+                                ("pred".into(), "likes".into()),
+                                ("topic".into(), "$topic".into()),
+                                ("obj".into(), "$obj".into()),
+                            ]),
+                        },
+                    ],
+                    then: vec![Action::Assert {
+                        rel: "rel".into(),
+                        args: BTreeMap::from([
+                            ("subj".into(), "user".into()),
+                            ("pred".into(), "likes".into()),
+                            ("topic".into(), "$topic".into()),
+                            ("obj".into(), "$obj".into()),
+                        ]),
+                        scope: Scope::LongTerm,
+                    }],
+                    trust: 0.9,
+                    support: 1,
+                    provenance: format!("induced:correction({item},{topic})"),
+                    kind: PatternKind::Induced,
+                };
+                let pid = pat.id.clone();
+                self.state.patterns.push(pat);
+                self.add_pending_approval(&pid, item, topic);
+                self.emit_correction_outcome("proposed_rule", item, topic, Some(&pid));
+                format!("induced candidate rule {pid} linking likes + is_a")
+            }
+            (true, false) => {
+                self.add_dialogue_confirm("confirm_isa", item, topic);
+                self.emit_correction_outcome("missing_isa", item, topic, None);
+                format!("knows user likes {item}, missing is_a({item}, {topic})")
+            }
+            (false, true) => {
+                self.add_dialogue_confirm("confirm_like", item, topic);
+                self.emit_correction_outcome("missing_like", item, topic, None);
+                format!("knows is_a({item}, {topic}), missing likes({item})")
+            }
+            (false, false) => {
+                self.add_dialogue_confirm("confirm_both", item, topic);
+                self.emit_correction_outcome("unknown_item", item, topic, None);
+                format!("unknown item {item} for topic {topic}")
+            }
+        }
+    }
+
+    fn emit_correction_outcome(
+        &mut self,
+        status: &str,
+        item: &str,
+        topic: &str,
+        pattern_id: Option<&str>,
+    ) {
+        let mut args = BTreeMap::from([
+            ("status".into(), status.into()),
+            ("item".into(), item.into()),
+            ("topic".into(), topic.into()),
+        ]);
+        if let Some(pid) = pattern_id {
+            args.insert("pattern_id".into(), pid.into());
+        }
+        self.add_fact(
+            "correction_outcome".into(),
+            args,
+            Scope::Working,
+            "meta:induce_from_correction".into(),
+        );
+    }
+
+    fn add_pending_approval(&mut self, pattern_id: &str, item: &str, topic: &str) {
+        self.add_fact(
+            "dialogue_pending_approval".into(),
+            BTreeMap::from([
+                ("pattern_id".into(), pattern_id.into()),
+                ("item".into(), item.into()),
+                ("topic".into(), topic.into()),
+            ]),
+            Scope::Working,
+            "meta:induce_from_correction".into(),
+        );
+    }
+
+    fn add_dialogue_confirm(&mut self, kind: &str, item: &str, topic: &str) {
+        self.add_fact(
+            "dialogue_confirm".into(),
+            BTreeMap::from([
+                ("kind".into(), kind.into()),
+                ("item".into(), item.into()),
+                ("topic".into(), topic.into()),
+            ]),
+            Scope::Working,
+            "meta:induce_from_correction".into(),
+        );
+    }
+}
+
+fn has_like_fact(facts: &[crate::types::Fact], item: &str) -> bool {
+    let target = normalize(item);
+    facts.iter().any(|f| {
+        f.rel == "rel"
+            && f.args
+                .get("subj")
+                .map(|v| normalize(v) == "user")
+                .unwrap_or(false)
+            && f.args
+                .get("pred")
+                .map(|v| normalize(v) == "likes")
+                .unwrap_or(false)
+            && f.args
+                .get("obj")
+                .map(|v| normalize(v) == target)
+                .unwrap_or(false)
+    })
+}
+
+fn has_like_topic_fact(facts: &[crate::types::Fact], item: &str, topic: &str) -> bool {
+    let target_item = normalize(item);
+    let target_topic = normalize(topic);
+    facts.iter().any(|f| {
+        f.rel == "rel"
+            && f.args
+                .get("subj")
+                .map(|v| normalize(v) == "user")
+                .unwrap_or(false)
+            && f.args
+                .get("pred")
+                .map(|v| normalize(v) == "likes")
+                .unwrap_or(false)
+            && f.args
+                .get("topic")
+                .map(|v| normalize(v) == target_topic)
+                .unwrap_or(false)
+            && f.args
+                .get("obj")
+                .map(|v| normalize(v) == target_item)
+                .unwrap_or(false)
+    })
+}
+
+fn has_isa_path(facts: &[crate::types::Fact], child: &str, ancestor: &str) -> bool {
+    let target = normalize(ancestor);
+    let mut frontier = vec![normalize(child)];
+    let mut visited = HashSet::new();
+
+    for _ in 0..6 {
+        let mut next = Vec::new();
+        for node in frontier {
+            if !visited.insert(node.clone()) {
+                continue;
+            }
+            for f in facts {
+                if f.rel != "is_a" {
+                    continue;
+                }
+                let matches_child = f
+                    .args
+                    .get("child")
+                    .map(|v| normalize(v) == node)
+                    .unwrap_or(false);
+                if matches_child && let Some(parent) = f.args.get("parent") {
+                    let parent_norm = normalize(parent);
+                    if parent_norm == target {
+                        return true;
+                    }
+                    next.push(parent_norm);
+                }
+            }
+        }
+        if next.is_empty() {
+            break;
+        }
+        frontier = next;
+    }
+    false
 }
 
 #[derive(Default)]

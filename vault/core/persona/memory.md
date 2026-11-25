@@ -73,14 +73,19 @@ when: collected_empty(tag="likes")
 then: => "I don't know what you like yet. Tell me \"I like ...\" and I'll remember."
 
 rule ask-user-likes-topic-do
-when: "what $topic do I like", !collected(tag="likes_topic"), !collected_empty(tag="likes_topic")
-then:
-  -dialogue_topic
-  +dialogue_topic(kind="likes", topic=$topic)
-  @collect(rel="rel", field="obj", tag="likes_topic", subj="user", pred="likes", topic=$topic)
+when: "what $topic do I like", !intent(name="likes_topic")
+then: +intent(name="likes_topic", topic=$topic)
 
 rule ask-user-likes-topic-short
-when: "what $topic I like", !collected(tag="likes_topic"), !collected_empty(tag="likes_topic")
+when: "what $topic I like", !intent(name="likes_topic")
+then: +intent(name="likes_topic", topic=$topic)
+
+rule ask-user-likes-topic-favorite
+when: "what is my favorite $topic", !intent(name="likes_topic")
+then: +intent(name="likes_topic", topic=$topic)
+
+rule run-likes-topic-collect
+when: intent(name="likes_topic", topic=$topic), !collected(tag="likes_topic"), !collected_empty(tag="likes_topic")
 then:
   -dialogue_topic
   +dialogue_topic(kind="likes", topic=$topic)

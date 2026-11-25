@@ -14,6 +14,7 @@ impl Engine {
             test_typed_relations_and_inverses(),
             test_generic_workflows(),
             test_collect_and_additive_memory(),
+            test_correction_rule_induction_and_active_learning(),
         ]
     }
 }
@@ -230,6 +231,44 @@ fn test_collect_and_additive_memory() -> SelfTestResult {
     }
 }
 
+fn test_correction_rule_induction_and_active_learning() -> SelfTestResult {
+    let mut eng = Engine::new();
+    let _ = eng.turn("my favorite drink is black tea");
+    let _ = eng.turn("I like caramel macchiato");
+    let _ = eng.turn("caramel macchiato is a drink");
+    let before = eng.turn("what is my favorite drink");
+    let propose = eng.turn("what about caramel macchiato");
+    let approve = eng.turn("approve");
+    let after = eng.turn("what drink do I like");
+
+    let _ = eng.turn("I like matcha");
+    let _ = eng.turn("matcha is a drink");
+    let generalized = eng.turn("what drink do I like");
+
+    let unknown = eng.turn("what about oolong");
+    let confirm = eng.turn("yes");
+    let after_unknown = eng.turn("what drink do I like");
+
+    let passed = before.reply.contains("black tea")
+        && !before.reply.contains("caramel macchiato")
+        && propose.reply.contains("proposed candidate rule")
+        && approve.reply.contains("Approved rule")
+        && after.reply.contains("caramel macchiato")
+        && generalized.reply.contains("matcha")
+        && unknown.reply.contains("haven't heard of oolong")
+        && confirm.reply.contains("oolong")
+        && after_unknown.reply.contains("oolong");
+
+    SelfTestResult {
+        name: "Correction-driven rule induction & active learning".into(),
+        passed,
+        detail: format!(
+            "propose='{}' | generalized='{}' | unknown='{}'",
+            propose.reply, generalized.reply, after_unknown.reply
+        ),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -237,7 +276,7 @@ mod tests {
     #[test]
     fn all_selftests_pass() {
         let results = Engine::run_selftests();
-        assert_eq!(results.len(), 10);
+        assert_eq!(results.len(), 11);
         for result in &results {
             assert!(
                 result.passed,
