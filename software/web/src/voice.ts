@@ -16,6 +16,7 @@ class TinyVocaPlayer {
   private audioCtx: AudioContext | null = null;
   private sources: AudioBufferSourceNode[] = [];
   private runId = 0;
+  private activeDone: (() => void) | null = null;
   private listeners = new Set<(status: VoiceStatus, detail?: string) => void>();
   private status: VoiceStatus = 'idle';
 
@@ -75,6 +76,11 @@ class TinyVocaPlayer {
       }
     }
     this.sources = [];
+    if (this.activeDone) {
+      const done = this.activeDone;
+      this.activeDone = null;
+      done();
+    }
     if (this.voca) {
       this.emit('ready');
     } else if (this.status === 'speaking') {
@@ -107,6 +113,7 @@ class TinyVocaPlayer {
 
     const rate = this.voca.config.sample_rate;
     let nextTime = 0;
+    let finishPromise: Promise<void> | null = null;
 
     for (const [seed, utt] of utterances.entries()) {
       if (mine !== this.runId) return;
@@ -130,14 +137,23 @@ class TinyVocaPlayer {
       this.sources.push(source);
 
       if (seed === utterances.length - 1) {
-        source.onended = () => {
-          if (mine === this.runId) {
-            this.sources = [];
-            this.emit('ready');
-          }
-        };
+        finishPromise = new Promise<void>((resolve) => {
+          this.activeDone = resolve;
+          source.onended = () => {
+            if (mine === this.runId) {
+              this.sources = [];
+              this.activeDone = null;
+              this.emit('ready');
+              resolve();
+            }
+          };
+        });
       }
       await paint();
+    }
+
+    if (finishPromise) {
+      await finishPromise;
     }
   }
 }
