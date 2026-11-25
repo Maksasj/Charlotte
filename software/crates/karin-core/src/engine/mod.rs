@@ -420,7 +420,8 @@ fn score_pattern(pattern: &Pattern) -> f64 {
             }
             Condition::Contains { .. } => 1.0,
             Condition::Fact { .. } => 2.0,
-            Condition::NotFact { .. } | Condition::NotEq { .. } => 0.4,
+            Condition::NotFact { .. } => 0.4,
+            Condition::NotEq { .. } => 0.0,
         };
     }
 

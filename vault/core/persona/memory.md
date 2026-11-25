@@ -38,6 +38,14 @@ then:
   ++rel(subj="user", pred="likes", obj=$thing)
   => "Noted — I'll remember you like $thing."
 
+rule learn-user-like-topic-a
+when: "my favorite $topic is a $thing"
+then:
+  -dialogue_topic
+  +dialogue_topic(kind="likes", topic=$topic)
+  ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
+  => "Got it — I'll remember $thing as a $topic you like."
+
 rule learn-user-like-topic
 when: "my favorite $topic is $thing"
 then:
