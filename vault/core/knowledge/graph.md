@@ -25,6 +25,12 @@ then:
   ++is_a(child=$child, parent=$parent)
   => "Learned: $child is a $parent."
 
+rule graph-teach-is-an
+when: "$child is an $parent", $child != $parent, $child != "what", $child != "who", $child != "is"
+then:
+  ++is_a(child=$child, parent=$parent)
+  => "Learned: $child is a $parent."
+
 rule graph-teach-prop
 when: "the $attr of $entity is $val"
 then:
@@ -76,5 +82,25 @@ then:
 
 rule graph-prop-unknown
 when: query_prop(cur=$cur, attr=$attr, orig=$orig), !prop(entity=$cur, attr=$attr), !is_a(child=$cur)
-then: => "I don't know the $attr of $orig yet."
+then: => "I don't know the $attr of $orig yet. Teach me with \"the $attr of $orig is ...\"."
+```
+
+## Entity Summaries & Comparisons
+
+```karin
+rule graph-what-is-entity
+when: "what is $entity", is_a(child=$entity, parent=$parent)
+then: => "$entity is a $parent."
+
+rule graph-compare-attr
+when: "compare $attr of $a and $b", $a != $b, prop(entity=$a, attr=$attr, value=$va), prop(entity=$b, attr=$attr, value=$vb)
+then: => "$a ($attr: $va) vs $b ($attr: $vb)."
+
+rule graph-compare-weather
+when: "compare $a and $b", $a != $b, weather_city(city=$a, condition=$ca, temp=$ta), weather_city(city=$b, condition=$cb, temp=$tb)
+then: => "$a: $ca, $ta vs $b: $cb, $tb."
+
+rule graph-compare-is-a
+when: "compare $a and $b", $a != $b, is_a(child=$a, parent=$pa), is_a(child=$b, parent=$pb)
+then: => "$a is a $pa; $b is a $pb."
 ```

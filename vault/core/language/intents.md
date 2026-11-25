@@ -21,6 +21,14 @@ rule intent-weather-forecast-city
 when: "forecast for $city", !intent(name="weather")
 then: +intent(name="weather", city=$city)
 
+rule intent-weather-how-hot
+when: "how hot is $city", !intent(name="weather")
+then: +intent(name="weather", city=$city)
+
+rule intent-weather-how-is
+when: "how is the weather in $city", !intent(name="weather")
+then: +intent(name="weather", city=$city)
+
 rule intent-weather-bare
 when: "weather", !intent(name="weather_missing_city"), !intent(name="weather")
 then: +intent(name="weather_missing_city")
@@ -44,6 +52,10 @@ then: +intent(name="calc", expr=$expr)
 rule intent-calc-eval
 when: "eval $expr", !intent(name="calc")
 then: +intent(name="calc", expr=$expr)
+
+rule intent-calc-solve
+when: "solve $expr", !intent(name="calc")
+then: +intent(name="calc", expr=$expr)
 ```
 
 ## Definition Intents
@@ -57,9 +69,45 @@ rule intent-define-meaning
 when: "what does $topic mean", !intent(name="define")
 then: +intent(name="define", topic=$topic)
 
+rule intent-define-explain
+when: "explain $topic", !intent(name="define")
+then: +intent(name="define", topic=$topic)
+
+rule intent-define-could-explain
+when: "could you explain $topic", !intent(name="define")
+then: +intent(name="define", topic=$topic)
+
 rule intent-define-bare
 when: "define", !intent(name="define_missing_topic"), !intent(name="define")
 then: +intent(name="define_missing_topic")
+```
+
+## Note Intents
+
+```karin
+rule intent-note-remember
+when: "remember $text", !intent(name="save_note")
+then: +intent(name="save_note", text=$text)
+
+rule intent-note-make
+when: "make a note $text", !intent(name="save_note")
+then: +intent(name="save_note", text=$text)
+
+rule intent-note-save
+when: "save note $text", !intent(name="save_note")
+then: +intent(name="save_note", text=$text)
+
+rule intent-note-list-short
+when: "my notes", !intent(name="list_notes")
+then: +intent(name="list_notes")
+
+rule intent-note-list-show
+when: "show my notes", !intent(name="list_notes")
+then: +intent(name="list_notes")
+
+rule intent-note-list-all
+when: "list my notes", !intent(name="list_notes")
+then: +intent(name="list_notes")
 ```
 
 ## Unit Conversion Intents
