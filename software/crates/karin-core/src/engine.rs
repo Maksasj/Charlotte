@@ -1,4 +1,4 @@
-use crate::fixtures::{initial_state, load_fixtures};
+use crate::vault::{initial_state, load_vault};
 use crate::tools::{NewFact, run_world_tool};
 use crate::types::{
     Action, AgentState, ChainRecord, ChatMessage, CompetingMatch, Condition, Episode, Fact,
@@ -19,9 +19,9 @@ impl Engine {
         }
     }
 
-    pub fn from_fixtures_dir(dir: &Path) -> Result<Self, String> {
+    pub fn from_vault_dir(dir: &Path) -> Result<Self, String> {
         Ok(Self {
-            state: load_fixtures(dir)?,
+            state: load_vault(dir)?,
         })
     }
 
@@ -33,8 +33,8 @@ impl Engine {
         self.state = initial_state();
     }
 
-    pub fn reset_from_fixtures_dir(&mut self, dir: &Path) -> Result<(), String> {
-        self.state = load_fixtures(dir)?;
+    pub fn reset_from_vault_dir(&mut self, dir: &Path) -> Result<(), String> {
+        self.state = load_vault(dir)?;
         Ok(())
     }
 
