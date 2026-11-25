@@ -1,4 +1,4 @@
-use crate::fixtures::initial_state;
+use crate::fixtures::{initial_state, load_fixtures};
 use crate::tools::{NewFact, run_world_tool};
 use crate::types::{
     Action, AgentState, ChainRecord, ChatMessage, CompetingMatch, Condition, Episode, Fact,
@@ -6,6 +6,7 @@ use crate::types::{
 };
 use crate::unify::{Bindings, is_var, match_conditions, normalize, subst, subst_args};
 use std::collections::{BTreeMap, HashSet};
+use std::path::Path;
 
 pub struct Engine {
     pub state: AgentState,
@@ -18,12 +19,23 @@ impl Engine {
         }
     }
 
+    pub fn from_fixtures_dir(dir: &Path) -> Result<Self, String> {
+        Ok(Self {
+            state: load_fixtures(dir)?,
+        })
+    }
+
     pub fn from_state(state: AgentState) -> Self {
         Self { state }
     }
 
     pub fn reset(&mut self) {
         self.state = initial_state();
+    }
+
+    pub fn reset_from_fixtures_dir(&mut self, dir: &Path) -> Result<(), String> {
+        self.state = load_fixtures(dir)?;
+        Ok(())
     }
 
     fn alloc_id(&mut self, prefix: &str) -> String {
