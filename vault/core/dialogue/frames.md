@@ -14,6 +14,8 @@ rule dialogue-cancel-slot
 when: dialogue_slot(goal=$goal, slot=$slot), "cancel"
 then:
   -dialogue_slot(goal=$goal, slot=$slot)
+  -dialogue_goal(goal=$goal)
+  -dialogue_filled(goal=$goal)
   => "Okay, cancelled."
 
 rule dialogue-capture-slot
