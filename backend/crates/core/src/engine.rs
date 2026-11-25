@@ -655,7 +655,7 @@ impl Engine {
             let t3 = eng.turn("hello");
             let t4 = eng.turn("weather");
             let t5 = eng.turn("Paris");
-            let ok = t1.reply.contains("Nova")
+            let ok = t1.reply.contains("Karin")
                 && t2.reply.contains("Alex")
                 && t3.reply.contains("Alex")
                 && t4.reply.contains("Which city")
