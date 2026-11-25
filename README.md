@@ -1,117 +1,30 @@
-# Symbolic Learning Agent
+# Symbolic Core
 
-A conversational agent whose reasoning, memory, learning and replies are all
-symbolic. Knowledge lives in a vault of Datalog facts, rules and procedures; a
-stratified Datalog reasoner answers with proofs; a learner guesses rules and
-procedures from what it is taught and keeps them only when they hold up. A
-language model is used only at the edges: to translate user input into
-checked dialogue acts, and in training as teacher, reviewer and judge.
+A general-purpose, purely symbolic (non-neural) assistant built on one uniform **facts + patterns** core.
 
-The current design is [`research/Symbolic Learning Agent – Design 2.0.md`](research/Symbolic%20Learning%20Agent%20–%20Design%202.0.md)
-(milestones 12 to 18). v1 is [`research/DESIGN_1.md`](research/DESIGN_1.md), with its findings in
-[`research/REPORT_DESIGN_1.md`](research/REPORT_DESIGN_1.md). Build status, acceptance results and
-decisions are kept in [`PROGRESS.md`](PROGRESS.md).
+## Architecture
 
-## How it works
+- **`backend/crates/core`** — Pure Rust symbolic engine (`Perceive → Match → Select → Fire`) with `?var` unification, working vs. long-term fact scopes, uniform world tools + meta-tools, impasse teaching, anti-unification generalization, chain chunking, and JSON persistence.
+- **`backend/crates/server`** — Rust Axum HTTP API (`http://127.0.0.1:8080`) exposing chat, trace inspection, teaching, facts/patterns CRUD, meta-tools, and live self-tests.
+- **`frontend/`** — Vite + React + TypeScript UI with hot module reload (`http://localhost:5173`), proxying `/api` to the Rust backend.
 
+## Running Locally
+
+### 1. Start the Rust backend
+```bash
+cargo run -p symbolic-server
 ```
-message ─► segmenter ─► translator (fixed patterns → learned patterns → model) ─► validator
-                                                                                     │
-reply ◄── realizer (sentence frames) ◄── dialogue manager (moves chosen by rules) ◄──┘
-                                              │
-                         reasoner (Datalog, proofs, aggregates, time) ◄─► vault
-                                              │
-                         learner (rules, procedures, corrections, words) ─► review queue
+(Listens on `127.0.0.1:8080` by default; override with `PORT=8080` or `STATE_PATH=data/state.json`.)
+
+### 2. Start the Vite React frontend (with HMR)
+```bash
+cd frontend
+npm install
+npm run dev
 ```
+Open `http://localhost:5173`.
 
-- **Understanding:** each part of a message is translated on its own and checked
-  against a closed predicate registry; only failed parts are retried or split.
-- **Dialogue:** a session memory, task frames with slots, and reply moves chosen
-  by Datalog policy rules, each with its proof.
-- **Learning:** procedures, guessed rules, new words and input patterns enter as
-  hypotheses, are used on trial ("I was taught this once", "I'd guess so ...
-  Is that right?"), and are confirmed or dropped. Corrections are gradual: one
-  counterexample is an exception, two with a shared feature change the rule.
-- **Measurement:** every turn gets an outcome label (helpful, clarify, teach me,
-  not understood, wrong move, wrong content, echo) with confidence intervals.
-
-## Layout
-
-| Path | What |
-|---|---|
-| `crates/core` | Values, facts, rules, the vault (Markdown files with Datalog blocks), journal, transactions |
-| `crates/reasoner` | Stratified Datalog with negation, aggregates, arithmetic, time, proofs, quarantine |
-| `crates/learner` | Rule guessing, corrections, learning from demonstrations |
-| `crates/lexicon` | The predicate registry and type checks |
-| `crates/parser` | Fixed sentence patterns, the oracle parser for tests, the Claude CLI wrapper |
-| `crates/translate` | Segmenter, three-tier translator, learned patterns, validator |
-| `crates/nlg` | The realizer: content plans to sentences through registry frames |
-| `crates/agent` | The agent: brain, sessions, dialogue manager, tasks, learning, review queue, hygiene; the `sla` chat binary |
-| `crates/eval` | Outcome labels, regression replay, gold sets, wording, patterns, curriculum runs, benchmarks; `sla_eval` and `sla_trainer` |
-| `data/` | Scenarios, curriculum (held-out scenarios and seed procedures), gold sets, synthetic test sets, and `training/` (every generated conversation, kept) |
-| `eval/` | Evaluation history, reports and caches |
-| `docs/` | Dialogue format, language and parser specs |
-| `tools/` | `make_registry.py` (generates the registry), `extract_regression.py` |
-| `vault/` | The default knowledge vault |
-
-## Running
-
-Rust stable toolchain (developed with `stable-x86_64-pc-windows-gnu`). Model
-calls go through the [Claude Code](https://claude.com/claude-code) CLI (`claude -p`), so it must be
-installed and logged in for anything that uses a model; everything else runs offline.
-
-```sh
-# all tests (no model calls: model paths run on mocks)
+### 3. Run Rust tests
+```bash
 cargo test
-
-# chat with the agent
-cargo run --release -p sla_agent --bin sla              # pattern parser only
-cargo run --release -p sla_agent --bin sla -- --llm     # with the model translator
-#   options: --vault DIR, --script FILE; commands :facts :rules :log :reload :quit
-
-# offline knowledge tests (v1 dialogues)
-cargo run --release -p sla_eval -- --no-claude
 ```
-
-Evaluations (results are appended to `eval/` and conversations archived in `data/training/`):
-
-```sh
-sla_eval outcomes --parser llm:haiku --judge haiku   # outcome mix with 95% intervals
-sla_eval gold                                        # translator gold set
-sla_eval wording --ceiling                           # old vs new wording, judged pairwise
-sla_eval patterns --teach 300                        # learned input patterns
-sla_eval curriculum [--limit N]                      # the four encounters over held-out scenarios
-sla_eval hygiene --vault DIR                         # duplicate entities, knowledge health (use a copy)
-sla_eval bench --vault DIR                           # speed of the agent's own work
-sla_eval stress --teachers 16 --minutes 10           # parallel writers on mock models
-```
-
-(`sla_eval` is `cargo run --release -p sla_eval --`.)
-
-The training dashboard has two parts: the API server, and the page.
-
-- API: `cargo run --release -p sla_eval --bin sla_trainer` (add `--mock` to try it
-  without model calls). It prints an address with `?token=...`.
-- Page (Vite, React, TypeScript; needs Node.js): `cd dashboard && npm install && npm run dev`,
-  then open `http://127.0.0.1:5173/?token=<the token sla_trainer printed>`. Edits to
-  `dashboard/src/` show up at once (hot reload). `npm run build` makes a static copy in
-  `dashboard/dist/`, which sla_trainer then also serves at its own address.
-
-## Status
-
-**Design 3.0 (2026-11-19).** The 3.0 agent (crates `kb3`, `parse3`, `teach3`, `agent3`, `eval3`) works as follows:
-- it learns household procedures from teaching lines, with learned taggers and Haiku as a fallback reader;
-- it stores them as facts with provenance;
-- it answers in relation lines: one fact per line, checked exactly against the ground truth;
-- it holds no English word lists, enforced by a test.
-
-On a sealed held-out set it answers 25% of new tasks exactly after one teaching, 21% in a never-seen domain, and 8% of new situations. Full results, limits and targets: `paper/main.pdf` and `PROGRESS.md`. The 2.0 agent (crates `agent`, `translate`, ...) is kept unchanged for the v2.0.0 replay baseline.
-
-
-
-Design 2.0 is done (v2.0.0): milestones 12 to 18 are built and measured. Milestone 18's targets
-are met on the held-out scenarios: transfer 6 of 15 (40%), second encounter 75-90%.
-The judge score (5.1-5.4, target 6.0) was put out of scope by the user, because the
-remaining low ratings come from what the teacher taught. Numbers, causes and decisions are in [`PROGRESS.md`](PROGRESS.md).
-The trained vault is in `vault/` (committed copy in
-`data/training/curriculum/vaults/2026-11-18T05-11-26/`).

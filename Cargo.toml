@@ -1,26 +1,17 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/core",
-    "crates/reasoner",
-    "crates/learner",
-    "crates/lexicon",
-    "crates/nlg",
-    "crates/parser",
-    "crates/translate",
-    "crates/agent",
-    "crates/eval",
-    "crates/kb3",
-    "crates/parse3",
-    "crates/teach3",
-    "crates/agent3",
-    "crates/eval3",
-    "crates/replay2",
-    "crates/reason4",
-    "crates/agent4",
-    "crates/eval4",
+    "backend/crates/core",
+    "backend/crates/server",
 ]
 
 [workspace.package]
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+axum = "0.8"
+tower-http = { version = "0.6", features = ["cors"] }
