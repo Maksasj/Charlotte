@@ -37,6 +37,8 @@ function fmtCond(c: Condition): string {
       return `¬${c.rel}(${Object.entries(c.args)
         .map(([k, v]) => `${k}=${v}`)
         .join(', ')})`;
+    case 'not_eq':
+      return `${c.left} ≠ ${c.right}`;
   }
 }
 

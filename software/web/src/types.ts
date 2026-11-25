@@ -13,7 +13,8 @@ export type Condition =
   | { kind: 'text'; template: string }
   | { kind: 'contains'; phrase: string }
   | { kind: 'fact'; rel: string; args: Record<string, string> }
-  | { kind: 'not_fact'; rel: string; args: Record<string, string> };
+  | { kind: 'not_fact'; rel: string; args: Record<string, string> }
+  | { kind: 'not_eq'; left: string; right: string };
 
 export type Action =
   | { kind: 'assert'; rel: string; args: Record<string, string>; scope: Scope }

@@ -3,6 +3,11 @@ use std::collections::BTreeMap;
 
 pub(crate) fn parse_condition(raw: &str) -> Result<Condition, String> {
     let trimmed = raw.trim();
+    if let Some((lhs, rhs)) = split_outside_quotes(trimmed, "!=") {
+        let left = parse_value(lhs.trim())?;
+        let right = parse_value(rhs.trim())?;
+        return Ok(Condition::NotEq { left, right });
+    }
     if let Some(rest) = trimmed.strip_prefix('~') {
         Ok(Condition::Contains {
             phrase: unquote(rest.trim())?,
@@ -81,16 +86,19 @@ pub(crate) fn parse_call(raw: &str) -> Result<(String, BTreeMap<String, String>)
                 .find('=')
                 .ok_or_else(|| format!("expected k=v in '{part}'"))?;
             let key = part[..eq].trim().to_string();
-            let raw_val = part[eq + 1..].trim();
-            let value = if raw_val.starts_with('"') {
-                unquote(raw_val)?
-            } else {
-                raw_val.to_string()
-            };
+            let value = parse_value(part[eq + 1..].trim())?;
             args.insert(key, value);
         }
     }
     Ok((name, args))
+}
+
+fn parse_value(raw: &str) -> Result<String, String> {
+    if raw.starts_with('"') {
+        unquote(raw)
+    } else {
+        Ok(raw.to_string())
+    }
 }
 
 pub(crate) fn unquote(raw: &str) -> Result<String, String> {

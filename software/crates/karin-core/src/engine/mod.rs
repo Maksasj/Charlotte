@@ -157,9 +157,11 @@ impl Engine {
 
     fn prepare_turn(&mut self, input: &str) -> usize {
         self.state.turn += 1;
-        self.state
-            .facts
-            .retain(|fact| fact.scope == Scope::LongTerm || fact.rel == "asked_slot");
+        self.state.facts.retain(|fact| {
+            fact.scope == Scope::LongTerm
+                || fact.rel == "asked_slot"
+                || fact.rel.starts_with("dialogue_")
+        });
 
         let args = BTreeMap::from([("text".into(), input.to_string())]);
         self.add_fact("user_text".into(), args, Scope::Working, "perceive".into());
@@ -386,7 +388,7 @@ fn score_pattern(pattern: &Pattern) -> f64 {
             }
             Condition::Contains { .. } => 1.0,
             Condition::Fact { .. } => 2.0,
-            Condition::NotFact { .. } => 0.4,
+            Condition::NotFact { .. } | Condition::NotEq { .. } => 0.4,
         };
     }
 

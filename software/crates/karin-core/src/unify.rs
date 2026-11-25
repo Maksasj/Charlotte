@@ -207,6 +207,15 @@ fn match_cond_rec(
                 match_cond_rec(conditions, idx + 1, facts, input, bindings)
             }
         }
+        Condition::NotEq { left, right } => {
+            let lhs = normalize(&subst(left, bindings));
+            let rhs = normalize(&subst(right, bindings));
+            if lhs != rhs {
+                match_cond_rec(conditions, idx + 1, facts, input, bindings)
+            } else {
+                None
+            }
+        }
     }
 }
 
@@ -230,5 +239,20 @@ mod tests {
         )
         .expect("should match");
         assert_eq!(b.get("$lang").map(String::as_str), Some("Spanish"));
+    }
+
+    #[test]
+    fn not_eq_condition_guards_inequality() {
+        let conds = vec![
+            Condition::Text {
+                template: "$a vs $b".into(),
+            },
+            Condition::NotEq {
+                left: "$a".into(),
+                right: "$b".into(),
+            },
+        ];
+        assert!(match_conditions(&conds, &[], "km vs kg").is_some());
+        assert!(match_conditions(&conds, &[], "km vs KM").is_none());
     }
 }

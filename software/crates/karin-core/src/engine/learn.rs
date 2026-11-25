@@ -253,6 +253,10 @@ impl ChainFolder {
                     rel: rel.clone(),
                     args: remap_args(args, &self.var_remap),
                 }),
+                Condition::NotEq { left, right } => self.when.push(Condition::NotEq {
+                    left: remap_str(left, &self.var_remap),
+                    right: remap_str(right, &self.var_remap),
+                }),
             }
         }
     }

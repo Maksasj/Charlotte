@@ -13,8 +13,16 @@ definition(topic="chunking", text="Compiling a successful multi-step chain of pa
 ## Lookup Rules
 
 ```karin
-rule parse-define
-when: "define $topic", !definition_result(), !definition_unknown()
+rule define-need-topic
+when: intent(name="define_missing_topic"), !need_slot(goal="define", slot="topic")
+then: +need_slot(goal="define", slot="topic", prompt="Which concept would you like me to define?")
+
+rule define-from-slot
+when: slot_value(goal="define", slot="topic", value=$topic), !intent(name="define")
+then: +intent(name="define", topic=$topic)
+
+rule run-define-tool
+when: intent(name="define", topic=$topic), !definition_result(), !definition_unknown()
 then: @define(topic=$topic)
 
 rule reply-definition
