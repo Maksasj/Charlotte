@@ -104,12 +104,16 @@ fn collect_md_files(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), String> {
     Ok(())
 }
 
-/// Unified Compact Rule DSL parser for modular Markdown files.
+/// Unified literate-Markdown Compact Rule DSL parser.
 ///
-/// A single `.md` module may freely mix:
+/// Only fenced code blocks (` ``` ` or ` ```karin `) are parsed; all prose, headings,
+/// links, and notes outside code fences are ignored as human documentation.
+///
+/// Inside a code fence, a module may freely mix:
 /// - Facts:    `persona_name(value="Karin")` or `[working] asked_slot(slot="city")`
-/// - Patterns: `## rule-name` followed by `when:` / `then:` (and optional metadata)
+/// - Patterns: `rule <name>` (or `## <name>`) followed by `when:` / `then:`
 /// - Episodes: `"greet Alice" => "Warm greetings, Alice! Glad you're here."`
+/// - Comments: lines starting with `#` or `//`
 #[allow(clippy::too_many_arguments)]
 fn parse_module_md(
     raw: &str,
@@ -128,6 +132,8 @@ fn parse_module_md(
         Then,
     }
 
+    let mut in_fence = false;
+    let mut parse_fence = false;
     let mut current: Option<Pattern> = None;
     let mut block = Block::None;
 
@@ -140,19 +146,34 @@ fn parse_module_md(
 
     for (line_no, raw_line) in raw.lines().enumerate() {
         let t = raw_line.trim();
-        if t.is_empty() || t.starts_with('>') || t.starts_with("//") {
+
+        // Toggle fenced code blocks (``` or ```karin).
+        if let Some(rest) = t.strip_prefix("```") {
+            if !in_fence {
+                in_fence = true;
+                let lang = rest.trim();
+                parse_fence = lang.is_empty() || lang.eq_ignore_ascii_case("karin");
+            } else {
+                flush_pattern(&mut current, patterns);
+                block = Block::None;
+                in_fence = false;
+                parse_fence = false;
+            }
             continue;
         }
 
-        // H1 heading resets out of any active pattern block back to top-level.
-        if t.starts_with("# ") && !t.starts_with("## ") {
-            flush_pattern(&mut current, patterns);
-            block = Block::None;
+        // Everything outside a parsed code fence is ignored as comments/prose.
+        if !in_fence || !parse_fence {
             continue;
         }
 
-        // H2 heading starts a new pattern.
-        if let Some(heading) = t.strip_prefix("## ") {
+        if t.is_empty() || t.starts_with("//") || (t.starts_with('#') && !t.starts_with("## ")) {
+            continue;
+        }
+
+        // `rule <name>` or `## <name>` starts a new pattern.
+        let rule_heading = t.strip_prefix("rule ").or_else(|| t.strip_prefix("## "));
+        if let Some(heading) = rule_heading {
             flush_pattern(&mut current, patterns);
             let name = heading.trim().to_string();
             let id = format!("p{}", *next_pat);
@@ -511,5 +532,41 @@ mod tests {
         assert_eq!(state.facts.len(), 10);
         assert_eq!(state.patterns.len(), 29);
         assert_eq!(state.episodes.len(), 4);
+    }
+
+    #[test]
+    fn ignores_prose_outside_code_fences() {
+        let md = r#"
+# Notes
+
+This prose has fake_fact(a="1") and "fake" => "episode" and should be ignored!
+
+rule ignored-rule
+when: "hi"
+then: => "ignored"
+
+```
+real_fact(k="v")
+
+rule real-rule
+when: "ping"
+then: => "pong"
+```
+
+More comments outside fences.
+
+```karin
+"a b" => "c b"
+```
+"#;
+        let (mut f, mut p, mut e) = (Vec::new(), Vec::new(), Vec::new());
+        let (mut nf, mut np, mut ne) = (1, 1, 1);
+        parse_module_md(md, "test", &mut f, &mut p, &mut e, &mut nf, &mut np, &mut ne).unwrap();
+        assert_eq!(f.len(), 1);
+        assert_eq!(f[0].rel, "real_fact");
+        assert_eq!(p.len(), 1);
+        assert_eq!(p[0].name, "real-rule");
+        assert_eq!(e.len(), 1);
+        assert_eq!(e[0].input, "a b");
     }
 }
