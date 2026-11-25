@@ -16,44 +16,37 @@ pub fn default_vault_dir() -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../../vault/core"),
     ];
     for c in cwd_candidates {
-        if c.join("patterns").is_dir() {
+        if c.is_dir() {
             return c;
         }
     }
     PathBuf::from("vault/core")
 }
 
-/// Load core facts, patterns, and episodes from Compact Rule DSL Markdown files
-/// under `vault/core/{facts,patterns,episodes}/*.md`.
+/// Recursively load all `.md` modules under `vault/core/` (any topic folder layout).
+/// Each Markdown module can freely mix facts, patterns (`## name`), and episodes (`"in" => "out"`).
 pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
     let mut facts = Vec::new();
-    let mut next_fact = 1usize;
-    for path in list_md_files(&dir.join("facts"))? {
-        let stem = file_stem(&path);
-        let raw = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let parsed = parse_facts_md(&raw, &stem, &mut next_fact)
-            .map_err(|e| format!("{}: {e}", path.display()))?;
-        facts.extend(parsed);
-    }
-
     let mut patterns = Vec::new();
-    let mut next_pat = 1usize;
-    for path in list_md_files(&dir.join("patterns"))? {
-        let stem = file_stem(&path);
-        let raw = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let parsed = parse_patterns_md(&raw, &stem, &mut next_pat)
-            .map_err(|e| format!("{}: {e}", path.display()))?;
-        patterns.extend(parsed);
-    }
-
     let mut episodes = Vec::new();
+    let mut next_fact = 1usize;
+    let mut next_pat = 1usize;
     let mut next_ep = 1usize;
-    for path in list_md_files(&dir.join("episodes"))? {
-        let stem = file_stem(&path);
+
+    for path in list_md_files_recursive(dir)? {
+        let module = module_id(dir, &path);
         let raw = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        let parsed = parse_episodes_md(&raw, &stem, &mut next_ep)
-            .map_err(|e| format!("{}: {e}", path.display()))?;
-        episodes.extend(parsed);
+        parse_module_md(
+            &raw,
+            &module,
+            &mut facts,
+            &mut patterns,
+            &mut episodes,
+            &mut next_fact,
+            &mut next_pat,
+            &mut next_ep,
+        )
+        .map_err(|e| format!("{}: {e}", path.display()))?;
     }
 
     let max_num = next_fact.max(next_pat).max(next_ep);
@@ -76,72 +69,58 @@ pub fn initial_state() -> AgentState {
     })
 }
 
-fn file_stem(path: &Path) -> String {
-    path.file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or("vault")
-        .to_string()
+fn module_id(root: &Path, path: &Path) -> String {
+    let rel = path.strip_prefix(root).unwrap_or(path);
+    let mut s = rel.with_extension("").to_string_lossy().replace('\\', "/");
+    if s.is_empty() {
+        s = "vault".to_string();
+    }
+    s
 }
 
-fn list_md_files(dir: &Path) -> Result<Vec<PathBuf>, String> {
+fn list_md_files_recursive(dir: &Path) -> Result<Vec<PathBuf>, String> {
     if !dir.is_dir() {
         return Ok(Vec::new());
     }
-    let mut files: Vec<PathBuf> = fs::read_dir(dir)
-        .map_err(|e| format!("readdir {}: {e}", dir.display()))?
-        .filter_map(|e| e.ok().map(|e| e.path()))
-        .filter(|p| p.extension().and_then(|s| s.to_str()) == Some("md"))
-        .collect();
-    files.sort();
-    Ok(files)
-}
-
-/// Compact fact lines:
-///   `persona_name(value="Karin")`
-///   `[working] asked_slot(slot="city")`
-fn parse_facts_md(raw: &str, stem: &str, next_id: &mut usize) -> Result<Vec<Fact>, String> {
     let mut out = Vec::new();
-    for line in raw.lines() {
-        let mut t = line.trim();
-        if t.is_empty() || t.starts_with('#') || t.starts_with('>') || t.starts_with("//") {
-            continue;
-        }
-        if let Some(rest) = t.strip_prefix("- ") {
-            t = rest.trim();
-        }
-        let (scope, expr) = if let Some(rest) = t.strip_prefix("[working]") {
-            (Scope::Working, rest.trim())
-        } else if let Some(rest) = t.strip_prefix("[long_term]") {
-            (Scope::LongTerm, rest.trim())
-        } else {
-            (Scope::LongTerm, t)
-        };
-        if !expr.contains('(') {
-            continue;
-        }
-        let (rel, args) = parse_call(expr)?;
-        let id = format!("f{}", *next_id);
-        *next_id += 1;
-        out.push(Fact {
-            id,
-            rel,
-            args,
-            scope,
-            provenance: format!("vault:{stem}"),
-            turn: 0,
-        });
-    }
+    collect_md_files(dir, &mut out)?;
+    out.sort();
     Ok(out)
 }
 
-/// Compact pattern DSL:
-///   ## rule-name
-///   when: "weather in ?city", !want_weather()
-///   then: +want_weather(city=?city)
+fn collect_md_files(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), String> {
+    let mut entries: Vec<PathBuf> = fs::read_dir(dir)
+        .map_err(|e| format!("readdir {}: {e}", dir.display()))?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .collect();
+    entries.sort();
+    for path in entries {
+        if path.is_dir() {
+            collect_md_files(&path, out)?;
+        } else if path.extension().and_then(|s| s.to_str()) == Some("md") {
+            out.push(path);
+        }
+    }
+    Ok(())
+}
+
+/// Unified Compact Rule DSL parser for modular Markdown files.
 ///
-/// Multi-line `when:` / `then:` blocks are also supported, plus optional
-/// `status:`, `kind:`, `trust:`, `support:` overrides.
-fn parse_patterns_md(raw: &str, stem: &str, next_id: &mut usize) -> Result<Vec<Pattern>, String> {
+/// A single `.md` module may freely mix:
+/// - Facts:    `persona_name(value="Karin")` or `[working] asked_slot(slot="city")`
+/// - Patterns: `## rule-name` followed by `when:` / `then:` (and optional metadata)
+/// - Episodes: `"greet Alice" => "Warm greetings, Alice! Glad you're here."`
+#[allow(clippy::too_many_arguments)]
+fn parse_module_md(
+    raw: &str,
+    module: &str,
+    facts: &mut Vec<Fact>,
+    patterns: &mut Vec<Pattern>,
+    episodes: &mut Vec<Episode>,
+    next_fact: &mut usize,
+    next_pat: &mut usize,
+    next_ep: &mut usize,
+) -> Result<(), String> {
     #[derive(PartialEq)]
     enum Block {
         None,
@@ -149,24 +128,35 @@ fn parse_patterns_md(raw: &str, stem: &str, next_id: &mut usize) -> Result<Vec<P
         Then,
     }
 
-    let mut out = Vec::new();
     let mut current: Option<Pattern> = None;
     let mut block = Block::None;
 
+    let flush_pattern = |current: &mut Option<Pattern>, patterns: &mut Vec<Pattern>| {
+        if let Some(mut p) = current.take() {
+            infer_kind_if_unset(&mut p);
+            patterns.push(p);
+        }
+    };
+
     for (line_no, raw_line) in raw.lines().enumerate() {
         let t = raw_line.trim();
-        if t.is_empty() || t.starts_with('>') || t.starts_with("//") || (t.starts_with("# ") && !t.starts_with("## ")) {
+        if t.is_empty() || t.starts_with('>') || t.starts_with("//") {
             continue;
         }
 
+        // H1 heading resets out of any active pattern block back to top-level.
+        if t.starts_with("# ") && !t.starts_with("## ") {
+            flush_pattern(&mut current, patterns);
+            block = Block::None;
+            continue;
+        }
+
+        // H2 heading starts a new pattern.
         if let Some(heading) = t.strip_prefix("## ") {
-            if let Some(mut p) = current.take() {
-                infer_kind_if_unset(&mut p);
-                out.push(p);
-            }
+            flush_pattern(&mut current, patterns);
             let name = heading.trim().to_string();
-            let id = format!("p{}", *next_id);
-            *next_id += 1;
+            let id = format!("p{}", *next_pat);
+            *next_pat += 1;
             current = Some(Pattern {
                 id,
                 name,
@@ -175,83 +165,132 @@ fn parse_patterns_md(raw: &str, stem: &str, next_id: &mut usize) -> Result<Vec<P
                 then: Vec::new(),
                 trust: 0.9,
                 support: 3,
-                provenance: format!("vault:{stem}"),
+                provenance: format!("vault:{module}"),
                 kind: PatternKind::Reply,
             });
             block = Block::None;
             continue;
         }
 
-        let Some(p) = current.as_mut() else {
-            continue;
-        };
+        // If inside a pattern, check pattern fields or indented/bulleted continuations.
+        if let Some(p) = current.as_mut() {
+            let is_indented = raw_line.starts_with(' ') || raw_line.starts_with('\t');
+            if let Some(rest) = t.strip_prefix("when:") {
+                block = Block::When;
+                let rest = rest.trim();
+                if !rest.is_empty() {
+                    for item in split_top_level(rest, ',') {
+                        p.when.push(parse_condition(&item).map_err(|e| format!("line {}: {e}", line_no + 1))?);
+                    }
+                }
+                continue;
+            } else if let Some(rest) = t.strip_prefix("then:") {
+                block = Block::Then;
+                let rest = rest.trim();
+                if !rest.is_empty() {
+                    for item in split_top_level(rest, ',') {
+                        p.then.push(parse_action(&item).map_err(|e| format!("line {}: {e}", line_no + 1))?);
+                    }
+                }
+                continue;
+            } else if let Some(rest) = t.strip_prefix("status:") {
+                block = Block::None;
+                p.status = match rest.trim() {
+                    "candidate" => PatternStatus::Candidate,
+                    _ => PatternStatus::Active,
+                };
+                continue;
+            } else if let Some(rest) = t.strip_prefix("kind:") {
+                block = Block::None;
+                p.kind = match rest.trim() {
+                    "language" => PatternKind::Language,
+                    "reasoning" => PatternKind::Reasoning,
+                    "composite" => PatternKind::Composite,
+                    "induced" => PatternKind::Induced,
+                    _ => PatternKind::Reply,
+                };
+                continue;
+            } else if let Some(rest) = t.strip_prefix("trust:") {
+                block = Block::None;
+                p.trust = rest
+                    .trim()
+                    .parse()
+                    .map_err(|_| format!("line {}: invalid trust '{}'", line_no + 1, rest.trim()))?;
+                continue;
+            } else if let Some(rest) = t.strip_prefix("support:") {
+                block = Block::None;
+                p.support = rest
+                    .trim()
+                    .parse()
+                    .map_err(|_| format!("line {}: invalid support '{}'", line_no + 1, rest.trim()))?;
+                continue;
+            } else if (is_indented || t.starts_with("- ")) && block != Block::None {
+                let item = t.strip_prefix("- ").map(str::trim).unwrap_or(t);
+                match block {
+                    Block::When => {
+                        for sub in split_top_level(item, ',') {
+                            p.when.push(parse_condition(&sub).map_err(|e| format!("line {}: {e}", line_no + 1))?);
+                        }
+                    }
+                    Block::Then => {
+                        for sub in split_top_level(item, ',') {
+                            p.then.push(parse_action(&sub).map_err(|e| format!("line {}: {e}", line_no + 1))?);
+                        }
+                    }
+                    Block::None => {}
+                }
+                continue;
+            } else {
+                // Non-indented top-level line ends the current pattern block.
+                flush_pattern(&mut current, patterns);
+                block = Block::None;
+            }
+        }
 
-        if let Some(rest) = t.strip_prefix("when:") {
-            block = Block::When;
-            let rest = rest.trim();
-            if !rest.is_empty() {
-                for item in split_top_level(rest, ',') {
-                    p.when.push(parse_condition(&item).map_err(|e| format!("line {}: {e}", line_no + 1))?);
-                }
+        // Top-level item: either an episode (`"in" => "out"`) or a fact (`rel(k="v")`).
+        let top = t.strip_prefix("- ").map(str::trim).unwrap_or(t);
+
+        if top.starts_with('"') {
+            if let Some((lhs, rhs)) = split_outside_quotes(top, "=>") {
+                let input = unquote(lhs.trim()).map_err(|e| format!("line {}: {e}", line_no + 1))?;
+                let reply = unquote(rhs.trim()).map_err(|e| format!("line {}: {e}", line_no + 1))?;
+                let id = format!("e{}", *next_ep);
+                *next_ep += 1;
+                episodes.push(Episode {
+                    id,
+                    input,
+                    reply,
+                    source: format!("vault:{module}"),
+                    generalized: false,
+                });
+                continue;
             }
-        } else if let Some(rest) = t.strip_prefix("then:") {
-            block = Block::Then;
-            let rest = rest.trim();
-            if !rest.is_empty() {
-                for item in split_top_level(rest, ',') {
-                    p.then.push(parse_action(&item).map_err(|e| format!("line {}: {e}", line_no + 1))?);
-                }
-            }
-        } else if let Some(rest) = t.strip_prefix("status:") {
-            block = Block::None;
-            p.status = match rest.trim() {
-                "candidate" => PatternStatus::Candidate,
-                _ => PatternStatus::Active,
-            };
-        } else if let Some(rest) = t.strip_prefix("kind:") {
-            block = Block::None;
-            p.kind = match rest.trim() {
-                "language" => PatternKind::Language,
-                "reasoning" => PatternKind::Reasoning,
-                "composite" => PatternKind::Composite,
-                "induced" => PatternKind::Induced,
-                _ => PatternKind::Reply,
-            };
-        } else if let Some(rest) = t.strip_prefix("trust:") {
-            block = Block::None;
-            p.trust = rest
-                .trim()
-                .parse()
-                .map_err(|_| format!("line {}: invalid trust '{}'", line_no + 1, rest.trim()))?;
-        } else if let Some(rest) = t.strip_prefix("support:") {
-            block = Block::None;
-            p.support = rest
-                .trim()
-                .parse()
-                .map_err(|_| format!("line {}: invalid support '{}'", line_no + 1, rest.trim()))?;
+        }
+
+        let (scope, expr) = if let Some(rest) = top.strip_prefix("[working]") {
+            (Scope::Working, rest.trim())
+        } else if let Some(rest) = top.strip_prefix("[long_term]") {
+            (Scope::LongTerm, rest.trim())
         } else {
-            let item = t.strip_prefix("- ").map(str::trim).unwrap_or(t);
-            match block {
-                Block::When => {
-                    for sub in split_top_level(item, ',') {
-                        p.when.push(parse_condition(&sub).map_err(|e| format!("line {}: {e}", line_no + 1))?);
-                    }
-                }
-                Block::Then => {
-                    for sub in split_top_level(item, ',') {
-                        p.then.push(parse_action(&sub).map_err(|e| format!("line {}: {e}", line_no + 1))?);
-                    }
-                }
-                Block::None => {}
-            }
+            (Scope::LongTerm, top)
+        };
+        if expr.contains('(') {
+            let (rel, args) = parse_call(expr).map_err(|e| format!("line {}: {e}", line_no + 1))?;
+            let id = format!("f{}", *next_fact);
+            *next_fact += 1;
+            facts.push(Fact {
+                id,
+                rel,
+                args,
+                scope,
+                provenance: format!("vault:{module}"),
+                turn: 0,
+            });
         }
     }
 
-    if let Some(mut p) = current {
-        infer_kind_if_unset(&mut p);
-        out.push(p);
-    }
-    Ok(out)
+    flush_pattern(&mut current, patterns);
+    Ok(())
 }
 
 fn infer_kind_if_unset(p: &mut Pattern) {
@@ -334,36 +373,6 @@ fn parse_action(s: &str) -> Result<Action, String> {
     } else {
         Err(format!("invalid action '{t}' (expected =>, @, +, ++, or -)"))
     }
-}
-
-/// Compact episode lines:
-///   `"greet Alice" => "Warm greetings, Alice! Glad you're here."`
-fn parse_episodes_md(raw: &str, stem: &str, next_id: &mut usize) -> Result<Vec<Episode>, String> {
-    let mut out = Vec::new();
-    for (line_no, line) in raw.lines().enumerate() {
-        let mut t = line.trim();
-        if t.is_empty() || t.starts_with('#') || t.starts_with('>') || t.starts_with("//") {
-            continue;
-        }
-        if let Some(rest) = t.strip_prefix("- ") {
-            t = rest.trim();
-        }
-        let Some((lhs, rhs)) = split_outside_quotes(t, "=>") else {
-            continue;
-        };
-        let input = unquote(lhs.trim()).map_err(|e| format!("line {}: {e}", line_no + 1))?;
-        let reply = unquote(rhs.trim()).map_err(|e| format!("line {}: {e}", line_no + 1))?;
-        let id = format!("e{}", *next_id);
-        *next_id += 1;
-        out.push(Episode {
-            id,
-            input,
-            reply,
-            source: format!("vault:{stem}"),
-            generalized: false,
-        });
-    }
-    Ok(out)
 }
 
 /// Parse `rel(k="v", k2=?var)` or `rel()` or `rel`.
