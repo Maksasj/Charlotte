@@ -23,8 +23,9 @@ pub fn default_vault_dir() -> PathBuf {
     PathBuf::from("vault/core")
 }
 
-/// Recursively load all `.md` modules under `vault/core/` (any topic folder layout).
-/// Each Markdown module can freely mix facts, patterns (`## name`), and episodes (`"in" => "out"`).
+/// Recursively load all `.md` modules under `vault/core/` (any topic folder layout),
+/// plus any `.md` files in the sibling meta folder `vault/.episodes/`.
+/// Each Markdown module can freely mix facts, patterns (`rule <name>`), and episodes (`"in" => "out"`).
 pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
     let mut facts = Vec::new();
     let mut patterns = Vec::new();
@@ -33,20 +34,30 @@ pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
     let mut next_pat = 1usize;
     let mut next_ep = 1usize;
 
-    for path in list_md_files_recursive(dir)? {
-        let module = module_id(dir, &path);
-        let raw = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
-        parse_module_md(
-            &raw,
-            &module,
-            &mut facts,
-            &mut patterns,
-            &mut episodes,
-            &mut next_fact,
-            &mut next_pat,
-            &mut next_ep,
-        )
-        .map_err(|e| format!("{}: {e}", path.display()))?;
+    let mut roots: Vec<(PathBuf, String)> = vec![(dir.to_path_buf(), String::new())];
+    if let Some(parent) = dir.parent() {
+        let ep_dir = parent.join(".episodes");
+        if ep_dir.is_dir() && ep_dir != dir {
+            roots.push((ep_dir, ".episodes/".to_string()));
+        }
+    }
+
+    for (root, prefix) in roots {
+        for path in list_md_files_recursive(&root)? {
+            let module = format!("{prefix}{}", module_id(&root, &path));
+            let raw = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
+            parse_module_md(
+                &raw,
+                &module,
+                &mut facts,
+                &mut patterns,
+                &mut episodes,
+                &mut next_fact,
+                &mut next_pat,
+                &mut next_ep,
+            )
+            .map_err(|e| format!("{}: {e}", path.display()))?;
+        }
     }
 
     let max_num = next_fact.max(next_pat).max(next_ep);

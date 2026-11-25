@@ -17,14 +17,3 @@ rule reply-meta-result
 when: meta_result(summary=?summary)
 then: => "?summary"
 ```
-
-## Seed Episodes
-
-Concrete examples used to test and bootstrap anti-unification.
-
-```karin
-"greet Alice" => "Warm greetings, Alice! Glad you're here."
-"greet Bob" => "Warm greetings, Bob! Glad you're here."
-"praise Rust" => "Rust is genuinely impressive — clean, fast, and reliable."
-"praise Prolog" => "Prolog is genuinely impressive — clean, fast, and reliable."
-```
