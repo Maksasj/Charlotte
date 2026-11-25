@@ -1,7 +1,9 @@
-/target
-/data
-/frontend/node_modules
-/frontend/dist
+/software/target
+/software/web/node_modules
+/software/web/dist
+/data/*
+!/data/.gitkeep
+/vault/state.json
 .DS_Store
 *.log
 *.tsbuildinfo
