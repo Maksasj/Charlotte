@@ -27,6 +27,7 @@ pub async fn chat(State(app): State<Arc<AppState>>, Json(req): Json<ChatReq>) ->
 }
 
 pub async fn new_chat(State(app): State<Arc<AppState>>) -> Json<Value> {
+    app.rotate_chat_id();
     let (_, state) = app.mutate(Engine::new_chat);
     Json(json!({ "state": state }))
 }
@@ -118,6 +119,7 @@ pub async fn meta_chunk(State(app): State<Arc<AppState>>, Json(req): Json<MetaRe
 }
 
 pub async fn reset(State(app): State<Arc<AppState>>) -> Json<Value> {
+    app.rotate_chat_id();
     let vault_dir = app.vault_dir.clone();
     let (_, state) = app.mutate(|eng| {
         if let Err(err) = eng.reset_from_vault_dir(&vault_dir) {

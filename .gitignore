@@ -4,6 +4,7 @@
 /data/*
 !/data/.gitkeep
 /vault/state.json
+/vault/.chats
 .DS_Store
 *.log
 *.tsbuildinfo

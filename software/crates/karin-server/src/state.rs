@@ -1,6 +1,6 @@
 use karin_core::{
     Action, AgentState, Condition, Engine, PatternKind, PatternStatus, Scope, ToolInfo,
-    store::save_state,
+    store::{next_chat_id, save_chat, save_state},
 };
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf, sync::Mutex};
@@ -9,6 +9,8 @@ pub struct AppState {
     pub engine: Mutex<Engine>,
     pub state_path: PathBuf,
     pub vault_dir: PathBuf,
+    pub chats_dir: PathBuf,
+    pub chat_id: Mutex<String>,
 }
 
 impl AppState {
@@ -36,9 +38,18 @@ impl AppState {
         Some(snapshot)
     }
 
+    pub fn rotate_chat_id(&self) {
+        let mut id = self.chat_id.lock().unwrap();
+        *id = next_chat_id(&self.chats_dir);
+    }
+
     fn persist(&self, state: &AgentState) {
         if let Err(err) = save_state(&self.state_path, state) {
             eprintln!("warning: failed to save state: {err}");
+        }
+        let chat_id = self.chat_id.lock().unwrap().clone();
+        if let Err(err) = save_chat(&self.chats_dir, &chat_id, &state.messages) {
+            eprintln!("warning: failed to save chat: {err}");
         }
     }
 }
