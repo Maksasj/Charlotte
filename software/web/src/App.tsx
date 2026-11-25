@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import { karinVoice, type VoiceStatus } from './voice';
 import type {
   Action,
   AgentState,
@@ -81,8 +82,19 @@ export default function App() {
   const [factScope, setFactScope] = useState<Scope>('long_term');
 
   const [tests, setTests] = useState<SelfTestResult[]>([]);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return karinVoice.subscribe((status, detail) => {
+      setVoiceStatus(status);
+      if (status === 'error' && detail) {
+        setErrorMsg(`Voice error: ${detail}`);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -121,6 +133,9 @@ export default function App() {
       setSelectedTrace(res.trace);
       setInput('');
       setTeachReply('');
+      if (voiceEnabled) {
+        void karinVoice.speak(res.trace.reply);
+      }
     } catch (e) {
       setErrorMsg((e as Error).message);
     } finally {
@@ -181,6 +196,7 @@ export default function App() {
   }
 
   async function handleNewChat() {
+    karinVoice.stop();
     const res = await api.newChat();
     setState(res.state);
     setSelectedTrace(null);
@@ -190,6 +206,7 @@ export default function App() {
   }
 
   async function handleReset() {
+    karinVoice.stop();
     const res = await api.reset();
     setState(res.state);
     setSelectedTrace(null);
@@ -239,6 +256,31 @@ export default function App() {
           )}
         </div>
         <div className="topbar-actions">
+          <button
+            className={`btn btn-sm ${voiceEnabled ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={async () => {
+              if (voiceEnabled) {
+                karinVoice.stop();
+                setVoiceEnabled(false);
+              } else {
+                setVoiceEnabled(true);
+                try {
+                  await karinVoice.ensureLoaded();
+                } catch {
+                  setVoiceEnabled(false);
+                }
+              }
+            }}
+            title="Speak Karin's replies using tiny-voca (F2 female voice)"
+          >
+            {voiceStatus === 'loading'
+              ? 'Loading Voice…'
+              : voiceStatus === 'speaking'
+                ? 'Speaking… (Stop)'
+                : voiceEnabled
+                  ? 'Voice: On (F2)'
+                  : 'Voice: Off'}
+          </button>
           <button className="btn btn-primary btn-sm" onClick={handleNewChat}>
             New Chat
           </button>
@@ -314,6 +356,12 @@ export default function App() {
                         }}
                       >
                         Trace
+                      </button>
+                      <button
+                        className="meta-link"
+                        onClick={() => void karinVoice.speak(m.text)}
+                      >
+                        Speak
                       </button>
                       <span className="vote-group">
                         <button
