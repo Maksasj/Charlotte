@@ -53,6 +53,14 @@ rule rel-ask-located-in
 when: "where is $subj located", !query_rel()
 then: +query_rel(subj=$subj, pred="located_in")
 
+rule rel-ask-where-is
+when: "where is $subj", !query_rel()
+then: +query_rel(subj=$subj, pred="located_in")
+
+rule rel-ask-where-find
+when: "where can I find $subj", !query_rel()
+then: +query_rel(subj=$subj, pred="located_in")
+
 rule rel-ask-contains
 when: "what does $subj contain", !query_rel()
 then: +query_rel(subj=$subj, pred="contains")
@@ -79,9 +87,9 @@ then: => "$subj $pred $obj (via inverse $inv)."
 
 rule rel-unknown-with-inverse
 when: query_rel(subj=$subj, pred=$pred), !rel(subj=$subj, pred=$pred), inverse(pred=$pred, inv=$inv), !rel(pred=$inv, obj=$subj)
-then: => "I don't have a $pred relation for $subj yet."
+then: => "I don't have a $pred relation for $subj yet. Teach me with \"link $subj $pred ...\"."
 
 rule rel-unknown-plain
 when: query_rel(subj=$subj, pred=$pred), !rel(subj=$subj, pred=$pred), !inverse(pred=$pred)
-then: => "I don't have a $pred relation for $subj yet."
+then: => "I don't have a $pred relation for $subj yet. Teach me with \"link $subj $pred ...\"."
 ```
