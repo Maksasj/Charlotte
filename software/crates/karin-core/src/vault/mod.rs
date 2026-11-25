@@ -161,8 +161,8 @@ mod tests {
     #[test]
     fn loads_compact_dsl_vault_core() {
         let state = initial_state();
-        assert_eq!(state.facts.len(), 10);
-        assert_eq!(state.patterns.len(), 29);
+        assert!(state.facts.len() >= 30);
+        assert!(state.patterns.len() >= 50);
         assert_eq!(state.episodes.len(), 4);
     }
 

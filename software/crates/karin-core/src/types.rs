@@ -38,6 +38,10 @@ pub enum Condition {
         #[serde(default)]
         args: BTreeMap<String, String>,
     },
+    NotEq {
+        left: String,
+        right: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

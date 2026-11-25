@@ -13,25 +13,23 @@ weather_city(city="Vilnius", condition="crisp and sunny", temp="9°C")
 
 ## Lookup & Reply Rules
 
+Consumes canonical `intent(name="weather", ...)` facts and uses the shared `dialogue/frames.md` slot protocol (checking `prop(entity="user", attr="city")` first if known).
+
 ```karin
-rule parse-weather-city
-when: "weather in $city", !want_weather()
-then: +want_weather(city=$city)
+rule weather-use-known-user-city
+when: intent(name="weather_missing_city"), prop(entity="user", attr="city", value=$city), !intent(name="weather")
+then: +intent(name="weather", city=$city)
 
-rule parse-weather-no-city
-when: "weather", !want_weather()
-then:
-  +asked_slot(slot="city", goal="weather")
-  => "Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)"
+rule weather-need-city
+when: intent(name="weather_missing_city"), !prop(entity="user", attr="city"), !need_slot(goal="weather", slot="city")
+then: +need_slot(goal="weather", slot="city", prompt="Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)")
 
-rule bind-asked-city-for-weather
-when: asked_slot(slot="city", goal="weather"), "$city", !want_weather()
-then:
-  -asked_slot
-  +want_weather(city=$city)
+rule weather-from-slot
+when: slot_value(goal="weather", slot="city", value=$city), !intent(name="weather")
+then: +intent(name="weather", city=$city)
 
 rule run-weather-tool
-when: want_weather(city=$city), !weather_report(), !weather_unknown()
+when: intent(name="weather", city=$city), !weather_report(), !weather_unknown()
 then: @weather(city=$city)
 
 rule reply-weather-report
