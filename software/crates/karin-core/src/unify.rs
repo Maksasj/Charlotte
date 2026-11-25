@@ -19,20 +19,23 @@ pub fn normalize(s: &str) -> String {
             prev_space = false;
         }
     }
-    out.trim_end_matches(|c: char| matches!(c, '?' | '!' | '.' | ',' | ';'))
+    out.trim_end_matches(['?', '!', '.', ',', ';'])
         .trim()
         .to_string()
 }
 
 pub fn is_var(s: &str) -> bool {
-    s.starts_with('?') && s.len() > 1 && s[1..].chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+    s.starts_with('?')
+        && s.len() > 1
+        && s[1..]
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
 pub fn subst(template: &str, bindings: &Bindings) -> String {
     let mut result = template.to_string();
-    // Sort keys by descending length so ?city_name substitutes before ?city
     let mut keys: Vec<&String> = bindings.keys().collect();
-    keys.sort_by(|a, b| b.len().cmp(&a.len()));
+    keys.sort_by_key(|key| std::cmp::Reverse(key.len()));
     for k in keys {
         if let Some(v) = bindings.get(k) {
             result = result.replace(k.as_str(), v.as_str());
@@ -41,7 +44,10 @@ pub fn subst(template: &str, bindings: &Bindings) -> String {
     result
 }
 
-pub fn subst_args(args: &BTreeMap<String, String>, bindings: &Bindings) -> BTreeMap<String, String> {
+pub fn subst_args(
+    args: &BTreeMap<String, String>,
+    bindings: &Bindings,
+) -> BTreeMap<String, String> {
     args.iter()
         .map(|(k, v)| (k.clone(), subst(v, bindings)))
         .collect()
@@ -67,8 +73,6 @@ pub fn bind_value(pattern_val: &str, actual_val: &str, bindings: &Bindings) -> O
     }
 }
 
-/// Match a text template like "weather in ?city" or "calculate ?expr" against user input.
-/// Supports `?var` capturing 1 or more words when needed (with backtracking).
 pub fn match_text_template(template: &str, input: &str, bindings: &Bindings) -> Option<Bindings> {
     let pat_norm = normalize(template);
     let inp_norm = normalize(input);
@@ -76,7 +80,7 @@ pub fn match_text_template(template: &str, input: &str, bindings: &Bindings) -> 
     let inp_tokens: Vec<&str> = inp_norm.split_whitespace().collect();
     let raw_tokens: Vec<&str> = input
         .trim()
-        .trim_end_matches(|c: char| matches!(c, '?' | '!' | '.' | ',' | ';'))
+        .trim_end_matches(['?', '!', '.', ',', ';'])
         .split_whitespace()
         .collect();
 
@@ -109,20 +113,16 @@ fn match_tokens(
             return None;
         }
         let max_end = inp.len() - remaining_pat;
-        // Prefer capturing from shortest to longest (or full remainder if last token)
         if remaining_pat == 0 {
             let captured = slice_joined(raw, inp, ii, inp.len());
-            if let Some(next) = bind_value(p, &captured, bindings) {
-                return Some(next);
-            }
-            return None;
+            return bind_value(p, &captured, bindings);
         }
         for end in (ii + 1)..=max_end {
             let captured = slice_joined(raw, inp, ii, end);
-            if let Some(next) = bind_value(p, &captured, bindings) {
-                if let Some(done) = match_tokens(pat, inp, raw, pi + 1, end, &next) {
-                    return Some(done);
-                }
+            if let Some(next) = bind_value(p, &captured, bindings)
+                && let Some(done) = match_tokens(pat, inp, raw, pi + 1, end, &next)
+            {
+                return Some(done);
             }
         }
         None
@@ -154,11 +154,7 @@ fn match_fact_args(
     Some(current)
 }
 
-pub fn match_conditions(
-    conditions: &[Condition],
-    facts: &[Fact],
-    input: &str,
-) -> Option<Bindings> {
+pub fn match_conditions(conditions: &[Condition], facts: &[Fact], input: &str) -> Option<Bindings> {
     let empty = Bindings::new();
     match_cond_rec(conditions, 0, facts, input, &empty)
 }
@@ -189,15 +185,14 @@ fn match_cond_rec(
             }
         }
         Condition::Fact { rel, args } => {
-            // Iterate newest facts first so updated facts win
             for fact in facts.iter().rev() {
                 if fact.rel != *rel {
                     continue;
                 }
-                if let Some(next) = match_fact_args(args, &fact.args, bindings) {
-                    if let Some(done) = match_cond_rec(conditions, idx + 1, facts, input, &next) {
-                        return Some(done);
-                    }
+                if let Some(next) = match_fact_args(args, &fact.args, bindings)
+                    && let Some(done) = match_cond_rec(conditions, idx + 1, facts, input, &next)
+                {
+                    return Some(done);
                 }
             }
             None
