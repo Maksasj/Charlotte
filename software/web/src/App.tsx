@@ -100,6 +100,20 @@ export default function App() {
 
   const speechSupported = isSpeechRecognitionSupported();
 
+  function looksLikeEcho(heard: string, karinReply: string): boolean {
+    const norm = (s: string) =>
+      s
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const h = norm(heard);
+    if (!h) return true;
+    const r = norm(karinReply);
+    if (!r) return false;
+    return r.includes(h);
+  }
+
   function stopVoiceDialog() {
     voiceLoopRunId.current += 1;
     listenHandleRef.current?.stop();
@@ -130,39 +144,45 @@ export default function App() {
       return;
     }
 
+    let pendingHeard: string | null = null;
+
     while (runId === voiceLoopRunId.current) {
-      setVoiceDialogPhase('listening');
-      setLiveTranscript('');
-
-      const handle = listenOnce({
-        onInterim: (t) => {
-          if (runId === voiceLoopRunId.current) setLiveTranscript(t);
-        },
-      });
-      listenHandleRef.current = handle;
-
-      let heard: string | null = null;
-      try {
-        heard = await handle.promise;
-      } catch (e) {
-        if (runId === voiceLoopRunId.current) {
-          setErrorMsg((e as Error).message);
-          setVoiceDialogPhase('idle');
-        }
-        return;
-      } finally {
-        if (listenHandleRef.current === handle) listenHandleRef.current = null;
-      }
-
-      if (runId !== voiceLoopRunId.current) return;
+      let heard = pendingHeard;
+      pendingHeard = null;
 
       if (!heard) {
-        if (!handsFreeRef.current) {
-          setVoiceDialogPhase('idle');
+        setVoiceDialogPhase('listening');
+        setLiveTranscript('');
+
+        const handle = listenOnce({
+          onInterim: (t) => {
+            if (runId === voiceLoopRunId.current) setLiveTranscript(t);
+          },
+        });
+        listenHandleRef.current = handle;
+
+        try {
+          heard = await handle.promise;
+        } catch (e) {
+          if (runId === voiceLoopRunId.current) {
+            setErrorMsg((e as Error).message);
+            setVoiceDialogPhase('idle');
+          }
           return;
+        } finally {
+          if (listenHandleRef.current === handle) listenHandleRef.current = null;
         }
-        await new Promise((r) => setTimeout(r, 250));
-        continue;
+
+        if (runId !== voiceLoopRunId.current) return;
+
+        if (!heard) {
+          if (!handsFreeRef.current) {
+            setVoiceDialogPhase('idle');
+            return;
+          }
+          await new Promise((r) => setTimeout(r, 200));
+          continue;
+        }
       }
 
       setLiveTranscript(heard);
@@ -189,22 +209,76 @@ export default function App() {
       if (runId !== voiceLoopRunId.current) return;
       setLiveTranscript('');
       setVoiceDialogPhase('speaking');
-      try {
-        await karinVoice.speak(reply);
-      } catch (e) {
+
+      let karinSpeaking = true;
+      let bargedIn = false;
+
+      const speakPromise = karinVoice
+        .speak(reply)
+        .catch((e) => {
+          if (runId === voiceLoopRunId.current) {
+            setErrorMsg((e as Error).message);
+          }
+        })
+        .finally(() => {
+          karinSpeaking = false;
+          if (runId === voiceLoopRunId.current && !bargedIn && handsFreeRef.current) {
+            setVoiceDialogPhase('listening');
+          }
+        });
+
+      if (!handsFreeRef.current) {
+        await speakPromise;
         if (runId === voiceLoopRunId.current) {
-          setErrorMsg((e as Error).message);
           setVoiceDialogPhase('idle');
         }
         return;
       }
 
-      if (runId !== voiceLoopRunId.current) return;
-      if (!handsFreeRef.current) {
-        setVoiceDialogPhase('idle');
-        return;
+      // Keep barge-in listener active throughout Karin's speech so user speech cuts her off immediately
+      while (runId === voiceLoopRunId.current && !pendingHeard) {
+        const bargeHandle = listenOnce({
+          onInterim: (t) => {
+            if (runId !== voiceLoopRunId.current) return;
+            if (karinSpeaking) {
+              if (looksLikeEcho(t, reply)) return;
+              bargedIn = true;
+              karinVoice.stop();
+              setVoiceDialogPhase('listening');
+            }
+            setLiveTranscript(t);
+          },
+        });
+        listenHandleRef.current = bargeHandle;
+
+        let nextHeard: string | null = null;
+        try {
+          nextHeard = await bargeHandle.promise;
+        } catch (e) {
+          karinVoice.stop();
+          if (runId === voiceLoopRunId.current) {
+            setErrorMsg((e as Error).message);
+            setVoiceDialogPhase('idle');
+          }
+          return;
+        } finally {
+          if (listenHandleRef.current === bargeHandle) listenHandleRef.current = null;
+        }
+
+        if (runId !== voiceLoopRunId.current) return;
+
+        if (nextHeard && (bargedIn || !karinSpeaking || !looksLikeEcho(nextHeard, reply))) {
+          karinVoice.stop();
+          pendingHeard = nextHeard;
+          break;
+        }
+
+        if (!karinSpeaking) break;
       }
-      await new Promise((r) => setTimeout(r, 200));
+
+      if (!pendingHeard) {
+        await speakPromise;
+      }
     }
   }
 
