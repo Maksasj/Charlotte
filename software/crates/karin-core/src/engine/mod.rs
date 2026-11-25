@@ -347,6 +347,29 @@ impl Engine {
                 );
                 summary
             }
+            "induce_from_correction" => {
+                let item = args.get("item").map(String::as_str).unwrap_or("");
+                let topic = args.get("topic").map(String::as_str).unwrap_or("");
+                self.induce_from_correction(item, topic)
+            }
+            "approve_pattern" => {
+                let id = args.get("id").map(String::as_str).unwrap_or("");
+                let ok = self.promote_pattern(id);
+                self.add_fact(
+                    "approval_result".into(),
+                    BTreeMap::from([
+                        ("ok".into(), if ok { "true" } else { "false" }.into()),
+                        ("id".into(), id.into()),
+                    ]),
+                    Scope::Working,
+                    "meta:approve".into(),
+                );
+                if ok {
+                    format!("approved pattern {id}")
+                } else {
+                    format!("pattern {id} not found")
+                }
+            }
             other => match run_world_tool(other, args, &self.state.facts) {
                 Some(outcome) => {
                     for NewFact {
