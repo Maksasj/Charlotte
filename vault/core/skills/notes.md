@@ -1,17 +1,21 @@
 # Notes
 
-## save-note
+Saves and lists freeform long-term notes via `@note_save` and `@note_list`.
+
+```karin
+rule save-note
 when: "remember ?text", !note_saved()
 then: @note_save(text=?text)
 
-## reply-note-saved
+rule reply-note-saved
 when: note_saved(text=?text)
 then: => "Saved to long-term memory: \"?text\"."
 
-## list-notes
+rule list-notes
 when: "my notes", !notes_listing()
 then: @note_list()
 
-## reply-notes-listing
+rule reply-notes-listing
 when: notes_listing(list=?list)
 then: => "Your notes: ?list"
+```
