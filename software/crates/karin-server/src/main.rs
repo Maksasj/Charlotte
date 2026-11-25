@@ -77,6 +77,7 @@ fn build_router(shared: Arc<AppState>) -> Router {
         .route("/api/health", get(handlers::health))
         .route("/api/state", get(handlers::get_state))
         .route("/api/chat", post(handlers::chat))
+        .route("/api/chat/new", post(handlers::new_chat))
         .route("/api/teach", post(handlers::teach))
         .route("/api/feedback", post(handlers::feedback))
         .route("/api/facts", post(handlers::add_fact))

@@ -18,6 +18,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ input }),
     }),
+  newChat: () => req<{ state: AgentState }>('/api/chat/new', { method: 'POST' }),
   teach: (input: string, reply: string, promote = true) =>
     req<{ state: AgentState }>('/api/teach', {
       method: 'POST',

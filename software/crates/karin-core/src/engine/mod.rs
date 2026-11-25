@@ -51,6 +51,15 @@ impl Engine {
         Ok(())
     }
 
+    pub fn new_chat(&mut self) {
+        self.state.turn = 0;
+        self.state
+            .facts
+            .retain(|fact| fact.scope == Scope::LongTerm);
+        self.state.messages.clear();
+        self.state.chains.clear();
+    }
+
     pub(crate) fn alloc_id(&mut self, prefix: &str) -> String {
         let id = format!("{prefix}{}", self.state.next_id);
         self.state.next_id += 1;
