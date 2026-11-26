@@ -4,11 +4,6 @@ Karin is the entity `karin`. People can stand in relations to her: "Max is your
 creator" stores `rel(subj="karin", pred="creator", obj=<Max>)`.
 
 ```karin
-rule karin-say-is-your
-when: "$x is your $rel", !intent(), words($x) <= 2, $rel != "name", $x != "what", $x != "who", $x != "it", $x != "this", $x != "that"
-trust: 3
-then: +intent(name="karin_rel_tell", person=$x, rel=$rel)
-
 rule karin-rel-is-speaker
 when: intent(name="karin_rel_tell", person=$x, rel=$rel), speaker(entity=$me), named(entity=$me, value=$x)
 trust: 2

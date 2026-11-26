@@ -39,33 +39,4 @@ then:
   -dialogue_filled(goal="decide")
   => "I don't know the $c of $b yet. Teach me with \"the $c of $b is ...\" and ask again."
 
-goal_need(goal="meeting", slot="time", prompt="What time?")
-goal_need(goal="meeting", slot="day", prompt="Which day?")
-goal_need(goal="meeting", slot="who", prompt="Who is the meeting with?")
-
-rule wf-meeting-start
-when: "schedule a meeting", !dialogue_goal()
-then: +dialogue_goal(goal="meeting")
-
-rule wf-meeting-start-who
-when: "schedule a meeting with $who", !dialogue_goal()
-then:
-  +dialogue_goal(goal="meeting")
-  +dialogue_filled(goal="meeting", slot="who", value=$who)
-
-rule wf-meeting-finish
-when: dialogue_goal(goal="meeting"), dialogue_filled(goal="meeting", slot="who", value=$who), dialogue_filled(goal="meeting", slot="day", value=$day), dialogue_filled(goal="meeting", slot="time", value=$time)
-then:
-  -dialogue_goal(goal="meeting")
-  -dialogue_filled(goal="meeting")
-  ++meeting(who=$who, day=$day, time=$time)
-  => "Meeting booked with $who on $day at $time."
-
-rule wf-meeting-recall
-when: "my meetings", meeting(who=$who, day=$day, time=$time)
-then: => "Next meeting: $who on $day at $time."
-
-rule wf-meeting-recall-empty
-when: "my meetings", !meeting()
-then: => "No meetings yet. Say \"schedule a meeting\" to book one."
 ```

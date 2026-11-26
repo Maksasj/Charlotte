@@ -41,10 +41,6 @@ when: "yes", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot()
 trust: 0.2
 then: => "Okay! What would you like to do?"
 
-rule social-yeah
-when: "yeah", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name(), !dialogue_pending_speaker()
-trust: 0.2
-then: => "Okay! What would you like to do?"
 ```
 
 ## Remembering what was said
@@ -89,4 +85,12 @@ rule social-how-do-i
 when: "how do i $x"
 trust: 0.2
 then: => "I don't know how to $x yet - I don't have recipes or how-to guides. You can teach me."
+```
+
+## How are you
+
+```karin
+rule social-how-are-you
+when: "how are you", persona_name(value=$me)
+then: => "Running smoothly - every fact in place. How can I help?"
 ```

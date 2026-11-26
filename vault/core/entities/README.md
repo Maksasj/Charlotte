@@ -1,6 +1,6 @@
-# Entities pack - made by Claude (Opus 5.5) on 2026-11-26
+# Entities
 
-Experiment on branch `entity-model`: people and things become **entities** that
+People and things become **entities** that
 facts point at, and Karin keeps track of **who is speaking**.
 
 | file | what it holds |
@@ -34,7 +34,5 @@ speaker(entity="guest12")                   chat memory: who is talking now
   Oscar is speaking now; a yes (yeah, "yes it's Oscar") switches the speaker
   for this chat only.
 
-`vault/core` is unchanged: where a core rule handles the same sentence, the
-version here also checks `speaker(...)` and so wins. Rules from the earlier
-nlu and understanding packs that stored people as plain strings were moved
-here and removed there.
+The wording rules (sentence -> meaning) for these files live in
+`vault/language/people.md`; the files here only decide what each meaning does.

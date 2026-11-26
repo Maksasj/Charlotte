@@ -47,7 +47,7 @@ pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
 }
 
 /// A cheap fingerprint of every vault Markdown file (path, size, modified time),
-/// over the same folders `load_vault` reads: core, `generated-*`, `.episodes`.
+/// over the same folders `load_vault` reads: core, every module folder, `.episodes`.
 /// It changes when a file is edited, added or removed, or a folder appears.
 pub fn vault_fingerprint(dir: &Path) -> u64 {
     use std::collections::hash_map::DefaultHasher;
@@ -138,10 +138,21 @@ impl VaultBuilder {
     }
 }
 
+/// The folders the vault is made of, in load order: `core` first (the
+/// reasoning every other module builds on), then every other folder beside it
+/// in name order (`language`, `persona`, `skills`, ... - a new module is just a
+/// new folder), then `.episodes`. Folders starting with `.` are skipped
+/// (chat logs, episodes). Module ids carry their folder: `core/entities/me`,
+/// `skills/weather/weather`.
 fn vault_roots(core_dir: &Path) -> Vec<(PathBuf, String)> {
-    let mut roots = vec![(core_dir.to_path_buf(), String::new())];
+    let core_name = core_dir
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or("core")
+        .to_string();
+    let mut roots = vec![(core_dir.to_path_buf(), format!("{core_name}/"))];
     if let Some(parent) = core_dir.parent() {
-        let mut generated: Vec<(String, PathBuf)> = fs::read_dir(parent)
+        let mut modules: Vec<(String, PathBuf)> = fs::read_dir(parent)
             .ok()
             .into_iter()
             .flatten()
@@ -149,11 +160,11 @@ fn vault_roots(core_dir: &Path) -> Vec<(PathBuf, String)> {
             .filter(|path| path.is_dir() && path != core_dir)
             .filter_map(|path| {
                 let name = path.file_name()?.to_str()?.to_string();
-                name.starts_with("generated-").then_some((name, path))
+                (!name.starts_with('.')).then_some((name, path))
             })
             .collect();
-        generated.sort_by(|a, b| a.0.cmp(&b.0));
-        for (name, path) in generated {
+        modules.sort_by(|a, b| a.0.cmp(&b.0));
+        for (name, path) in modules {
             roots.push((path, format!("{name}/")));
         }
 

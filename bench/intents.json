@@ -125,7 +125,14 @@
       "learn-user-city",
       "learn-user-work",
       "recall-user-workplace*",
-      "me-about*"
+      "me-about*",
+      "me-live-in",
+      "me-where-do-i-live*",
+      "me-work-at",
+      "me-where-do-i-work*",
+      "me-goal-*",
+      "me-working-on",
+      "me-projects-*"
     ],
     "likes.tell": [
       "learn-user-like*",
@@ -253,7 +260,9 @@
       "weather-from-slot",
       "run-weather-tool",
       "reply-weather-*",
-      "alias-weather-raining"
+      "alias-weather-raining",
+      "me-weather-my-city",
+      "me-weather-ask-city"
     ],
     "weather.cities": [
       "weather-known-cities*",
@@ -269,7 +278,8 @@
       "formula-tip",
       "formula-discount",
       "formula-split",
-      "reply-formula-*"
+      "reply-formula-*",
+      "formula-speed-h"
     ],
     "convert": [
       "intent-convert-*",

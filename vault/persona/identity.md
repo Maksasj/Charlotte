@@ -51,15 +51,15 @@ then: => "See you soon! Your memory stays saved."
 
 rule help-short
 when: "help"
-then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts (like \"Go is a programming language\")."
+then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, and answer or learn knowledge-graph facts (like \"Go is a programming language\")."
 
 rule help-capabilities
 when: "what can you do"
-then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts (like \"Go is a programming language\")."
+then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, and answer or learn knowledge-graph facts (like \"Go is a programming language\")."
 
 rule help-assist
 when: "what can you help me with"
-then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts."
+then: => "I can check weather, calculate math, convert units, define concepts, save notes, set reminders, and answer or learn knowledge-graph facts."
 
 rule who-are-you
 when: "who are you", persona_name(value=$me), persona_role(value=$role), persona_tone(value=$tone)

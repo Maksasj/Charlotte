@@ -24,34 +24,6 @@ topic_word(word="animal")
 
 ## More ways to ask
 
-```karin
-rule likes-ask-bare-my-favorite
-when: "my favorite $topic", !intent(name="likes_topic")
-then: +intent(name="likes_topic", topic=$topic)
-
-rule likes-ask-bare-favorite
-when: "favorite $topic", !intent(name="likes_topic")
-then: +intent(name="likes_topic", topic=$topic)
-
-rule likes-ask-what-is-favorite
-when: "what $topic is my favorite", !intent(name="likes_topic")
-trust: 2.0
-then: +intent(name="likes_topic", topic=$topic)
-
-rule likes-ask-what-are-favorite
-when: "what are my favorite $topic", !intent(name="likes_topic")
-then: +intent(name="likes_topic", topic=$topic)
-
-rule likes-ask-what-is-do-i-like
-when: "what is $topic do i like", !intent(name="likes_topic")
-then: +intent(name="likes_topic", topic=$topic)
-
-rule likes-ask-tell-favorite
-when: "tell me my favorite $topic", !intent(name="likes_topic")
-then: +intent(name="likes_topic", topic=$topic)
-```
 
 ## More ways to tell
 
-```karin
-```

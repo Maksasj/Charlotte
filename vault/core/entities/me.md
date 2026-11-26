@@ -11,41 +11,6 @@ is someone she already knows, offers to switch to them.
 Wording rules only produce `intent(name="speaker_is", value=X, how=...)`;
 the behaviour rules below decide what it means for the entities.
 
-```karin
-rule me-say-my-name-is
-when: "my name is $n", !intent(), words($n) <= 3
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="said")
-
-rule me-say-call-me
-when: "call me $n", !intent(), words($n) <= 3
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="said")
-
-rule me-say-is-me
-when: "$n is me", !intent(), words($n) <= 2, $n != "it", $n != "this", $n != "that", $n != "who", $n != "what"
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="alias")
-
-rule me-say-hey-it-is
-when: "hey it is $n", !intent(), words($n) <= 2
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="said")
-
-rule me-say-hey-this-is
-when: "hey this is $n", !intent(), words($n) <= 2
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="said")
-
-rule me-say-i-am
-when: "i am $n", !intent(), words($n) <= 1, !state_word(word=$n), $n != "here", $n != "back"
-trust: 3
-then: +intent(name="speaker_is", value=$n, how="i_am")
-
-rule me-say-name-answer
-when: slot_value(goal="identity", slot="name", value=$n), !intent(), words($n) <= 2
-then: +intent(name="speaker_is", value=$n, how="said")
-```
 
 ## Wording
 
@@ -55,7 +20,6 @@ rewrite(from="yes that is me", to="yes")
 rewrite(from="yes it is me", to="yes")
 rewrite(from="yeah", to="yes")
 rewrite(from="yep", to="yes")
-rewrite(from="sure", to="yes")
 rewrite(from="yup", to="yes")
 rewrite(from="hey my name is", to="my name is")
 rewrite(from="hi my name is", to="my name is")
@@ -383,6 +347,114 @@ then:
 Priority note: `me-ask-likes-topic` runs above the core lookup but below rules
 learned from corrections (likes + is_a), which must tag likes before they are
 collected.
+
+## Where you live and work, your goal, your projects
+
+Older rules keep these on the fixed id `user`; these keep them on whoever is
+speaking (a guest's move along when the guest is merged into a known person).
+
+```karin
+rule me-live-in
+when: "i live in $city", speaker(entity=$me), words($city) <= 3
+trust: 2
+then:
+  -prop(entity=$me, attr="city")
+  ++prop(entity=$me, attr="city", value=$city)
+  => "Got it - I'll remember you live in $city."
+
+rule me-where-do-i-live
+when: "where do i live", speaker(entity=$me), prop(entity=$me, attr="city", value=$city)
+trust: 2
+then: => "You live in $city."
+
+rule me-where-do-i-live-unknown
+when: "where do i live", speaker(entity=$me), !prop(entity=$me, attr="city")
+trust: 2
+then: => "I don't know where you live yet. Tell me \"I live in ...\"."
+
+rule me-work-at
+when: "i work at $org", speaker(entity=$me), words($org) <= 4
+trust: 2
+then:
+  -prop(entity=$me, attr="workplace")
+  ++prop(entity=$me, attr="workplace", value=$org)
+  => "Noted - I'll remember you work at $org."
+
+rule me-where-do-i-work
+when: "where do i work", speaker(entity=$me), prop(entity=$me, attr="workplace", value=$org)
+trust: 2
+then: => "You told me you work at $org."
+
+rule me-where-do-i-work-unknown
+when: "where do i work", speaker(entity=$me), !prop(entity=$me, attr="workplace")
+trust: 2
+then: => "I don't know where you work yet. Tell me \"I work at ...\" and I'll remember."
+
+rule me-goal-set
+when: "my goal is $goal", speaker(entity=$me)
+trust: 2
+then:
+  -prop(entity=$me, attr="goal")
+  ++prop(entity=$me, attr="goal", value=$goal)
+  => "Goal saved: $goal. I'll keep it in mind."
+
+rule me-goal-ask
+when: "what is my goal", speaker(entity=$me), prop(entity=$me, attr="goal", value=$goal)
+trust: 2
+then: => "Your goal is: $goal."
+
+rule me-goal-ask-unknown
+when: "what is my goal", speaker(entity=$me), !prop(entity=$me, attr="goal")
+trust: 2
+then: => "You haven't set a goal yet. Say \"my goal is ...\"."
+
+rule me-working-on
+when: "i am working on $project", speaker(entity=$me)
+trust: 2
+then:
+  ++rel(subj=$me, pred="works_on", obj=$project)
+  => "Noted - you're working on $project."
+
+rule me-projects-ask
+when: "what am i working on", speaker(entity=$me), !collected(tag="my_projects"), !collected_empty(tag="my_projects")
+trust: 2
+then: @collect(rel="rel", field="obj", tag="my_projects", subj=$me, pred="works_on")
+
+rule me-projects-list
+when: "list my projects", speaker(entity=$me), !collected(tag="my_projects"), !collected_empty(tag="my_projects")
+trust: 2
+then: @collect(rel="rel", field="obj", tag="my_projects", subj=$me, pred="works_on")
+
+rule me-projects-reply
+when: collected(tag="my_projects", list=$l)
+trust: 4
+then: => "You're working on: $l."
+
+rule me-projects-reply-empty
+when: collected_empty(tag="my_projects")
+trust: 4
+then: => "No projects yet. Say \"I am working on ...\"."
+```
+
+The weather skill looks up the city of whoever is speaking, or asks for one.
+Both drop the "city missing" request, so the core rules that read the fixed
+id `user` don't answer for someone else afterwards.
+
+```karin
+rule me-weather-my-city
+when: intent(name="weather_missing_city"), speaker(entity=$me), prop(entity=$me, attr="city", value=$city), !intent(name="weather")
+trust: 2
+then:
+  -intent(name="weather_missing_city")
+  +intent(name="weather", city=$city)
+
+rule me-weather-ask-city
+when: intent(name="weather_missing_city"), speaker(entity=$me), !prop(entity=$me, attr="city"), !need_slot(goal="weather", slot="city"), !intent(name="weather")
+trust: 2
+then:
+  -intent(name="weather_missing_city")
+  +need_slot(goal="weather", slot="city", prompt="Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)")
+```
 
 ## Corrections ("what about X?" -> "yes")
 

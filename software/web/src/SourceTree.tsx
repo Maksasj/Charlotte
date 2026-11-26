@@ -4,8 +4,8 @@ import { RuntimeIcon, VaultIcon } from './Icons';
 
 /**
  * Where a fact or pattern lives, as a vault-like path: folders…, then the file.
- *   vault:skills/units                            → vault / core / skills / units.md
- *   vault:generated-claude-opus-5.5/formulas      → vault / generated-claude-opus-5.5 / formulas.md
+ *   vault:core/entities/me                        → vault / core / entities / me.md
+ *   vault:skills/weather/weather                  → vault / skills / weather / weather.md
  *   taught:…, anti_unify(…), induced…, chunk(…)   → runtime / learned / <how>
  *   pattern:p266                                  → runtime / conversation / <rule name>
  *   perceive, meta:*                              → runtime / conversation / …
@@ -15,10 +15,7 @@ export function vaultPathOf(provenance: string, ruleName: (id: string) => string
     const parts = provenance.slice('vault:'.length).split('/');
     const file = `${parts[parts.length - 1]}.md`;
     const folders = parts.slice(0, -1);
-    if (parts[0].startsWith('generated-') || parts[0].startsWith('.')) {
-      return ['vault', ...folders, file];
-    }
-    return ['vault', 'core', ...folders, file];
+    return ['vault', ...folders, file];
   }
   if (provenance.startsWith('taught')) return ['runtime', 'learned', 'taught replies'];
   if (provenance.startsWith('anti_unify')) return ['runtime', 'learned', 'induced from episodes'];

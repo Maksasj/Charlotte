@@ -44,12 +44,6 @@ then:
   +formula_calc(kind="travel_time", p=$s, n=$d)
   @calc(expr="$d / $s")
 
-rule formula-speed
-when: "speed for $d km in $t hours", !formula_calc()
-then:
-  +formula_calc(kind="speed", p=$t, n=$d)
-  @calc(expr="$d / $t")
-
 rule reply-formula-percent
 when: formula_calc(kind="percent", p=$p, n=$n), calc_result(value=$r)
 then: => "$p% of $n is $r."
@@ -73,4 +67,20 @@ then: => "$d km at $s km/h takes $r hours."
 rule reply-formula-speed
 when: formula_calc(kind="speed", p=$t, n=$d), calc_result(value=$r)
 then: => "$d km in $t hours is an average of $r km/h."
+```
+
+## Speed (written as the sentence arrives: "hours" becomes "h")
+
+`formula-speed` in `generated-claude-opus-5.5/formulas.md` waits for
+"speed for $d km in $t hours", but the unit lexicon rewrites "hours" to "h"
+before any rule sees the sentence, so it could never match. This is the same
+rule written the way the sentence actually arrives; its reply rule
+(`reply-formula-speed`) is unchanged.
+
+```karin
+rule formula-speed-h
+when: "speed for $d km in $t h", !formula_calc()
+then:
+  +formula_calc(kind="speed", p=$t, n=$d)
+  @calc(expr="$d / $t")
 ```

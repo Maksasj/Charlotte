@@ -380,3 +380,19 @@ hint(word="chat", text="To start a new chat, use the New chat button.")
 hint(word="smart", text="I'm a symbolic assistant: I understand the phrasings I've been taught, and I learn new ones when you teach me.")
 hint(word="stupid", text="Sorry - I only understand the phrasings I've been taught. Teach me what you meant and I'll get it next time.")
 ```
+
+## "What's the weather" goes to the weather skill
+
+"what is X" belongs to the definition skill, so "what's the weather" was
+answered with "I don't have a definition for the weather". These send weather
+questions to the weather skill (which then asks for, or knows, the city).
+
+```karin
+rewrite(from="what is the weather like in", to="weather in")
+rewrite(from="what is the weather in", to="weather in")
+rewrite(from="what is the weather like", to="weather")
+rewrite(from="what is the weather", to="weather")
+rewrite(from="how is the weather like in", to="weather in")
+rewrite(from="how is the weather in", to="weather in")
+rewrite(from="how is the weather", to="weather")
+```

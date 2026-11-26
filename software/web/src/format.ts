@@ -35,7 +35,7 @@ export function fmtAction(a: Action): string {
   }
 }
 
-/** "vault:generated-claude-opus-5.5-nlu-2026-11-26/people" → "generated-…/people". */
+/** "vault:skills/weather/weather" → "skills/weather/weather"; long folder names are shortened. */
 export function shortSource(provenance: string): string {
   const p = provenance.replace(/^vault:/, '');
   const parts = p.split('/');
