@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { isSpeechRecognitionSupported, listenOnce, type ListenHandle } from './speech';
 import { karinVoice, type VoiceStatus } from './voice';
+import { closeMic, micAnalyserNode, openMic } from './level';
+import VoiceWave from './VoiceWave';
 import { fmtAction, fmtCond } from './format';
 import { FactRow, PatternRow } from './Rows';
 import { VaultExplorer, vaultPathOf } from './SourceTree';
@@ -144,7 +146,8 @@ export default function App() {
   const [voiceDialogPhase, setVoiceDialogPhase] = useState<
     'idle' | 'loading' | 'listening' | 'thinking' | 'speaking'
   >('idle');
-  const [handsFree, setHandsFree] = useState(true);
+  const [handsFree, setHandsFree] = useState(() => localStorage.getItem('karin.handsFree') !== 'false');
+  const [micMeter, setMicMeter] = useState<'off' | 'on' | 'blocked'>('off');
   const [liveTranscript, setLiveTranscript] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -152,6 +155,7 @@ export default function App() {
   const listenHandleRef = useRef<ListenHandle | null>(null);
   const handsFreeRef = useRef(handsFree);
   handsFreeRef.current = handsFree;
+  useEffect(() => localStorage.setItem('karin.handsFree', String(handsFree)), [handsFree]);
 
   const speechSupported = isSpeechRecognitionSupported();
 
@@ -174,6 +178,8 @@ export default function App() {
     listenHandleRef.current?.stop();
     listenHandleRef.current = null;
     karinVoice.stop();
+    closeMic();
+    setMicMeter('off');
     setLiveTranscript('');
     setVoiceDialogPhase('idle');
   }
@@ -187,6 +193,13 @@ export default function App() {
     const runId = ++voiceLoopRunId.current;
     setErrorMsg(null);
     setStatusMsg(null);
+
+    // The level meter has its own mic stream (speech recognition doesn't share
+    // its audio); without it the dialog still works, just without the waveform.
+    openMic().then(
+      () => runId === voiceLoopRunId.current && setMicMeter('on'),
+      () => runId === voiceLoopRunId.current && setMicMeter('blocked'),
+    );
 
     try {
       setVoiceDialogPhase('loading');
@@ -232,6 +245,8 @@ export default function App() {
 
         if (!heard) {
           if (!handsFreeRef.current) {
+            closeMic();
+            setMicMeter('off');
             setVoiceDialogPhase('idle');
             return;
           }
@@ -285,6 +300,8 @@ export default function App() {
       if (!handsFreeRef.current) {
         await speakPromise;
         if (runId === voiceLoopRunId.current) {
+          closeMic();
+          setMicMeter('off');
           setVoiceDialogPhase('idle');
         }
         return;
@@ -686,7 +703,7 @@ export default function App() {
                           : `${m.trace.steps.length} ${m.trace.steps.length === 1 ? 'step' : 'steps'}`}
                       </span>
                       <button
-                        className="meta-link"
+                        className="meta-link trace-link"
                         onClick={() => {
                           setSelectedTrace(m.trace!);
                           setTab('trace');
@@ -779,25 +796,32 @@ export default function App() {
                   autoFocus
                 />
               ) : (
-                <div className="agent-voice">
-                  <span className={`voice-orb ${voiceDialogPhase}`} />
-                  <div className="voice-text">
-                    <div className="voice-phase-label">
-                      {!speechSupported
-                        ? 'Speech recognition unavailable in this browser'
+                <div className={`agent-voice ${voiceDialogPhase}`}>
+                  {voiceDialogPhase === 'idle' ? (
+                    <span className="voice-orb idle" />
+                  ) : (
+                    <VoiceWave
+                      phase={voiceDialogPhase}
+                      mic={micAnalyserNode}
+                      output={() => karinVoice.outputAnalyser()}
+                    />
+                  )}
+                  <div className={`voice-line ${liveTranscript ? 'heard' : ''}`}>
+                    {liveTranscript
+                      ? liveTranscript
+                      : !speechSupported
+                        ? 'Speech recognition is not available in this browser'
                         : voiceDialogPhase === 'idle'
-                          ? 'Ready - press Start Talking and speak to Karin'
+                          ? micMeter === 'blocked'
+                            ? 'Ready - allow the microphone to see your voice level'
+                            : 'Ready when you are'
                           : voiceDialogPhase === 'loading'
-                            ? 'Loading Karin voice (tiny-voca F2)…'
+                            ? 'Loading Karin voice…'
                             : voiceDialogPhase === 'listening'
-                              ? 'Listening… speak now'
+                              ? 'Listening…'
                               : voiceDialogPhase === 'thinking'
-                                ? 'Karin is thinking…'
-                                : 'Karin is speaking…'}
-                    </div>
-                    {liveTranscript && (
-                      <div className="voice-transcript">&ldquo;{liveTranscript}&rdquo;</div>
-                    )}
+                                ? 'Thinking…'
+                                : 'Karin is speaking'}
                   </div>
                 </div>
               )}
@@ -829,14 +853,19 @@ export default function App() {
                   </button>
                 </div>
                 {dialogMode === 'voice' && (
-                  <label className="agent-chip" title="Keep listening after each reply">
-                    <input
-                      type="checkbox"
-                      checked={handsFree}
-                      onChange={(e) => setHandsFree(e.target.checked)}
-                    />
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={handsFree}
+                    className={`agent-switch ${handsFree ? 'on' : ''}`}
+                    title={handsFree ? 'Hands-free: Karin keeps listening after each reply' : 'One turn at a time: press Start talking for each turn'}
+                    onClick={() => setHandsFree((v) => !v)}
+                  >
+                    <span className="track">
+                      <span className="knob" />
+                    </span>
                     Hands-free
-                  </label>
+                  </button>
                 )}
                 <div className="agent-actions">
                   {dialogMode === 'text' ? (
@@ -850,7 +879,8 @@ export default function App() {
                       disabled={!speechSupported}
                       onClick={() => void startVoiceDialog()}
                     >
-                      Start Talking
+                      <MicIcon />
+                      Start talking
                     </button>
                   ) : (
                     <>

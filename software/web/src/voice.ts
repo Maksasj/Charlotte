@@ -14,6 +14,7 @@ class TinyVocaPlayer {
   private phonemizer: Phonemizer | null = null;
   private loadPromise: Promise<void> | null = null;
   private audioCtx: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
   private sources: AudioBufferSourceNode[] = [];
   private runId = 0;
   private activeDone: (() => void) | null = null;
@@ -34,11 +35,20 @@ class TinyVocaPlayer {
   private ensureAudioContext(): AudioContext {
     if (!this.audioCtx) {
       this.audioCtx = new AudioContext();
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 1024;
+      this.analyser.smoothingTimeConstant = 0.2;
+      this.analyser.connect(this.audioCtx.destination);
     }
     if (this.audioCtx.state === 'suspended') {
       void this.audioCtx.resume();
     }
     return this.audioCtx;
+  }
+
+  /** Taps Karin's voice output, for the waveform. */
+  outputAnalyser(): AnalyserNode | null {
+    return this.analyser;
   }
 
   async ensureLoaded(): Promise<void> {
@@ -129,7 +139,7 @@ class TinyVocaPlayer {
 
       const source = ctx.createBufferSource();
       source.buffer = buffer;
-      source.connect(ctx.destination);
+      source.connect(this.analyser ?? ctx.destination);
 
       nextTime = Math.max(nextTime, ctx.currentTime + 0.04);
       source.start(nextTime);
