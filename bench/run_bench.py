@@ -9,7 +9,7 @@ never saved or logged), so a bench run never touches Karin's live memory or chat
     python bench/run_bench.py --start-server          # start a private server for the run (CI)
     python bench/run_bench.py --fail-under 0.6 --max-wrong 0.1   # exit 1 if worse
 
-Writes data/training/bench/<time>-<label>/{report.md, summary.json, results.jsonl}
+Writes bench/results/<time>-<label>/{report.md, summary.json, results.jsonl}
 and compares with the previous run (regressions / fixes). Standard library only.
 
 Scoring per turn (see bench/README.md):
@@ -387,7 +387,7 @@ def main() -> int:
     ap.add_argument("--cargo", default="cargo", help='cargo command for --start-server, e.g. "cargo +stable-x86_64-pc-windows-msvc"')
     ap.add_argument("--cases", type=Path, default=ROOT / "bench" / "cases")
     ap.add_argument("--intents", type=Path, default=ROOT / "bench" / "intents.json")
-    ap.add_argument("--out", type=Path, default=ROOT / "data" / "training" / "bench")
+    ap.add_argument("--out", type=Path, default=ROOT / "bench" / "results")
     ap.add_argument("--label", default="run")
     ap.add_argument("--only", nargs="*", default=[], help="only chats whose id contains one of these")
     ap.add_argument("--fail-under", type=float, help="exit 1 if accuracy is below this (0..1)")

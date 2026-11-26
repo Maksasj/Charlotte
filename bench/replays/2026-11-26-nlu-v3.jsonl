@@ -1,0 +1,335 @@
+{"chat":"chat-1795608994","turn":1,"input":"who are you","reply":"I'm Karin, a purely symbolic, self-improving assistant. My style is direct, curious, and transparent.","impasse":false,"fired":["p104"]}
+{"chat":"chat-1795609016","turn":1,"input":"Hi !","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609016","turn":2,"input":"How are you ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795609016","turn":3,"input":"What drink do I like ?","reply":"I don't know what drink you like yet. Say \"my favorite drink is ...\" to tell me.","impasse":false,"fired":["p118","p121","p123"]}
+{"chat":"chat-1795609016","turn":4,"input":"What drink I like ?","reply":"I don't know what drink you like yet. Say \"my favorite drink is ...\" to tell me.","impasse":false,"fired":["p119","p121","p123"]}
+{"chat":"chat-1795609016","turn":5,"input":"I like black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795609016","turn":6,"input":"What drink do I like ?","reply":"I don't know what drink you like yet. Say \"my favorite drink is ...\" to tell me.","impasse":false,"fired":["p118","p121","p123"]}
+{"chat":"chat-1795609016","turn":7,"input":"my favorite drink is black tea","reply":"Got it — I'll remember black tea as a drink you like.","impasse":false,"fired":["p112"]}
+{"chat":"chat-1795609016","turn":8,"input":"What drink do I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795609016","turn":9,"input":"What drink I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p119","p121","p122"]}
+{"chat":"chat-1795609135","turn":1,"input":"What is a Symbolic AI ?","reply":"Symbolic AI: AI built from explicit facts, rules, and reasoning steps rather than neural weights.","impasse":false,"fired":["p330","p133","p134"]}
+{"chat":"chat-1795609147","turn":1,"input":"weather","reply":"Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)","impasse":false,"fired":["p52","p144","p1"]}
+{"chat":"chat-1795609147","turn":2,"input":"Vilnius","reply":"Weather in Vilnius: crisp and sunny, 9°C.","impasse":false,"fired":["p3","p145","p146","p147"]}
+{"chat":"chat-1795609147","turn":3,"input":"What is weather in Vilnius ?","reply":"Weather in Vilnius: crisp and sunny, 9°C.","impasse":false,"fired":["p48","p70","p146","p147"]}
+{"chat":"chat-1795609186","turn":1,"input":"my name is Maksim","reply":"Nice to meet you, Maksim! I've stored your name in long-term memory.","impasse":false,"fired":["p105"]}
+{"chat":"chat-1795609186","turn":2,"input":"What is my name ?","reply":"Your name is Maksim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795609186","turn":3,"input":"What is your name ?","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795609186","turn":4,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609186","turn":5,"input":"What is your name ?","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795609223","turn":1,"input":"Hi Karin","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609223","turn":2,"input":"Hi Karin","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609223","turn":3,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609223","turn":4,"input":"Hi Karin","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795609223","turn":5,"input":"calculate 6 * 7","reply":"6 * 7 = 42","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795609223","turn":6,"input":"calculate 5 * 7 and 6 * 9","reply":"5 * 7 = 35. 6 * 9 = 54.","impasse":false,"fired":["p54","p128","p129","p54","p128","p129"]}
+{"chat":"chat-1795609223","turn":7,"input":"What is my name ?","reply":"Your name is Maksim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795609223","turn":8,"input":"I like caramel macchiato","reply":"Noted — I'll remember you like caramel macchiato.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795609223","turn":9,"input":"caramel macchiato is a drink","reply":"Learned: caramel macchiato is a drink.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795609223","turn":10,"input":"What is my favorite drink ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795609223","turn":11,"input":"What drink do I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795610269","turn":1,"input":"What drink I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p119","p121","p122"]}
+{"chat":"chat-1795610269","turn":2,"input":"I like black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795610269","turn":3,"input":"black tea is a drink","reply":"Learned: black tea is a drink.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795610269","turn":4,"input":"What drink I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p119","p121","p122"]}
+{"chat":"chat-1795610269","turn":5,"input":"my favorite drink is a black tea","reply":"Got it — I'll remember black tea as a drink you like.","impasse":false,"fired":["p111"]}
+{"chat":"chat-1795610269","turn":6,"input":"What drink I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p119","p121","p122"]}
+{"chat":"chat-1795610269","turn":7,"input":"my favorite drink is a black tea","reply":"Got it — I'll remember black tea as a drink you like.","impasse":false,"fired":["p111"]}
+{"chat":"chat-1795610363","turn":1,"input":"my favorite drink is a black tea","reply":"Got it — I'll remember black tea as a drink you like.","impasse":false,"fired":["p111"]}
+{"chat":"chat-1795610363","turn":2,"input":"What drink I like ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p119","p121","p122"]}
+{"chat":"chat-1795610417","turn":1,"input":"What is my favorite drink ?","reply":"Your favorite drink: black tea.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795610417","turn":2,"input":"what about caramel macchiato ?","reply":"Good catch! I see you like caramel macchiato and caramel macchiato is a drink. I proposed candidate rule p794 to connect likes + is_a automatically — say \"approve\" (or click Promote in Patterns) to activate it.","impasse":false,"fired":["p71","p74"]}
+{"chat":"chat-1795610417","turn":3,"input":"yes","reply":"Approved rule p794! From now on, whenever you like something and I know its category, I'll connect them automatically.","impasse":false,"fired":["p81","p82"]}
+{"chat":"chat-1795610417","turn":4,"input":"What is my favorite drinks ?","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p120","p794","p121","p122"]}
+{"chat":"chat-1795610417","turn":5,"input":"What is my favorite drink ?","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795610417","turn":6,"input":"What is caramel macchiato ?","reply":"caramel macchiato is a drink.","impasse":false,"fired":["p28"]}
+{"chat":"chat-1795610417","turn":7,"input":"What is my name ?","reply":"Your name is Maksim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795610417","turn":8,"input":"my name is Maksim","reply":"Nice to meet you, Maksim! I've stored your name in long-term memory.","impasse":false,"fired":["p105"]}
+{"chat":"chat-1795610417","turn":9,"input":"What is my name ?","reply":"Your name is Maksim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795610417","turn":10,"input":"Maksim likes black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p287"]}
+{"chat":"chat-1795612764","turn":1,"input":"Hi Karin","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795612764","turn":2,"input":"Hi Karin","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795612764","turn":3,"input":"How are you ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795612764","turn":4,"input":"What is my name ?","reply":"Your name is Maksim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795612764","turn":5,"input":"What I like ?","reply":"You like black tea, caramel macchiato.","impasse":false,"fired":["p115","p119","p116"]}
+{"chat":"chat-1795612764","turn":6,"input":"What drink do I like ?","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795612764","turn":7,"input":"What is your favorite drink ?","reply":"I don't have a favorite drink — I can't taste or listen, I'm a symbolic assistant. What's yours?","impasse":false,"fired":["p301"]}
+{"chat":"chat-1795612764","turn":8,"input":"What is your favorite drink ?","reply":"I don't have a favorite drink — I can't taste or listen, I'm a symbolic assistant. What's yours?","impasse":false,"fired":["p301"]}
+{"chat":"chat-1795612764","turn":9,"input":"Who are you ?","reply":"I'm Karin, a purely symbolic, self-improving assistant. My style is direct, curious, and transparent.","impasse":false,"fired":["p104"]}
+{"chat":"chat-1795612764","turn":10,"input":"What is your name ?","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795612764","turn":11,"input":"What is your name ?","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795612764","turn":12,"input":"Hii","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795612764","turn":13,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795619028","turn":1,"input":"hey Karen how are you","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795619028","turn":2,"input":"sorry I meant Karen","reply":"No worries at all!","impasse":false,"fired":["p333"]}
+{"chat":"chat-1795619028","turn":3,"input":"how are you today","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795619028","turn":4,"input":"how are you","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795619028","turn":5,"input":"what is your name","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795619028","turn":6,"input":"who am I","reply":"You're Maksim.","impasse":false,"fired":["p260"]}
+{"chat":"chat-1795619028","turn":7,"input":"my name is Maxim","reply":"Nice to meet you, Maxim! I've stored your name in long-term memory.","impasse":false,"fired":["p105"]}
+{"chat":"chat-1795619028","turn":8,"input":"so what is my name","reply":"Your name is Maxim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795619028","turn":9,"input":"calculate 7 + 10","reply":"7 + 10 = 17","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795619028","turn":10,"input":"thanks","reply":"You're welcome! Let me know if there's anything else.","impasse":false,"fired":["p332"]}
+{"chat":"chat-1795619028","turn":11,"input":"what is the weather in a wellness","reply":"I don't have a weather fact for a wellness yet. You can add a weather_city fact in the Facts tab.","impasse":false,"fired":["p48","p70","p146","p148"]}
+{"chat":"chat-1795619028","turn":12,"input":"which cities do you know","reply":"I have weather for Paris, Tokyo, London, Vilnius.","impasse":false,"fired":["p327","p329"]}
+{"chat":"chat-1795619028","turn":13,"input":"calculate 7 + 10","reply":"7 + 10 = 17","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795619028","turn":14,"input":"convert 5 kg to pounds","reply":"5 kg = 11.0231 lb","impasse":false,"fired":["p69","p140","p141"]}
+{"chat":"chat-1795619028","turn":15,"input":"what is my name","reply":"Your name is Maxim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795619028","turn":16,"input":"things do I like","reply":"You like black tea, caramel macchiato.","impasse":false,"fired":["p115","p119","p116"]}
+{"chat":"chat-1795619028","turn":17,"input":"favorite drink","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p247","p121","p122"]}
+{"chat":"chat-1795619028","turn":18,"input":"hey Karen what tools do you have","reply":"I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts (like \"Go is a programming language\").","impasse":false,"fired":["p102"]}
+{"chat":"chat-1795619028","turn":19,"input":"at which tools do you have","reply":"I don't understand \"at which tools do you have\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":20,"input":"how many facts do you know","reply":"I don't understand \"how many facts do you know\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":21,"input":"I really like black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":22,"input":"I love black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":23,"input":"I like black tea","reply":"Noted — I'll remember you like black tea.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":24,"input":"black tea is a drink","reply":"Learned: black tea is a drink.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":25,"input":"what's drink do I like","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p250","p121","p122"]}
+{"chat":"chat-1795619028","turn":26,"input":"what's I like","reply":"You like black tea, caramel macchiato.","impasse":false,"fired":["p115","p119","p116"]}
+{"chat":"chat-1795619028","turn":27,"input":"like","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":28,"input":"what is your name","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795619028","turn":29,"input":"what drink do I like","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795619028","turn":30,"input":"what is a caramel macchiato","reply":"caramel macchiato is a drink.","impasse":false,"fired":["p28"]}
+{"chat":"chat-1795619028","turn":31,"input":"what is rust used for","reply":"The purpose of rust is writing software.","impasse":false,"fired":["p331","p26","p25"]}
+{"chat":"chat-1795619028","turn":32,"input":"what is a rust","reply":"rust is a programming language.","impasse":false,"fired":["p28"]}
+{"chat":"chat-1795619028","turn":33,"input":"what is the weather in Vilnius right now","reply":"Weather in Vilnius: crisp and sunny, 9°C.","impasse":false,"fired":["p48","p70","p146","p147"]}
+{"chat":"chat-1795619028","turn":34,"input":"how are you feeling today","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795619028","turn":35,"input":"what is your name","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795619028","turn":36,"input":"what is my name","reply":"Your name is Maxim.","impasse":false,"fired":["p106"]}
+{"chat":"chat-1795619028","turn":37,"input":"how my dad called me","reply":"I don't understand \"how my dad called me\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":38,"input":"my dad's name is Vasily","reply":"Got it — your dad is Vasily.","impasse":false,"fired":["p274"]}
+{"chat":"chat-1795619028","turn":39,"input":"by the way","reply":"I don't understand \"by the way\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":40,"input":"by the way I'm Maxim","reply":"Yes — you're Maxim. I remember.","impasse":false,"fired":["p266"]}
+{"chat":"chat-1795619028","turn":41,"input":"which drinks do I like","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795619028","turn":42,"input":"what drink is my favorite","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p248","p121","p122"]}
+{"chat":"chat-1795619028","turn":43,"input":"Karen can you start a new chat for me","reply":"I can't start a new chat myself yet — use the New chat button.","impasse":false,"fired":["p345"]}
+{"chat":"chat-1795619028","turn":44,"input":"Karen is your name","reply":"Yes — that's me, Karin.","impasse":false,"fired":["p297"]}
+{"chat":"chat-1795619028","turn":45,"input":"what is your name","reply":"My name is Karin.","impasse":false,"fired":["p295"]}
+{"chat":"chat-1795619028","turn":46,"input":"your name is Karen","reply":"Yes — that's me, Karin.","impasse":false,"fired":["p297"]}
+{"chat":"chat-1795619028","turn":47,"input":"can you create a note for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p256","p1"]}
+{"chat":"chat-1795619028","turn":48,"input":"what tools do you have","reply":"I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts (like \"Go is a programming language\").","impasse":false,"fired":["p102"]}
+{"chat":"chat-1795619028","turn":49,"input":"Karen hello","reply":"Hello Maxim! I'm Karin. What shall we work on?","impasse":false,"fired":["p92"]}
+{"chat":"chat-1795619028","turn":50,"input":"hello Karen","reply":"Hello Maxim! I'm Karin. What shall we work on?","impasse":false,"fired":["p92"]}
+{"chat":"chat-1795619028","turn":51,"input":"hello","reply":"Hello Maxim! I'm Karin. What shall we work on?","impasse":false,"fired":["p92"]}
+{"chat":"chat-1795619028","turn":52,"input":"can you create a to-do list for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p3","p256","p1"]}
+{"chat":"chat-1795619028","turn":53,"input":"can you create a note for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p3","p256","p1"]}
+{"chat":"chat-1795619028","turn":54,"input":"can you save a note for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p3","p256","p1"]}
+{"chat":"chat-1795619028","turn":55,"input":"Greek Alice","reply":"Saved to long-term memory: \"Greek Alice\".","impasse":false,"fired":["p3","p257","p136","p137"]}
+{"chat":"chat-1795619028","turn":56,"input":"praise rust","reply":"I don't understand \"praise rust\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":57,"input":"rust is a programming language","reply":"Learned: rust is a programming language.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":58,"input":"Mike I have","reply":"I don't understand \"Mike I have\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":59,"input":"is my friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":60,"input":"Oscar is my friend","reply":"Got it — Oscar is your friend.","impasse":false,"fired":["p273"]}
+{"chat":"chat-1795619028","turn":61,"input":"Karen is my friend","reply":"That's lovely to hear — I'm happy to be your friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":62,"input":"Karen is my favorite person","reply":"That's lovely to hear — I'm happy to be your favorite person.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":63,"input":"10","reply":"I only caught \"10\". Could you say the whole sentence?","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":64,"input":"create a new chat for me","reply":"I can't start a new chat myself yet — use the New chat button.","impasse":false,"fired":["p345"]}
+{"chat":"chat-1795619028","turn":65,"input":"hi Karen","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795619028","turn":66,"input":"Karen what is the symbolic artificial intelligence","reply":"symbolic ai: AI built from explicit facts, rules, and reasoning steps rather than neural weights.","impasse":false,"fired":["p330","p133","p134"]}
+{"chat":"chat-1795619028","turn":67,"input":"Karen what is symbolic AI","reply":"symbolic AI: AI built from explicit facts, rules, and reasoning steps rather than neural weights.","impasse":false,"fired":["p330","p133","p134"]}
+{"chat":"chat-1795619028","turn":68,"input":"what is the definition for programming language","reply":"programming language: a formal language for writing instructions a computer can run, like Rust or Python.","impasse":false,"fired":["p58","p133","p134"]}
+{"chat":"chat-1795619028","turn":69,"input":"Karen is a drink","reply":"Thanks for telling me — but I'm just a symbolic assistant.","impasse":false,"fired":["p313"]}
+{"chat":"chat-1795619028","turn":70,"input":"can can is not a drink","reply":"I don't understand \"can can is not a drink\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":71,"input":"can you are a good girl today","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":72,"input":"Oscar is my friend","reply":"Got it — Oscar is your friend.","impasse":false,"fired":["p273"]}
+{"chat":"chat-1795619028","turn":73,"input":"query user friend","reply":"user friend Oscar.","impasse":false,"fired":["p41","p42"]}
+{"chat":"chat-1795619028","turn":74,"input":"link user front Oscar","reply":"Linked: user —[front]→ Oscar.","impasse":false,"fired":["p34"]}
+{"chat":"chat-1795619028","turn":75,"input":"link user friend Oscar","reply":"Linked: user —[friend]→ Oscar.","impasse":false,"fired":["p34"]}
+{"chat":"chat-1795619028","turn":76,"input":"Oscar is my friend","reply":"Got it — Oscar is your friend.","impasse":false,"fired":["p273"]}
+{"chat":"chat-1795619028","turn":77,"input":"Oscar is a friend","reply":"Learned: Oscar is a friend.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":78,"input":"is Oscar a friend","reply":"Yes, Oscar is a friend.","impasse":false,"fired":["p20","p21"]}
+{"chat":"chat-1795619028","turn":79,"input":"Oscar is my best friend","reply":"Got it — Oscar is your best friend.","impasse":false,"fired":["p273"]}
+{"chat":"chat-1795619028","turn":80,"input":"Oscar is best friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":81,"input":"Oscar is friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":82,"input":"is a friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":83,"input":"Oscar is a friend","reply":"Learned: Oscar is a friend.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":84,"input":"Oscar is a best friend","reply":"Learned: Oscar is a best friend.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":85,"input":"who is my best friend","reply":"Your best friend: Oscar.","impasse":false,"fired":["p276","p279"]}
+{"chat":"chat-1795619028","turn":86,"input":"what is my best friend","reply":"Your best friend: Oscar.","impasse":false,"fired":["p277","p279"]}
+{"chat":"chat-1795619028","turn":87,"input":"Oscar a friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":88,"input":"is Oscar a friend","reply":"Yes, Oscar is a friend.","impasse":false,"fired":["p20","p21"]}
+{"chat":"chat-1795619028","turn":89,"input":"is Oscar my best friend","reply":"Yes, Oscar is your best friend.","impasse":false,"fired":["p285"]}
+{"chat":"chat-1795619028","turn":90,"input":"is Oscar a best friend","reply":"Yes, Oscar is a best friend.","impasse":false,"fired":["p20","p21"]}
+{"chat":"chat-1795619028","turn":91,"input":"who is Oscar","reply":"Oscar is your best friend.","impasse":false,"fired":["p281"]}
+{"chat":"chat-1795619028","turn":92,"input":"Oscar is my best friend and he lives in Venus","reply":"Got it — Oscar is your best friend. Got it — Oscar lives in Venus.","impasse":false,"fired":["p273","p292"]}
+{"chat":"chat-1795619028","turn":93,"input":"Karen is my best friend","reply":"That's lovely to hear — I'm happy to be your best friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":94,"input":"Karen is my best a friend","reply":"That's lovely to hear — I'm happy to be your best friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":95,"input":"Karen is a my best friend","reply":"That's lovely to hear — I'm happy to be your best friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":96,"input":"is Karen","reply":"I don't understand \"is Karen\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":97,"input":"best friend","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":98,"input":"is Karen a best friend","reply":"I don't have facts showing that Karen is a best friend.","impasse":false,"fired":["p20","p23"]}
+{"chat":"chat-1795619028","turn":99,"input":"Karen you are my best friend now","reply":"That's lovely to hear — I'm happy to be your best friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":100,"input":"learn much more stuff I want you to learn much much more stuff","reply":"I don't understand \"learn much more stuff I want you to learn much much more stuff\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":101,"input":"Karen is smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":102,"input":"Ken is a smart","reply":"Learned: Ken is a smart.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":103,"input":"Karen","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795619028","turn":104,"input":"Karen is my best friend","reply":"That's lovely to hear — I'm happy to be your best friend.","impasse":false,"fired":["p312"]}
+{"chat":"chat-1795619028","turn":105,"input":"can can you open my","reply":"I'm not sure what you meant. I can't open or control apps yet.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":106,"input":"Karen can you start a new chat please","reply":"I can't start a new chat myself yet — use the New chat button.","impasse":false,"fired":["p345"]}
+{"chat":"chat-1795619028","turn":107,"input":"how many messages do we have in our chat right now","reply":"I'm not sure what you meant. To start a new chat, use the New chat button.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":108,"input":"Karen I'm an artist","reply":"Nice — I'll remember you're an artist.","impasse":false,"fired":["p264"]}
+{"chat":"chat-1795619028","turn":109,"input":"Karen","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795619028","turn":110,"input":"I like to draw","reply":"Noted — I'll remember you like to draw.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":111,"input":"to draw anime","reply":"I don't understand \"to draw anime\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":112,"input":"I like to draw anime","reply":"Noted — I'll remember you like to draw anime.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":113,"input":"what do I like to draw","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":114,"input":"can I make a note","reply":"Sure — what should the note say?","impasse":false,"fired":["p256","p1"]}
+{"chat":"chat-1795619028","turn":115,"input":"Karen make a note","reply":"Sure — what should the note say?","impasse":false,"fired":["p3","p256","p1"]}
+{"chat":"chat-1795619028","turn":116,"input":"Karen create a note","reply":"Sure — what should the note say?","impasse":false,"fired":["p3","p256","p1"]}
+{"chat":"chat-1795619028","turn":117,"input":"Karen safe in the long-term memory of a do you want to make a draft for me","reply":"Saved to long-term memory: \"safe in the long-term memory of a do you want to make a draft\".","impasse":false,"fired":["p3","p257","p136","p137"]}
+{"chat":"chat-1795619028","turn":118,"input":"Karen I like rock music","reply":"Got it — I'll remember rock as a music you like.","impasse":false,"fired":["p252"]}
+{"chat":"chat-1795619028","turn":119,"input":"Aaron I like rock music","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":120,"input":"I like is a rock music","reply":"Noted — I'll remember you like is a rock music.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":121,"input":"I like rock music itself","reply":"Noted — I'll remember you like rock music itself.","impasse":false,"fired":["p110"]}
+{"chat":"chat-1795619028","turn":122,"input":"they're like","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":123,"input":"Karen can you start Overlord app","reply":"I can't open or control apps yet.","impasse":false,"fired":["p348"]}
+{"chat":"chat-1795619028","turn":124,"input":"turn create a new chat in overall up under studio design","reply":"I'm not sure what you meant. To start a new chat, use the New chat button.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":125,"input":"can open teams app","reply":"I'm not sure what you meant. I can't open or control apps yet.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":126,"input":"acapella","reply":"I only caught \"acapella\". Could you say the whole sentence?","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":127,"input":"Karen list my notes","reply":"Your notes: 1. Greek Alice | 2. safe in the long-term memory of a do you want to make a draft","impasse":false,"fired":["p68","p138","p139"]}
+{"chat":"chat-1795619028","turn":128,"input":"can I need to draw a wolf today","reply":"I don't understand \"can I need to draw a wolf today\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":129,"input":"can a roof is my best friend","reply":"Got it — can a roof is your best friend.","impasse":false,"fired":["p273"]}
+{"chat":"chat-1795619028","turn":130,"input":"Aruba","reply":"I only caught \"Aruba\". Could you say the whole sentence?","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":131,"input":"can you are very funny","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":132,"input":"Karen you are very funny","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":133,"input":"Kelly you're not very smart right now","reply":"I'm not sure what you meant. I'm a symbolic assistant: I understand the phrasings I've been taught, and I learn new ones when you teach me.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":134,"input":"sorry Karen","reply":"No worries at all!","impasse":false,"fired":["p333"]}
+{"chat":"chat-1795619028","turn":135,"input":"sorry","reply":"No worries at all!","impasse":false,"fired":["p333"]}
+{"chat":"chat-1795619028","turn":136,"input":"Karen can you apologize for your not understanding my questions","reply":"I'm sorry I didn't understand you. I'm a symbolic assistant, so I only know the phrasings I've been taught — every one you teach me helps.","impasse":false,"fired":["p314"]}
+{"chat":"chat-1795619028","turn":137,"input":"104 East Oscar","reply":"I don't understand \"104 East Oscar\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":138,"input":"Karen who is Oscar","reply":"Oscar is your best friend.","impasse":false,"fired":["p281"]}
+{"chat":"chat-1795619028","turn":139,"input":"what is Oscar","reply":"Oscar is a best friend.","impasse":false,"fired":["p28"]}
+{"chat":"chat-1795619028","turn":140,"input":"Oscar Alex ice cream","reply":"I don't understand \"Oscar Alex ice cream\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":141,"input":"Oscar likes ice cream","reply":"Noted — Oscar likes ice cream.","impasse":false,"fired":["p288"]}
+{"chat":"chat-1795619028","turn":142,"input":"Oscar like ice cream","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":143,"input":"who is Oscar","reply":"Oscar is your best friend.","impasse":false,"fired":["p281"]}
+{"chat":"chat-1795619028","turn":144,"input":"Karen who is Oscar","reply":"Oscar is your best friend.","impasse":false,"fired":["p281"]}
+{"chat":"chat-1795619028","turn":145,"input":"can you're failing","reply":"I don't understand \"can you're failing\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":146,"input":"current how are you","reply":"I don't understand \"current how are you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":147,"input":"Karen what can you do","reply":"I can check weather, calculate math, convert units, define concepts, save notes, set reminders, plan trips, and answer or learn knowledge-graph facts (like \"Go is a programming language\").","impasse":false,"fired":["p102"]}
+{"chat":"chat-1795619028","turn":148,"input":"California","reply":"I only caught \"California\". Could you say the whole sentence?","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":149,"input":"turn who are you","reply":"I don't understand \"turn who are you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":150,"input":"Ken who are you","reply":"I don't understand \"Ken who are you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":151,"input":"who are you","reply":"I'm Karin, a purely symbolic, self-improving assistant. My style is direct, curious, and transparent.","impasse":false,"fired":["p104"]}
+{"chat":"chat-1795619028","turn":152,"input":"you're not doing great job right now","reply":"Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it.","impasse":false,"fired":["p309"]}
+{"chat":"chat-1795619028","turn":153,"input":"who is Karen","reply":"I'm Karin, a purely symbolic, self-improving assistant. My style is direct, curious, and transparent.","impasse":false,"fired":["p104"]}
+{"chat":"chat-1795619028","turn":154,"input":"what is Karen","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795619028","turn":155,"input":"it's my best friend not yours","reply":"I'm not sure what you meant. Tell me \"Oscar is my friend\", then ask \"who is my friend\".","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":156,"input":"can you chat","reply":"I'm not sure what you meant. To start a new chat, use the New chat button.","impasse":true,"fired":[]}
+{"chat":"chat-1795619028","turn":157,"input":"Karen","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795619028","turn":158,"input":"Karen can you stop please","reply":"Okay, I'll stop.","impasse":false,"fired":["p336"]}
+{"chat":"chat-1795619028","turn":159,"input":"Karen you're not very smart","reply":"Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it.","impasse":false,"fired":["p308"]}
+{"chat":"chat-1795619028","turn":160,"input":"Karen is smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":161,"input":"is Karen smart","reply":"I try! But I only know what I've been taught — teach me more and I'll get better.","impasse":false,"fired":["p311"]}
+{"chat":"chat-1795619028","turn":162,"input":"Karina","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795619028","turn":163,"input":"Karina","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795619028","turn":164,"input":"Karina is smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795619028","turn":165,"input":"Karina is a Karen","reply":"Learned: Karina is a Karen.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795619028","turn":166,"input":"Karina is Karina","reply":"I don't understand \"Karina is Karina\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":1,"input":"Karina is a Karin","reply":"Learned: Karina is a Karin.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795620542","turn":2,"input":"What is Karina","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":3,"input":"What is Karin ?","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":4,"input":"What is Karina","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":5,"input":"What is Karin","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":6,"input":"What is Karin","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":7,"input":"What is Karina","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":8,"input":"what is Karina","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":9,"input":"Karen is you","reply":"I don't understand \"Karen is you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":10,"input":"Karen is a you","reply":"Thanks for telling me — but I'm just a symbolic assistant.","impasse":false,"fired":["p313"]}
+{"chat":"chat-1795620542","turn":11,"input":"what is you","reply":"I don't understand \"what is you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":12,"input":"Karen","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795620542","turn":13,"input":"can you repeat after afterwards","reply":"I don't understand \"can you repeat after afterwards\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":14,"input":"what is a last message","reply":"I said: \"I don't understand \"can you repeat after afterwards\" yet. You can teach me a reply, or say \"help\" to hear what I can do.\"","impasse":false,"fired":["p342"]}
+{"chat":"chat-1795620542","turn":15,"input":"Karen calculate 5 + 5","reply":"5 + 5 = 10","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795620542","turn":16,"input":"calculate 5 + 5","reply":"5 + 5 = 10","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795620542","turn":17,"input":"calculate square root of 5","reply":"Couldn't evaluate \"square root of 5\": invalid character 's'.","impasse":false,"fired":["p54","p128","p130"]}
+{"chat":"chat-1795620542","turn":18,"input":"divided calculate 5.7","reply":"I'm not sure what you meant. I can do + - * / and parentheses, like \"calculate (5 + 7) / 2\".","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":19,"input":"divide 5 by 7","reply":"5 / 7 = 0.7143","impasse":false,"fired":["p315","p128","p129"]}
+{"chat":"chat-1795620542","turn":20,"input":"calculate 5 + 7","reply":"5 + 7 = 12","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795620542","turn":21,"input":"calculate 5 / 7","reply":"5 / 7 = 0.7143","impasse":false,"fired":["p54","p128","p129"]}
+{"chat":"chat-1795620542","turn":22,"input":"what is Oscar","reply":"Oscar is a best friend.","impasse":false,"fired":["p28"]}
+{"chat":"chat-1795620542","turn":23,"input":"what is Karen","reply":"I'm Karin, a purely symbolic, self-improving assistant.","impasse":false,"fired":["p299"]}
+{"chat":"chat-1795620542","turn":24,"input":"no Karen is you not me","reply":"I don't understand \"no Karen is you not me\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":25,"input":"you is Maksim","reply":"I don't understand \"you is Maksim\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":26,"input":"when is saying what do you","reply":"I don't understand \"when is saying what do you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":27,"input":"sing it to me not to you","reply":"I don't understand \"sing it to me not to you\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":28,"input":"what music do I like","reply":"Your favorite music: rock.","impasse":false,"fired":["p118","p121","p122"]}
+{"chat":"chat-1795620542","turn":29,"input":"my favorite music is a rock","reply":"Got it — I'll remember rock as a music you like.","impasse":false,"fired":["p111"]}
+{"chat":"chat-1795620542","turn":30,"input":"what is my favorite music","reply":"Your favorite music: rock.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795620542","turn":31,"input":"my favorite music is metalcore","reply":"Got it — I'll remember metalcore as a music you like.","impasse":false,"fired":["p112"]}
+{"chat":"chat-1795620542","turn":32,"input":"favorite music","reply":"Your favorite music: rock, metalcore.","impasse":false,"fired":["p247","p121","p122"]}
+{"chat":"chat-1795620542","turn":33,"input":"what is a my favorite music","reply":"Your favorite music: rock, metalcore.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795620542","turn":34,"input":"what Karen likes","reply":"I don't have likes of my own, but I remember yours. Ask me \"what do I like\".","impasse":false,"fired":["p302"]}
+{"chat":"chat-1795620542","turn":35,"input":"Karen also likes rock music same as me","reply":"I don't have tastes of my own — but I can remember that you like rock music if you say \"I like rock music\".","impasse":false,"fired":["p303"]}
+{"chat":"chat-1795620542","turn":36,"input":"Karen is a smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p306"]}
+{"chat":"chat-1795620542","turn":37,"input":"you're not smart Karen sorry","reply":"No worries at all!","impasse":false,"fired":["p333"]}
+{"chat":"chat-1795620542","turn":38,"input":"do you know a river gnome","reply":"I don't understand \"do you know a river gnome\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":39,"input":"let me know is Amy","reply":"I don't understand \"let me know is Amy\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":40,"input":"are there any","reply":"I don't understand \"are there any\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":41,"input":"never know is Amy","reply":"I don't understand \"never know is Amy\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":42,"input":"never know is","reply":"I don't understand \"never know is\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":43,"input":"regular is a maxim","reply":"Learned: regular is a maxim.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795620542","turn":44,"input":"Heather gnome","reply":"I don't understand \"Heather gnome\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":45,"input":"8 Maxim","reply":"I don't understand \"8 Maxim\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":46,"input":"little girl you're so stupid","reply":"I'm not sure what you meant. Sorry — I only understand the phrasings I've been taught. Teach me what you meant and I'll get it next time.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":47,"input":"Karen stop it","reply":"Okay, I'll stop.","impasse":false,"fired":["p337"]}
+{"chat":"chat-1795620542","turn":48,"input":"Karen can you stop it please","reply":"Okay, I'll stop.","impasse":false,"fired":["p337"]}
+{"chat":"chat-1795620542","turn":49,"input":"can you stop please","reply":"Okay, I'll stop.","impasse":false,"fired":["p336"]}
+{"chat":"chat-1795620542","turn":50,"input":"Karen can you make a note on a Friday I will check my friends","reply":"Saved to long-term memory: \"on a Friday I will check my friends\".","impasse":false,"fired":["p64","p136","p137"]}
+{"chat":"chat-1795620542","turn":51,"input":"Karen can you take a note for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p256","p1"]}
+{"chat":"chat-1795620542","turn":52,"input":"remember me to text my friends","reply":"Saved to long-term memory: \"to text my friends\".","impasse":false,"fired":["p3","p63","p136","p137"]}
+{"chat":"chat-1795620542","turn":53,"input":"my notes","reply":"Your notes: 1. Greek Alice | 2. safe in the long-term memory of a do you want to make a draft | 3. on a Friday I will check my friends | 4. to text my friends","impasse":false,"fired":["p66","p138","p139"]}
+{"chat":"chat-1795620542","turn":54,"input":"list my notes please","reply":"Your notes: 1. Greek Alice | 2. safe in the long-term memory of a do you want to make a draft | 3. on a Friday I will check my friends | 4. to text my friends","impasse":false,"fired":["p68","p138","p139"]}
+{"chat":"chat-1795620542","turn":55,"input":"Karen list all my notes","reply":"Your notes: 1. Greek Alice | 2. safe in the long-term memory of a do you want to make a draft | 3. on a Friday I will check my friends | 4. to text my friends","impasse":false,"fired":["p68","p138","p139"]}
+{"chat":"chat-1795620542","turn":56,"input":"what is my","reply":"I don't understand \"what is my\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":57,"input":"Karen what is a note","reply":"note: a short piece of text I keep in long-term memory for you. Say \"make a note <text>\" to add one and \"list my notes\" to hear them.","impasse":false,"fired":["p330","p133","p134"]}
+{"chat":"chat-1795620542","turn":58,"input":"can you are sometimes so stupid","reply":"Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it.","impasse":false,"fired":["p307"]}
+{"chat":"chat-1795620542","turn":59,"input":"Karen can you stop please being so stupid","reply":"Sorry — I'll try to do better. Tell me what you meant and I'll learn it.","impasse":false,"fired":["p339"]}
+{"chat":"chat-1795620542","turn":60,"input":"okay you're very smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795620542","turn":61,"input":"Karen you are very smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795620542","turn":62,"input":"can can you add more notes for me","reply":"I'm not sure what you meant. For notes, say \"make a note <text>\" or \"list my notes\".","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":63,"input":"how do I make a banana bread","reply":"I don't know how to make a banana bread yet — I don't have recipes or how-to guides. You can teach me.","impasse":false,"fired":["p349"]}
+{"chat":"chat-1795620542","turn":64,"input":"my dad just texted me","reply":"I don't understand \"my dad just texted me\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":65,"input":"can you make a note for a Friday","reply":"Saved to long-term memory: \"for a Friday\".","impasse":false,"fired":["p64","p136","p137"]}
+{"chat":"chat-1795620542","turn":66,"input":"can you make a to-do item for me","reply":"Sure — what should the note say?","impasse":false,"fired":["p256","p1"]}
+{"chat":"chat-1795620542","turn":67,"input":"recently I started listening some punk music","reply":"Nice — I'll remember you listen to punk music.","impasse":false,"fired":["p254"]}
+{"chat":"chat-1795620542","turn":68,"input":"what is a very smart","reply":"I don't have a definition for \"very smart\" yet. Add a definition fact or teach me!","impasse":false,"fired":["p3","p330","p133","p135"]}
+{"chat":"chat-1795620542","turn":69,"input":"and can you stop being so stupid","reply":"Sorry — I'll try to do better. Tell me what you meant and I'll learn it.","impasse":false,"fired":["p339"]}
+{"chat":"chat-1795620542","turn":70,"input":"Karen hello","reply":"Hello Maxim! I'm Karin. What shall we work on?","impasse":false,"fired":["p92"]}
+{"chat":"chat-1795620542","turn":71,"input":"pass a task to Overlord to make a new folder","reply":"I can't send tasks to Overlord yet — there's no connection between us.","impasse":false,"fired":["p346"]}
+{"chat":"chat-1795620542","turn":72,"input":"Karen can you say a overlord agent to start a new sub-agent and so that sub-agent be working on a voice integration into Overlord so you have a dictation mode and also want to have a dictation mode for overload as well","reply":"I can't send tasks to Overlord yet — there's no connection between us.","impasse":false,"fired":["p346"]}
+{"chat":"chat-1795620542","turn":73,"input":"yes","reply":"Okay! What would you like to do?","impasse":false,"fired":["p340"]}
+{"chat":"chat-1795620542","turn":74,"input":"Liam","reply":"I only caught \"Liam\". Could you say the whole sentence?","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":75,"input":"yeah","reply":"Okay! What would you like to do?","impasse":false,"fired":["p341"]}
+{"chat":"chat-1795620542","turn":76,"input":"Karen","reply":"Yes? I'm listening.","impasse":false,"fired":["p300"]}
+{"chat":"chat-1795620542","turn":77,"input":"Karen is a very smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795620542","turn":78,"input":"Karen is smart","reply":"Thank you — that's kind of you!","impasse":false,"fired":["p305"]}
+{"chat":"chat-1795620542","turn":79,"input":"is Karen smart","reply":"I try! But I only know what I've been taught — teach me more and I'll get better.","impasse":false,"fired":["p311"]}
+{"chat":"chat-1795620542","turn":80,"input":"is Karen a smart","reply":"I try! But I only know what I've been taught — teach me more and I'll get better.","impasse":false,"fired":["p310"]}
+{"chat":"chat-1795620542","turn":81,"input":"is a smart a Karen","reply":"I don't have facts showing that a smart is a Karen.","impasse":false,"fired":["p20","p23"]}
+{"chat":"chat-1795620542","turn":82,"input":"is smart is a Karen","reply":"Learned: is smart is a Karen.","impasse":false,"fired":["p17"]}
+{"chat":"chat-1795620542","turn":83,"input":"sorry I'm wrong","reply":"No worries at all!","impasse":false,"fired":["p333"]}
+{"chat":"chat-1795620542","turn":84,"input":"call Karen","reply":"I don't understand \"call Karen\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":85,"input":"and I just said nothing can you just repeat it","reply":"I don't understand \"and I just said nothing can you just repeat it\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":86,"input":"Chatsworth character","reply":"I don't understand \"Chatsworth character\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":87,"input":"are you like to keep Seafood","reply":"I'm not sure what you meant. Tell me \"I like ...\", then ask \"what do I like\".","impasse":true,"fired":[]}
+{"chat":"chat-1795620542","turn":88,"input":"maximum likes chicken","reply":"Noted — maximum likes chicken.","impasse":false,"fired":["p288"]}
+{"chat":"chat-1795620542","turn":89,"input":"what is my favorite drink","reply":"Your favorite drink: black tea, caramel macchiato.","impasse":false,"fired":["p120","p121","p122"]}
+{"chat":"chat-1795620542","turn":90,"input":"my favorite food","reply":"I don't know what food you like yet. Say \"my favorite food is ...\" to tell me.","impasse":false,"fired":["p246","p121","p123"]}
+{"chat":"chat-1795685357","turn":1,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795685357","turn":2,"input":"How are you ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795685357","turn":3,"input":"What I just said ?","reply":"I don't understand \"What I just said ?\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795685357","turn":4,"input":"How are you Karin ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795685357","turn":5,"input":"Who is Oskar ?","reply":"I don't know who Oskar is yet. Tell me, for example, \"Oskar is my friend\".","impasse":false,"fired":["p284"]}
+{"chat":"chat-1795685357","turn":6,"input":"Who is a Oskarr ?","reply":"I don't know who a Oskarr is yet. Tell me, for example, \"a Oskarr is my friend\".","impasse":false,"fired":["p284"]}
+{"chat":"chat-1795685756","turn":1,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795685756","turn":2,"input":"How are you ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795685756","turn":3,"input":"What I just said ?","reply":"I don't understand \"What I just said ?\" yet. You can teach me a reply, or say \"help\" to hear what I can do.","impasse":true,"fired":[]}
+{"chat":"chat-1795685756","turn":4,"input":"How are you Karin ?","reply":"Running smoothly — every fact in place. How can I help?","impasse":false,"fired":["p161"]}
+{"chat":"chat-1795685756","turn":5,"input":"Who is Oskar ?","reply":"I don't know who Oskar is yet. Tell me, for example, \"Oskar is my friend\".","impasse":false,"fired":["p284"]}
+{"chat":"chat-1795685756","turn":6,"input":"Who is a Oskarr ?","reply":"I don't know who a Oskarr is yet. Tell me, for example, \"a Oskarr is my friend\".","impasse":false,"fired":["p284"]}
+{"chat":"chat-1795685756","turn":7,"input":"my name is Maksim","reply":"Nice to meet you, Maksim! I've stored your name in long-term memory.","impasse":false,"fired":["p105"]}
+{"chat":"chat-1795685756","turn":8,"input":"Oscar is my best friend and he lives in Venus","reply":"Got it — Oscar is your best friend. Got it — Oscar lives in Venus.","impasse":false,"fired":["p273","p292"]}
+{"chat":"chat-1795685963","turn":1,"input":"Hi","reply":"Hi! I'm Karin — ready when you are.","impasse":false,"fired":["p94"]}
+{"chat":"chat-1795685963","turn":2,"input":"I am Maksim","reply":"Yes — you're Maksim. I remember.","impasse":false,"fired":["p266"]}
+{"chat":"chat-1795685963","turn":3,"input":"Who am I ?","reply":"You're Maksim.","impasse":false,"fired":["p260"]}

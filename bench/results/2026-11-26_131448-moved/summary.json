@@ -1,0 +1,170 @@
+{
+  "label": "moved",
+  "time": "2026-11-26_131448",
+  "version": "c3d57d3 + uncommitted changes",
+  "server": "http://127.0.0.1:8080",
+  "chats": 14,
+  "baseline": "2026-11-26_131307-run",
+  "turns": 329,
+  "outcomes": {
+    "correct": 251,
+    "partial": 0,
+    "value_error": 2,
+    "wrong": 3,
+    "missed": 29,
+    "correct_reject": 37,
+    "false_accept": 7
+  },
+  "accuracy": 0.8754,
+  "understanding": 0.8799,
+  "wrong_rate": 0.0304,
+  "false_accept_rate": 0.1522,
+  "missed_rate": 0.1025,
+  "in_scope_turns": 283,
+  "noise_turns": 46,
+  "by_intent": {
+    "calc": {
+      "correct": 9,
+      "value_error": 1
+    },
+    "chat.repeat": {
+      "missed": 4,
+      "correct": 1
+    },
+    "convert": {
+      "correct": 1
+    },
+    "define": {
+      "correct": 5
+    },
+    "fact.ask": {
+      "correct": 4,
+      "wrong": 1
+    },
+    "fact.teach": {
+      "correct": 4
+    },
+    "help.capabilities": {
+      "correct": 3,
+      "missed": 1
+    },
+    "likes.ask": {
+      "correct": 29,
+      "missed": 1
+    },
+    "likes.correction": {
+      "correct": 2
+    },
+    "likes.tell": {
+      "correct": 19,
+      "missed": 2,
+      "wrong": 1
+    },
+    "noise": {
+      "correct_reject": 37,
+      "correct": 2,
+      "false_accept": 7
+    },
+    "note.create": {
+      "correct": 12,
+      "missed": 1
+    },
+    "note.list": {
+      "correct": 4
+    },
+    "people.likes.tell": {
+      "correct": 1,
+      "missed": 1
+    },
+    "people.rel.ask": {
+      "correct": 7
+    },
+    "people.rel.tell": {
+      "correct": 10,
+      "missed": 2
+    },
+    "people.rel.tell+people.city.tell": {
+      "correct": 1
+    },
+    "people.who_is": {
+      "correct": 8
+    },
+    "persona.called": {
+      "correct": 7,
+      "missed": 1
+    },
+    "persona.identity": {
+      "correct": 13,
+      "missed": 3
+    },
+    "persona.likes": {
+      "correct": 4
+    },
+    "persona.name": {
+      "correct": 10
+    },
+    "persona.statement": {
+      "correct": 2,
+      "missed": 3
+    },
+    "social.complaint": {
+      "missed": 3,
+      "correct": 7
+    },
+    "social.compliment": {
+      "correct": 21,
+      "wrong": 1
+    },
+    "social.greet": {
+      "correct": 17
+    },
+    "social.how_are_you": {
+      "correct": 8,
+      "missed": 1
+    },
+    "social.sorry": {
+      "correct": 4
+    },
+    "social.stop": {
+      "correct": 4
+    },
+    "social.thanks": {
+      "correct": 1
+    },
+    "social.yes": {
+      "correct": 2
+    },
+    "unsupported.app": {
+      "correct": 3,
+      "missed": 2
+    },
+    "unsupported.how_to": {
+      "correct": 1
+    },
+    "unsupported.new_chat": {
+      "correct": 3
+    },
+    "unsupported.other": {
+      "missed": 4
+    },
+    "user.name.ask": {
+      "correct": 10
+    },
+    "user.name.tell": {
+      "correct": 6
+    },
+    "user.role.tell": {
+      "correct": 1
+    },
+    "weather.ask": {
+      "correct": 4,
+      "value_error": 1
+    },
+    "weather.cities": {
+      "correct": 1
+    }
+  },
+  "unmapped_rules": [],
+  "fixed": 0,
+  "broken": 0
+}
