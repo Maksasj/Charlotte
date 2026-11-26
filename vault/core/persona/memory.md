@@ -23,20 +23,20 @@ when: "I live in $city"
 then:
   -prop(entity="user", attr="city")
   ++prop(entity="user", attr="city", value=$city)
-  => "Got it — I'll remember you live in $city."
+  => "Got it - I'll remember you live in $city."
 
 rule learn-user-work
 when: "I work at $org"
 then:
   -prop(entity="user", attr="workplace")
   ++prop(entity="user", attr="workplace", value=$org)
-  => "Noted — I'll remember you work at $org."
+  => "Noted - I'll remember you work at $org."
 
 rule learn-user-like
 when: "I like $thing"
 then:
   ++rel(subj="user", pred="likes", obj=$thing)
-  => "Noted — I'll remember you like $thing."
+  => "Noted - I'll remember you like $thing."
 
 rule learn-user-like-topic-a
 when: "my favorite $topic is a $thing"
@@ -44,7 +44,7 @@ then:
   -dialogue_topic
   +dialogue_topic(kind="likes", topic=$topic)
   ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
-  => "Got it — I'll remember $thing as a $topic you like."
+  => "Got it - I'll remember $thing as a $topic you like."
 
 rule learn-user-like-topic
 when: "my favorite $topic is $thing"
@@ -52,19 +52,19 @@ then:
   -dialogue_topic
   +dialogue_topic(kind="likes", topic=$topic)
   ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
-  => "Got it — I'll remember $thing as a $topic you like."
+  => "Got it - I'll remember $thing as a $topic you like."
 
 rule learn-user-also-like-topic
 when: "I also like $thing", dialogue_topic(kind="likes", topic=$topic)
 then:
   ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
-  => "Got it — added $thing to the $topic you like."
+  => "Got it - added $thing to the $topic you like."
 
 rule learn-user-also-like-general
 when: "I also like $thing", !dialogue_topic(kind="likes")
 then:
   ++rel(subj="user", pred="likes", obj=$thing)
-  => "Got it — added $thing to what you like."
+  => "Got it - added $thing to what you like."
 
 rule ask-user-likes-all
 when: "what do I like", !collected(tag="likes"), !collected_empty(tag="likes")
@@ -121,5 +121,5 @@ then: => "I know you live in $city. Tell me \"my name is ...\" so I know your na
 
 rule recall-user-profile-empty
 when: "what do you know about me", !user_name(), !prop(entity="user", attr="city")
-then: => "I don't know much about you yet — try \"my name is ...\", \"I live in ...\", or \"I like ...\"."
+then: => "I don't know much about you yet - try \"my name is ...\", \"I live in ...\", or \"I like ...\"."
 ```

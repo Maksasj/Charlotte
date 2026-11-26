@@ -23,7 +23,7 @@ then: => "Hello! I'm $me. Ask me for weather, math, definitions, notes, or teach
 
 rule greet-hi
 when: "hi", persona_name(value=$me)
-then: => "Hi! I'm $me — ready when you are."
+then: => "Hi! I'm $me - ready when you are."
 
 rule greet-hey
 when: "hey", persona_name(value=$me)
@@ -31,7 +31,7 @@ then: => "Hey! What can I help with?"
 
 rule greet-morning
 when: "good morning", persona_name(value=$me)
-then: => "Good morning! I'm $me — ready whenever you are."
+then: => "Good morning! I'm $me - ready whenever you are."
 
 rule thanks
 when: ~"thank"

@@ -1,6 +1,6 @@
 # Data-Driven Planar Areas (`gpt-6.2-sol`)
 
-Single generic area rule driven by `sol_area_factor` facts and `@calc` — adding a shape takes one fact.
+Single generic area rule driven by `sol_area_factor` facts and `@calc` - adding a shape takes one fact.
 
 ```karin
 sol_area_factor(shape="rectangle", factor="1")

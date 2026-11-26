@@ -22,11 +22,11 @@ then: @induce_from_correction(item=$item, topic=$topic)
 
 rule reply-correction-proposed-rule
 when: correction_outcome(status="proposed_rule", item=$item, topic=$topic, pattern_id=$pid)
-then: => "Good catch! I see you like $item and $item is a $topic. I proposed candidate rule $pid to connect likes + is_a automatically — say \"approve\" (or click Promote in Patterns) to activate it."
+then: => "Good catch! I see you like $item and $item is a $topic. I proposed candidate rule $pid to connect likes + is_a automatically - say \"approve\" (or click Promote in Patterns) to activate it."
 
 rule reply-correction-already-active
 when: correction_outcome(status="already_active", item=$item, topic=$topic)
-then: => "Done — I connected $item as a $topic you like."
+then: => "Done - I connected $item as a $topic you like."
 
 rule reply-correction-already-known
 when: correction_outcome(status="already_known", item=$item, topic=$topic)
@@ -42,7 +42,7 @@ then: => "I know $item is a $topic, but I didn't know you like it. Should I add 
 
 rule reply-correction-unknown-item
 when: correction_outcome(status="unknown_item", item=$item, topic=$topic)
-then: => "I haven't heard of $item before — what is it? Say \"yes\" if it's a $topic you like."
+then: => "I haven't heard of $item before - what is it? Say \"yes\" if it's a $topic you like."
 
 rule approve-pending-rule-word
 when: "approve", dialogue_pending_approval(pattern_id=$pid), !approval_result()
@@ -70,7 +70,7 @@ then:
   -dialogue_confirm
   ++is_a(child=$item, parent=$topic)
   ++rel(subj="user", pred="likes", topic=$topic, obj=$item)
-  => "Got it — learned that $item is a $topic and added it to your favorite $topic."
+  => "Got it - learned that $item is a $topic and added it to your favorite $topic."
 
 rule confirm-missing-like-yes
 when: "yes", dialogue_confirm(kind="confirm_like", item=$item, topic=$topic)
@@ -78,7 +78,7 @@ then:
   -dialogue_confirm
   ++rel(subj="user", pred="likes", obj=$item)
   ++rel(subj="user", pred="likes", topic=$topic, obj=$item)
-  => "Got it — added $item to your favorite $topic."
+  => "Got it - added $item to your favorite $topic."
 
 rule confirm-unknown-both-yes
 when: "yes", dialogue_confirm(kind="confirm_both", item=$item, topic=$topic)
@@ -87,7 +87,7 @@ then:
   ++is_a(child=$item, parent=$topic)
   ++rel(subj="user", pred="likes", obj=$item)
   ++rel(subj="user", pred="likes", topic=$topic, obj=$item)
-  => "Got it — learned that $item is a $topic and remembered it as a $topic you like."
+  => "Got it - learned that $item is a $topic and remembered it as a $topic you like."
 
 rule decline-pending-approval
 when: "no", dialogue_pending_approval()

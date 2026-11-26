@@ -855,7 +855,7 @@ export class Normalizer {
     text = re.sub(r`(?<=\d)–(?=\d)`, "-", text);
     text = _DAY_RANGE.sub((match) => this._dayRange(match), text);
     for (const [old, fresh] of [["‘", "'"], ["’", "'"], ["‚", "'"], ["‛", "'"], ["`", "'"], ["´", "'"], ["“", '"'], ["”", '"'],
-      ["„", '"'], ["‟", '"'], ["«", '"'], ["»", '"'], ["–", "—"], ["―", "—"], ["[", "("], ["]", ")"]]) {
+      ["„", '"'], ["‟", '"'], ["«", '"'], ["»", '"'], ["–", "-"], ["―", "-"], ["[", "("], ["]", ")"]]) {
       text = text.replaceAll(old, fresh);
     }
     this.inline = [];
@@ -868,7 +868,7 @@ export class Normalizer {
     text = re.sub(r`\.{3,}`, "…", text);
     text = re.sub(r`(?<=\d)\s-\s(?=\d[\d.,]*\s?=)`, " minus ", text);
     text = re.sub(r`(?<![\d.,/-])(\d[\d.,]*)-(?=\d[\d.,]*=)`, r`\1 minus `, text);
-    text = re.sub(r`-{2,}|\s-\s`, "—", text);
+    text = re.sub(r`-{2,}|\s-\s`, "-", text);
     text = re.sub(r`\bw/o\b`, " without ", text, re.IGNORECASE);
     text = re.sub(r`\bw/(?=\s|$)`, " with ", text, re.IGNORECASE);
     text = re.sub(r`\bn/a\b`, " not applicable ", text, re.IGNORECASE);
@@ -892,9 +892,9 @@ export class Normalizer {
     const clock = r`\d{1,2}:[0-5]\d(?:\s?[AaPp]\.?[Mm]\.?)?|\b\d{1,2}\s?[AaPp]\.?[Mm]\.?`;
     text = re.sub(r`(` + clock + r`)\s(` + _ZONES + r`)\b`, (m) => `${m.group(1)} ${_spelled(m.group(2))}`, text);
     text = re.sub(r`(?<![\d.,:])(\d{1,2})\.([0-5]\d)(?=\s?[AaPp]\.?[Mm]\b)`, r`\1:\2`, text);
-    text = re.sub(r`(?<![\d.,:])(\d{1,2})\.(00|15|30|45)(\s?(?:to|until|till|and|[-—])\s?)(\d{1,2})\.(00|15|30|45)(?!\d|\.\d)`,
+    text = re.sub(r`(?<![\d.,:])(\d{1,2})\.(00|15|30|45)(\s?(?:to|until|till|and|[--])\s?)(\d{1,2})\.(00|15|30|45)(?!\d|\.\d)`,
       (match) => this._dotTimes(match), text);
-    text = re.sub(r`(` + clock + r`)\s?[-—]\s?(?=\d{1,2}(?::[0-5]\d|\s?[AaPp]\.?[Mm]\b))`, r`\1 to `, text);
+    text = re.sub(r`(` + clock + r`)\s?[--]\s?(?=\d{1,2}(?::[0-5]\d|\s?[AaPp]\.?[Mm]\b))`, r`\1 to `, text);
     text = _RATIO.sub((match) => this._ratio(match), text);
     text = re.sub(r`(?<![\d:])(\d{1,2}):([0-5]\d)(?::([0-5]\d))?` + _HALF_DAY + r`?(?![\d:])`, (match) => this._time(match), text);
     text = re.sub(r`(?<![\d.:,])(\d{1,2})` + _HALF_DAY + r`(?![A-Za-z])`,
@@ -910,9 +910,9 @@ export class Normalizer {
       (m) => this._date(int(m.group(2)), int(m.group(3)), m.group(1)) || m.group(0), text);
     text = re.sub(r`(?<![\d.])(\d{1,2})\.(\d{1,2})\.(\d{4})(?!\d|\.\d)`, (match) => this._dotDate(match), text);
     text = re.sub(r`(?<![\d/])(\d{1,2})/(\d{1,2})/(\d{4}|\d{2})(?![\d/])`, (match) => this._slashDate(match), text);
-    text = re.sub(r`\b(` + _MONTH_PATTERN + r`)\.?\s+(\d{1,2})(?:st|nd|rd|th)?\s?[-—]\s?(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?(?![\d:])`,
+    text = re.sub(r`\b(` + _MONTH_PATTERN + r`)\.?\s+(\d{1,2})(?:st|nd|rd|th)?\s?[--]\s?(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?(?![\d:])`,
       (match) => this._daysOfMonth(match), text);
-    text = re.sub(r`(?<![\d.,/:-])(\d{1,2})(?:st|nd|rd|th)?\s?[-—]\s?(\d{1,2})(?:st|nd|rd|th)?\s+(` + _MONTH_PATTERN + r`)\b(?:,?\s+(\d{4}))?`,
+    text = re.sub(r`(?<![\d.,/:-])(\d{1,2})(?:st|nd|rd|th)?\s?[--]\s?(\d{1,2})(?:st|nd|rd|th)?\s+(` + _MONTH_PATTERN + r`)\b(?:,?\s+(\d{4}))?`,
       (match) => this._daysOfMonth(match), text);
     text = re.sub(r`\b(` + _MONTH_PATTERN + r`)\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?(?![\d:])`,
       (m) => this._date(_MONTH_NUMBER.get(m.group(1).toLowerCase().slice(0, 3)), int(m.group(2)), m.group(3)) || m.group(0), text);
@@ -1177,12 +1177,12 @@ export class Normalizer {
         added = this._wordTokens(word, allCaps, previous, re.match(r`\s*[A-Za-z]`, text.slice(match.end())) !== null, fresh);
         previous = word;
         if (["Ss", "ss", "Zz", "zz"].includes(word) && added.length === 1 && (isspace(before) || "\"'(".includes(before)) &&
-            re.match(r`[.!?…,;:—\"')]*(?:\s|$)`, text.slice(match.end()))) {
+            re.match(r`[.!?…,;:-\"')]*(?:\s|$)`, text.slice(match.end()))) {
           short.push(out.length);
         }
         if (this.replies.has(word.toLowerCase()) && (len(word) > 1 || islower(word)) && added.length === 1 &&
             (isspace(before) || "\"'".includes(before)) &&
-            re.match(r`(?:[.?…,;—]*[\"']?(?:\s|$)|!+[\"']?\s*$)`, text.slice(match.end()))) {
+            re.match(r`(?:[.?…,;-]*[\"']?(?:\s|$)|!+[\"']?\s*$)`, text.slice(match.end()))) {
           replies.push(out.length);
         }
       } else if (number !== null) {

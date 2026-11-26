@@ -4,12 +4,12 @@ A general-purpose, purely symbolic (non-neural) assistant built on one uniform *
 
 ## Layout
 
-- **`software/crates/karin-core`** — Pure Rust symbolic engine (`Perceive → Match → Select → Fire`) with `$var` unification, working vs. long-term fact scopes, uniform world tools + meta-tools, impasse teaching, anti-unification generalization, chain chunking, and JSON persistence.
-- **`software/crates/karin-server`** — Rust Axum HTTP API (`http://127.0.0.1:8080`) exposing chat, trace inspection, teaching, facts/patterns CRUD, meta-tools, and live self-tests.
-- **`software/web`** — Vite + React + TypeScript UI with hot module reload (`http://localhost:5173`), proxying `/api` to the Rust backend.
-- **`vault/`** — Modular symbolic brain: topic-organized Compact DSL Markdown modules in `vault/core/{persona,skills,learning}/*.md` (each mixing facts, patterns, and episodes) plus persisted runtime state (`vault/state.json`).
-- **`data/`** — External datasets and evaluation corpora.
-- **`research/`** — Reports, prototypes, and experiments.
+- **`software/crates/karin-core`** - Pure Rust symbolic engine (`Perceive → Match → Select → Fire`) with `$var` unification, working vs. long-term fact scopes, uniform world tools + meta-tools, impasse teaching, anti-unification generalization, chain chunking, and JSON persistence.
+- **`software/crates/karin-server`** - Rust Axum HTTP API (`http://127.0.0.1:8080`) exposing chat, trace inspection, teaching, facts/patterns CRUD, meta-tools, and live self-tests.
+- **`software/web`** - Vite + React + TypeScript UI with hot module reload (`http://localhost:5173`), proxying `/api` to the Rust backend.
+- **`vault/`** - Modular symbolic brain: topic-organized Compact DSL Markdown modules in `vault/core/{persona,skills,learning}/*.md` (each mixing facts, patterns, and episodes) plus persisted runtime state (`vault/state.json`).
+- **`data/`** - External datasets and evaluation corpora.
+- **`research/`** - Reports, prototypes, and experiments.
 
 ## Running Locally
 

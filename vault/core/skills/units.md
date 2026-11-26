@@ -40,5 +40,5 @@ then: => "$v $from = $res $to"
 
 rule reply-conversion-dim-mismatch
 when: intent(name="convert", from=$from, to=$to), unit_base(unit=$from, dim=$d1), unit_base(unit=$to, dim=$d2), $d1 != $d2
-then: => "Cannot convert $from ($d1) to $to ($d2) — incompatible dimensions."
+then: => "Cannot convert $from ($d1) to $to ($d2) - incompatible dimensions."
 ```

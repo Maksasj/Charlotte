@@ -43,7 +43,7 @@ rule rel-teach-generic
 when: "link $subj $pred $obj", $subj != $obj
 then:
   ++rel(subj=$subj, pred=$pred, obj=$obj)
-  => "Linked: $subj —[$pred]→ $obj."
+  => "Linked: $subj -[$pred]→ $obj."
 ```
 
 ## Querying Relations (Direct & Automatic Inverse)
