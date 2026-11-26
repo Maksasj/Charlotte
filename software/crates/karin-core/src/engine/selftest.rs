@@ -280,7 +280,7 @@ mod tests {
         for result in &results {
             assert!(
                 result.passed,
-                "selftest failed: {} — {}",
+                "selftest failed: {} - {}",
                 result.name, result.detail
             );
         }

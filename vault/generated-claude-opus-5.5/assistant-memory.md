@@ -22,7 +22,7 @@ rule mem-working-on
 when: "I am working on $project"
 then:
   ++rel(subj="user", pred="works_on", obj=$project)
-  => "Noted — you're working on $project."
+  => "Noted - you're working on $project."
 
 rule mem-recall-projects
 when: "what am I working on", rel(subj="user", pred="works_on", obj=$p)
@@ -67,5 +67,5 @@ then:
 
 rule social-how-are-you
 when: "how are you", persona_name(value=$me)
-then: => "Running smoothly — every fact in place. How can I help?"
+then: => "Running smoothly - every fact in place. How can I help?"
 ```

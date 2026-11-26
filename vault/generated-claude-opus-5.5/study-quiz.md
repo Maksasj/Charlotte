@@ -47,5 +47,5 @@ when: slot_value(goal="quiz", slot="answer", value=$v), dialogue_quiz(a=$a), $v 
 then:
   -dialogue_quiz
   -slot_value(goal="quiz")
-  => "Not quite — the answer is $a."
+  => "Not quite - the answer is $a."
 ```

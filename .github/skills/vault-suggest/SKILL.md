@@ -5,7 +5,7 @@ description: Read-only analysis of Karin's vault/core to propose and verify read
 
 # Vault Suggest (Read-Only)
 
-Analyze Karin's modular symbolic vault (`vault/core/`) and propose high-leverage, ready-to-paste Compact Rule DSL rules and facts — **strictly read-only**.
+Analyze Karin's modular symbolic vault (`vault/core/`) and propose high-leverage, ready-to-paste Compact Rule DSL rules and facts - **strictly read-only**.
 
 ## Strict Read-Only Rule
 
@@ -53,8 +53,8 @@ Before outputting any snippet, verify every rule and fact against the current va
 3. **Collision & Priority Check**
    - Rule names do not duplicate any existing `rule <name>` in `vault/core/`.
    - Text templates do not shadow or collide with existing patterns (watch out for broad templates like `"what is $x"`, `"$a is $b"`, `"$x in $y"`).
-   - Remember `=> "..."` (`Action::Reply`) gets a `+2.5` score bonus — guard fallback reply rules (e.g., `!is_a(child=$cur)`) so they cannot preempt multi-hop or slot-capture rules.
-   - Remember `unify.rs` matches facts newest-first (`facts.iter().rev()`) — check ordering when declaring multiple `goal_need` facts for one workflow.
+   - Remember `=> "..."` (`Action::Reply`) gets a `+2.5` score bonus - guard fallback reply rules (e.g., `!is_a(child=$cur)`) so they cannot preempt multi-hop or slot-capture rules.
+   - Remember `unify.rs` matches facts newest-first (`facts.iter().rev()`) - check ordering when declaring multiple `goal_need` facts for one workflow.
 
 4. **Cross-Turn State Check**
    - Only `Scope::LongTerm` (`++`) and `dialogue_*` working facts survive across turns.

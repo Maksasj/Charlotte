@@ -31,7 +31,7 @@ then: +query_loc(cur=$a, target=$b, orig=$a, pred="part_of")
 
 rule locx-match
 when: query_loc(cur=$cur, target=$t, orig=$o, pred=$p), rel(subj=$cur, pred=$p, obj=$t)
-then: => "Yes — $o is $p $t."
+then: => "Yes - $o is $p $t."
 
 rule locx-hop
 when: query_loc(cur=$cur, target=$t, orig=$o, pred=$p), rel(subj=$cur, pred=$p, obj=$mid), $mid != $t, !rel(subj=$cur, pred=$p, obj=$t), !visited_loc(node=$mid)
