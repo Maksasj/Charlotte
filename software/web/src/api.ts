@@ -1,4 +1,4 @@
-import type { AgentState, Scope, SelfTestResult, ToolInfo, TurnTrace } from './types';
+import type { AgentState, Scope, SelfTestResult, ToolInfo, TurnTrace, VaultStatus } from './types';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -13,6 +13,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   getState: () => req<{ state: AgentState; tools: ToolInfo[] }>('/api/state'),
+  vaultStatus: () => req<VaultStatus>('/api/vault/status'),
   chat: (input: string) =>
     req<{ trace: TurnTrace; state: AgentState }>('/api/chat', {
       method: 'POST',

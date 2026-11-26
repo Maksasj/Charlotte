@@ -10,17 +10,18 @@ export type Locator = { kind: 'fact'; rel: string; values: string[] } | { kind: 
 
 const cache = new Map<string, Promise<string | null>>();
 
-export function fetchVaultSource(vaultPath: string, reload = false): Promise<string | null> {
-  if (reload) cache.delete(vaultPath);
-  if (!cache.has(vaultPath)) {
+export function fetchVaultSource(vaultPath: string, reload = false, version = 0): Promise<string | null> {
+  const key = `${version}:${vaultPath}`;
+  if (reload) cache.delete(key);
+  if (!cache.has(key)) {
     cache.set(
-      vaultPath,
+      key,
       fetch(`/vault-src/${vaultPath}`)
         .then((r) => (r.ok ? r.text() : null))
         .catch(() => null),
     );
   }
-  return cache.get(vaultPath)!;
+  return cache.get(key)!;
 }
 
 // ---------------------------------------------------------------------------
@@ -308,12 +309,15 @@ export function VaultSource({
   vaultPath,
   fallback,
   locator,
+  refreshKey = 0,
 }: {
   /** Path inside vault/, e.g. "core/persona/identity.md"; null for runtime items. */
   vaultPath: string | null;
   /** DSL to show when the file isn't available. */
   fallback: string;
   locator?: Locator;
+  /** Bumped when the vault reloads: re-read the file. */
+  refreshKey?: number;
 }) {
   const [text, setText] = useState<string | null | undefined>(undefined);
   const [nonce, setNonce] = useState(0);
@@ -326,11 +330,11 @@ export function VaultSource({
       setText(null);
       return;
     }
-    fetchVaultSource(vaultPath, nonce > 0).then((t) => alive && setText(t));
+    fetchVaultSource(vaultPath, nonce > 0, refreshKey).then((t) => alive && setText(t));
     return () => {
       alive = false;
     };
-  }, [vaultPath, nonce]);
+  }, [vaultPath, nonce, refreshKey]);
 
   const fromFile = typeof text === 'string';
   const source = fromFile ? text! : `\`\`\`karin\n${fallback}\n\`\`\``;

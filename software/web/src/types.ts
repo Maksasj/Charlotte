@@ -114,6 +114,17 @@ export interface AgentState {
   nextId: number;
 }
 
+export interface VaultStatus {
+  version: number;
+  ok: boolean;
+  message: string;
+  reloadedAt: number;
+  rules: number;
+  facts: number;
+  addedRules: string[];
+  removedRules: string[];
+}
+
 export interface ToolInfo {
   name: string;
   description: string;

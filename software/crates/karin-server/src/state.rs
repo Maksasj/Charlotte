@@ -13,6 +13,8 @@ pub struct AppState {
     pub chat_id: Mutex<String>,
     /// Throwaway sessions that are never saved or logged (see incognito.rs).
     pub incognito: crate::incognito::Incognito,
+    /// Outcome of the last vault reload (see vault_watch.rs).
+    pub vault_status: Mutex<crate::vault_watch::VaultStatus>,
 }
 
 impl AppState {

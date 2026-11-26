@@ -1,5 +1,8 @@
 mod learn;
+mod reload;
 mod selftest;
+
+pub use reload::VaultReload;
 
 use crate::nlu::Lexicon;
 use crate::tools::{NewFact, run_world_tool};
