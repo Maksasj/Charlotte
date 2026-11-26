@@ -1,6 +1,7 @@
 mod handlers;
 mod incognito;
 mod state;
+mod vault_watch;
 
 use axum::{
     Router,
@@ -40,7 +41,13 @@ async fn main() {
         chats_dir,
         chat_id: Mutex::new(chat_id),
         incognito: Default::default(),
+        vault_status: Default::default(),
     });
+
+    // The saved state may predate vault edits: merge the current vault in now,
+    // then keep watching it for changes.
+    vault_watch::reload(&shared, "startup");
+    vault_watch::spawn(shared.clone());
 
     let app = build_router(shared);
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
@@ -106,6 +113,8 @@ fn build_router(shared: Arc<AppState>) -> Router {
         .route("/api/meta/chunk", post(handlers::meta_chunk))
         .route("/api/reset", post(handlers::reset))
         .route("/api/selftest", get(handlers::selftest))
+        .route("/api/vault/status", get(vault_watch::status))
+        .route("/api/vault/reload", post(vault_watch::reload_now))
         .route("/api/incognito", post(incognito::create))
         .route("/api/incognito/{id}", delete(incognito::delete))
         .route("/api/incognito/{id}/chat", post(incognito::chat))

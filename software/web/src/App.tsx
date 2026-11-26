@@ -328,6 +328,46 @@ export default function App() {
     loadInitial();
   }, []);
 
+  // Hot reload: the backend reloads the vault when its files change; follow it.
+  const [vaultVersion, setVaultVersion] = useState(0);
+  const seenVaultVersion = useRef<number | null>(null);
+  useEffect(() => {
+    let alive = true;
+    const check = async () => {
+      try {
+        const status = await api.vaultStatus();
+        if (!alive) return;
+        const seen = seenVaultVersion.current;
+        seenVaultVersion.current = status.version;
+        if (seen === null || status.version === seen) return;
+        setVaultVersion(status.version);
+        if (status.ok) {
+          const data = await api.getState();
+          if (alive) setState(data.state);
+          const added = status.addedRules.length;
+          const removed = status.removedRules.length;
+          const changes = [
+            added && `+${added} ${added === 1 ? 'rule' : 'rules'}`,
+            removed && `-${removed} ${removed === 1 ? 'rule' : 'rules'}`,
+          ].filter(Boolean);
+          setStatusMsg(
+            `Vault reloaded${changes.length ? `: ${changes.join(', ')}` : ''} · ${status.rules} rules, ${status.facts} vault facts`,
+          );
+        } else {
+          setStatusMsg(status.message);
+        }
+      } catch {
+        /* backend not reachable or too old: ignore */
+      }
+    };
+    check();
+    const id = window.setInterval(check, 2000);
+    return () => {
+      alive = false;
+      window.clearInterval(id);
+    };
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state?.messages.length]);
@@ -900,6 +940,7 @@ export default function App() {
                   />
                 ) : (
                 <VaultExplorer<KItem>
+                  refreshKey={vaultVersion}
                   items={knowledgeItems}
                   pathOf={(k) =>
                     vaultPathOf(k.kind === 'fact' ? k.fact.provenance : k.pattern.provenance, ruleName)

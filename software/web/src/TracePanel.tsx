@@ -1,4 +1,5 @@
 import { fmtAction, fmtCond, shortSource } from './format';
+import { FailedIcon, UnusedIcon, UsedIcon } from './Icons';
 import type { AttemptTrace, CompetingMatch, Fact, Pattern, StepTrace, TurnTrace } from './types';
 
 /** Relations shown collapsed by default (long, mostly for "repeat"). */
@@ -315,7 +316,9 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
               const state = used ? 'answered' : a.answered ? 'unused' : 'failed';
               return (
                 <li key={i} className={state}>
-                  <span className="attempt-mark">{used ? '✓' : a.answered ? '○' : '✗'}</span>
+                  <span className="attempt-mark" title={used ? 'used' : a.answered ? 'matched, not used' : 'no match'}>
+                    {used ? <UsedIcon /> : a.answered ? <UnusedIcon /> : <FailedIcon />}
+                  </span>
                   <span className="badge">{ATTEMPT_LABEL[a.kind] ?? a.kind}</span>
                   <span className="mono">{a.text}</span>
                   {state === 'unused' && <span className="muted">matched, but not used</span>}

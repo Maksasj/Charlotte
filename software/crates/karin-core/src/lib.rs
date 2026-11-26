@@ -6,6 +6,6 @@ pub mod types;
 pub mod unify;
 pub mod vault;
 
-pub use engine::Engine;
+pub use engine::{Engine, VaultReload};
 pub use tools::list_tools;
 pub use types::*;

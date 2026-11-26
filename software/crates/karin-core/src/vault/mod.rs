@@ -46,6 +46,28 @@ pub fn load_vault(dir: &Path) -> Result<AgentState, String> {
     Ok(builder.finish())
 }
 
+/// A cheap fingerprint of every vault Markdown file (path, size, modified time),
+/// over the same folders `load_vault` reads: core, `generated-*`, `.episodes`.
+/// It changes when a file is edited, added or removed, or a folder appears.
+pub fn vault_fingerprint(dir: &Path) -> u64 {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    let mut h = DefaultHasher::new();
+    for (root, prefix) in vault_roots(dir) {
+        prefix.hash(&mut h);
+        for path in list_markdown_files(&root).unwrap_or_default() {
+            path.hash(&mut h);
+            if let Ok(meta) = fs::metadata(&path) {
+                meta.len().hash(&mut h);
+                if let Ok(modified) = meta.modified() {
+                    modified.hash(&mut h);
+                }
+            }
+        }
+    }
+    h.finish()
+}
+
 pub fn initial_state() -> AgentState {
     let dir = default_vault_dir();
     load_vault(&dir).unwrap_or_else(|err| {

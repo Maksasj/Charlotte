@@ -96,6 +96,8 @@ interface Props<T> {
   locatorOf: (item: T) => Locator;
   /** The item as DSL, for items with no vault file. */
   dslOf: (item: T) => string;
+  /** Changes when the vault was reloaded, so source views re-read their files. */
+  refreshKey?: number;
 }
 
 type Selection = { node: string; item?: string } | null;
@@ -111,6 +113,7 @@ export function VaultExplorer<T>({
   noun,
   locatorOf,
   dslOf,
+  refreshKey = 0,
   itemIcon,
   countLabel,
 }: Props<T>) {
@@ -350,6 +353,7 @@ export function VaultExplorer<T>({
             {view === 'source' ? (
               <VaultSource
                 vaultPath={n.key.startsWith('vault/') ? n.key.slice('vault/'.length) : null}
+                refreshKey={refreshKey}
                 fallback={(() => {
                   const blocks = n.items.map(dslOf);
                   // Multi-line items (rules) get a blank line between them, facts don't.

@@ -2029,3 +2029,29 @@ h6.src-h {
   margin-top: 8px;
   line-height: 1.45;
 }
+
+/* Readings-tried marks: small outline icons instead of text glyphs */
+.attempt-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.attempt-mark .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.attempts li.answered .attempt-mark {
+  color: var(--ok);
+}
+
+.attempts li.unused .attempt-mark {
+  color: var(--muted);
+}
+
+.attempts li.failed .attempt-mark {
+  color: color-mix(in srgb, var(--err) 70%, var(--muted));
+}

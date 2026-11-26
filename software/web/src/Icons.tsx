@@ -30,6 +30,29 @@ export const VaultIcon = ({ className }: { className?: string }) => (
   </Svg>
 );
 
+/** Reading used: a check in a circle. */
+export const UsedIcon = ({ className }: { className?: string }) => (
+  <Svg className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8 12.5l2.7 2.7L16 9.8" />
+  </Svg>
+);
+
+/** Reading matched but not used: a dashed circle. */
+export const UnusedIcon = ({ className }: { className?: string }) => (
+  <Svg className={className}>
+    <circle cx="12" cy="12" r="9" strokeDasharray="3.2 3.2" />
+  </Svg>
+);
+
+/** Reading failed: a cross in a circle. */
+export const FailedIcon = ({ className }: { className?: string }) => (
+  <Svg className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5l5 5M14.5 9.5l-5 5" />
+  </Svg>
+);
+
 /** A pulse: memory that lives in the running engine. */
 export const RuntimeIcon = ({ className }: { className?: string }) => (
   <Svg className={className}>
