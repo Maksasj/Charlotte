@@ -11,6 +11,9 @@ python bench/run_bench.py --label my-change
 # start a private server just for the run (CI); add --cargo "cargo +<toolchain>" if needed
 python bench/run_bench.py --start-server --label ci
 
+# compare with a chosen earlier run (label or folder name) instead of the latest
+python bench/run_bench.py --label entity-v1 --baseline main-baseline
+
 # fail the run (exit 1) if it gets worse than a threshold
 python bench/run_bench.py --start-server --fail-under 0.85 --max-wrong 0.04
 ```
@@ -43,6 +46,7 @@ microphone heard it. Each scored turn says what a sensible assistant should do:
 | `slots` | values that must appear in what Karin did (reply, bindings, stored facts), case-insensitive |
 | `also` | other intents that are also fine |
 | `setup` (per chat) | unscored turns run first, for things the chat relied on from earlier chats |
+| `split` (per chat) | `dev` (default): chats the rules were written from, a regression check. `test`: chats no rule was written from, the honest generalisation score. Never write rules from a `test` chat; if one is used, move it to `dev`. |
 | `skip` | turn or chat not scored (duplicates, test messages) |
 
 The first labels are a draft by Claude and need a human review.

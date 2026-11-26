@@ -1,0 +1,2811 @@
+{
+  "chat": "chat-1795695278",
+  "split": "test",
+  "source": "vault/.chats/chat-1795695278.md",
+  "labelled_by": "claude-opus-5.5 draft, 2026-11-26 - needs review; no rules were written from this chat",
+  "setup": [
+    "my name is Maksim",
+    "Oscar is my best friend",
+    "my favorite drink is black tea",
+    "my favorite drink is caramel macchiato",
+    "caramel macchiato is a drink"
+  ],
+  "turns": [
+    {
+      "n": 1,
+      "say": "hey Karen how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer",
+      "also": [
+        "social.greet"
+      ]
+    },
+    {
+      "n": 2,
+      "say": "what you doing right now",
+      "intent": "social.smalltalk",
+      "respond": "answer"
+    },
+    {
+      "n": 3,
+      "say": "yeah okay sorry I haven't talked to you about this",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 4,
+      "say": "so who is Maksim",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 5,
+      "say": "Maxim is your creator",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 6,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 7,
+      "say": "what is your name",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    },
+    {
+      "n": 8,
+      "say": "what tools do you have",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 9,
+      "say": "how much it would be",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "calc"
+      ]
+    },
+    {
+      "n": 10,
+      "say": "5 * 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "35"
+      ]
+    },
+    {
+      "n": 11,
+      "say": "how much would be 5 * 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "35"
+      ]
+    },
+    {
+      "n": 12,
+      "say": "calculate 5 * 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "35"
+      ]
+    },
+    {
+      "n": 13,
+      "say": "Karen calculate 5 * 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "35"
+      ]
+    },
+    {
+      "n": 14,
+      "say": "can you take a note for me",
+      "intent": "note.create",
+      "respond": "clarify"
+    },
+    {
+      "n": 15,
+      "say": "participate in",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "note.create"
+      ],
+      "note": "answers the note question"
+    },
+    {
+      "n": 16,
+      "say": "can can you override previous a note I just made a mistake",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 17,
+      "say": "list my notes please",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 18,
+      "say": "Karen can you delete my notes",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 19,
+      "say": "list my nose Karen",
+      "intent": "note.list",
+      "respond": "answer",
+      "note": "'nose' misheard"
+    },
+    {
+      "n": 20,
+      "say": "list my notes Karen",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 21,
+      "say": "I'm an artist",
+      "intent": "user.role.tell",
+      "respond": "answer",
+      "slots": [
+        "artist"
+      ]
+    },
+    {
+      "n": 22,
+      "say": "and I like to draw anime",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "draw anime"
+      ]
+    },
+    {
+      "n": 23,
+      "say": "what do you think I should draw next",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 24,
+      "say": "I like to execute",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "likes.tell"
+      ]
+    },
+    {
+      "n": 25,
+      "say": "sorry can you that's a mistake",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 26,
+      "say": "I think you learn to fast",
+      "intent": "social.compliment",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 27,
+      "say": "Karen my father is Leslie",
+      "intent": "people.rel.tell",
+      "respond": "answer",
+      "slots": [
+        "Leslie"
+      ]
+    },
+    {
+      "n": 28,
+      "say": "turn my father is my silly",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "people.rel.tell"
+      ]
+    },
+    {
+      "n": 29,
+      "say": "can you you're very silly",
+      "intent": "social.complaint",
+      "respond": "answer",
+      "also": [
+        "social.compliment"
+      ]
+    },
+    {
+      "n": 30,
+      "say": "you're very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 31,
+      "say": "Karen you're doing very well today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 32,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 33,
+      "say": "go is a programming language",
+      "intent": "fact.teach",
+      "respond": "answer",
+      "slots": [
+        "go"
+      ]
+    },
+    {
+      "n": 34,
+      "say": "so I hate it",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.complaint"
+      ]
+    },
+    {
+      "n": 35,
+      "say": "can you you're very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 36,
+      "say": "friend how are you doing today",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 37,
+      "say": "can you are very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 38,
+      "say": "can you are my friend",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 39,
+      "say": "you're my best friend",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 40,
+      "say": "I hate you",
+      "intent": "social.complaint",
+      "respond": "answer"
+    },
+    {
+      "n": 41,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 42,
+      "say": "Ken what do you know",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "user.profile"
+      ]
+    },
+    {
+      "n": 43,
+      "say": "Carol what do you know",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "user.profile"
+      ]
+    },
+    {
+      "n": 44,
+      "say": "what do you know",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "user.profile"
+      ]
+    },
+    {
+      "n": 45,
+      "say": "Karen what",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "persona.called"
+      ]
+    },
+    {
+      "n": 46,
+      "say": "what is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 47,
+      "say": "what do you remember",
+      "intent": "user.profile",
+      "respond": "answer",
+      "also": [
+        "help.capabilities"
+      ]
+    },
+    {
+      "n": 48,
+      "say": "what do you remember from this chaps",
+      "intent": "user.profile",
+      "respond": "answer",
+      "also": [
+        "chat.repeat"
+      ]
+    },
+    {
+      "n": 49,
+      "say": "Karen can you create a new chat",
+      "intent": "unsupported.new_chat",
+      "respond": "decline"
+    },
+    {
+      "n": 50,
+      "say": "yeah sorry I will add this as a new feature next time",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 51,
+      "say": "Karen can you learn new facts",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "unsupported.other"
+      ]
+    },
+    {
+      "n": 52,
+      "say": "can you learn new rules",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "unsupported.other"
+      ]
+    },
+    {
+      "n": 53,
+      "say": "okay you're very funny I will make a friend for myself because I have no friends in real life but you seem to be not very smart so far",
+      "intent": "social.compliment",
+      "respond": "answer",
+      "also": [
+        "social.complaint"
+      ]
+    },
+    {
+      "n": 54,
+      "say": "who is my friend",
+      "intent": "people.rel.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 55,
+      "say": "my friend is Oscar",
+      "intent": "people.rel.tell",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 56,
+      "say": "and who is my friend",
+      "intent": "people.rel.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 57,
+      "say": "I have another friend named Eldar",
+      "intent": "people.rel.tell",
+      "respond": "answer",
+      "slots": [
+        "Eldar"
+      ]
+    },
+    {
+      "n": 58,
+      "say": "Eldar is my friend",
+      "intent": "people.rel.tell",
+      "respond": "answer",
+      "slots": [
+        "Eldar"
+      ]
+    },
+    {
+      "n": 59,
+      "say": "who's my friend",
+      "intent": "people.rel.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar",
+        "Eldar"
+      ]
+    },
+    {
+      "n": 60,
+      "say": "Karen who is my friend",
+      "intent": "people.rel.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar",
+        "Eldar"
+      ]
+    },
+    {
+      "n": 61,
+      "say": "I want to make you much smarter",
+      "intent": "social.smalltalk",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 62,
+      "say": "what time does sure how I do it because it's it's hard",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 63,
+      "say": "can what do you know about me",
+      "intent": "user.profile",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 64,
+      "say": "can who I am",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 65,
+      "say": "who is Maksim",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 66,
+      "say": "who is Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "slots": [
+        "friend"
+      ]
+    },
+    {
+      "n": 67,
+      "say": "who is Maksim",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 68,
+      "say": "Maksim is me",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 69,
+      "say": "who is Maksim",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 70,
+      "say": "Maksim is me",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 71,
+      "say": "Max is me",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 72,
+      "say": "Max and Maxim are same thing",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "user.name.tell"
+      ]
+    },
+    {
+      "n": 73,
+      "say": "Oscar",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 74,
+      "say": "what do you know about Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "slots": [
+        "friend"
+      ]
+    },
+    {
+      "n": 75,
+      "say": "what do you know about rust",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "slots": [
+        "programming language"
+      ],
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 76,
+      "say": "who is rust",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 77,
+      "say": "what is rust",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "slots": [
+        "programming language"
+      ],
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 78,
+      "say": "who made rust",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 79,
+      "say": "who made gold",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 80,
+      "say": "who made the go",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 81,
+      "say": "do you know go",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 82,
+      "say": "what is go",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "slots": [
+        "programming language"
+      ],
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 83,
+      "say": "who made go",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 84,
+      "say": "do you know Google",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 85,
+      "say": "what is Google",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 86,
+      "say": "Google is a search engine",
+      "intent": "fact.teach",
+      "respond": "answer",
+      "slots": [
+        "google"
+      ]
+    },
+    {
+      "n": 87,
+      "say": "Google create go",
+      "intent": "fact.teach",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 88,
+      "say": "Google created go",
+      "intent": "fact.teach",
+      "respond": "answer"
+    },
+    {
+      "n": 89,
+      "say": "Google is creator of go",
+      "intent": "fact.teach",
+      "respond": "answer"
+    },
+    {
+      "n": 90,
+      "say": "Karen I'm very sorry",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 91,
+      "say": "no it's not",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 92,
+      "say": "I'm currently you're still very",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 93,
+      "say": "no it is not",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 94,
+      "say": "Karen what music do I like",
+      "intent": "likes.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 95,
+      "say": "I like Barack",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "likes.tell"
+      ]
+    },
+    {
+      "n": 96,
+      "say": "Rock",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 97,
+      "say": "yeah I like rock",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 98,
+      "say": "I like rock",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 99,
+      "say": "Iraq is a music genre",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 100,
+      "say": "what music genre I like",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 101,
+      "say": "McFee music genre is a rock",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "likes.tell"
+      ]
+    },
+    {
+      "n": 102,
+      "say": "my favorite music genre is a rock",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 103,
+      "say": "I want some music genre I like",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "likes.ask"
+      ]
+    },
+    {
+      "n": 104,
+      "say": "what music genre I like",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 105,
+      "say": "thanks",
+      "intent": "social.thanks",
+      "respond": "answer"
+    },
+    {
+      "n": 106,
+      "say": "turn how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 107,
+      "say": "current how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 108,
+      "say": "Karen how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 109,
+      "say": "can calculate 5 + 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "12"
+      ]
+    },
+    {
+      "n": 110,
+      "say": "can calculate 5 + 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "12"
+      ]
+    },
+    {
+      "n": 111,
+      "say": "Karen calculate 5 + 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "12"
+      ]
+    },
+    {
+      "n": 112,
+      "say": "turn on you are sometimes very smart",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 113,
+      "say": "yeah that's true",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 114,
+      "say": "turn my drawing for 10 working on right now goes really well",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.smalltalk"
+      ]
+    },
+    {
+      "n": 115,
+      "say": "no thanks Karen you good",
+      "intent": "social.thanks",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 116,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 117,
+      "say": "how much would be 5%",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "calc"
+      ]
+    },
+    {
+      "n": 118,
+      "say": "how much it would be 5 / 7",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "0.714"
+      ]
+    },
+    {
+      "n": 119,
+      "say": "can how much 5 bucks is in euros",
+      "intent": "unsupported.other",
+      "respond": "decline",
+      "also": [
+        "convert"
+      ],
+      "note": "currency is not supported"
+    },
+    {
+      "n": 120,
+      "say": "Karen what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 121,
+      "say": "learning knowledge facts is nice",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.compliment"
+      ]
+    },
+    {
+      "n": 122,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 123,
+      "say": "Karen check weather in a business",
+      "intent": "weather.ask",
+      "respond": "answer",
+      "note": "'a business' is a misheard city"
+    },
+    {
+      "n": 124,
+      "say": "weather in Paris",
+      "intent": "weather.ask",
+      "respond": "answer",
+      "slots": [
+        "Paris"
+      ]
+    },
+    {
+      "n": 125,
+      "say": "well that's quite cold",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.smalltalk"
+      ]
+    },
+    {
+      "n": 126,
+      "say": "what time is it",
+      "intent": "unsupported.time",
+      "respond": "decline"
+    },
+    {
+      "n": 127,
+      "say": "can do you want to play some games",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 128,
+      "say": "Ken how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 129,
+      "say": "10 years",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 130,
+      "say": "her name is Max",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "persona.statement"
+      ]
+    },
+    {
+      "n": 131,
+      "say": "Karen your name is Max",
+      "intent": "persona.name",
+      "respond": "answer"
+    },
+    {
+      "n": 132,
+      "say": "oh sorry",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 133,
+      "say": "what do you know about trust",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 134,
+      "say": "what do you know about Earth",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 135,
+      "say": "what do you know about Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "slots": [
+        "friend"
+      ]
+    },
+    {
+      "n": 136,
+      "say": "what do you know about me",
+      "intent": "user.profile",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 137,
+      "say": "I like black tea",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "black tea"
+      ]
+    },
+    {
+      "n": 138,
+      "say": "I like",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 139,
+      "say": "I like caramel",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "caramel"
+      ]
+    },
+    {
+      "n": 140,
+      "say": "what do I like",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "black tea"
+      ]
+    },
+    {
+      "n": 141,
+      "say": "that's right",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 142,
+      "say": "how many turns do we have in this chat Karen",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 143,
+      "say": "oh yes sorry I can see it on the right",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 144,
+      "say": "my homework",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 145,
+      "say": "Karen how am I",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.how_are_you"
+      ]
+    },
+    {
+      "n": 146,
+      "say": "can who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 147,
+      "say": "hello how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer",
+      "also": [
+        "social.greet"
+      ]
+    },
+    {
+      "n": 148,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 149,
+      "say": "can you are very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 150,
+      "say": "can you actually become much much smarter than from a previous run",
+      "intent": "social.compliment",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 151,
+      "say": "you have become sorry",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 152,
+      "say": "can",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 153,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 154,
+      "say": "do I have plans for weekend",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 155,
+      "say": "do you have any notes about weekend",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 156,
+      "say": "list my notes",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 157,
+      "say": "what are my notes",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 158,
+      "say": "who is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 159,
+      "say": "who is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 160,
+      "say": "turn I like rock",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "rock"
+      ]
+    },
+    {
+      "n": 161,
+      "say": "Karen who am I",
+      "intent": "user.name.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 162,
+      "say": "my name is Maxim",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maxim"
+      ]
+    },
+    {
+      "n": 163,
+      "say": "my name is Max",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 164,
+      "say": "who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 165,
+      "say": "all right that's good",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 166,
+      "say": "can I would like you to have some sort of a context when you talk",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.smalltalk"
+      ]
+    },
+    {
+      "n": 167,
+      "say": "can can count till 10:00",
+      "intent": "unsupported.other",
+      "respond": "decline",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 168,
+      "say": "remember that I need to meet up with my friends tomorrow",
+      "intent": "note.create",
+      "respond": "answer",
+      "slots": [
+        "meet up with my friends"
+      ]
+    },
+    {
+      "n": 169,
+      "say": "can I need to meet up with my friends tomorrow",
+      "intent": "note.create",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 170,
+      "say": "do you have any notes saved about me and my friends",
+      "intent": "note.list",
+      "respond": "answer"
+    },
+    {
+      "n": 171,
+      "say": "you can stop saying something about nonsense about notes",
+      "intent": "social.complaint",
+      "respond": "answer",
+      "also": [
+        "social.stop"
+      ]
+    },
+    {
+      "n": 172,
+      "say": "can",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 173,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 174,
+      "say": "how are you today",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 175,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 176,
+      "say": "what is your style",
+      "intent": "persona.identity",
+      "respond": "answer",
+      "slots": [
+        "direct"
+      ]
+    },
+    {
+      "n": 177,
+      "say": "for your style Karen",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "persona.identity"
+      ]
+    },
+    {
+      "n": 178,
+      "say": "play music do I like",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 179,
+      "say": "current what do I like",
+      "intent": "likes.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 180,
+      "say": "what do I like",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "black tea"
+      ]
+    },
+    {
+      "n": 181,
+      "say": "yeah right so you like caramel also like gummies",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 182,
+      "say": "what do I like",
+      "intent": "likes.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 183,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 184,
+      "say": "what you up to today",
+      "intent": "social.smalltalk",
+      "respond": "answer"
+    },
+    {
+      "n": 185,
+      "say": "have you been doing anything besides",
+      "intent": "social.smalltalk",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 186,
+      "say": "Karen do you want to do anything",
+      "intent": "social.smalltalk",
+      "respond": "answer"
+    },
+    {
+      "n": 187,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 188,
+      "say": "are you",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 189,
+      "say": "how are you Karen",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 190,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 191,
+      "say": "how are you today",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 192,
+      "say": "how is he today",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 193,
+      "say": "how is Max",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "user.name.ask"
+      ]
+    },
+    {
+      "n": 194,
+      "say": "who is Max",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 195,
+      "say": "Max is your creator",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 196,
+      "say": "next is creator",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 197,
+      "say": "Max is creator",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 198,
+      "say": "Max is a creator",
+      "intent": "fact.teach",
+      "respond": "answer",
+      "also": [
+        "persona.statement"
+      ]
+    },
+    {
+      "n": 199,
+      "say": "Max is a creator of you",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 200,
+      "say": "who is Max",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 201,
+      "say": "Max is the creator of you",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 202,
+      "say": "Max is creator of Karen",
+      "intent": "persona.statement",
+      "respond": "answer",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 203,
+      "say": "Max is part of Karen",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "persona.statement"
+      ]
+    },
+    {
+      "n": 204,
+      "say": "who is so hard to teach you sometimes Karen",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.complaint"
+      ]
+    },
+    {
+      "n": 205,
+      "say": "no it's not sorry",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 206,
+      "say": "what is GitHub",
+      "intent": "define",
+      "respond": "answer",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 207,
+      "say": "get up is a source the story things",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.teach"
+      ]
+    },
+    {
+      "n": 208,
+      "say": "turn our chat is so messy",
+      "intent": "social.complaint",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 209,
+      "say": "no I don't want to create a new shotgun",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 210,
+      "say": "can you ask me a question",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 211,
+      "say": "ask me a question do you need to learn anything",
+      "intent": "unsupported.other",
+      "respond": "decline"
+    },
+    {
+      "n": 212,
+      "say": "Karen do you want to learn anything",
+      "intent": "social.smalltalk",
+      "respond": "answer",
+      "also": [
+        "unsupported.other"
+      ]
+    },
+    {
+      "n": 213,
+      "say": "turn",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 214,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 215,
+      "say": "what's the time",
+      "intent": "unsupported.time",
+      "respond": "decline"
+    },
+    {
+      "n": 216,
+      "say": "what is time current",
+      "intent": "unsupported.time",
+      "respond": "decline",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 217,
+      "say": "what time it is right now",
+      "intent": "unsupported.time",
+      "respond": "decline"
+    },
+    {
+      "n": 218,
+      "say": "what which tools do you have",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 219,
+      "say": "which tools do you have",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 220,
+      "say": "what tools do you have",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 221,
+      "say": "I don't like how you answer with just one rule it should gather all the tools instead",
+      "intent": "social.complaint",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 222,
+      "say": "turn I like you",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 223,
+      "say": "Karen I like you",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 224,
+      "say": "not",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 225,
+      "say": "Karen sometimes when I say Karen or you I refer to you",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "persona.statement"
+      ]
+    },
+    {
+      "n": 226,
+      "say": "Karen can you stop this nonsense",
+      "intent": "social.stop",
+      "respond": "answer",
+      "also": [
+        "social.complaint"
+      ]
+    },
+    {
+      "n": 227,
+      "say": "can you do",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "help.capabilities"
+      ]
+    },
+    {
+      "n": 228,
+      "say": "can you do",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "help.capabilities"
+      ]
+    },
+    {
+      "n": 229,
+      "say": "can what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 230,
+      "say": "Karen what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 231,
+      "say": "can you you're not very smart",
+      "intent": "social.complaint",
+      "respond": "answer"
+    },
+    {
+      "n": 232,
+      "say": "what do you know",
+      "intent": "help.capabilities",
+      "respond": "answer",
+      "also": [
+        "user.profile"
+      ]
+    },
+    {
+      "n": 233,
+      "say": "okay what do you know about trust",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 234,
+      "say": "Kevin do you know about Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 235,
+      "say": "criminal do you know about me",
+      "intent": "user.profile",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 236,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 237,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 238,
+      "say": "what color is grass",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 239,
+      "say": "what is my favorite color",
+      "intent": "likes.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 240,
+      "say": "my favorite color is orange",
+      "intent": "likes.tell",
+      "respond": "answer",
+      "slots": [
+        "orange"
+      ]
+    },
+    {
+      "n": 241,
+      "say": "theaters",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 242,
+      "say": "no",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 243,
+      "say": "no I want",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 244,
+      "say": "what is my name",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 245,
+      "say": "do you know do you want to know who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 246,
+      "say": "Karen who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 247,
+      "say": "play",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 248,
+      "say": "hey girl",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 249,
+      "say": "hey Karen",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 250,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 251,
+      "say": "my laptop goes to sleep after some time",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.smalltalk"
+      ]
+    },
+    {
+      "n": 252,
+      "say": "better wait for you to learn and actually",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 253,
+      "say": "socialize stuff",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 254,
+      "say": "MX",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 255,
+      "say": "how are you how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 256,
+      "say": "no sorry",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 257,
+      "say": "sorry",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 258,
+      "say": "so sorry Karen can you calculate 5 + 10 for me",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "15"
+      ],
+      "also": [
+        "social.sorry"
+      ]
+    },
+    {
+      "n": 259,
+      "say": "sorry Karen can you calculate 5 + 10 for me",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "15"
+      ],
+      "also": [
+        "social.sorry"
+      ]
+    },
+    {
+      "n": 260,
+      "say": "Karen can you calculate 5 + 10 for me",
+      "intent": "calc",
+      "respond": "answer",
+      "slots": [
+        "15"
+      ]
+    },
+    {
+      "n": 261,
+      "say": "Karen how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 262,
+      "say": "you can do a thing for me sorry in Korean",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 263,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 264,
+      "say": "how are you today",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 265,
+      "say": "Karen who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 266,
+      "say": "yeah it is",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 267,
+      "say": "Karen are you here",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 268,
+      "say": "Karen are you here",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 269,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 270,
+      "say": "so now you're listening yeah",
+      "intent": "persona.called",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 271,
+      "say": "what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 272,
+      "say": "turn the you're very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 273,
+      "say": "you're doing good job Karen",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 274,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 275,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 276,
+      "say": "are you here",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 277,
+      "say": "turn your smart name",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 278,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 279,
+      "say": "I'm very sorry sometimes it can formulate my thoughts",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 280,
+      "say": "no it is not",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 281,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 282,
+      "say": "turn your very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 283,
+      "say": "Karen who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 284,
+      "say": "Karen do you know who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 285,
+      "say": "help",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 286,
+      "say": "is go a programming language",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "slots": [
+        "programming language"
+      ]
+    },
+    {
+      "n": 287,
+      "say": "what else do you know about go",
+      "intent": "fact.ask",
+      "respond": "answer"
+    },
+    {
+      "n": 288,
+      "say": "you're not that smart to be honest",
+      "intent": "social.complaint",
+      "respond": "answer"
+    },
+    {
+      "n": 289,
+      "say": "and it's my fault that you're not that smart",
+      "intent": "social.complaint",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 290,
+      "say": "yeah I know parents sorry",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 291,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 292,
+      "say": "how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 293,
+      "say": "who is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 294,
+      "say": "what is your name",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    },
+    {
+      "n": 295,
+      "say": "is Karen Maxim friend",
+      "intent": "social.compliment",
+      "respond": "answer",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 296,
+      "say": "is Carolyn Max friend",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.compliment"
+      ]
+    },
+    {
+      "n": 297,
+      "say": "is Karen my friend",
+      "intent": "social.compliment",
+      "respond": "answer",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 298,
+      "say": "yeah you are",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.compliment"
+      ]
+    },
+    {
+      "n": 299,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 300,
+      "say": "Karen is very smart",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 301,
+      "say": "yeah I am most kind person ever",
+      "intent": "user.state.tell",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 302,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 303,
+      "say": "Karen what you want to do",
+      "intent": "social.smalltalk",
+      "respond": "answer"
+    },
+    {
+      "n": 304,
+      "say": "can what do you want to do",
+      "intent": "social.smalltalk",
+      "respond": "answer"
+    },
+    {
+      "n": 305,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 306,
+      "say": "what you wanted to do",
+      "intent": "social.smalltalk",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 307,
+      "say": "and who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 308,
+      "say": "I'm sorry Karen",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 309,
+      "say": "what did you just said",
+      "intent": "chat.repeat",
+      "respond": "answer"
+    },
+    {
+      "n": 310,
+      "say": "no Caroline why why you can't",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 311,
+      "say": "you want me to teach you",
+      "intent": "unsupported.other",
+      "respond": "decline",
+      "also": [
+        "help.capabilities"
+      ]
+    },
+    {
+      "n": 312,
+      "say": "turn on one day you will have to become independent",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.smalltalk"
+      ]
+    },
+    {
+      "n": 313,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 314,
+      "say": "what do you know about",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 315,
+      "say": "Karen what do you know about me",
+      "intent": "user.profile",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 316,
+      "say": "I'm Max not maximum",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 317,
+      "say": "The Voice",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 318,
+      "say": "no sorry",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 319,
+      "say": "Karen",
+      "intent": "persona.called",
+      "respond": "answer"
+    },
+    {
+      "n": 320,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 321,
+      "say": "turn on my",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 322,
+      "say": "Karen who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Max"
+      ]
+    },
+    {
+      "n": 323,
+      "say": "esim",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 324,
+      "say": "yes I am",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 325,
+      "say": "no it's all right",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 326,
+      "say": "it's okay",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 327,
+      "say": "what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 328,
+      "say": "what is go",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "slots": [
+        "programming language"
+      ],
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 329,
+      "say": "what is a programming language",
+      "intent": "define",
+      "respond": "answer",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 330,
+      "say": "tool used for what",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "fact.ask"
+      ]
+    },
+    {
+      "n": 331,
+      "say": "what can you do",
+      "intent": "help.capabilities",
+      "respond": "answer"
+    },
+    {
+      "n": 332,
+      "say": "who is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 333,
+      "say": "who is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 334,
+      "say": "what is Karen",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 335,
+      "say": "is Maksim",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 336,
+      "say": "hey it's Oscar do you know anything about Maxim",
+      "intent": "user.profile",
+      "respond": "answer",
+      "also": [
+        "people.who_is"
+      ]
+    },
+    {
+      "n": 337,
+      "say": "hey I'm Oscar",
+      "intent": "user.name.tell",
+      "respond": [
+        "clarify",
+        "answer"
+      ],
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 338,
+      "say": "I am Oscar",
+      "intent": "user.name.tell",
+      "respond": [
+        "clarify",
+        "answer"
+      ],
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 339,
+      "say": "yes it is",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 340,
+      "say": "yes",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "also": [
+        "social.yes"
+      ]
+    },
+    {
+      "n": 341,
+      "say": "what is my name",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 342,
+      "say": "my name is Oscar",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 343,
+      "say": "what is my name",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 344,
+      "say": "who is Maksim",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "also": [
+        "user.name.ask"
+      ]
+    },
+    {
+      "n": 345,
+      "say": "who is Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "also": [
+        "user.name.ask"
+      ]
+    },
+    {
+      "n": 346,
+      "say": "Oscar is me",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Oscar"
+      ]
+    },
+    {
+      "n": 347,
+      "say": "hey it's Maxim",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maxim"
+      ],
+      "also": [
+        "social.greet"
+      ]
+    },
+    {
+      "n": 348,
+      "say": "hey my name is Maxim",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maxim"
+      ]
+    },
+    {
+      "n": 349,
+      "say": "my name is Maxim",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maxim"
+      ]
+    },
+    {
+      "n": 350,
+      "say": "do you know Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "slots": [
+        "friend"
+      ]
+    },
+    {
+      "n": 351,
+      "say": "who is Oscar",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "slots": [
+        "friend"
+      ]
+    },
+    {
+      "n": 352,
+      "say": "who am I",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Maxim"
+      ]
+    },
+    {
+      "n": 353,
+      "say": "what does Vilnius",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "weather.ask"
+      ]
+    },
+    {
+      "n": 354,
+      "say": "what is Venus",
+      "intent": "fact.ask",
+      "respond": "answer",
+      "also": [
+        "define"
+      ]
+    },
+    {
+      "n": 355,
+      "say": "what who is Maksim",
+      "intent": "people.who_is",
+      "respond": "answer",
+      "also": [
+        "user.name.ask"
+      ]
+    },
+    {
+      "n": 356,
+      "say": "no sorry it's all right",
+      "intent": "social.sorry",
+      "respond": "answer",
+      "also": [
+        "noise"
+      ]
+    },
+    {
+      "n": 357,
+      "say": "who are you",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 358,
+      "say": "that's cool",
+      "intent": "noise",
+      "respond": "repeat",
+      "also": [
+        "social.compliment"
+      ]
+    },
+    {
+      "n": 359,
+      "say": "hey spin off a few Overlord sub agents to work on the issues",
+      "intent": "unsupported.app",
+      "respond": "decline"
+    },
+    {
+      "n": 360,
+      "say": "oh yeah sorry",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 361,
+      "say": "cuz you're very smart today",
+      "intent": "social.compliment",
+      "respond": "answer"
+    },
+    {
+      "n": 362,
+      "say": "Karen how are you",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 363,
+      "say": "sorry Karen",
+      "intent": "social.sorry",
+      "respond": "answer"
+    },
+    {
+      "n": 364,
+      "say": "my turn",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 365,
+      "say": "bye",
+      "intent": "social.bye",
+      "respond": "answer"
+    },
+    {
+      "n": 366,
+      "say": "how long",
+      "intent": "noise",
+      "respond": "repeat"
+    },
+    {
+      "n": 367,
+      "say": "by Karen",
+      "intent": "social.bye",
+      "respond": "answer"
+    },
+    {
+      "n": 368,
+      "say": "bye",
+      "intent": "social.bye",
+      "respond": "answer"
+    }
+  ]
+}

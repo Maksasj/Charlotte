@@ -168,13 +168,15 @@ def score(turn: dict, trace: dict, got: dict) -> str:
 # Running
 # ---------------------------------------------------------------------------
 
-def load_cases(folder: Path, only: list[str]) -> list[dict]:
+def load_cases(folder: Path, only: list[str], split: str | None = None) -> list[dict]:
     cases = []
     for f in sorted(folder.glob("*.json")):
         case = json.loads(f.read_text(encoding="utf-8"))
         if case.get("skip"):
             continue
         if only and not any(o in case["chat"] for o in only):
+            continue
+        if split and case.get("split", "dev") != split:
             continue
         cases.append(case)
     return cases
@@ -193,6 +195,7 @@ def run_case(api: Api, case: dict, imap: IntentMap) -> list[dict]:
             got = read_trace(trace, imap)
             rows.append({
                 "chat": case["chat"],
+                "split": case.get("split", "dev"),
                 "n": turn["n"],
                 "say": turn["say"],
                 "expected": turn["intent"],
@@ -274,9 +277,16 @@ def summarize(rows: list[dict]) -> dict:
     }
 
 
-def previous_run(base: Path, current: Path) -> Path | None:
-    runs = sorted(p for p in base.glob("*/results.jsonl") if p.parent != current)
-    return runs[-1].parent if runs else None
+def previous_run(base: Path, current: Path, baseline: str | None = None) -> Path | None:
+    """The run to compare with: the one named by --baseline (folder name or label,
+    newest match wins), otherwise the most recent earlier run."""
+    runs = sorted(p.parent for p in base.glob("*/results.jsonl") if p.parent != current)
+    if baseline:
+        named = [r for r in runs if r.name == baseline or r.name.endswith(f"-{baseline}")]
+        if not named:
+            sys.exit(f"no earlier run matches --baseline {baseline!r} in {base}")
+        return named[-1]
+    return runs[-1] if runs else None
 
 
 def compare(rows: list[dict], prev_dir: Path | None) -> tuple[list, list]:
@@ -304,7 +314,7 @@ def fmt_expected(r: dict) -> str:
     return e + (f" (or {', '.join(r['also'])})" if r["also"] else "")
 
 
-def report_md(meta: dict, s: dict, rows: list[dict], worse: list, better: list) -> str:
+def report_md(meta: dict, s: dict, rows: list[dict], worse: list, better: list, splits: dict | None = None) -> str:
     o = s["outcomes"]
     lines = [
         f"# Karin language bench — {meta['label']}",
@@ -324,6 +334,16 @@ def report_md(meta: dict, s: dict, rows: list[dict], worse: list, better: list) 
         f"| False-accept rate | {s['false_accept_rate']:.1%} | noise answered as if understood |",
         f"| Missed rate | {s['missed_rate']:.1%} | in-scope turns where Karin got stuck |",
         "",
+    ]
+    if splits and len(splits) > 1:
+        lines += ["## By split", "",
+                  "*dev*: chats the rules were written from (regression check). *test*: chats no rule was written from (generalisation).", "",
+                  "| Split | Turns | Accuracy | Understanding | Wrong | False accept | Missed |", "|---|---|---|---|---|---|---|"]
+        for sp, v in splits.items():
+            lines.append(f"| **{sp}** | {v['turns']} | {v['accuracy']:.1%} | {v['understanding']:.1%} | {v['wrong_rate']:.1%} | "
+                         f"{v['false_accept_rate']:.1%} | {v['missed_rate']:.1%} |")
+        lines.append("")
+    lines += [
         "## Outcomes",
         "",
         "| Outcome | Turns |",
@@ -368,7 +388,8 @@ def report_md(meta: dict, s: dict, rows: list[dict], worse: list, better: list) 
                 got += f" ({r['kind']}, wanted {r['respond']})"
             reply = r["reply"].replace("|", "\\|")
             reply = reply if len(reply) < 110 else reply[:107] + "…"
-            lines.append(f"| {r['chat'][-6:]}·{r['n']} | {r['say']} | {fmt_expected(r)} | {got} | {reply} |")
+            tag = " *(test)*" if r.get("split") == "test" else ""
+            lines.append(f"| {r['chat'][-6:]}·{r['n']}{tag} | {r['say']} | {fmt_expected(r)} | {got} | {reply} |")
 
     if s["unmapped_rules"]:
         lines += ["", "## Unmapped rules", "",
@@ -389,7 +410,9 @@ def main() -> int:
     ap.add_argument("--intents", type=Path, default=ROOT / "bench" / "intents.json")
     ap.add_argument("--out", type=Path, default=ROOT / "bench" / "results")
     ap.add_argument("--label", default="run")
+    ap.add_argument("--baseline", help="compare with this earlier run (its label or folder name) instead of the latest")
     ap.add_argument("--only", nargs="*", default=[], help="only chats whose id contains one of these")
+    ap.add_argument("--split", choices=["dev", "test"], help="only one split (dev: chats rules were written from; test: unseen chats)")
     ap.add_argument("--fail-under", type=float, help="exit 1 if accuracy is below this (0..1)")
     ap.add_argument("--max-wrong", type=float, help="exit 1 if the wrong-answer rate is above this (0..1)")
     args = ap.parse_args()
@@ -412,7 +435,7 @@ def main() -> int:
 
     try:
         imap = IntentMap(args.intents)
-        cases = load_cases(args.cases, args.only)
+        cases = load_cases(args.cases, args.only, args.split)
         rows = []
         for case in cases:
             rows += run_case(api, case, imap)
@@ -426,20 +449,27 @@ def main() -> int:
     stamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     out_dir = args.out / f"{stamp}-{args.label}"
     out_dir.mkdir(parents=True, exist_ok=True)
-    prev = previous_run(args.out, out_dir)
+    prev = previous_run(args.out, out_dir, args.baseline)
     worse, better = compare(rows, prev)
     s = summarize(rows)
+    splits = {sp: summarize([r for r in rows if r.get("split", "dev") == sp])
+              for sp in sorted({r.get("split", "dev") for r in rows})}
     meta = {"label": args.label, "time": stamp, "version": git_version(), "server": server,
             "chats": len(cases), "baseline": prev.name if prev else None}
     (out_dir / "results.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
-    (out_dir / "summary.json").write_text(json.dumps({**meta, **s, "fixed": len(better), "broken": len(worse)},
+    (out_dir / "summary.json").write_text(json.dumps({**meta, **s, "fixed": len(better), "broken": len(worse),
+                                                      "splits": {k: {kk: v[kk] for kk in ("turns", "accuracy", "understanding", "wrong_rate", "false_accept_rate", "missed_rate", "outcomes")} for k, v in splits.items()}},
                                                      indent=2, ensure_ascii=False), encoding="utf-8")
-    (out_dir / "report.md").write_text(report_md(meta, s, rows, worse, better), encoding="utf-8")
+    (out_dir / "report.md").write_text(report_md(meta, s, rows, worse, better, splits), encoding="utf-8")
 
     o = s["outcomes"]
     print(f"accuracy {s['accuracy']:.1%} · understanding {s['understanding']:.1%} · "
           f"wrong {s['wrong_rate']:.1%} · false-accept {s['false_accept_rate']:.1%} · missed {s['missed_rate']:.1%}")
     print("  " + " · ".join(f"{k} {o[k]}" for k in OUTCOMES))
+    if len(splits) > 1:
+        for sp, v in splits.items():
+            print(f"  {sp:<4} {v['turns']:>3} turns: accuracy {v['accuracy']:.1%} · understanding {v['understanding']:.1%} · "
+                  f"wrong {v['wrong_rate']:.1%} · false-accept {v['false_accept_rate']:.1%} · missed {v['missed_rate']:.1%}")
     if prev:
         print(f"  vs {prev.name}: {len(better)} fixed, {len(worse)} broken")
     if s["unmapped_rules"]:
