@@ -71,8 +71,7 @@ them). Rules missing from the map are listed under "Unmapped rules" in the repor
 
 Each run writes `bench/results/<time>-<label>/` with `report.md`,
 `summary.json` and `results.jsonl`, and compares with the previous run
-(fixed / broken turns). Results are kept in git as the history of how Karin
-is doing.
+(fixed / broken turns). Results stay on disk but are git-ignored.
 
 `bench/replays/` holds the earlier whole-chat replays (impasse rate only) from
 `cargo run -p karin-core --example replay`, kept for reference.
