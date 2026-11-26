@@ -98,6 +98,8 @@ interface Props<T> {
   dslOf: (item: T) => string;
   /** Changes when the vault was reloaded, so source views re-read their files. */
   refreshKey?: number;
+  /** Open this node (and item) from outside, e.g. a rule clicked in the Tools view. */
+  focus?: { node: string; item?: string; nonce: number };
 }
 
 type Selection = { node: string; item?: string } | null;
@@ -114,6 +116,7 @@ export function VaultExplorer<T>({
   locatorOf,
   dslOf,
   refreshKey = 0,
+  focus,
   itemIcon,
   countLabel,
 }: Props<T>) {
@@ -121,6 +124,17 @@ export function VaultExplorer<T>({
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(['vault', 'runtime']));
   const [selection, setSelection] = useState<Selection>(null);
   const [view, setView] = useState<'source' | 'items'>('source');
+
+  useEffect(() => {
+    if (!focus) return;
+    setSelection({ node: focus.node, item: focus.item });
+    const parts = focus.node.split('/');
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      for (let i = 1; i <= parts.length; i++) next.add(parts.slice(0, i).join('/'));
+      return next;
+    });
+  }, [focus?.nonce]);
 
   // ---- build the tree ----
   const top = new Map<string, Node<T>>();

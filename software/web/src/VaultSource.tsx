@@ -304,6 +304,24 @@ function renderMarkdown(lines: string[], hits: Set<number>, lineBase = 1): React
 // Component
 // ---------------------------------------------------------------------------
 
+/** A block of Karin DSL with highlighting (no line numbers). */
+export function KarinCode({ code }: { code: string }) {
+  return (
+    <div className="src-code karin-code">
+      <pre>
+        {code.split(/\r?\n/).map((l, i) => (
+          <div key={i} className="src-line">
+            <span className="src-text">
+              {highlightKarinLine(l, `kc${i}`)}
+              {l === '' ? ' ' : null}
+            </span>
+          </div>
+        ))}
+      </pre>
+    </div>
+  );
+}
+
 /** Shows a vault file as written (or generated DSL when there is no file). */
 export function VaultSource({
   vaultPath,

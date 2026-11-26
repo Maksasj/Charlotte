@@ -129,6 +129,22 @@ export interface ToolInfo {
   name: string;
   description: string;
   meta: boolean;
+  package?: string;
+  args?: ToolArg[];
+  produces?: ToolOutput[];
+}
+
+export interface ToolArg {
+  name: string;
+  required: boolean;
+  description: string;
+}
+
+export interface ToolOutput {
+  rel: string;
+  args: string[];
+  scope: Scope;
+  when: string;
 }
 
 export interface SelfTestResult {

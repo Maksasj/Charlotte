@@ -59,3 +59,17 @@ export const RuntimeIcon = ({ className }: { className?: string }) => (
     <path d="M22 12h-4l-3 8L9 4l-3 8H2" />
   </Svg>
 );
+
+export const MicIcon = ({ className }: { className?: string }) => (
+  <Svg className={className}>
+    <rect x="9" y="3" width="6" height="11" rx="3" />
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+  </Svg>
+);
+
+export const KeyboardIcon = ({ className }: { className?: string }) => (
+  <Svg className={className}>
+    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+    <path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17.5 10h.01M7.5 14h9" />
+  </Svg>
+);

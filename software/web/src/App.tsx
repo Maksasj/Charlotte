@@ -7,6 +7,8 @@ import { FactRow, PatternRow } from './Rows';
 import { VaultExplorer, vaultPathOf } from './SourceTree';
 import { factDsl, patternDsl } from './VaultSource';
 import { GraphView } from './GraphView';
+import { KeyboardIcon, MicIcon } from './Icons';
+import { ToolsPanel } from './ToolsPanel';
 import { TracePanel } from './TracePanel';
 import type {
   AgentState,
@@ -67,13 +69,59 @@ export default function App() {
   });
   const [input, setInput] = useState('');
   const [selectedTrace, setSelectedTrace] = useState<TurnTrace | null>(null);
-  const [wideInspector, setWideInspector] = useState(false);
+  // Chat pane width in % of the window; the inspector takes the rest. Dragged with
+  // the splitter between them, remembered across reloads.
+  const DEFAULT_SPLIT = 55;
+  const WIDE_SPLIT = 34;
+  const [split, setSplit] = useState<number>(() => {
+    const saved = Number(localStorage.getItem('karin-split'));
+    return saved >= 20 && saved <= 80 ? saved : DEFAULT_SPLIT;
+  });
+  const [splitBeforeWide, setSplitBeforeWide] = useState<number>(DEFAULT_SPLIT);
+  const wideInspector = split <= WIDE_SPLIT + 1;
+  const gridRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    localStorage.setItem('karin-split', String(Math.round(split * 10) / 10));
+  }, [split]);
+
+  function startDrag(e: React.PointerEvent<HTMLDivElement>) {
+    const grid = gridRef.current;
+    if (!grid) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const rect = grid.getBoundingClientRect();
+    document.body.classList.add('resizing');
+    const move = (ev: PointerEvent) => {
+      // keep at least ~300px for the chat and ~380px for the inspector
+      const min = (300 / rect.width) * 100;
+      const max = 100 - (380 / rect.width) * 100;
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+      setSplit(Math.min(Math.max(pct, min), max));
+    };
+    const up = () => {
+      document.body.classList.remove('resizing');
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  }
+
+  function toggleWide() {
+    if (wideInspector) {
+      setSplit(splitBeforeWide > WIDE_SPLIT + 1 ? splitBeforeWide : DEFAULT_SPLIT);
+    } else {
+      setSplitBeforeWide(split);
+      setSplit(WIDE_SPLIT);
+    }
+  }
   const [showAddFact, setShowAddFact] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const [knowFilter, setKnowFilter] = useState('');
+  const [knowFocus, setKnowFocus] = useState<{ node: string; item?: string; nonce: number } | undefined>();
   const [knowView, setKnowView] = useState<'tree' | 'graph'>(() =>
     window.location.hash === '#graph' ? 'graph' : 'tree',
   );
@@ -501,6 +549,15 @@ export default function App() {
       );
     });
 
+  /** Open a rule in the Knowledge tab (tree view, its file selected, the rule highlighted). */
+  function openRuleInKnowledge(p: Pattern) {
+    setKnowFilter('');
+    setKnowKind('all');
+    setKnowView('tree');
+    setKnowFocus({ node: vaultPathOf(p.provenance, ruleName).join('/'), item: p.id, nonce: Date.now() });
+    setTab('knowledge');
+  }
+
   const knowledgeItems: KItem[] = [
     ...(knowKind === 'facts' ? [] : visiblePatterns.map((pattern) => ({ kind: 'pattern' as const, pattern }))),
     ...(knowKind === 'patterns' ? [] : visibleFacts.map((fact) => ({ kind: 'fact' as const, fact }))),
@@ -587,37 +644,12 @@ export default function App() {
         </div>
       )}
 
-      <div className={`main-grid ${wideInspector ? 'inspector-wide' : ''}`}>
+      <div
+        className="main-grid"
+        ref={gridRef}
+        style={{ gridTemplateColumns: `minmax(0, ${split}%) 7px minmax(0, 1fr)` }}
+      >
         <section className="chat-pane">
-          <div className="dialog-mode-bar">
-            <div className="dialog-mode-tabs">
-              <button
-                className={`mode-tab ${dialogMode === 'text' ? 'active' : ''}`}
-                onClick={() => {
-                  stopVoiceDialog();
-                  setDialogMode('text');
-                }}
-              >
-                Text Chat
-              </button>
-              <button
-                className={`mode-tab ${dialogMode === 'voice' ? 'active' : ''}`}
-                onClick={() => setDialogMode('voice')}
-              >
-                Voice Dialog
-              </button>
-            </div>
-            {dialogMode === 'voice' && (
-              <label className="muted row" style={{ gap: 6, fontSize: 12 }}>
-                <input
-                  type="checkbox"
-                  checked={handsFree}
-                  onChange={(e) => setHandsFree(e.target.checked)}
-                />
-                Hands-free loop
-              </label>
-            )}
-          </div>
           <div className="messages">
             {!state || state.messages.length === 0 ? (
               <div className="empty-state">
@@ -730,34 +762,31 @@ export default function App() {
           )}
 
           <div className="composer-wrap">
-            {dialogMode === 'text' ? (
-              <form
-                className="composer"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  sendMessage(input);
-                }}
-              >
+            <form
+              className={`agent-box mode-${dialogMode} ${dialogMode === 'voice' ? `phase-${voiceDialogPhase}` : ''}`}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (dialogMode === 'text') sendMessage(input);
+              }}
+            >
+              {dialogMode === 'text' ? (
                 <input
                   type="text"
+                  className="agent-input"
                   placeholder="Message Karin..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  autoFocus
                 />
-                <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>
-                  Send
-                </button>
-              </form>
-            ) : (
-              <div className={`voice-composer phase-${voiceDialogPhase}`}>
-                <div className="voice-status-row">
+              ) : (
+                <div className="agent-voice">
                   <span className={`voice-orb ${voiceDialogPhase}`} />
                   <div className="voice-text">
                     <div className="voice-phase-label">
                       {!speechSupported
                         ? 'Speech recognition unavailable in this browser'
                         : voiceDialogPhase === 'idle'
-                          ? 'Ready - click Start Talking and speak to Karin'
+                          ? 'Ready - press Start Talking and speak to Karin'
                           : voiceDialogPhase === 'loading'
                             ? 'Loading Karin voice (tiny-voca F2)…'
                             : voiceDialogPhase === 'listening'
@@ -771,10 +800,52 @@ export default function App() {
                     )}
                   </div>
                 </div>
-                <div className="voice-actions">
-                  {voiceDialogPhase === 'idle' ? (
+              )}
+
+              <div className="agent-bar">
+                <div className="agent-modes" role="tablist" aria-label="Input mode">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={dialogMode === 'text'}
+                    className={dialogMode === 'text' ? 'on' : ''}
+                    onClick={() => {
+                      stopVoiceDialog();
+                      setDialogMode('text');
+                    }}
+                  >
+                    <KeyboardIcon />
+                    Text
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={dialogMode === 'voice'}
+                    className={dialogMode === 'voice' ? 'on' : ''}
+                    onClick={() => setDialogMode('voice')}
+                  >
+                    <MicIcon />
+                    Voice
+                  </button>
+                </div>
+                {dialogMode === 'voice' && (
+                  <label className="agent-chip" title="Keep listening after each reply">
+                    <input
+                      type="checkbox"
+                      checked={handsFree}
+                      onChange={(e) => setHandsFree(e.target.checked)}
+                    />
+                    Hands-free
+                  </label>
+                )}
+                <div className="agent-actions">
+                  {dialogMode === 'text' ? (
+                    <button type="submit" className="btn btn-primary btn-sm" disabled={busy || !input.trim()}>
+                      Send
+                    </button>
+                  ) : voiceDialogPhase === 'idle' ? (
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm"
                       type="button"
                       disabled={!speechSupported}
                       onClick={() => void startVoiceDialog()}
@@ -784,28 +855,30 @@ export default function App() {
                   ) : (
                     <>
                       {voiceDialogPhase === 'speaking' && (
-                        <button
-                          className="btn btn-ghost"
-                          type="button"
-                          onClick={() => karinVoice.stop()}
-                        >
+                        <button className="btn btn-ghost btn-sm" type="button" onClick={() => karinVoice.stop()}>
                           Interrupt
                         </button>
                       )}
-                      <button
-                        className="btn btn-primary"
-                        type="button"
-                        onClick={stopVoiceDialog}
-                      >
+                      <button className="btn btn-primary btn-sm" type="button" onClick={stopVoiceDialog}>
                         Stop
                       </button>
                     </>
                   )}
                 </div>
               </div>
-            )}
+            </form>
           </div>
         </section>
+
+        <div
+          className="splitter"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize the inspector"
+          title="Drag to resize · double-click to reset"
+          onPointerDown={startDrag}
+          onDoubleClick={() => setSplit(DEFAULT_SPLIT)}
+        />
 
         <section className="inspector-pane">
           <div className="tabs">
@@ -840,13 +913,13 @@ export default function App() {
             <button
               className="tab tab-right"
               title={wideInspector ? 'Give the chat more room' : 'Give the inspector more room'}
-              onClick={() => setWideInspector((w) => !w)}
+              onClick={toggleWide}
             >
               {wideInspector ? 'Collapse' : 'Expand'}
             </button>
           </div>
 
-          <div className={`inspector-body ${tab === 'knowledge' ? 'flush' : ''}`}>
+          <div className={`inspector-body ${tab === 'knowledge' || tab === 'tools' ? 'flush' : ''}`}>
             {tab === 'trace' && (
               <>
                 {!selectedTrace ? (
@@ -941,6 +1014,7 @@ export default function App() {
                 ) : (
                 <VaultExplorer<KItem>
                   refreshKey={vaultVersion}
+                  focus={knowFocus}
                   items={knowledgeItems}
                   pathOf={(k) =>
                     vaultPathOf(k.kind === 'fact' ? k.fact.provenance : k.pattern.provenance, ruleName)
@@ -1002,9 +1076,13 @@ export default function App() {
             )}
 
             {tab === 'tools' && state && (
-              <>
-                <div className="card">
-                  <div className="section-label">Learning Meta-Tools</div>
+              <ToolsPanel
+                tools={tools}
+                state={state}
+                onOpenRule={openRuleInKnowledge}
+                learning={{
+                  generalize_episodes: (
+                    <>
                   <div className="row" style={{ marginTop: 8 }}>
                     <button className="btn btn-primary btn-sm" onClick={() => runGeneralize(false)}>
                       Anti-Unify Episodes
@@ -1012,29 +1090,8 @@ export default function App() {
                     <button className="btn btn-ghost btn-sm" onClick={() => runGeneralize(true)}>
                       Anti-Unify &amp; Promote
                     </button>
-                    <button className="btn btn-primary btn-sm" onClick={() => runChunk(false)}>
-                      Chunk Last Chain
-                    </button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => runChunk(true)}>
-                      Chunk &amp; Promote
-                    </button>
                   </div>
-                </div>
-
-                <div className="section-label">Registered Tools</div>
-                {tools.map((t) => (
-                  <div key={t.name} className="card">
-                    <div className="card-head">
-                      <span className="mono card-title">{t.name}</span>
-                      <span className={`badge ${t.meta ? 'brand' : ''}`}>
-                        {t.meta ? 'meta-tool' : 'world tool'}
-                      </span>
-                    </div>
-                    <div className="muted">{t.description}</div>
-                  </div>
-                ))}
-
-                <div className="section-label">Episodes ({state.episodes.length})</div>
+                  <div className="section-label">Episodes ({state.episodes.length})</div>
                 <div className="card mono">
                   {state.episodes.map((ep) => (
                     <div key={ep.id} style={{ marginBottom: 4 }}>
@@ -1045,8 +1102,19 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-
-                <div className="section-label">Multi-Step Chains ({state.chains.length})</div>
+                    </>
+                  ),
+                  chunk_last_chain: (
+                    <>
+                  <div className="row" style={{ marginTop: 8 }}>
+<button className="btn btn-primary btn-sm" onClick={() => runChunk(false)}>
+                      Chunk Last Chain
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => runChunk(true)}>
+                      Chunk &amp; Promote
+                    </button>
+                  </div>
+                  <div className="section-label">Multi-Step Chains ({state.chains.length})</div>
                 <div className="card mono">
                   {state.chains.length === 0 ? (
                     <span className="muted">
@@ -1063,7 +1131,10 @@ export default function App() {
                     ))
                   )}
                 </div>
-              </>
+                    </>
+                  ),
+                }}
+              />
             )}
 
             {tab === 'tests' && (
