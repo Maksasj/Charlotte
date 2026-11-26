@@ -331,10 +331,39 @@ impl Engine {
         self.state.turn += 1;
         self.state.facts.retain(|fact| fact.scope != Scope::Working);
         self.expire_chat_memory();
+        self.seed_chat_memory();
 
         let args = BTreeMap::from([("text".into(), input.to_string())]);
         self.add_fact("user_text".into(), args, Scope::Working, "perceive".into());
         self.state.turn
+    }
+
+    /// Chat facts every chat starts with, declared in the vault as
+    /// `chat_seed(rel=R, k=v, ...)`: when the chat has no `R` fact, `R(k=v, ...)`
+    /// is added to chat memory (e.g. the default speaker).
+    fn seed_chat_memory(&mut self) {
+        let seeds: Vec<(String, BTreeMap<String, String>)> = self
+            .state
+            .facts
+            .iter()
+            .filter(|f| f.rel == "chat_seed")
+            .filter_map(|f| {
+                let rel = f.args.get("rel")?.clone();
+                let mut args = f.args.clone();
+                args.remove("rel");
+                Some((rel, args))
+            })
+            .collect();
+        for (rel, args) in seeds {
+            let present = self
+                .state
+                .facts
+                .iter()
+                .any(|f| f.rel == rel && f.scope == Scope::Chat);
+            if !present {
+                self.add_fact(rel, args, Scope::Chat, "chat_seed".into());
+            }
+        }
     }
 
     /// Chat facts the vault declares short-lived with `chat_expiry(rel=..., turns=N)` are
