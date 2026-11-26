@@ -37,12 +37,12 @@ when: "stop being $x"
 then: => "Sorry - I'll try to do better. Tell me what you meant and I'll learn it."
 
 rule social-yes-nothing-pending
-when: "yes", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name()
+when: "yes", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name(), !dialogue_pending_speaker()
 trust: 0.2
 then: => "Okay! What would you like to do?"
 
 rule social-yeah
-when: "yeah", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name()
+when: "yeah", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name(), !dialogue_pending_speaker()
 trust: 0.2
 then: => "Okay! What would you like to do?"
 ```

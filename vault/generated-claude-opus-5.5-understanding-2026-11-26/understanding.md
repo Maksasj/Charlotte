@@ -64,12 +64,6 @@ relation_word(word="boss")
 relation_word(word="teacher")
 relation_word(word="neighbor")
 
-rule people-teach-rel-no-my
-when: "$x is $rel", relation_word(word=$rel), !intent(), words($x) <= 2, $x != "who", $x != "what", $x != "it", $x != "he", $x != "she", $x != "this", $x != "that", $x != "you"
-then:
-  ++rel(subj="user", pred=$rel, obj=$x)
-  +chat mention(entity=$x, kind="person")
-  => "Got it - $x is your $rel."
 ```
 
 ## 5. "Oscar like ice cream" — only for people Karin already knows
@@ -78,12 +72,6 @@ The general "$x like $y" read "Aaron I like rock music" as Aaron's taste, so it
 is limited to someone stored as one of the user's relations.
 
 ```karin
-rule people-known-like-speech
-when: "$x like $y", rel(subj="user", pred=$p, obj=$x), $p != "likes", words($x) <= 2
-then:
-  ++rel(subj=$x, pred="likes", obj=$y)
-  +chat mention(entity=$x, kind="person")
-  => "Noted - $x likes $y."
 ```
 
 ## 6. Karin as herself

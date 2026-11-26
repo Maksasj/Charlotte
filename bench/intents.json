@@ -16,7 +16,8 @@
   "intents": {
     "social.greet": [
       "greet-*",
-      "social-good-evening"
+      "social-good-evening",
+      "me-greet-known"
     ],
     "social.how_are_you": [
       "social-how-are-you"
@@ -67,7 +68,8 @@
     ],
     "persona.identity": [
       "who-are-you",
-      "self-what-are-you"
+      "self-what-are-you",
+      "karin-ask-*"
     ],
     "persona.called": [
       "self-called",
@@ -81,7 +83,8 @@
     ],
     "persona.statement": [
       "self-you-are-a-thing",
-      "self-you-are-me"
+      "self-you-are-me",
+      "karin-rel-*"
     ],
     "help.capabilities": [
       "help-*"
@@ -91,40 +94,56 @@
       "user-call-me",
       "user-confirm-name-*",
       "user-i-am-known-name",
-      "user-i-am-maybe-name"
+      "user-i-am-maybe-name",
+      "me-is-*",
+      "me-confirm-name-*",
+      "me-switch-*"
     ],
     "user.name.ask": [
       "recall-user-name*",
-      "user-who-am-i*"
+      "user-who-am-i*",
+      "me-who-am-i*",
+      "me-what-is-my-name*"
     ],
     "user.state.tell": [
       "user-i-am-state-*"
     ],
     "user.role.tell": [
       "user-i-am-a",
-      "user-i-am-an"
+      "user-i-am-an",
+      "me-role-a",
+      "me-role-an"
     ],
     "user.role.ask": [
-      "user-what-am-i"
+      "user-what-am-i",
+      "me-what-am-i"
     ],
     "user.profile": [
       "recall-user-profile-*",
       "learn-user-city",
       "learn-user-work",
-      "recall-user-workplace*"
+      "recall-user-workplace*",
+      "me-about*"
     ],
     "likes.tell": [
       "learn-user-like*",
       "learn-user-also-like-*",
       "likes-teach-*",
-      "people-user-likes-by-name"
+      "people-user-likes-by-name",
+      "me-like*",
+      "me-favorite*",
+      "me-thing-is-favorite",
+      "me-also-like*",
+      "me-listen*",
+      "likes-person-is-me"
     ],
     "likes.ask": [
       "ask-user-likes-*",
       "reply-user-likes-*",
       "run-likes-topic-collect",
       "likes-ask-*",
-      "induced-likes-topic-from-isa"
+      "induced-likes-topic-from-isa",
+      "me-ask-likes*"
     ],
     "likes.correction": [
       "correct-likes-*",
@@ -138,7 +157,8 @@
     "people.rel.tell": [
       "people-teach-my-rel*",
       "rel-teach-*",
-      "people-teach-rel-no-my"
+      "people-teach-rel-no-my",
+      "rel-tell-*"
     ],
     "people.rel.ask": [
       "people-ask-*",
@@ -146,19 +166,28 @@
       "people-is-my-rel-*",
       "rel-ask-generic",
       "rel-match-*",
-      "rel-unknown-*"
+      "rel-unknown-*",
+      "rel-ask-who-is-my",
+      "rel-ask-what-is-my",
+      "rel-ask-my-name",
+      "rel-ask-is-my-*"
     ],
     "people.who_is": [
       "people-who-is-*",
-      "people-what-is-known"
+      "people-what-is-known",
+      "who-is-*",
+      "about-reply-*"
     ],
     "people.likes.tell": [
       "people-other-likes",
-      "people-known-like-speech"
+      "people-known-like-speech",
+      "likes-person-known",
+      "likes-person-new"
     ],
     "people.likes.ask": [
       "people-what-does-like",
-      "people-reply-their-likes*"
+      "people-reply-their-likes*",
+      "likes-ask-what-does"
     ],
     "people.city.tell": [
       "people-lives-in"
