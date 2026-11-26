@@ -1,0 +1,8 @@
+[package]
+name = "karin-tool"
+description = "Shared API for Karin's tools: the WorldTool trait, facts and tool descriptions."
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true

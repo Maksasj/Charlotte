@@ -1,7 +1,9 @@
-use super::{ToolOutcome, WorldTool, working_fact};
-use crate::types::{Fact, ToolInfo};
-use crate::unify::normalize;
-use std::collections::{BTreeMap, HashSet};
+//! Karin tool: gather matching facts into one list.
+
+use karin_tool::*;
+use std::collections::BTreeMap;
+
+use std::collections::HashSet;
 
 pub struct CollectTool;
 
@@ -13,6 +15,40 @@ impl WorldTool for CollectTool {
             name: "collect".into(),
             description: "Collect all matching facts for a relation into a joined list.".into(),
             meta: false,
+            package: "karin-tool-collect".into(),
+            args: vec![
+                arg("rel", true, "relation to read, e.g. rel or weather_city"),
+                arg(
+                    "field",
+                    false,
+                    "argument whose values are listed (default: value)",
+                ),
+                arg(
+                    "tag",
+                    false,
+                    "label copied to the result, so reply rules can tell lists apart",
+                ),
+                arg("sep", false, "separator between items (default: \", \")"),
+                arg(
+                    "<any other key>",
+                    false,
+                    "filter: only facts whose argument equals this value",
+                ),
+            ],
+            produces: vec![
+                output(
+                    "collected",
+                    &["tag", "count", "list"],
+                    Scope::Working,
+                    "when at least one fact matches",
+                ),
+                output(
+                    "collected_empty",
+                    &["tag"],
+                    Scope::Working,
+                    "when nothing matches",
+                ),
+            ],
         }
     }
 

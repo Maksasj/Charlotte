@@ -1,0 +1,8 @@
+[package]
+name = "karin-tool-calc"
+description = "Karin tool: evaluate arithmetic expressions."
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+karin-tool = { path = "../karin-tool" }

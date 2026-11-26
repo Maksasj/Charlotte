@@ -1,5 +1,6 @@
-use super::{ToolOutcome, WorldTool, find_fact, working_fact};
-use crate::types::{Fact, ToolInfo};
+//! Karin tool: look up weather facts for a city.
+
+use karin_tool::*;
 use std::collections::BTreeMap;
 
 pub struct WeatherTool;
@@ -10,6 +11,26 @@ impl WorldTool for WeatherTool {
             name: "weather".into(),
             description: "Look up weather facts for a city from long-term knowledge.".into(),
             meta: false,
+            package: "karin-tool-weather".into(),
+            args: vec![arg(
+                "city",
+                true,
+                "city name, matched against weather_city(city=...) facts",
+            )],
+            produces: vec![
+                output(
+                    "weather_report",
+                    &["city", "condition", "temp"],
+                    Scope::Working,
+                    "when a weather_city fact exists",
+                ),
+                output(
+                    "weather_unknown",
+                    &["city"],
+                    Scope::Working,
+                    "when the city is unknown",
+                ),
+            ],
         }
     }
 

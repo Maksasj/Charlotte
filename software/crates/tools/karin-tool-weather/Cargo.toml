@@ -1,0 +1,8 @@
+[package]
+name = "karin-tool-weather"
+description = "Karin tool: look up weather facts for a city."
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+karin-tool = { path = "../karin-tool" }

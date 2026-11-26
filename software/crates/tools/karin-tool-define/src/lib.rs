@@ -1,5 +1,6 @@
-use super::{ToolOutcome, WorldTool, find_fact, working_fact};
-use crate::types::{Fact, ToolInfo};
+//! Karin tool: look up a concept definition.
+
+use karin_tool::*;
 use std::collections::BTreeMap;
 
 pub struct DefineTool;
@@ -10,6 +11,26 @@ impl WorldTool for DefineTool {
             name: "define".into(),
             description: "Look up a concept definition from long-term knowledge.".into(),
             meta: false,
+            package: "karin-tool-define".into(),
+            args: vec![arg(
+                "topic",
+                true,
+                "concept, matched against definition(topic=...) facts",
+            )],
+            produces: vec![
+                output(
+                    "definition_result",
+                    &["topic", "text"],
+                    Scope::Working,
+                    "when a definition exists",
+                ),
+                output(
+                    "definition_unknown",
+                    &["topic"],
+                    Scope::Working,
+                    "when there is none",
+                ),
+            ],
         }
     }
 

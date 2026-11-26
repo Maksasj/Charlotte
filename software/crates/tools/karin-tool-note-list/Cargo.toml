@@ -1,0 +1,8 @@
+[package]
+name = "karin-tool-note-list"
+description = "Karin tool: list saved notes."
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+karin-tool = { path = "../karin-tool" }

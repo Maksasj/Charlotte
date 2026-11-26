@@ -1,28 +1,10 @@
 use crate::types::{Condition, Fact};
 use std::collections::BTreeMap;
 
+pub use karin_tool::normalize;
+
 pub type Bindings = BTreeMap<String, String>;
 
-pub fn normalize(s: &str) -> String {
-    let trimmed = s.trim();
-    let mut out = String::with_capacity(trimmed.len());
-    let mut prev_space = false;
-    for ch in trimmed.chars() {
-        let lower = ch.to_ascii_lowercase();
-        if lower.is_whitespace() {
-            if !prev_space && !out.is_empty() {
-                out.push(' ');
-                prev_space = true;
-            }
-        } else {
-            out.push(lower);
-            prev_space = false;
-        }
-    }
-    out.trim_end_matches(['?', '!', '.', ',', ';'])
-        .trim()
-        .to_string()
-}
 
 pub fn is_var(s: &str) -> bool {
     s.starts_with('$')

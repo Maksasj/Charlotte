@@ -1,0 +1,8 @@
+[package]
+name = "karin-tool-note-save"
+description = "Karin tool: save a note to long-term memory."
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+karin-tool = { path = "../karin-tool" }

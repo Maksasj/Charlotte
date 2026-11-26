@@ -1,37 +1,9 @@
-use super::{NewFact, ToolOutcome, WorldTool, working_fact};
-use crate::types::{Fact, Scope, ToolInfo};
+//! Karin tool: list saved notes.
+
+use karin_tool::*;
 use std::collections::BTreeMap;
 
-pub struct NoteSaveTool;
 pub struct NoteListTool;
-
-impl WorldTool for NoteSaveTool {
-    fn info(&self) -> ToolInfo {
-        ToolInfo {
-            name: "note_save".into(),
-            description: "Save a personal note into long-term memory.".into(),
-            meta: false,
-        }
-    }
-
-    fn run(&self, args: &BTreeMap<String, String>, _facts: &[Fact]) -> ToolOutcome {
-        let text = args.get("text").cloned().unwrap_or_default();
-        let fact_args = BTreeMap::from([("text".into(), text.clone())]);
-
-        ToolOutcome {
-            facts: vec![
-                NewFact {
-                    rel: "note".into(),
-                    args: fact_args.clone(),
-                    scope: Scope::LongTerm,
-                    provenance: "tool:note_save".into(),
-                },
-                working_fact("note_saved", fact_args, "tool:note_save"),
-            ],
-            summary: format!("note_save(\"{text}\")"),
-        }
-    }
-}
 
 impl WorldTool for NoteListTool {
     fn info(&self) -> ToolInfo {
@@ -39,6 +11,14 @@ impl WorldTool for NoteListTool {
             name: "note_list".into(),
             description: "List all saved notes from long-term memory.".into(),
             meta: false,
+            package: "karin-tool-note-list".into(),
+            args: vec![],
+            produces: vec![output(
+                "notes_listing",
+                &["list", "count"],
+                Scope::Working,
+                "always (list may be empty)",
+            )],
         }
     }
 

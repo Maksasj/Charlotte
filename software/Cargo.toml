@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/karin-core",
     "crates/karin-server",
+    "crates/tools/*",
 ]
 
 [workspace.package]

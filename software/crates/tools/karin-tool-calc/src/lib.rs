@@ -1,5 +1,9 @@
-use super::{ToolOutcome, WorldTool, math::eval_expr, math::format_number, working_fact};
-use crate::types::{Fact, ToolInfo};
+//! Karin tool: evaluate arithmetic expressions.
+
+mod math;
+
+use karin_tool::*;
+use math::{eval_expr, format_number};
 use std::collections::BTreeMap;
 
 pub struct CalcTool;
@@ -10,6 +14,26 @@ impl WorldTool for CalcTool {
             name: "calc".into(),
             description: "Evaluate a safe arithmetic expression (+, -, *, /, parentheses).".into(),
             meta: false,
+            package: "karin-tool-calc".into(),
+            args: vec![arg(
+                "expr",
+                true,
+                "arithmetic expression: numbers, + - * /, parentheses",
+            )],
+            produces: vec![
+                output(
+                    "calc_result",
+                    &["expr", "value"],
+                    Scope::Working,
+                    "when the expression evaluates",
+                ),
+                output(
+                    "calc_error",
+                    &["expr", "error"],
+                    Scope::Working,
+                    "when it cannot be evaluated",
+                ),
+            ],
         }
     }
 

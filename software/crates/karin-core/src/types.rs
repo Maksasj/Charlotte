@@ -1,27 +1,10 @@
 use serde::{Deserialize, Serialize};
+
+/// Shared with the tool packages.
+pub use karin_tool::{Fact, Scope, ToolArg, ToolInfo, ToolOutput};
 use std::collections::BTreeMap;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Scope {
-    /// Lives for one turn.
-    Working,
-    /// Lives for one chat: survives turns, cleared by `new_chat`, never saved to the vault.
-    Chat,
-    /// Lives forever (persisted).
-    LongTerm,
-}
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Fact {
-    pub id: String,
-    pub rel: String,
-    pub args: BTreeMap<String, String>,
-    pub scope: Scope,
-    pub provenance: String,
-    pub turn: usize,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -222,13 +205,6 @@ pub struct AgentState {
     pub next_id: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ToolInfo {
-    pub name: String,
-    pub description: String,
-    pub meta: bool,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

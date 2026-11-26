@@ -6,3 +6,10 @@ edition.workspace = true
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
+karin-tool = { path = "../tools/karin-tool" }
+karin-tool-calc = { path = "../tools/karin-tool-calc" }
+karin-tool-collect = { path = "../tools/karin-tool-collect" }
+karin-tool-define = { path = "../tools/karin-tool-define" }
+karin-tool-note-list = { path = "../tools/karin-tool-note-list" }
+karin-tool-note-save = { path = "../tools/karin-tool-note-save" }
+karin-tool-weather = { path = "../tools/karin-tool-weather" }
