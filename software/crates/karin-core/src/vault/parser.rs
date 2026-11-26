@@ -218,6 +218,8 @@ fn strip_bullet(trimmed: &str) -> &str {
 fn split_scope(line: &str) -> (Scope, &str) {
     if let Some(rest) = line.strip_prefix("[working]") {
         (Scope::Working, rest.trim())
+    } else if let Some(rest) = line.strip_prefix("[chat]") {
+        (Scope::Chat, rest.trim())
     } else if let Some(rest) = line.strip_prefix("[long_term]") {
         (Scope::LongTerm, rest.trim())
     } else {

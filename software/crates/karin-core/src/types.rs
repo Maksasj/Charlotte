@@ -4,7 +4,11 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Scope {
+    /// Lives for one turn.
     Working,
+    /// Lives for one chat: survives turns, cleared by `new_chat`, never saved to the vault.
+    Chat,
+    /// Lives forever (persisted).
     LongTerm,
 }
 
@@ -140,6 +144,12 @@ pub struct TurnTrace {
     pub steps: Vec<StepTrace>,
     pub fired_pattern_ids: Vec<String>,
     pub chunked_pattern_id: Option<String>,
+    /// What the language layer turned the input into: one entry per clause that was understood.
+    #[serde(default)]
+    pub understood: Vec<String>,
+    /// Clauses of the input that no pattern could handle.
+    #[serde(default)]
+    pub missed: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

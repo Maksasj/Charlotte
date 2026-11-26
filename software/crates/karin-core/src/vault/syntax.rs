@@ -41,6 +41,13 @@ pub(crate) fn parse_action(raw: &str) -> Result<Action, String> {
             args,
             scope: Scope::LongTerm,
         })
+    } else if let Some(rest) = trimmed.strip_prefix("+chat ") {
+        let (rel, args) = parse_call(rest.trim())?;
+        Ok(Action::Assert {
+            rel,
+            args,
+            scope: Scope::Chat,
+        })
     } else if let Some(rest) = trimmed.strip_prefix('+') {
         let (rel, args) = parse_call(rest.trim())?;
         Ok(Action::Assert {
@@ -64,7 +71,7 @@ pub(crate) fn parse_action(raw: &str) -> Result<Action, String> {
         }
     } else {
         Err(format!(
-            "invalid action '{trimmed}' (expected =>, @, +, ++, or -)"
+            "invalid action '{trimmed}' (expected =>, @, +, +chat, ++, or -)"
         ))
     }
 }

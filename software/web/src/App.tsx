@@ -47,7 +47,7 @@ function fmtCond(c: Condition): string {
 function fmtAction(a: Action): string {
   switch (a.kind) {
     case 'assert':
-      return `assert[${a.scope === 'long_term' ? 'lt' : 'w'}] ${a.rel}(${Object.entries(a.args)
+      return `assert[${a.scope === 'long_term' ? 'lt' : a.scope === 'chat' ? 'chat' : 'w'}] ${a.rel}(${Object.entries(a.args)
         .map(([k, v]) => `${k}=${v}`)
         .join(', ')})`;
     case 'retract':
@@ -882,7 +882,7 @@ export default function App() {
                       </span>
                       <div className="row">
                         <span className={`badge ${f.scope === 'working' ? 'warn' : ''}`}>
-                          {f.scope === 'long_term' ? 'long-term' : 'working'}
+                          {f.scope === 'long_term' ? 'long-term' : f.scope === 'chat' ? 'chat' : 'working'}
                         </span>
                         <button
                           className="btn-danger"
