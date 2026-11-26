@@ -1,3 +1,0 @@
-{"pred":"move_out","arity":1,"definition":"user7 has moved out of their home","source":"user","facts":["move_out(user7)"],"status":"pending","frame":null}
-{"pred":"never_done","arity":2,"definition":"user7 has never done their own laundry","source":"user","facts":["never_done(user7, laundry)"],"status":"pending","frame":null}
-{"pred":"cannot_make","arity":2,"definition":"the speaker is not allowed to make holes","source":"user","facts":["cannot_make(user44, hole)"],"status":"pending","frame":null}

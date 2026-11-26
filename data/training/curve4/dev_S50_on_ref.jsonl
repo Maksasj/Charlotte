@@ -1,5 +1,0 @@
-{"q": "w1-035", "claim": "can_go_in(mozzarella, fridge)", "ok": true, "error": ""}
-{"q": "w1-060", "claim": "swap(make_chili_con_carne_s2, pot, frying_pan)", "ok": true, "error": ""}
-{"q": "w2-001", "claim": "can_go_in(fork, drawer)", "ok": true, "error": ""}
-{"q": "w2-111", "claim": "swap(prune_roses_s2, secateurs, knife)", "ok": true, "error": ""}
-{"q": "w3-121", "claim": "swap(prune_rose_s1, secateurs, knife)", "ok": true, "error": ""}

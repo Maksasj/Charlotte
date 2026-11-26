@@ -1,1 +1,0 @@
-{"pred":"trip_lasts","arity":2,"definition":"the speaker's trip lasts this many weeks","source":"user","facts":["trip_lasts(user64, week)"],"status":"pending","frame":null}

@@ -1,5 +1,0 @@
-baking.msgs
-cooking.msgs
-cleaning.msgs
-repair.msgs
-procedures_fixture.msgs

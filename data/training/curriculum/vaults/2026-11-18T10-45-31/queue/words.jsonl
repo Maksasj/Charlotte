@@ -1,1 +1,0 @@
-{"pred":"forecast","arity":2,"definition":"rain is forecast for the whole day","source":"user","facts":["forecast(rain, all_day)"],"status":"pending","frame":null}

@@ -1,1 +1,0 @@
-{"pred":"turns_age","arity":2,"definition":"my_daughter turns 8 years old next month","source":"user","facts":["turns_age(my_daughter, 8)"],"status":"pending","frame":null}
