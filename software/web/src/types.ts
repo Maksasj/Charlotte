@@ -47,6 +47,18 @@ export interface CompetingMatch {
   name: string;
   score: number;
   bindings: Record<string, string>;
+  parts?: ScorePart[];
+}
+
+export interface ScorePart {
+  label: string;
+  value: number;
+}
+
+export interface AttemptTrace {
+  kind: 'whole' | 'clause' | 'ellipsis' | 'exact';
+  text: string;
+  answered: boolean;
 }
 
 export interface StepTrace {
@@ -56,6 +68,7 @@ export interface StepTrace {
   winnerName: string;
   bindings: Record<string, string>;
   effects: string[];
+  text?: string;
 }
 
 export interface TurnTrace {
@@ -68,6 +81,8 @@ export interface TurnTrace {
   chunkedPatternId?: string | null;
   understood?: string[];
   missed?: string[];
+  attempts?: AttemptTrace[];
+  chatMemory?: Fact[];
 }
 
 export interface ChatMessage {

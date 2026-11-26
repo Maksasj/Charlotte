@@ -48,7 +48,7 @@ then: => "My name is $me."
 
 rule self-name-confirm
 when: "your name is karin", persona_name(value=$me)
-then: => "Yes — that's me, $me."
+then: => "Yes - that's me, $me."
 
 rule self-name-other
 when: "your name is $x", persona_name(value=$me), $x != "karin"
@@ -65,7 +65,7 @@ then: => "Yes? I'm listening."
 
 rule self-favorite
 when: "what is your favorite $topic"
-then: => "I don't have a favorite $topic — I can't taste or listen, I'm a symbolic assistant. What's yours?"
+then: => "I don't have a favorite $topic - I can't taste or listen, I'm a symbolic assistant. What's yours?"
 
 rule self-likes
 when: "what do you like"
@@ -73,11 +73,11 @@ then: => "I don't have likes of my own, but I remember yours. Ask me \"what do I
 
 rule self-you-like
 when: "you like $x"
-then: => "I don't have tastes of my own — but I can remember that you like $x if you say \"I like $x\"."
+then: => "I don't have tastes of my own - but I can remember that you like $x if you say \"I like $x\"."
 
 rule self-do-you-like
 when: "do you like $x"
-then: => "I don't have tastes of my own — but I can remember yours. Say \"I like $x\" if you do."
+then: => "I don't have tastes of my own - but I can remember yours. Say \"I like $x\" if you do."
 ```
 
 ## Compliments, criticism and friendship
@@ -85,42 +85,42 @@ then: => "I don't have tastes of my own — but I can remember yours. Say \"I li
 ```karin
 rule self-you-are-positive
 when: "you are $adj", sentiment(word=$adj, polarity="positive")
-then: => "Thank you — that's kind of you!"
+then: => "Thank you - that's kind of you!"
 
 rule self-you-are-a-positive
 when: "you are a $adj", sentiment(word=$adj, polarity="positive")
-then: => "Thank you — that's kind of you!"
+then: => "Thank you - that's kind of you!"
 
 rule self-you-are-negative
 when: "you are $adj", sentiment(word=$adj, polarity="negative")
-then: => "Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
+then: => "Sorry - I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
 
 rule self-you-are-not-positive
 when: "you are not $adj", sentiment(word=$adj, polarity="positive")
-then: => "Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
+then: => "Sorry - I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
 
 rule self-not-doing-well
 when: "you are not doing $x"
-then: => "Sorry — I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
+then: => "Sorry - I only understand the phrasings I've been taught, so I miss a lot. Tell me what you meant and I'll learn it."
 
 rule self-are-you-a-positive
 when: "are you a $adj", sentiment(word=$adj, polarity="positive")
-then: => "I try! But I only know what I've been taught — teach me more and I'll get better."
+then: => "I try! But I only know what I've been taught - teach me more and I'll get better."
 
 rule self-are-you-positive
 when: "are you $adj", sentiment(word=$adj, polarity="positive")
-then: => "I try! But I only know what I've been taught — teach me more and I'll get better."
+then: => "I try! But I only know what I've been taught - teach me more and I'll get better."
 
 rule self-my-friend
 when: "you are my $rel"
-then: => "That's lovely to hear — I'm happy to be your $rel."
+then: => "That's lovely to hear - I'm happy to be your $rel."
 
 rule self-you-are-a-thing
 when: "you are a $x"
 trust: 0.2
-then: => "Thanks for telling me — but I'm just a symbolic assistant."
+then: => "Thanks for telling me - but I'm just a symbolic assistant."
 
 rule self-apologize
 when: ~"apologize"
-then: => "I'm sorry I didn't understand you. I'm a symbolic assistant, so I only know the phrasings I've been taught — every one you teach me helps."
+then: => "I'm sorry I didn't understand you. I'm a symbolic assistant, so I only know the phrasings I've been taught - every one you teach me helps."
 ```

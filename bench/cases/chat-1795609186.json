@@ -1,0 +1,50 @@
+{
+  "chat": "chat-1795609186",
+  "source": "vault/.chats/chat-1795609186.md",
+  "labelled_by": "claude-opus-5.5 draft, 2026-11-26 - needs review",
+  "setup": [],
+  "turns": [
+    {
+      "n": 1,
+      "say": "my name is Maksim",
+      "intent": "user.name.tell",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 2,
+      "say": "What is my name ?",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 3,
+      "say": "What is your name ?",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    },
+    {
+      "n": 4,
+      "say": "Hi",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 5,
+      "say": "What is your name ?",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    }
+  ]
+}

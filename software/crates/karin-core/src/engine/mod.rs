@@ -4,8 +4,8 @@ mod selftest;
 use crate::nlu::Lexicon;
 use crate::tools::{NewFact, run_world_tool};
 use crate::types::{
-    Action, AgentState, ChainRecord, ChatMessage, CompetingMatch, Condition, Fact, Pattern,
-    PatternKind, PatternStatus, Scope, StepTrace, TurnTrace,
+    Action, AgentState, AttemptTrace, ChainRecord, ChatMessage, CompetingMatch, Condition, Fact,
+    Pattern, PatternKind, PatternStatus, Scope, ScorePart, StepTrace, TurnTrace,
 };
 use crate::unify::{Bindings, is_var, match_conditions, normalize, subst, subst_args};
 use crate::vault::{initial_state, load_vault};
@@ -20,6 +20,8 @@ const IMPASSE_REPLY: &str =
 
 pub struct Engine {
     pub state: AgentState,
+    /// The readings tried during the current turn (for the trace).
+    attempt_log: Vec<AttemptTrace>,
 }
 
 impl Default for Engine {
@@ -32,17 +34,22 @@ impl Engine {
     pub fn new() -> Self {
         Self {
             state: initial_state(),
+            attempt_log: Vec::new(),
         }
     }
 
     pub fn from_vault_dir(dir: &Path) -> Result<Self, String> {
         Ok(Self {
             state: load_vault(dir)?,
+            attempt_log: Vec::new(),
         })
     }
 
     pub fn from_state(state: AgentState) -> Self {
-        Self { state }
+        Self {
+            state,
+            attempt_log: Vec::new(),
+        }
     }
 
     pub fn reset(&mut self) {
@@ -140,12 +147,13 @@ impl Engine {
     pub fn turn(&mut self, input: &str) -> TurnTrace {
         let raw = input.trim().to_string();
         let turn = self.prepare_turn(&raw);
+        self.attempt_log.clear();
         let lex = Lexicon::from_facts(&self.state.facts);
         let base = self.snapshot();
 
         // 1. The whole utterance, in canonical form.
         let whole_text = lex.normalize(&lex.resolve_pronouns(&raw, &self.state.facts));
-        let mut chosen = self.attempt(&whole_text);
+        let mut chosen = self.attempt("whole", &whole_text);
 
         // 2. Several clauses ("Oscar is my friend and he lives in Venus"): used
         //    when every clause is understood, or when the whole was not.
@@ -165,7 +173,7 @@ impl Engine {
         // 3. The exact text, for patterns taught on exact wording.
         if chosen.replies.is_empty() && whole_text != raw {
             self.restore(base.clone(), &raw);
-            let exact = self.attempt(&raw);
+            let exact = self.attempt("exact", &raw);
             if exact.answered() {
                 chosen = exact;
             }
@@ -201,7 +209,7 @@ impl Engine {
     }
 
     /// Run the rule loop on one canonical sentence. Rolls back on failure.
-    fn attempt(&mut self, text: &str) -> Attempt {
+    fn attempt(&mut self, kind: &str, text: &str) -> Attempt {
         let before = self.snapshot();
         let mut fired_keys = HashSet::new();
         let mut out = Attempt::default();
@@ -227,6 +235,7 @@ impl Engine {
                 winner_name: winner.name,
                 bindings,
                 effects,
+                text: text.to_string(),
             });
 
             if let Some(text) = reply {
@@ -235,6 +244,11 @@ impl Engine {
             }
         }
 
+        self.attempt_log.push(AttemptTrace {
+            kind: kind.to_string(),
+            text: text.to_string(),
+            answered: !out.replies.is_empty(),
+        });
         if out.replies.is_empty() {
             let user_text = self.current_user_text();
             self.restore(before, &user_text);
@@ -255,13 +269,13 @@ impl Engine {
         for clause in clauses {
             self.reset_working(&raw);
             let text = lex.normalize(&lex.resolve_pronouns(clause, &self.state.facts));
-            let mut got = self.attempt(&text);
+            let mut got = self.attempt("clause", &text);
             if !got.answered()
                 && let Some((prev_text, prev_bindings)) = &previous
                 && let Some(filled) = fill_ellipsis(prev_text, prev_bindings, &text)
             {
                 self.reset_working(&raw);
-                got = self.attempt(&filled);
+                got = self.attempt("ellipsis", &filled);
             }
             if got.answered() {
                 let used = got.understood.last().cloned().unwrap_or(text);
@@ -370,27 +384,35 @@ impl Engine {
             match action {
                 Action::Assert { rel, args, scope } => {
                     let resolved = subst_args(args, bindings);
-                    effects.push(format!("assert {rel}({resolved:?})"));
-                    self.add_fact(
+                    let fact = self.add_fact(
                         rel.clone(),
                         resolved,
                         scope.clone(),
                         format!("pattern:{}", winner.id),
                     );
+                    let prefix = match fact.scope {
+                        Scope::Working => "+",
+                        Scope::Chat => "+chat ",
+                        Scope::LongTerm => "++",
+                    };
+                    effects.push(format!("{prefix}{}", fmt_call(rel, &fact.args)));
                 }
                 Action::Retract { rel, args } => {
                     let resolved = args.as_ref().map(|a| subst_args(a, bindings));
                     self.retract_matching(rel, resolved.as_ref());
-                    effects.push(format!("retract {rel}"));
+                    match &resolved {
+                        Some(filter) => effects.push(format!("-{}", fmt_call(rel, filter))),
+                        None => effects.push(format!("-{rel}")),
+                    }
                 }
                 Action::Tool { name, args } => {
                     let resolved = subst_args(args, bindings);
                     let summary = self.invoke_tool(name, &resolved);
-                    effects.push(format!("tool {summary}"));
+                    effects.push(format!("@{} → {summary}", fmt_call(name, &resolved)));
                 }
                 Action::Reply { template } => {
                     let text = subst(template, bindings);
-                    effects.push(format!("reply \"{text}\""));
+                    effects.push(format!("=> \"{text}\""));
                     reply = Some(text);
                 }
             }
@@ -432,6 +454,20 @@ impl Engine {
             self.state.chains.push(chain);
         }
 
+        // The chat remembers what was said (bounded like all chat memory).
+        for (by, text) in [("user", &input), ("karin", &reply)] {
+            let args = BTreeMap::from([("by".into(), by.into()), ("text".into(), text.clone())]);
+            self.add_fact("said".into(), args, Scope::Chat, "perceive".into());
+        }
+
+        let chat_memory: Vec<Fact> = self
+            .state
+            .facts
+            .iter()
+            .filter(|f| f.scope == Scope::Chat)
+            .cloned()
+            .collect();
+
         let trace = TurnTrace {
             turn,
             input: input.clone(),
@@ -442,13 +478,9 @@ impl Engine {
             chunked_pattern_id: None,
             understood,
             missed,
+            attempts: std::mem::take(&mut self.attempt_log),
+            chat_memory,
         };
-
-        // The chat remembers what was said (bounded like all chat memory).
-        for (by, text) in [("user", &input), ("karin", &reply)] {
-            let args = BTreeMap::from([("by".into(), by.into()), ("text".into(), text.clone())]);
-            self.add_fact("said".into(), args, Scope::Chat, "perceive".into());
-        }
 
         let user_msg = ChatMessage {
             id: self.alloc_id("m"),
@@ -571,40 +603,63 @@ fn top_competing_matches(candidates: &[(Pattern, Bindings, f64)]) -> Vec<Competi
             name: pat.name.clone(),
             score: (score * 100.0).round() / 100.0,
             bindings: bindings.clone(),
+            parts: score_parts(pat),
         })
         .collect()
 }
 
 fn score_pattern(pattern: &Pattern) -> f64 {
-    let mut score = pattern.trust * 2.0;
+    score_parts(pattern).iter().map(|p| p.value).sum()
+}
 
+/// A pattern's score, split into named parts so the trace can show why it won.
+fn score_parts(pattern: &Pattern) -> Vec<ScorePart> {
+    let mut text = 0.0;
+    let mut contains = 0.0;
+    let mut facts = 0.0;
+    let mut negations = 0.0;
     for cond in &pattern.when {
-        score += match cond {
+        match cond {
             Condition::Text { template } => {
                 let literals = template
                     .split_whitespace()
                     .filter(|tok| !is_var(tok))
                     .count();
-                3.0 + (literals as f64) * 0.6
+                text += 3.0 + (literals as f64) * 0.6;
             }
-            Condition::Contains { .. } => 1.0,
-            Condition::Fact { .. } => 2.0,
-            Condition::NotFact { .. } => 0.4,
-            Condition::NotEq { .. } => 0.0,
-        };
+            Condition::Contains { .. } => contains += 1.0,
+            Condition::Fact { .. } => facts += 2.0,
+            Condition::NotFact { .. } => negations += 0.4,
+            Condition::NotEq { .. } => {}
+        }
     }
+    let composite = if pattern.kind == PatternKind::Composite { 1.2 } else { 0.0 };
+    let reply = if pattern.then.iter().any(|act| matches!(act, Action::Reply { .. })) {
+        2.5
+    } else {
+        0.0
+    };
+    [
+        ("trust", pattern.trust * 2.0),
+        ("text", text),
+        ("contains", contains),
+        ("facts", facts),
+        ("negations", negations),
+        ("composite", composite),
+        ("reply", reply),
+    ]
+    .into_iter()
+    .filter(|(_, v)| *v != 0.0)
+    .map(|(label, value)| ScorePart {
+        label: label.into(),
+        value,
+    })
+    .collect()
+}
 
-    if pattern.kind == PatternKind::Composite {
-        score += 1.2;
-    }
-    if pattern
-        .then
-        .iter()
-        .any(|act| matches!(act, Action::Reply { .. }))
-    {
-        score += 2.5;
-    }
-    score
+fn fmt_call(name: &str, args: &BTreeMap<String, String>) -> String {
+    let inner: Vec<String> = args.iter().map(|(k, v)| format!("{k}=\"{v}\"")).collect();
+    format!("{name}({})", inner.join(", "))
 }
 
 #[derive(Clone)]

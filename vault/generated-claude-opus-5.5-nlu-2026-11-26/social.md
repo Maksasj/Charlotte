@@ -18,7 +18,7 @@ then: => "Good night! Everything you told me stays saved."
 
 rule social-good-evening
 when: "good evening", persona_name(value=$me)
-then: => "Good evening! I'm $me — what shall we do?"
+then: => "Good evening! I'm $me - what shall we do?"
 
 rule social-stop
 when: "stop"
@@ -34,15 +34,15 @@ then: => "Okay, I'll stop."
 
 rule social-stop-being
 when: "stop being $x"
-then: => "Sorry — I'll try to do better. Tell me what you meant and I'll learn it."
+then: => "Sorry - I'll try to do better. Tell me what you meant and I'll learn it."
 
 rule social-yes-nothing-pending
-when: "yes", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result()
+when: "yes", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name()
 trust: 0.2
 then: => "Okay! What would you like to do?"
 
 rule social-yeah
-when: "yeah", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result()
+when: "yeah", !dialogue_confirm(), !dialogue_pending_approval(), !dialogue_slot(), !approval_result(), !dialogue_pending_name()
 trust: 0.2
 then: => "Okay! What would you like to do?"
 ```
@@ -70,11 +70,11 @@ then: => "You said: \"$t\""
 ```karin
 rule social-new-chat
 when: "new chat"
-then: => "I can't start a new chat myself yet — use the New chat button."
+then: => "I can't start a new chat myself yet - use the New chat button."
 
 rule social-overlord
 when: ~"overlord"
-then: => "I can't send tasks to Overlord yet — there's no connection between us."
+then: => "I can't send tasks to Overlord yet - there's no connection between us."
 
 rule social-open-app
 when: "open $app"
@@ -88,5 +88,5 @@ then: => "I can't open or control apps yet."
 rule social-how-do-i
 when: "how do i $x"
 trust: 0.2
-then: => "I don't know how to $x yet — I don't have recipes or how-to guides. You can teach me."
+then: => "I don't know how to $x yet - I don't have recipes or how-to guides. You can teach me."
 ```

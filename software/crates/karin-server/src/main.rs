@@ -1,4 +1,5 @@
 mod handlers;
+mod incognito;
 mod state;
 
 use axum::{
@@ -38,6 +39,7 @@ async fn main() {
         vault_dir,
         chats_dir,
         chat_id: Mutex::new(chat_id),
+        incognito: Default::default(),
     });
 
     let app = build_router(shared);
@@ -104,6 +106,11 @@ fn build_router(shared: Arc<AppState>) -> Router {
         .route("/api/meta/chunk", post(handlers::meta_chunk))
         .route("/api/reset", post(handlers::reset))
         .route("/api/selftest", get(handlers::selftest))
+        .route("/api/incognito", post(incognito::create))
+        .route("/api/incognito/{id}", delete(incognito::delete))
+        .route("/api/incognito/{id}/chat", post(incognito::chat))
+        .route("/api/incognito/{id}/new-chat", post(incognito::new_chat))
+        .route("/api/incognito/{id}/state", get(incognito::state))
         .layer(cors)
         .with_state(shared)
 }
