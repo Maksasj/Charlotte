@@ -17,12 +17,11 @@ import type {
   Fact,
   Pattern,
   Scope,
-  SelfTestResult,
   ToolInfo,
   TurnTrace,
 } from './types';
 
-type Tab = 'trace' | 'knowledge' | 'tools' | 'tests';
+type Tab = 'trace' | 'knowledge' | 'tools';
 type KnowKind = 'all' | 'facts' | 'patterns';
 /** One entry of the Knowledge view: a fact or a pattern (rule). */
 type KItem = { kind: 'fact'; fact: Fact } | { kind: 'pattern'; pattern: Pattern };
@@ -65,7 +64,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>(() => {
     const fromHash = window.location.hash.replace('#', '');
     if (fromHash === 'facts' || fromHash === 'patterns' || fromHash === 'graph') return 'knowledge';
-    return (['trace', 'knowledge', 'tools', 'tests'] as Tab[]).includes(fromHash as Tab)
+    return (['trace', 'knowledge', 'tools'] as Tab[]).includes(fromHash as Tab)
       ? (fromHash as Tab)
       : 'trace';
   });
@@ -139,7 +138,6 @@ export default function App() {
   const [factArgsText, setFactArgsText] = useState('city=Berlin, condition=sunny, temp=21°C');
   const [factScope, setFactScope] = useState<Scope>('long_term');
 
-  const [tests, setTests] = useState<SelfTestResult[]>([]);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>('idle');
   const [dialogMode, setDialogMode] = useState<'text' | 'voice'>('text');
@@ -507,12 +505,6 @@ export default function App() {
     setKnowKind('patterns');
   }
 
-  async function runSelfTests() {
-    const res = await api.selftest();
-    setTests(res);
-    setTab('tests');
-  }
-
   async function handleNewChat() {
     stopVoiceDialog();
     const res = await api.newChat();
@@ -635,9 +627,6 @@ export default function App() {
           >
             {theme === 'light' ? 'Dark' : 'Light'}
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={runSelfTests}>
-            Self-Tests
-          </button>
           <button className="btn btn-ghost btn-sm" onClick={handleReset}>
             Reset
           </button>
@@ -664,7 +653,7 @@ export default function App() {
       <div
         className="main-grid"
         ref={gridRef}
-        style={{ gridTemplateColumns: `minmax(0, ${split}%) 7px minmax(0, 1fr)` }}
+        style={{ gridTemplateColumns: `minmax(0, ${split}%) 1px minmax(0, 1fr)` }}
       >
         <section className="chat-pane">
           <div className="messages">
@@ -935,12 +924,6 @@ export default function App() {
               Tools
             </button>
             <button
-              className={`tab ${tab === 'tests' ? 'active' : ''}`}
-              onClick={() => setTab('tests')}
-            >
-              Tests
-            </button>
-            <button
               className="tab tab-right"
               title={wideInspector ? 'Give the chat more room' : 'Give the inspector more room'}
               onClick={toggleWide}
@@ -1165,31 +1148,6 @@ export default function App() {
                   ),
                 }}
               />
-            )}
-
-            {tab === 'tests' && (
-              <>
-                <div className="row">
-                  <button className="btn btn-primary btn-sm" onClick={runSelfTests}>
-                    Run Rust Self-Tests
-                  </button>
-                </div>
-                {tests.length === 0 ? (
-                  <div className="muted">Click &ldquo;Run Rust Self-Tests&rdquo; to verify.</div>
-                ) : (
-                  tests.map((t) => (
-                    <div key={t.name} className="card">
-                      <div className="card-head">
-                        <span className="card-title">{t.name}</span>
-                        <span className={`badge ${t.passed ? 'ok' : 'err'}`}>
-                          {t.passed ? 'PASS' : 'FAIL'}
-                        </span>
-                      </div>
-                      <div className="mono muted">{t.detail}</div>
-                    </div>
-                  ))
-                )}
-              </>
             )}
           </div>
         </section>

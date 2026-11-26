@@ -635,10 +635,18 @@ button {
   position: relative;
   cursor: col-resize;
   background: var(--border);
-  background-clip: content-box;
-  padding: 0 3px;
   touch-action: none;
   z-index: 3;
+}
+
+/* 1px line in the layout, but a 9px invisible grab area over it */
+.splitter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
 }
 
 .splitter::after {

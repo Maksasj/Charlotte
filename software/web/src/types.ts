@@ -147,8 +147,3 @@ export interface ToolOutput {
   when: string;
 }
 
-export interface SelfTestResult {
-  name: string;
-  passed: boolean;
-  detail: string;
-}

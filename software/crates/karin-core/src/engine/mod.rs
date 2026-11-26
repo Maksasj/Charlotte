@@ -1,5 +1,6 @@
 mod learn;
 mod reload;
+#[cfg(test)]
 mod selftest;
 
 pub use reload::VaultReload;

@@ -112,7 +112,6 @@ fn build_router(shared: Arc<AppState>) -> Router {
         .route("/api/meta/generalize", post(handlers::meta_generalize))
         .route("/api/meta/chunk", post(handlers::meta_chunk))
         .route("/api/reset", post(handlers::reset))
-        .route("/api/selftest", get(handlers::selftest))
         .route("/api/vault/status", get(vault_watch::status))
         .route("/api/vault/reload", post(vault_watch::reload_now))
         .route("/api/incognito", post(incognito::create))

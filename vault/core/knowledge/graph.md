@@ -104,3 +104,12 @@ rule graph-compare-is-a
 when: "compare $a and $b", $a != $b, is_a(child=$a, parent=$pa), is_a(child=$b, parent=$pb)
 then: => "$a is a $pa; $b is a $pb."
 ```
+
+
+## "What is X used for"
+
+```karin
+rule graph-used-for
+when: "what is $x used for", !query_prop()
+then: +query_prop(cur=$x, attr="purpose", orig=$x)
+```

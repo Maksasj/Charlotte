@@ -1,5 +1,31 @@
+//! Self-tests (run by `cargo test`): short scripted conversations with a fresh
+//! Karin built from the vault on disk. Each one records every step (what was
+//! said, Karin's reply, what was expected), so a failure names the exact turn.
+
 use super::Engine;
-use crate::types::SelfTestResult;
+use crate::types::TurnTrace;
+
+pub struct SelfTestResult {
+    pub name: String,
+    /// What ability this checks, in plain words.
+    #[allow(dead_code)]
+    pub about: String,
+    pub passed: bool,
+    /// The first step that failed (empty when passed).
+    pub detail: String,
+    #[allow(dead_code)]
+    pub steps: Vec<SelfTestStep>,
+}
+
+/// One step: something said to Karin (`say`), done to her engine directly
+/// (`action`), or an extra condition (`check`), with what was expected.
+pub struct SelfTestStep {
+    pub kind: String,
+    pub input: String,
+    pub output: String,
+    pub expect: String,
+    pub ok: bool,
+}
 
 impl Engine {
     pub fn run_selftests() -> Vec<SelfTestResult> {
@@ -19,254 +45,253 @@ impl Engine {
     }
 }
 
-fn test_persona_and_multiturn() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("who are you");
-    let t2 = eng.turn("my name is Alex");
-    let t3 = eng.turn("hello");
-    let t4 = eng.turn("weather");
-    let t5 = eng.turn("Paris");
+/// A scripted conversation that keeps a record of each step.
+struct Script {
+    eng: Engine,
+    steps: Vec<SelfTestStep>,
+}
 
-    let passed = t1.reply.contains("Karin")
-        && t2.reply.contains("Alex")
-        && t3.reply.contains("Alex")
-        && t4.reply.contains("Which city")
-        && t5.reply.contains("partly cloudy");
-
-    SelfTestResult {
-        name: "Persona & multi-turn slot context".into(),
-        passed,
-        detail: format!("persona='{}' | multi-turn weather='{}'", t1.reply, t5.reply),
+impl Script {
+    fn new() -> Self {
+        Self { eng: Engine::new(), steps: Vec::new() }
     }
+
+    fn record(&mut self, kind: &str, input: &str, output: &str, expect: String, ok: bool) {
+        self.steps.push(SelfTestStep {
+            kind: kind.into(),
+            input: input.into(),
+            output: output.into(),
+            expect,
+            ok,
+        });
+    }
+
+    /// Says something without checking the reply (setting the scene).
+    fn say(&mut self, input: &str) -> TurnTrace {
+        let t = self.eng.turn(input);
+        self.record("say", input, &t.reply, String::new(), true);
+        t
+    }
+
+    /// Says something; the reply must contain every one of `parts`.
+    fn expect(&mut self, input: &str, parts: &[&str]) -> TurnTrace {
+        let t = self.eng.turn(input);
+        let ok = parts.iter().all(|p| t.reply.contains(p));
+        let expect = parts
+            .iter()
+            .map(|p| format!("\u{201c}{p}\u{201d}"))
+            .collect::<Vec<_>>()
+            .join(" and ");
+        self.record("say", input, &t.reply, format!("mentions {expect}"), ok);
+        t
+    }
+
+    /// Says something; `check` decides, `expect` says what it looks for.
+    fn check(&mut self, input: &str, expect: &str, check: impl Fn(&TurnTrace) -> bool) -> TurnTrace {
+        let t = self.eng.turn(input);
+        let ok = check(&t);
+        self.record("say", input, &t.reply, expect.into(), ok);
+        t
+    }
+
+    /// Something done to the engine directly rather than said.
+    fn action(&mut self, input: &str, output: &str, expect: &str, ok: bool) {
+        self.record("action", input, output, expect.into(), ok);
+    }
+
+    /// An extra condition about what happened so far.
+    fn assert(&mut self, what: &str, observed: String, ok: bool) {
+        self.record("check", what, &observed, what.into(), ok);
+    }
+
+    fn finish(self, name: &str, about: &str) -> SelfTestResult {
+        let failed = self.steps.iter().find(|s| !s.ok);
+        let detail = match failed {
+            Some(s) => format!("{} \u{2192} '{}' (expected: {})", s.input, s.output, s.expect),
+            None => String::new(),
+        };
+        SelfTestResult {
+            name: name.into(),
+            about: about.into(),
+            passed: failed.is_none(),
+            detail,
+            steps: self.steps,
+        }
+    }
+}
+
+fn test_persona_and_multiturn() -> SelfTestResult {
+    let mut s = Script::new();
+    s.expect("who are you", &["Karin"]);
+    s.expect("my name is Alex", &["Alex"]);
+    s.expect("hello", &["Alex"]);
+    s.expect("weather", &["Which city"]);
+    s.expect("Paris", &["partly cloudy"]);
+    s.finish(
+        "Persona & multi-turn slot context",
+        "Karin knows who she is, remembers your name, and finishes a question over two turns.",
+    )
 }
 
 fn test_impasse_and_teaching() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let before = eng.turn("launch rockets");
-    let (_, pat) = eng.teach_reply("launch rockets", "Ignition sequence started!", true);
-    let after = eng.turn("launch rockets");
-
-    let passed = before.impasse && !after.impasse && after.reply == "Ignition sequence started!";
-
-    SelfTestResult {
-        name: "Impasse detection & live teaching".into(),
-        passed,
-        detail: format!(
-            "impasse={} -> taught {} -> '{}'",
-            before.impasse, pat.id, after.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.check("launch rockets", "does not understand yet", |t| t.impasse);
+    let (_, pat) = s.eng.teach_reply("launch rockets", "Ignition sequence started!", true);
+    s.action(
+        "teach: \u{201c}launch rockets\u{201d} \u{2192} \u{201c}Ignition sequence started!\u{201d}",
+        &format!("new rule {}", pat.id),
+        "",
+        true,
+    );
+    s.check("launch rockets", "replies with the taught answer", |t| {
+        !t.impasse && t.reply == "Ignition sequence started!"
+    });
+    s.finish(
+        "Impasse detection & live teaching",
+        "When Karin doesn't understand she says so, and a reply you teach works right away.",
+    )
 }
 
 fn test_anti_unification() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let before = eng.turn("greet Clara");
-    let (created, _) = eng.generalize_episodes(true);
-    let after = eng.turn("greet Clara");
-
-    let passed =
-        before.impasse && !created.is_empty() && !after.impasse && after.reply.contains("Clara");
-
-    SelfTestResult {
-        name: "Anti-unification generalization".into(),
-        passed,
-        detail: format!(
-            "induced {} pattern(s) -> unseen 'greet Clara' => '{}'",
-            created.len(),
-            after.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.check("greet Clara", "does not understand yet", |t| t.impasse);
+    let (created, _) = s.eng.generalize_episodes(true);
+    s.action(
+        "generalize from earlier examples",
+        &format!("{} new rule(s)", created.len()),
+        "at least one rule",
+        !created.is_empty(),
+    );
+    s.check("greet Clara", "now greets Clara", |t| !t.impasse && t.reply.contains("Clara"));
+    s.finish(
+        "Anti-unification generalization",
+        "From similar examples Karin builds a general rule that handles a sentence she never saw.",
+    )
 }
 
 fn test_chain_chunking() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let before = eng.turn("calculate 6 * 7");
-    let (chunked, _) = eng.chunk_last_chain(true);
-    let after = eng.turn("calculate 9 * 9");
-
-    let passed = before.reply.contains("42")
-        && before.steps.len() == 3
-        && chunked.is_some()
-        && after.reply.contains("81")
-        && after.steps.len() < before.steps.len();
-
-    SelfTestResult {
-        name: "Chain chunking & composition".into(),
-        passed,
-        detail: format!(
-            "before={} steps ('{}') -> after={} steps ('{}')",
-            before.steps.len(),
-            before.reply,
-            after.steps.len(),
-            after.reply
-        ),
-    }
+    let mut s = Script::new();
+    let before = s.expect("calculate 6 * 7", &["42"]);
+    s.assert(
+        "takes 3 steps",
+        format!("{} steps", before.steps.len()),
+        before.steps.len() == 3,
+    );
+    let (chunked, _) = s.eng.chunk_last_chain(true);
+    s.action(
+        "merge the last chain of steps into one rule",
+        &chunked.as_ref().map(|p| format!("new rule {}", p.id)).unwrap_or("nothing merged".into()),
+        "a merged rule",
+        chunked.is_some(),
+    );
+    let after = s.expect("calculate 9 * 9", &["81"]);
+    s.assert(
+        "takes fewer steps than before",
+        format!("{} steps (before: {})", after.steps.len(), before.steps.len()),
+        after.steps.len() < before.steps.len(),
+    );
+    s.finish(
+        "Chain chunking & composition",
+        "A chain of rules that often fires together becomes one rule, so the same job takes fewer steps.",
+    )
 }
 
 fn test_knowledge_graph_inheritance() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("is Rust a tool");
-    let t2 = eng.turn("what is the purpose of Rust");
-    let t3 = eng.turn("Go is a programming language");
-    let t4 = eng.turn("what is the purpose of Go");
-
-    let passed = t1.reply.contains("Yes, Rust is a tool")
-        && t2.reply.contains("writing software")
-        && t3.reply.contains("Learned: Go is a programming language")
-        && t4.reply.contains("writing software");
-
-    SelfTestResult {
-        name: "Knowledge graph & transitive inheritance".into(),
-        passed,
-        detail: format!(
-            "hop='{}' | inherited='{}' | taught+inherited='{}'",
-            t1.reply, t2.reply, t4.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.expect("is Rust a tool", &["Yes, Rust is a tool"]);
+    s.expect("what is the purpose of Rust", &["writing software"]);
+    s.expect("Go is a programming language", &["Learned: Go is a programming language"]);
+    s.expect("what is the purpose of Go", &["writing software"]);
+    s.finish(
+        "Knowledge graph & transitive inheritance",
+        "Facts pass down \u{201c}is a\u{201d} links: something new inherits what its category knows.",
+    )
 }
 
 fn test_shared_slot_filling_and_intents() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("forecast for Tokyo");
-    let t2 = eng.turn("compute 5 * 8");
-    let t3 = eng.turn("define");
-    let t4 = eng.turn("symbolic AI");
-    let t5 = eng.turn("weather");
-    let t6 = eng.turn("cancel");
-
-    let passed = t1.reply.contains("Tokyo")
-        && t2.reply.contains("40")
-        && t3.reply.contains("define")
-        && t4.reply.contains("explicit facts")
-        && t5.reply.contains("Which city")
-        && t6.reply.contains("cancelled");
-
-    SelfTestResult {
-        name: "Shared slot-filling & canonical intents".into(),
-        passed,
-        detail: format!(
-            "paraphrase='{}' | slot='{}' | cancel='{}'",
-            t1.reply, t4.reply, t6.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.expect("forecast for Tokyo", &["Tokyo"]);
+    s.expect("compute 5 * 8", &["40"]);
+    s.expect("define", &["define"]);
+    s.expect("symbolic AI", &["explicit facts"]);
+    s.expect("weather", &["Which city"]);
+    s.expect("cancel", &["cancelled"]);
+    s.finish(
+        "Shared slot-filling & canonical intents",
+        "Different wordings reach the same skill, missing details are asked for, and \u{201c}cancel\u{201d} drops a question.",
+    )
 }
 
 fn test_data_driven_unit_conversions() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("convert 2 km to m");
-    let t2 = eng.turn("3 h in min");
-    let t3 = eng.turn("convert 5 km to kg");
-
-    let passed = t1.reply.contains("2000 m")
-        && t2.reply.contains("180 min")
-        && t3.reply.contains("incompatible dimensions");
-
-    SelfTestResult {
-        name: "Data-driven unit conversions".into(),
-        passed,
-        detail: format!(
-            "km->m='{}' | h->min='{}' | mismatch='{}'",
-            t1.reply, t2.reply, t3.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.expect("convert 2 km to m", &["2000 m"]);
+    s.expect("3 h in min", &["180 min"]);
+    s.expect("convert 5 km to kg", &["incompatible dimensions"]);
+    s.finish(
+        "Data-driven unit conversions",
+        "Unit conversions come from facts in the vault, and impossible ones are refused.",
+    )
 }
 
 fn test_typed_relations_and_inverses() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("what does France contain");
-    let t2 = eng.turn("Go was created by Google");
-    let t3 = eng.turn("what did Google create");
-
-    let passed = t1.reply.contains("Paris")
-        && t1.reply.contains("inverse")
-        && t2.reply.contains("Learned: Go was created by Google")
-        && t3.reply.contains("Go")
-        && t3.reply.contains("inverse");
-
-    SelfTestResult {
-        name: "Typed relations & automatic inverses".into(),
-        passed,
-        detail: format!("seed_inv='{}' | taught_inv='{}'", t1.reply, t3.reply),
-    }
+    let mut s = Script::new();
+    s.expect("what does France contain", &["Paris", "inverse"]);
+    s.expect("Go was created by Google", &["Learned: Go was created by Google"]);
+    s.expect("what did Google create", &["Go", "inverse"]);
+    s.finish(
+        "Typed relations & automatic inverses",
+        "A relation can be asked from either side: \u{201c}created by\u{201d} also answers \u{201c}what did X create\u{201d}.",
+    )
 }
 
 fn test_generic_workflows() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let t1 = eng.turn("plan a trip");
-    let t2 = eng.turn("Tokyo");
-    let t3 = eng.turn("5");
-    let t4 = eng.turn("plan a trip to Paris");
-    let t5 = eng.turn("3");
-
-    let passed = t1.reply.contains("Which city")
-        && t2.reply.contains("How many days")
-        && t3.reply.contains("5 days in Tokyo")
-        && t3.reply.contains("clear skies")
-        && t4.reply.contains("How many days")
-        && t5.reply.contains("3 days in Paris");
-
-    SelfTestResult {
-        name: "Generic multi-step workflows".into(),
-        passed,
-        detail: format!("full='{}' | prefilled='{}'", t3.reply, t5.reply),
-    }
+    let mut s = Script::new();
+    s.expect("add a reminder", &["What should I remind you to do"]);
+    s.expect("buy milk", &["When should I remind you"]);
+    s.expect("tomorrow", &["Reminder set", "buy milk", "tomorrow"]);
+    s.expect("remind me to call mom", &["When should I remind you"]);
+    s.expect("at 5", &["Reminder set", "call mom"]);
+    s.finish(
+        "Generic multi-step workflows",
+        "A workflow asks only for what's missing, step by step, then finishes.",
+    )
 }
 
 fn test_collect_and_additive_memory() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let _ = eng.turn("my favorite drink is black tea");
-    let t1 = eng.turn("what drink I like");
-    let t2 = eng.turn("I also like caramel macchiato");
-    let t3 = eng.turn("what drink do I like");
-
-    let passed = t1.reply.contains("black tea")
-        && t2.reply.contains("caramel macchiato")
-        && t3.reply.contains("black tea")
-        && t3.reply.contains("caramel macchiato");
-
-    SelfTestResult {
-        name: "Generic @collect & additive topic memory".into(),
-        passed,
-        detail: format!("before='{}' | after='{}'", t1.reply, t3.reply),
-    }
+    let mut s = Script::new();
+    s.say("my favorite drink is black tea");
+    s.expect("what drink I like", &["black tea"]);
+    s.expect("I also like caramel macchiato", &["caramel macchiato"]);
+    s.expect("what drink do I like", &["black tea", "caramel macchiato"]);
+    s.finish(
+        "Generic @collect & additive topic memory",
+        "New likes add to old ones, and a question lists them all.",
+    )
 }
 
 fn test_correction_rule_induction_and_active_learning() -> SelfTestResult {
-    let mut eng = Engine::new();
-    let _ = eng.turn("my favorite drink is black tea");
-    let _ = eng.turn("I like caramel macchiato");
-    let _ = eng.turn("caramel macchiato is a drink");
-    let before = eng.turn("what is my favorite drink");
-    let propose = eng.turn("what about caramel macchiato");
-    let approve = eng.turn("approve");
-    let after = eng.turn("what drink do I like");
-
-    let _ = eng.turn("I like matcha");
-    let _ = eng.turn("matcha is a drink");
-    let generalized = eng.turn("what drink do I like");
-
-    let unknown = eng.turn("what about oolong");
-    let confirm = eng.turn("yes");
-    let after_unknown = eng.turn("what drink do I like");
-
-    let passed = before.reply.contains("black tea")
-        && !before.reply.contains("caramel macchiato")
-        && propose.reply.contains("proposed candidate rule")
-        && approve.reply.contains("Approved rule")
-        && after.reply.contains("caramel macchiato")
-        && generalized.reply.contains("matcha")
-        && unknown.reply.contains("haven't heard of oolong")
-        && confirm.reply.contains("oolong")
-        && after_unknown.reply.contains("oolong");
-
-    SelfTestResult {
-        name: "Correction-driven rule induction & active learning".into(),
-        passed,
-        detail: format!(
-            "propose='{}' | generalized='{}' | unknown='{}'",
-            propose.reply, generalized.reply, after_unknown.reply
-        ),
-    }
+    let mut s = Script::new();
+    s.say("my favorite drink is black tea");
+    s.say("I like caramel macchiato");
+    s.say("caramel macchiato is a drink");
+    s.check(
+        "what is my favorite drink",
+        "lists black tea, not yet caramel macchiato",
+        |t| t.reply.contains("black tea") && !t.reply.contains("caramel macchiato"),
+    );
+    s.expect("what about caramel macchiato", &["proposed candidate rule"]);
+    s.expect("approve", &["Approved rule"]);
+    s.expect("what drink do I like", &["caramel macchiato"]);
+    s.say("I like matcha");
+    s.say("matcha is a drink");
+    s.expect("what drink do I like", &["matcha"]);
+    s.expect("what about oolong", &["haven't heard of oolong"]);
+    s.expect("yes", &["oolong"]);
+    s.expect("what drink do I like", &["oolong"]);
+    s.finish(
+        "Correction-driven rule induction & active learning",
+        "Correcting Karin makes her propose a general rule; once approved it covers new cases, and she asks about things she doesn't know.",
+    )
 }
 
 #[cfg(test)]

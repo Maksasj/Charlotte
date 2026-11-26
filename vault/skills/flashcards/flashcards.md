@@ -49,3 +49,20 @@ then:
   -slot_value(goal="quiz")
   => "Not quite - the answer is $a."
 ```
+
+
+## Listing flashcards
+
+```karin
+rule opus2-list-flashcards
+when: "list my flashcards", !collected(tag="opus2_cards"), !collected_empty(tag="opus2_cards")
+then: @collect(rel="flashcard", field="q", tag="opus2_cards", sep=" | ")
+
+rule opus2-reply-flashcards
+when: collected(tag="opus2_cards", count=$n, list=$list)
+then: => "$n flashcard(s): $list"
+
+rule opus2-reply-flashcards-empty
+when: collected_empty(tag="opus2_cards")
+then: => "No flashcards yet. Say \"add a flashcard\" to create one."
+```

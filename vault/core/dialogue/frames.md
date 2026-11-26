@@ -24,3 +24,17 @@ then:
   -dialogue_slot(goal=$goal, slot=$slot)
   +slot_value(goal=$goal, slot=$slot, value=$value)
 ```
+
+
+## "Never mind" cancels a question
+
+```karin
+rule alias-cancel-never-mind
+when: dialogue_slot(goal=$goal, slot=$slot), "never mind"
+then:
+  -dialogue_slot(goal=$goal, slot=$slot)
+  -dialogue_goal(goal=$goal)
+  -dialogue_filled(goal=$goal)
+  -dialogue_quiz
+  => "No problem, dropped it."
+```

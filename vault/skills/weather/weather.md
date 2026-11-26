@@ -16,17 +16,9 @@ weather_city(city="Vilnius", condition="crisp and sunny", temp="9°C")
 Consumes canonical `intent(name="weather", ...)` facts and uses the shared `dialogue/frames.md` slot protocol (checking `prop(entity="user", attr="city")` first if known).
 
 ```karin
-rule weather-use-known-user-city
-when: intent(name="weather_missing_city"), prop(entity="user", attr="city", value=$city), !intent(name="weather")
-then: +intent(name="weather", city=$city)
-
 rule weather-need-city
 when: intent(name="weather_missing_city"), !prop(entity="user", attr="city"), !need_slot(goal="weather", slot="city")
 then: +need_slot(goal="weather", slot="city", prompt="Which city would you like the weather for? (I know Paris, Tokyo, London, and Vilnius.)")
-
-rule weather-from-slot
-when: slot_value(goal="weather", slot="city", value=$city), !intent(name="weather")
-then: +intent(name="weather", city=$city)
 
 rule run-weather-tool
 when: intent(name="weather", city=$city), !weather_report(), !weather_unknown()
@@ -39,4 +31,21 @@ then: => "Weather in $city: $cond, $temp."
 rule reply-weather-unknown
 when: weather_unknown(city=$city)
 then: => "I don't have a weather fact for $city yet. You can add a weather_city fact in the Facts tab."
+```
+
+
+## Which cities Karin knows
+
+```karin
+rule weather-known-cities
+when: "what cities do you know", !collected(tag="cities")
+then: @collect(rel="weather_city", field="city", tag="cities")
+
+rule weather-known-cities-alt
+when: "what cities do you have", !collected(tag="cities")
+then: @collect(rel="weather_city", field="city", tag="cities")
+
+rule weather-reply-cities
+when: collected(tag="cities", list=$list)
+then: => "I have weather for $list."
 ```

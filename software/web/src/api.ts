@@ -1,4 +1,4 @@
-import type { AgentState, Scope, SelfTestResult, ToolInfo, TurnTrace, VaultStatus } from './types';
+import type { AgentState, Scope, ToolInfo, TurnTrace, VaultStatus } from './types';
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -54,5 +54,4 @@ export const api = {
       body: JSON.stringify({ autoPromote }),
     }),
   reset: () => req<{ state: AgentState }>('/api/reset', { method: 'POST' }),
-  selftest: () => req<SelfTestResult[]>('/api/selftest'),
 };

@@ -6,7 +6,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
 };
-use karin_core::{Engine, Pattern, SelfTestResult, list_tools};
+use karin_core::{Engine, Pattern, list_tools};
 use serde_json::{Value, json};
 use std::sync::Arc;
 
@@ -129,6 +129,3 @@ pub async fn reset(State(app): State<Arc<AppState>>) -> Json<Value> {
     Json(json!({ "state": state }))
 }
 
-pub async fn selftest() -> Json<Vec<SelfTestResult>> {
-    Json(Engine::run_selftests())
-}

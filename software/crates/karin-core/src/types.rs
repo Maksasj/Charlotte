@@ -205,11 +205,3 @@ pub struct AgentState {
     pub next_id: usize,
 }
 
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SelfTestResult {
-    pub name: String,
-    pub passed: bool,
-    pub detail: String,
-}
