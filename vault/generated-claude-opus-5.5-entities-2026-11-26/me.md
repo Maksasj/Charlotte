@@ -53,7 +53,9 @@ then: +intent(name="speaker_is", value=$n, how="said")
 rewrite(from="yes it is", to="yes")
 rewrite(from="yes that is me", to="yes")
 rewrite(from="yes it is me", to="yes")
+rewrite(from="yeah", to="yes")
 rewrite(from="yep", to="yes")
+rewrite(from="sure", to="yes")
 rewrite(from="yup", to="yes")
 rewrite(from="hey my name is", to="my name is")
 rewrite(from="hi my name is", to="my name is")
@@ -165,6 +167,15 @@ then:
 ```karin
 rule me-switch-yes
 when: "yes", dialogue_pending_speaker(entity=$o, name=$n), speaker(entity=$me)
+trust: 2
+then:
+  -dialogue_pending_speaker
+  -speaker
+  +chat speaker(entity=$o)
+  => "Hi $n! In this chat I'll keep what you tell me as yours."
+
+rule me-switch-yes-name
+when: "yes $n", dialogue_pending_speaker(entity=$o, name=$n), speaker(entity=$me)
 trust: 2
 then:
   -dialogue_pending_speaker

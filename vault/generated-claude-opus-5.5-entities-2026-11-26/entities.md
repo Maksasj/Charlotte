@@ -20,10 +20,10 @@ named(entity="karin", value="Karina")
 The speaker is chat memory: every chat starts with the default speaker
 (`chat_seed`, filled in by the engine before the first turn), and it changes
 only when the user says someone else is talking. Questions about switching
-lapse after one turn.
+lapse after two turns.
 
 ```karin
-chat_expiry(rel="dialogue_pending_speaker", turns="1")
+chat_expiry(rel="dialogue_pending_speaker", turns="2")
 chat_seed(rel="speaker", entity="user")
 ```
 
