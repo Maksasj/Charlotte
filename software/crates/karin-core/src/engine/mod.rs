@@ -340,7 +340,8 @@ impl Engine {
 
     /// Chat facts every chat starts with, declared in the vault as
     /// `chat_seed(rel=R, k=v, ...)`: when the chat has no `R` fact, `R(k=v, ...)`
-    /// is added to chat memory (e.g. the default speaker).
+    /// is added to chat memory (e.g. the speaker). A value `@new:<prefix>` becomes
+    /// a fresh id such as `guest123`, so every chat can start with its own entity.
     fn seed_chat_memory(&mut self) {
         let seeds: Vec<(String, BTreeMap<String, String>)> = self
             .state
@@ -354,15 +355,21 @@ impl Engine {
                 Some((rel, args))
             })
             .collect();
-        for (rel, args) in seeds {
+        for (rel, mut args) in seeds {
             let present = self
                 .state
                 .facts
                 .iter()
                 .any(|f| f.rel == rel && f.scope == Scope::Chat);
-            if !present {
-                self.add_fact(rel, args, Scope::Chat, "chat_seed".into());
+            if present {
+                continue;
             }
+            for value in args.values_mut() {
+                if let Some(prefix) = value.strip_prefix("@new:") {
+                    *value = self.alloc_id(prefix);
+                }
+            }
+            self.add_fact(rel, args, Scope::Chat, "chat_seed".into());
         }
     }
 
@@ -618,6 +625,22 @@ impl Engine {
                 let topic = args.get("topic").map(String::as_str).unwrap_or("");
                 self.induce_from_correction(item, topic)
             }
+            "merge_entities" => {
+                let from = args.get("from").cloned().unwrap_or_default();
+                let into = args.get("into").cloned().unwrap_or_default();
+                let moved = self.merge_entities(&from, &into);
+                self.add_fact(
+                    "entities_merged".into(),
+                    BTreeMap::from([
+                        ("from".into(), from.clone()),
+                        ("into".into(), into.clone()),
+                        ("count".into(), moved.to_string()),
+                    ]),
+                    Scope::Working,
+                    "engine:merge_entities".into(),
+                );
+                format!("merge_entities({from} -> {into}): {moved} facts")
+            }
             "approve_pattern" => {
                 let id = args.get("id").map(String::as_str).unwrap_or("");
                 let ok = self.promote_pattern(id);
@@ -658,6 +681,33 @@ impl Engine {
 /// Patterns learned for one exact wording: taught replies and hand-added rules.
 fn taught_on_exact_wording(pattern: &Pattern) -> bool {
     pattern.provenance.starts_with("taught") || pattern.provenance == "manual"
+}
+
+impl Engine {
+    /// Every fact that mentions entity `from` (as a whole argument value) now
+    /// mentions `into` instead; duplicates that this creates are dropped.
+    /// Returns how many facts changed.
+    fn merge_entities(&mut self, from: &str, into: &str) -> usize {
+        if from.is_empty() || into.is_empty() || from == into {
+            return 0;
+        }
+        let mut moved = 0;
+        for fact in &mut self.state.facts {
+            let mut changed = false;
+            for value in fact.args.values_mut() {
+                if value == from {
+                    *value = into.to_string();
+                    changed = true;
+                }
+            }
+            moved += usize::from(changed);
+        }
+        let mut seen = HashSet::new();
+        self.state
+            .facts
+            .retain(|f| seen.insert((f.rel.clone(), f.args.clone(), f.scope.clone())));
+        moved
+    }
 }
 
 fn fire_key(pattern_id: &str, bindings: &Bindings) -> String {

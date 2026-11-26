@@ -17,7 +17,8 @@
     "social.greet": [
       "greet-*",
       "social-good-evening",
-      "me-greet-known"
+      "me-greet-known",
+      "me-greet-guest"
     ],
     "social.how_are_you": [
       "social-how-are-you"
@@ -97,7 +98,8 @@
       "user-i-am-maybe-name",
       "me-is-*",
       "me-confirm-name-*",
-      "me-switch-*"
+      "me-switch-*",
+      "me-guest-is-known"
     ],
     "user.name.ask": [
       "recall-user-name*",
@@ -143,7 +145,8 @@
       "run-likes-topic-collect",
       "likes-ask-*",
       "induced-likes-topic-from-isa",
-      "me-ask-likes*"
+      "me-ask-likes*",
+      "me-ask-likes-guest"
     ],
     "likes.correction": [
       "correct-likes-*",
@@ -152,7 +155,10 @@
       "reply-approval-*",
       "confirm-*-yes",
       "decline-pending-approval",
-      "decline-dialogue-confirm"
+      "decline-dialogue-confirm",
+      "me-confirm-isa-yes",
+      "me-confirm-like-yes",
+      "me-confirm-both-yes"
     ],
     "people.rel.tell": [
       "people-teach-my-rel*",

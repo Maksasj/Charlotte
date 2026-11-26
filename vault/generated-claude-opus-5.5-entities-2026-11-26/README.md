@@ -17,15 +17,22 @@ entity(id="oscar", kind="person")         one per person / thing
 display_name(entity="oscar", value="Oscar")  how Karin says it
 named(entity="oscar", value="Oscar")         every name it answers to (nicknames too)
 rel(subj="user", pred="friend", obj="oscar") relations point at entity ids
-speaker(entity="user")                      chat memory: who is talking now
+speaker(entity="guest12")                   chat memory: who is talking now
 ```
 
-- `user` is the default speaker, so older rules that say `subj="user"` keep
-  working for them. New entities get their name as id ("Oscar").
+- Every chat starts with a fresh, anonymous **guest** (`chat_seed` with
+  `@new:guest`). Karin does not know who is talking until told: "who am I"
+  asks for a name, and personal statements are kept on the guest.
+- When the guest names themselves: a new name makes the guest that person;
+  a known name ("I'm Maxim") merges the guest into that person
+  (`@merge_entities`), so whatever was said before introducing moves along.
+- `user` is the id of the person known longest (older memory used it).
+  New entities get their name as id ("Oscar").
 - "I / me / my" in these rules means the current speaker; "you / Karin"
   means the entity `karin`.
-- "I am Oscar" when Oscar is someone Karin already knows asks whether Oscar is
-  speaking now; a yes switches the speaker for this chat only.
+- Once known, "I am Oscar" when Oscar is someone else Karin knows asks whether
+  Oscar is speaking now; a yes (yeah, "yes it's Oscar") switches the speaker
+  for this chat only.
 
 `vault/core` is unchanged: where a core rule handles the same sentence, the
 version here also checks `speaker(...)` and so wins. Rules from the earlier

@@ -30,6 +30,18 @@ pub fn meta_tools() -> Vec<ToolInfo> {
             produces: vec![output("correction_outcome", &["status", "item", "topic", "pattern_id"], Scope::Working, "always"), output("dialogue_pending_approval", &["pattern_id", "item", "topic"], Scope::Chat, "when a rule is proposed"), output("dialogue_confirm", &["kind", "item", "topic"], Scope::Chat, "when facts are missing")],
         },
         ToolInfo {
+            name: "merge_entities".into(),
+            description: "Engine tool: everything known about one entity now belongs to another (e.g. a guest who turns out to be a known person)."
+                .into(),
+            meta: true,
+            package: "karin-core".into(),
+            args: vec![
+                arg("from", true, "entity id whose facts move"),
+                arg("into", true, "entity id that receives them"),
+            ],
+            produces: vec![output("entities_merged", &["from", "into", "count"], Scope::Working, "always")],
+        },
+        ToolInfo {
             name: "approve_pattern".into(),
             description: "Meta-tool: promote a pending candidate pattern into active status."
                 .into(),

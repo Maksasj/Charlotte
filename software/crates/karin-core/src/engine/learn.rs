@@ -199,6 +199,18 @@ impl Engine {
         (Some(pattern), summary)
     }
 
+    /// Who is talking in this chat: the chat's `speaker(entity=...)` fact, or
+    /// `user` (the id older memory used) when the vault declares no speaker.
+    pub(crate) fn current_speaker(&self) -> String {
+        self.state
+            .facts
+            .iter()
+            .rev()
+            .find(|f| f.rel == "speaker" && f.scope == Scope::Chat)
+            .and_then(|f| f.args.get("entity").cloned())
+            .unwrap_or_else(|| "user".into())
+    }
+
     pub fn induce_from_correction(&mut self, item: &str, topic: &str) -> String {
         let item = item.trim();
         let topic = topic.trim();
@@ -206,12 +218,13 @@ impl Engine {
         self.retract_matching("dialogue_confirm", None);
         self.retract_matching("dialogue_pending_approval", None);
 
-        if has_like_topic_fact(&self.state.facts, item, topic) {
+        let speaker = self.current_speaker();
+        if has_like_topic_fact(&self.state.facts, &speaker, item, topic) {
             self.emit_correction_outcome("already_known", item, topic, None);
             return format!("already knew {item} is a {topic} you like");
         }
 
-        let has_like = has_like_fact(&self.state.facts, item);
+        let has_like = has_like_fact(&self.state.facts, &speaker, item);
         let has_isa = has_isa_path(&self.state.facts, item, topic);
 
         match (has_like, has_isa) {
@@ -227,7 +240,7 @@ impl Engine {
                         self.add_fact(
                             "rel".into(),
                             BTreeMap::from([
-                                ("subj".into(), "user".into()),
+                                ("subj".into(), speaker.clone()),
                                 ("pred".into(), "likes".into()),
                                 ("topic".into(), topic.into()),
                                 ("obj".into(), item.into()),
@@ -254,9 +267,13 @@ impl Engine {
                     status: PatternStatus::Candidate,
                     when: vec![
                         Condition::Fact {
+                            rel: "speaker".into(),
+                            args: BTreeMap::from([("entity".into(), "$me".into())]),
+                        },
+                        Condition::Fact {
                             rel: "rel".into(),
                             args: BTreeMap::from([
-                                ("subj".into(), "user".into()),
+                                ("subj".into(), "$me".into()),
                                 ("pred".into(), "likes".into()),
                                 ("obj".into(), "$obj".into()),
                             ]),
@@ -271,7 +288,7 @@ impl Engine {
                         Condition::NotFact {
                             rel: "rel".into(),
                             args: BTreeMap::from([
-                                ("subj".into(), "user".into()),
+                                ("subj".into(), "$me".into()),
                                 ("pred".into(), "likes".into()),
                                 ("topic".into(), "$topic".into()),
                                 ("obj".into(), "$obj".into()),
@@ -281,7 +298,7 @@ impl Engine {
                     then: vec![Action::Assert {
                         rel: "rel".into(),
                         args: BTreeMap::from([
-                            ("subj".into(), "user".into()),
+                            ("subj".into(), "$me".into()),
                             ("pred".into(), "likes".into()),
                             ("topic".into(), "$topic".into()),
                             ("obj".into(), "$obj".into()),
@@ -367,13 +384,13 @@ impl Engine {
     }
 }
 
-fn has_like_fact(facts: &[crate::types::Fact], item: &str) -> bool {
+fn has_like_fact(facts: &[crate::types::Fact], subj: &str, item: &str) -> bool {
     let target = normalize(item);
     facts.iter().any(|f| {
         f.rel == "rel"
             && f.args
                 .get("subj")
-                .map(|v| normalize(v) == "user")
+                .map(|v| normalize(v) == normalize(subj))
                 .unwrap_or(false)
             && f.args
                 .get("pred")
@@ -386,14 +403,14 @@ fn has_like_fact(facts: &[crate::types::Fact], item: &str) -> bool {
     })
 }
 
-fn has_like_topic_fact(facts: &[crate::types::Fact], item: &str, topic: &str) -> bool {
+fn has_like_topic_fact(facts: &[crate::types::Fact], subj: &str, item: &str, topic: &str) -> bool {
     let target_item = normalize(item);
     let target_topic = normalize(topic);
     facts.iter().any(|f| {
         f.rel == "rel"
             && f.args
                 .get("subj")
-                .map(|v| normalize(v) == "user")
+                .map(|v| normalize(v) == normalize(subj))
                 .unwrap_or(false)
             && f.args
                 .get("pred")

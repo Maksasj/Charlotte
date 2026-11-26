@@ -1,7 +1,7 @@
 # The current speaker (claude-opus-5.5, 2026-11-26)
 
-Everything "I / me / my" means the entity in `speaker(entity=...)`. By default
-that is `user`, a person Karin does not know yet: no `display_name`. When an
+Everything "I / me / my" means the entity in `speaker(entity=...)`. Every chat
+starts with a fresh guest, a person Karin does not know yet: no `display_name`. When an
 unknown speaker tells Karin something about themselves, she keeps it on that
 entity and asks who she is talking to; the answer names the entity, or, if it
 is someone she already knows, offers to switch to them.
@@ -68,6 +68,13 @@ rewrite(from="hello i am", to="i am")
 ## "My name is X": what it means
 
 ```karin
+rule me-guest-is-known
+when: intent(name="speaker_is", value=$n), speaker(entity=$me), !display_name(entity=$me), named(entity=$o, value=$n), $o != $me, $o != "karin"
+trust: 3
+then:
+  @merge_entities(from=$me, into=$o)
+  => "Welcome back, $n!"
+
 rule me-is-already-me
 when: intent(name="speaker_is", value=$n), speaker(entity=$me), named(entity=$me, value=$n)
 trust: 2
@@ -88,6 +95,7 @@ then:
   -dialogue_pending_speaker
   -speaker
   +chat speaker(entity=$o)
+  +chat speaker_switched(entity=$o)
   -display_name(entity=$o)
   ++display_name(entity=$o, value=$n)
   => "Hi $n! I'll talk to you as $n now."
@@ -104,13 +112,14 @@ rule me-is-new-name
 when: intent(name="speaker_is", value=$n, how=$how), $how != "i_am", speaker(entity=$me), !named(value=$n), !display_name(entity=$me)
 trust: 2
 then:
+  ++entity(id=$me, kind="person")
   ++display_name(entity=$me, value=$n)
   ++named(entity=$me, value=$n)
   -dialogue_slot(goal="identity")
   => "Nice to meet you, $n! I've stored your name in long-term memory."
 
 rule me-is-new-person
-when: intent(name="speaker_is", value=$n, how=$how), $how != "i_am", speaker(entity=$me), !default_speaker(entity=$me), !named(value=$n), display_name(entity=$me)
+when: intent(name="speaker_is", value=$n, how=$how), $how != "i_am", speaker(entity=$me), speaker_switched(entity=$me), !named(value=$n), display_name(entity=$me)
 trust: 2
 then:
   ++entity(id=$n, kind="person")
@@ -118,10 +127,11 @@ then:
   ++named(entity=$n, value=$n)
   -speaker
   +chat speaker(entity=$n)
+  +chat speaker_switched(entity=$n)
   => "Nice to meet you, $n! I'll talk to you as $n now."
 
 rule me-is-another-name
-when: intent(name="speaker_is", value=$n, how="said"), speaker(entity=$me), default_speaker(entity=$me), !named(value=$n), display_name(entity=$me, value=$old)
+when: intent(name="speaker_is", value=$n, how="said"), speaker(entity=$me), !speaker_switched(entity=$me), !named(value=$n), display_name(entity=$me, value=$old)
 trust: 2
 then:
   -display_name(entity=$me)
@@ -148,6 +158,7 @@ rule me-confirm-name-yes
 when: "yes", dialogue_pending_name(value=$n), speaker(entity=$me)
 trust: 2
 then:
+  ++entity(id=$me, kind="person")
   -dialogue_pending_name
   -display_name(entity=$me)
   ++display_name(entity=$me, value=$n)
@@ -172,6 +183,7 @@ then:
   -dialogue_pending_speaker
   -speaker
   +chat speaker(entity=$o)
+  +chat speaker_switched(entity=$o)
   => "Hi $n! In this chat I'll keep what you tell me as yours."
 
 rule me-switch-yes-name
@@ -181,6 +193,7 @@ then:
   -dialogue_pending_speaker
   -speaker
   +chat speaker(entity=$o)
+  +chat speaker_switched(entity=$o)
   => "Hi $n! In this chat I'll keep what you tell me as yours."
 
 rule me-switch-yes-i-am
@@ -190,6 +203,7 @@ then:
   -dialogue_pending_speaker
   -speaker
   +chat speaker(entity=$o)
+  +chat speaker_switched(entity=$o)
   => "Hi $n! In this chat I'll keep what you tell me as yours."
 
 rule me-confirm-name-yes-i-am
@@ -232,6 +246,13 @@ when: "what is my name", speaker(entity=$me), !display_name(entity=$me)
 then:
   +chat dialogue_slot(goal="identity", slot="name")
   => "You haven't told me your name yet - what is it?"
+
+rule me-greet-guest
+when: "hello", speaker(entity=$me), !display_name(entity=$me), persona_name(value=$k)
+trust: 2
+then:
+  +chat dialogue_slot(goal="identity", slot="name")
+  => "Hello! I'm $k. Who am I talking to?"
 
 rule me-greet-known
 when: "hello", speaker(entity=$me), display_name(entity=$me, value=$n), persona_name(value=$k)
@@ -337,6 +358,13 @@ then:
   ++rel(subj=$me, pred="likes", topic="music", obj=$thing)
   => "Nice - I'll remember you listen to $thing."
 
+rule me-ask-likes-guest
+when: "what do i like", speaker(entity=$me), !display_name(entity=$me), !rel(subj=$me, pred="likes")
+trust: 2
+then:
+  +chat dialogue_slot(goal="identity", slot="name")
+  => "I don't know who you are yet - what's your name?"
+
 rule me-ask-likes
 when: "what do i like", speaker(entity=$me), !collected(tag="likes"), !collected_empty(tag="likes")
 then:
@@ -355,6 +383,38 @@ then:
 Priority note: `me-ask-likes-topic` runs above the core lookup but below rules
 learned from corrections (likes + is_a), which must tag likes before they are
 collected.
+
+## Corrections ("what about X?" -> "yes")
+
+The core confirms these for `user`; these versions add the like to whoever is
+speaking.
+
+```karin
+rule me-confirm-isa-yes
+when: "yes", dialogue_confirm(kind="confirm_isa", item=$item, topic=$topic), speaker(entity=$me)
+then:
+  -dialogue_confirm
+  ++is_a(child=$item, parent=$topic)
+  ++rel(subj=$me, pred="likes", topic=$topic, obj=$item)
+  => "Got it - learned that $item is a $topic and added it to your favorite $topic."
+
+rule me-confirm-like-yes
+when: "yes", dialogue_confirm(kind="confirm_like", item=$item, topic=$topic), speaker(entity=$me)
+then:
+  -dialogue_confirm
+  ++rel(subj=$me, pred="likes", obj=$item)
+  ++rel(subj=$me, pred="likes", topic=$topic, obj=$item)
+  => "Got it - added $item to your favorite $topic."
+
+rule me-confirm-both-yes
+when: "yes", dialogue_confirm(kind="confirm_both", item=$item, topic=$topic), speaker(entity=$me)
+then:
+  -dialogue_confirm
+  ++is_a(child=$item, parent=$topic)
+  ++rel(subj=$me, pred="likes", obj=$item)
+  ++rel(subj=$me, pred="likes", topic=$topic, obj=$item)
+  => "Got it - learned that $item is a $topic and remembered it as a $topic you like."
+```
 
 ## "What do you know about me"
 

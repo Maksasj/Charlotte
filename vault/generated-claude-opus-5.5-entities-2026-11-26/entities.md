@@ -2,7 +2,8 @@
 
 ## Built-in entities
 
-`user` is whoever talks to Karin when nobody said otherwise; `karin` is Karin.
+`user` is the person Karin has known longest (older memory used this id);
+`karin` is Karin. A chat itself starts with an unknown guest (below).
 
 ```karin
 entity(id="user", kind="person")
@@ -17,14 +18,17 @@ named(entity="karin", value="Karina")
 
 ## Who is speaking
 
-The speaker is chat memory: every chat starts with the default speaker
-(`chat_seed`, filled in by the engine before the first turn), and it changes
-only when the user says someone else is talking. Questions about switching
+The speaker is chat memory. Every chat starts with a **fresh guest** - an entity
+Karin knows nothing about (`chat_seed` with `@new:guest`, filled in by the
+engine before the first turn). When the guest says who they are, a new name
+makes the guest that person; a name Karin knows merges the guest into that
+person (`@merge_entities`), so whatever was said before moves along.
+`user` stays the long-known person whose older memory used that id. Questions about switching
 lapse after two turns.
 
 ```karin
 chat_expiry(rel="dialogue_pending_speaker", turns="2")
-chat_seed(rel="speaker", entity="user")
+chat_seed(rel="speaker", entity="@new:guest")
 ```
 
 ## Wording
