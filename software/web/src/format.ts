@@ -17,6 +17,8 @@ export function fmtCond(c: Condition): string {
       return `¬${c.rel}(${args(c.args)})`;
     case 'not_eq':
       return `${c.left} ≠ ${c.right}`;
+    case 'word_count':
+      return `words(${c.var}) ${c.op} ${c.n}`;
   }
 }
 

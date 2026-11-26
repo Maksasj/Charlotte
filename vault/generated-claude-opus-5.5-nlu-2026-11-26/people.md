@@ -128,7 +128,7 @@ then:
 
 ```karin
 rule people-teach-my-rel
-when: "$x is my $rel", !intent(), $x != "what", $x != "who", $x != "it", $x != "this", $x != "that", $x != "you", $x != "he", $x != "she", $x != "there"
+when: "$x is my $rel", !intent(), words($x) <= 2, $x != "what", $x != "who", $x != "it", $x != "this", $x != "that", $x != "you", $x != "he", $x != "she", $x != "there"
 then:
   ++rel(subj="user", pred=$rel, obj=$x)
   +chat mention(entity=$x, kind="person")
@@ -222,7 +222,7 @@ then:
   => "Noted - I'll remember you like $y."
 
 rule people-other-likes
-when: "$x likes $y", !user_name(value=$x), $x != "who", $x != "what", $x != "everyone", $x != "he", $x != "she"
+when: "$x likes $y", !user_name(value=$x), words($x) <= 2, $x != "who", $x != "what", $x != "everyone", $x != "he", $x != "she"
 then:
   ++rel(subj=$x, pred="likes", obj=$y)
   +chat mention(entity=$x, kind="person")
@@ -243,7 +243,7 @@ when: collected_empty(tag="their_likes"), asked_likes(who=$x)
 then: => "I don't know what $x likes yet."
 
 rule people-lives-in
-when: "$x lives in $y", $x != "who"
+when: "$x lives in $y", words($x) <= 2, $x != "who"
 then:
   -prop(entity=$x, attr="city")
   ++prop(entity=$x, attr="city", value=$y)

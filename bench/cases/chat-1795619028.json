@@ -5,7 +5,8 @@
   "setup": [
     "my name is Maksim",
     "my favorite drink is black tea",
-    "my favorite drink is caramel macchiato"
+    "my favorite drink is caramel macchiato",
+    "caramel macchiato is a drink"
   ],
   "turns": [
     {
@@ -1282,5 +1283,6 @@
         "persona.statement"
       ]
     }
-  ]
+  ],
+  "setup_note": "'caramel macchiato is a drink' was taught in chat-1795609223, before this chat."
 }

@@ -3,6 +3,11 @@ use std::collections::BTreeMap;
 
 pub(crate) fn parse_condition(raw: &str) -> Result<Condition, String> {
     let trimmed = raw.trim();
+    if let Some(rest) = trimmed.strip_prefix("words(") {
+        return parse_word_count(rest).ok_or_else(|| {
+            format!("invalid word count '{trimmed}' (expected e.g. words($x) <= 2)")
+        });
+    }
     if let Some((lhs, rhs)) = split_outside_quotes(trimmed, "!=") {
         let left = parse_value(lhs.trim())?;
         let right = parse_value(rhs.trim())?;
@@ -23,6 +28,25 @@ pub(crate) fn parse_condition(raw: &str) -> Result<Condition, String> {
         let (rel, args) = parse_call(trimmed)?;
         Ok(Condition::Fact { rel, args })
     }
+}
+
+/// `$x) <= 2` (the part after `words(`).
+fn parse_word_count(rest: &str) -> Option<Condition> {
+    let close = rest.find(')')?;
+    let var = rest[..close].trim().to_string();
+    if !var.starts_with('$') {
+        return None;
+    }
+    let tail = rest[close + 1..].trim();
+    let op = ["<=", ">=", "==", "<", ">"]
+        .into_iter()
+        .find(|op| tail.starts_with(op))?;
+    let n = tail[op.len()..].trim().parse().ok()?;
+    Some(Condition::WordCount {
+        var,
+        op: op.to_string(),
+        n,
+    })
 }
 
 pub(crate) fn parse_action(raw: &str) -> Result<Action, String> {

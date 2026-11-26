@@ -504,6 +504,11 @@ impl ChainFolder {
                     left: remap_str(left, &self.var_remap),
                     right: remap_str(right, &self.var_remap),
                 }),
+                Condition::WordCount { var, op, n } => self.when.push(Condition::WordCount {
+                    var: remap_str(var, &self.var_remap),
+                    op: op.clone(),
+                    n: *n,
+                }),
             }
         }
     }

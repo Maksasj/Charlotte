@@ -216,6 +216,21 @@ fn match_cond_rec(
                 None
             }
         }
+        Condition::WordCount { var, op, n } => {
+            let count = normalize(&subst(var, bindings)).split_whitespace().count();
+            let ok = match op.as_str() {
+                "<=" => count <= *n,
+                "<" => count < *n,
+                ">=" => count >= *n,
+                ">" => count > *n,
+                _ => count == *n,
+            };
+            if ok {
+                match_cond_rec(conditions, idx + 1, facts, input, bindings)
+            } else {
+                None
+            }
+        }
     }
 }
 
@@ -239,6 +254,18 @@ mod tests {
         )
         .expect("should match");
         assert_eq!(b.get("$lang").map(String::as_str), Some("Spanish"));
+    }
+
+    #[test]
+    fn word_count_condition_limits_capture_length() {
+        let conds = vec![
+            Condition::Text {
+                template: "$x is my $rel".into(),
+            },
+            crate::vault::parse_condition_for_tests("words($x) <= 2").unwrap(),
+        ];
+        assert!(match_conditions(&conds, &[], "Mary Jane is my friend").is_some());
+        assert!(match_conditions(&conds, &[], "can a roof is my best friend").is_none());
     }
 
     #[test]

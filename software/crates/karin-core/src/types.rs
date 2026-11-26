@@ -46,6 +46,12 @@ pub enum Condition {
         left: String,
         right: String,
     },
+    /// `words($x) <= 2`: how many words a bound value has.
+    WordCount {
+        var: String,
+        op: String,
+        n: usize,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
