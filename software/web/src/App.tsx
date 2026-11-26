@@ -2,17 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { isSpeechRecognitionSupported, listenOnce, type ListenHandle } from './speech';
 import { karinVoice, type VoiceStatus } from './voice';
+import { fmtAction, fmtCond } from './format';
+import { FactRow, PatternRow } from './Rows';
+import { VaultExplorer, vaultPathOf } from './SourceTree';
+import { factDsl, patternDsl } from './VaultSource';
+import { GraphView } from './GraphView';
+import { TracePanel } from './TracePanel';
 import type {
-  Action,
   AgentState,
-  Condition,
+  Fact,
+  Pattern,
   Scope,
   SelfTestResult,
   ToolInfo,
   TurnTrace,
 } from './types';
 
-type Tab = 'trace' | 'facts' | 'patterns' | 'tools' | 'tests';
+type Tab = 'trace' | 'knowledge' | 'tools' | 'tests';
+type KnowKind = 'all' | 'facts' | 'patterns';
+/** One entry of the Knowledge view: a fact or a pattern (rule). */
+type KItem = { kind: 'fact'; fact: Fact } | { kind: 'pattern'; pattern: Pattern };
 
 const SUGGESTIONS = [
   'who are you',
@@ -25,55 +34,48 @@ const SUGGESTIONS = [
   'chunk last',
 ];
 
-function fmtCond(c: Condition): string {
-  switch (c.kind) {
-    case 'text':
-      return `text("${c.template}")`;
-    case 'contains':
-      return `contains("${c.phrase}")`;
-    case 'fact':
-      return `${c.rel}(${Object.entries(c.args)
-        .map(([k, v]) => `${k}=${v}`)
-        .join(', ')})`;
-    case 'not_fact':
-      return `¬${c.rel}(${Object.entries(c.args)
-        .map(([k, v]) => `${k}=${v}`)
-        .join(', ')})`;
-    case 'not_eq':
-      return `${c.left} ≠ ${c.right}`;
+/** "understood as …" note for a reply, when the language layer changed the wording. */
+function understoodNote(t: TurnTrace): string | null {
+  const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9 ]+/g, '').replace(/\s+/g, ' ').trim();
+  const understood = t.understood ?? [];
+  const missed = t.missed ?? [];
+  const parts: string[] = [];
+  if (understood.length > 0 && norm(understood.join(' ')) !== norm(t.input)) {
+    parts.push(`understood as ${understood.map((u) => `“${u}”`).join(' + ')}`);
   }
-}
-
-function fmtAction(a: Action): string {
-  switch (a.kind) {
-    case 'assert':
-      return `assert[${a.scope === 'long_term' ? 'lt' : a.scope === 'chat' ? 'chat' : 'w'}] ${a.rel}(${Object.entries(a.args)
-        .map(([k, v]) => `${k}=${v}`)
-        .join(', ')})`;
-    case 'retract':
-      return `retract ${a.rel}`;
-    case 'tool':
-      return `tool:${a.name}(${Object.entries(a.args)
-        .map(([k, v]) => `${k}=${v}`)
-        .join(', ')})`;
-    case 'reply':
-      return `reply "${a.template}"`;
+  if (missed.length > 0 && !t.impasse) {
+    parts.push(`missed ${missed.map((m) => `“${m}”`).join(', ')}`);
   }
+  return parts.length > 0 ? parts.join(' · ') : null;
 }
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [state, setState] = useState<AgentState | null>(null);
   const [tools, setTools] = useState<ToolInfo[]>([]);
-  const [tab, setTab] = useState<Tab>('trace');
+  const [tab, setTab] = useState<Tab>(() => {
+    const fromHash = window.location.hash.replace('#', '');
+    if (fromHash === 'facts' || fromHash === 'patterns' || fromHash === 'graph') return 'knowledge';
+    return (['trace', 'knowledge', 'tools', 'tests'] as Tab[]).includes(fromHash as Tab)
+      ? (fromHash as Tab)
+      : 'trace';
+  });
   const [input, setInput] = useState('');
   const [selectedTrace, setSelectedTrace] = useState<TurnTrace | null>(null);
+  const [wideInspector, setWideInspector] = useState(false);
+  const [showAddFact, setShowAddFact] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const [patternFilter, setPatternFilter] = useState('');
-  const [factFilter, setFactFilter] = useState('');
+  const [knowFilter, setKnowFilter] = useState('');
+  const [knowView, setKnowView] = useState<'tree' | 'graph'>(() =>
+    window.location.hash === '#graph' ? 'graph' : 'tree',
+  );
+  const [knowKind, setKnowKind] = useState<KnowKind>(() => {
+    const h = window.location.hash.replace('#', '');
+    return h === 'facts' || h === 'patterns' ? h : 'all';
+  });
 
   const [teachReply, setTeachReply] = useState('');
   const [teachPromote, setTeachPromote] = useState(true);
@@ -382,14 +384,16 @@ export default function App() {
     const res = await api.generalize(autoPromote);
     setState(res.state);
     setStatusMsg(res.summary);
-    setTab('patterns');
+    setTab('knowledge');
+    setKnowKind('patterns');
   }
 
   async function runChunk(autoPromote: boolean) {
     const res = await api.chunk(autoPromote);
     setState(res.state);
     setStatusMsg(res.summary);
-    setTab('patterns');
+    setTab('knowledge');
+    setKnowKind('patterns');
   }
 
   async function runSelfTests() {
@@ -422,29 +426,47 @@ export default function App() {
   const activeImpasse = lastAgentMsg?.trace?.impasse ? lastAgentMsg.trace : null;
   const candidateCount = state?.patterns.filter((p) => p.status === 'candidate').length ?? 0;
 
-  const visibleFacts = (state ? [...state.facts].reverse() : []).filter((f) => {
-    if (!factFilter.trim()) return true;
-    const q = factFilter.toLowerCase();
+  const patternNames = new Map((state?.patterns ?? []).map((p) => [p.id, p.name]));
+  const ruleName = (id: string) => patternNames.get(id);
+
+  const visibleFacts = (state ? [...state.facts] : []).filter((f) => {
+    if (!knowFilter.trim()) return true;
+    const q = knowFilter.toLowerCase();
     return (
       f.rel.toLowerCase().includes(q) ||
       JSON.stringify(f.args).toLowerCase().includes(q) ||
-      f.scope.includes(q)
+      f.scope.includes(q) ||
+      f.provenance.toLowerCase().includes(q)
     );
   });
 
   const visiblePatterns = (state ? [...state.patterns] : [])
     .sort((a, b) => (a.status === 'candidate' ? -1 : b.status === 'candidate' ? 1 : 0))
     .filter((p) => {
-      if (!patternFilter.trim()) return true;
-      const q = patternFilter.toLowerCase();
+      if (!knowFilter.trim()) return true;
+      const q = knowFilter.toLowerCase();
       return (
         p.name.toLowerCase().includes(q) ||
         p.kind.includes(q) ||
         p.status.includes(q) ||
+        p.provenance.toLowerCase().includes(q) ||
         p.when.some((c) => fmtCond(c).toLowerCase().includes(q)) ||
         p.then.some((a) => fmtAction(a).toLowerCase().includes(q))
       );
     });
+
+  const knowledgeItems: KItem[] = [
+    ...(knowKind === 'facts' ? [] : visiblePatterns.map((pattern) => ({ kind: 'pattern' as const, pattern }))),
+    ...(knowKind === 'patterns' ? [] : visibleFacts.map((fact) => ({ kind: 'fact' as const, fact }))),
+  ];
+  const countKnowledge = (list: KItem[]) => {
+    const rules = list.filter((k) => k.kind === 'pattern').length;
+    const facts = list.length - rules;
+    const parts = [];
+    if (rules > 0 || facts === 0) parts.push(`${rules} ${rules === 1 ? 'rule' : 'rules'}`);
+    if (facts > 0) parts.push(`${facts} ${facts === 1 ? 'fact' : 'facts'}`);
+    return parts.join(' · ');
+  };
 
   return (
     <div className="app">
@@ -519,7 +541,7 @@ export default function App() {
         </div>
       )}
 
-      <div className="main-grid">
+      <div className={`main-grid ${wideInspector ? 'inspector-wide' : ''}`}>
         <section className="chat-pane">
           <div className="dialog-mode-bar">
             <div className="dialog-mode-tabs">
@@ -570,9 +592,14 @@ export default function App() {
               state.messages.map((m) => (
                 <div
                   key={m.id}
-                  className={`msg-row ${m.role} ${m.trace?.impasse ? 'impasse' : ''}`}
+                  className={`msg-row ${m.role} ${m.trace?.impasse ? 'impasse' : ''} ${
+                    m.trace && selectedTrace?.turn === m.trace.turn && selectedTrace.input === m.trace.input ? "selected" : ""
+                  }`}
                 >
                   <div className="msg-bubble">{m.text}</div>
+                  {m.role === 'agent' && m.trace && understoodNote(m.trace) && (
+                    <div className="msg-understood">{understoodNote(m.trace)}</div>
+                  )}
                   {m.role === 'agent' && m.trace && (
                     <div className="msg-meta">
                       <span>
@@ -626,7 +653,7 @@ export default function App() {
           {activeImpasse && (
             <div className="teach-card">
               <div className="teach-title">
-                No pattern matched &ldquo;{activeImpasse.input}&rdquo; — teach Karin
+                No pattern matched &ldquo;{activeImpasse.input}&rdquo; - teach Karin
               </div>
               <div className="row">
                 <input
@@ -684,7 +711,7 @@ export default function App() {
                       {!speechSupported
                         ? 'Speech recognition unavailable in this browser'
                         : voiceDialogPhase === 'idle'
-                          ? 'Ready — click Start Talking and speak to Karin'
+                          ? 'Ready - click Start Talking and speak to Karin'
                           : voiceDialogPhase === 'loading'
                             ? 'Loading Karin voice (tiny-voca F2)…'
                             : voiceDialogPhase === 'listening'
@@ -743,16 +770,13 @@ export default function App() {
               Trace
             </button>
             <button
-              className={`tab ${tab === 'facts' ? 'active' : ''}`}
-              onClick={() => setTab('facts')}
+              className={`tab ${tab === 'knowledge' ? 'active' : ''}`}
+              onClick={() => setTab('knowledge')}
             >
-              Facts <span className="tab-count">{state?.facts.length ?? 0}</span>
-            </button>
-            <button
-              className={`tab ${tab === 'patterns' ? 'active' : ''}`}
-              onClick={() => setTab('patterns')}
-            >
-              Patterns <span className="tab-count">{state?.patterns.length ?? 0}</span>
+              Knowledge{' '}
+              <span className="tab-count">
+                {(state?.facts.length ?? 0) + (state?.patterns.length ?? 0)}
+              </span>
               {candidateCount > 0 && <span className="badge warn">{candidateCount}</span>}
             </button>
             <button
@@ -767,9 +791,16 @@ export default function App() {
             >
               Tests
             </button>
+            <button
+              className="tab tab-right"
+              title={wideInspector ? 'Give the chat more room' : 'Give the inspector more room'}
+              onClick={() => setWideInspector((w) => !w)}
+            >
+              {wideInspector ? 'Collapse' : 'Expand'}
+            </button>
           </div>
 
-          <div className="inspector-body">
+          <div className={`inspector-body ${tab === 'knowledge' ? 'flush' : ''}`}>
             {tab === 'trace' && (
               <>
                 {!selectedTrace ? (
@@ -777,61 +808,53 @@ export default function App() {
                     Send a message to inspect the Perceive → Match → Select → Fire trace.
                   </div>
                 ) : (
-                  <>
-                    <div className="card">
-                      <div className="card-head">
-                        <span className="card-title">
-                          Turn {selectedTrace.turn} · &ldquo;{selectedTrace.input}&rdquo;
-                        </span>
-                        <span className={`badge ${selectedTrace.impasse ? 'warn' : 'ok'}`}>
-                          {selectedTrace.impasse
-                            ? 'Impasse'
-                            : `${selectedTrace.steps.length} steps`}
-                        </span>
-                      </div>
-                      <div className="muted">{selectedTrace.reply}</div>
-                    </div>
-
-                    {selectedTrace.steps.map((s) => (
-                      <div key={s.step} className="card">
-                        <div className="card-head">
-                          <span className="card-title">
-                            {s.step}. {s.winnerName}
-                          </span>
-                          <span className="muted mono">{s.winnerId}</span>
-                        </div>
-                        {Object.keys(s.bindings).length > 0 && (
-                          <div className="muted mono" style={{ marginBottom: 6 }}>
-                            {Object.entries(s.bindings)
-                              .map(([k, v]) => `${k} = "${v}"`)
-                              .join(' · ')}
-                          </div>
-                        )}
-                        <div className="rule-block mono">
-                          {s.effects.map((ef, i) => (
-                            <div key={i}>→ {ef}</div>
-                          ))}
-                        </div>
-                        {s.competing.length > 1 && (
-                          <div className="muted">
-                            Competing:{' '}
-                            {s.competing
-                              .map((c) => `${c.name} (${c.score.toFixed(1)})`)
-                              .join(' · ')}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </>
+                  <TracePanel trace={selectedTrace} patterns={state?.patterns ?? []} />
                 )}
               </>
             )}
 
-            {tab === 'facts' && state && (
+            {tab === 'knowledge' && state && (
               <>
-                <form className="card" onSubmit={handleAddFact}>
-                  <div className="section-label">Add Fact</div>
-                  <div className="row" style={{ marginTop: 6 }}>
+                <div className="ex-toolbar">
+                  <div className="vx-switch" role="tablist" aria-label="View">
+                    <button className={knowView === 'tree' ? 'on' : ''} onClick={() => setKnowView('tree')}>
+                      Tree
+                    </button>
+                    <button className={knowView === 'graph' ? 'on' : ''} onClick={() => setKnowView('graph')}>
+                      Graph
+                    </button>
+                  </div>
+                  {knowView === 'tree' && (
+                  <div className="vx-switch" role="tablist" aria-label="Show">
+                    {(
+                      [
+                        ['all', 'All'],
+                        ['patterns', `Rules ${visiblePatterns.length}`],
+                        ['facts', `Facts ${visibleFacts.length}`],
+                      ] as [KnowKind, string][]
+                    ).map(([k, label]) => (
+                      <button key={k} className={knowKind === k ? 'on' : ''} onClick={() => setKnowKind(k)}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  )}
+                  <input
+                    type="text"
+                    className="field"
+                    placeholder="Filter by name, value, condition, action or source…"
+                    value={knowFilter}
+                    onChange={(e) => setKnowFilter(e.target.value)}
+                  />
+                  <button
+                    className={`btn btn-sm ${showAddFact ? 'btn-ghost' : 'btn-primary'}`}
+                    onClick={() => setShowAddFact((v) => !v)}
+                  >
+                    {showAddFact ? 'Cancel' : 'Add fact'}
+                  </button>
+                </div>
+                {showAddFact && (
+                  <form className="ex-addform" onSubmit={handleAddFact}>
                     <input
                       type="text"
                       className="field"
@@ -853,116 +876,81 @@ export default function App() {
                       value={factScope}
                       onChange={(e) => setFactScope(e.target.value as Scope)}
                     >
-                      <option value="long_term">long_term</option>
+                      <option value="long_term">long-term</option>
+                      <option value="chat">chat</option>
                       <option value="working">working</option>
                     </select>
                     <button type="submit" className="btn btn-primary btn-sm">
                       Add
                     </button>
-                  </div>
-                </form>
-
-                <input
-                  type="text"
-                  className="field"
-                  placeholder="Filter facts..."
-                  value={factFilter}
-                  onChange={(e) => setFactFilter(e.target.value)}
-                />
-
-                {visibleFacts.map((f) => (
-                  <div key={f.id} className="card">
-                    <div className="card-head">
-                      <span className="mono">
-                        <strong>{f.rel}</strong>(
-                        {Object.entries(f.args)
-                          .map(([k, v]) => `${k}="${v}"`)
-                          .join(', ')}
-                        )
+                  </form>
+                )}
+                {knowView === 'graph' ? (
+                  <GraphView
+                    patterns={state.patterns}
+                    facts={state.facts}
+                    query={knowFilter}
+                    theme={theme}
+                  />
+                ) : (
+                <VaultExplorer<KItem>
+                  items={knowledgeItems}
+                  pathOf={(k) =>
+                    vaultPathOf(k.kind === 'fact' ? k.fact.provenance : k.pattern.provenance, ruleName)
+                  }
+                  itemKey={(k) => (k.kind === 'fact' ? k.fact.id : k.pattern.id)}
+                  itemLabel={(k) =>
+                    k.kind === 'fact' ? (
+                      <span
+                        className="mono vx-fact-label"
+                        title={`${k.fact.rel}(${Object.entries(k.fact.args)
+                          .map(([a, v]) => `${a}="${v}"`)
+                          .join(', ')})`}
+                      >
+                        {Object.values(k.fact.args).join(' · ') || k.fact.rel}
                       </span>
-                      <div className="row">
-                        <span className={`badge ${f.scope === 'working' ? 'warn' : ''}`}>
-                          {f.scope === 'long_term' ? 'long-term' : f.scope === 'chat' ? 'chat' : 'working'}
-                        </span>
-                        <button
-                          className="btn-danger"
-                          title="Delete fact"
-                          onClick={async () => {
-                            const r = await api.deleteFact(f.id);
-                            setState(r.state);
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                    <div className="muted">
-                      {f.id} · {f.provenance} · turn {f.turn}
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {tab === 'patterns' && state && (
-              <>
-                <input
-                  type="text"
-                  className="field"
-                  placeholder="Filter patterns..."
-                  value={patternFilter}
-                  onChange={(e) => setPatternFilter(e.target.value)}
-                />
-
-                {visiblePatterns.map((p) => (
-                  <div key={p.id} className="card">
-                    <div className="card-head">
-                      <span className="card-title">
-                        {p.name} <span className="muted mono">{p.id}</span>
+                    ) : (
+                      <span className="vx-rule-label">
+                        {k.pattern.name}
+                        {k.pattern.status === 'candidate' && <span className="vx-flag">candidate</span>}
                       </span>
-                      <div className="row">
-                        <span className="badge">{p.kind}</span>
-                        <span className={`badge ${p.status === 'candidate' ? 'warn' : 'ok'}`}>
-                          {p.status}
-                        </span>
-                        {p.status === 'candidate' && (
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={async () => {
-                              const r = await api.promotePattern(p.id);
-                              setState(r.state);
-                            }}
-                          >
-                            Promote
-                          </button>
-                        )}
-                        <button
-                          className="btn-danger"
-                          title="Delete pattern"
-                          onClick={async () => {
-                            const r = await api.deletePattern(p.id);
-                            setState(r.state);
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                    <div className="rule-block mono">
-                      <div>
-                        <span className="rule-kw">when</span>
-                        {p.when.map(fmtCond).join(' ∧ ')}
-                      </div>
-                      <div>
-                        <span className="rule-kw">then</span>
-                        {p.then.map(fmtAction).join(' ; ')}
-                      </div>
-                    </div>
-                    <div className="muted">
-                      trust {p.trust.toFixed(2)} · support {p.support} · {p.provenance}
-                    </div>
-                  </div>
-                ))}
+                    )
+                  }
+                  groupOf={(k) => (k.kind === 'fact' ? k.fact.rel : undefined)}
+                  locatorOf={(k) =>
+                    k.kind === 'fact'
+                      ? { kind: 'fact', rel: k.fact.rel, values: Object.values(k.fact.args) }
+                      : { kind: 'rule', name: k.pattern.name }
+                  }
+                  dslOf={(k) => (k.kind === 'fact' ? factDsl(k.fact) : patternDsl(k.pattern))}
+                  filtering={knowFilter.trim() !== ''}
+                  noun="items"
+                  countLabel={countKnowledge}
+                  renderItem={(k) =>
+                    k.kind === 'fact' ? (
+                      <FactRow
+                        fact={k.fact}
+                        onDelete={async () => {
+                          const r = await api.deleteFact(k.fact.id);
+                          setState(r.state);
+                        }}
+                      />
+                    ) : (
+                      <PatternRow
+                        pattern={k.pattern}
+                        onPromote={async () => {
+                          const r = await api.promotePattern(k.pattern.id);
+                          setState(r.state);
+                        }}
+                        onDelete={async () => {
+                          const r = await api.deletePattern(k.pattern.id);
+                          setState(r.state);
+                        }}
+                      />
+                    )
+                  }
+                />
+                )}
               </>
             )}
 

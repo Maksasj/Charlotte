@@ -11,6 +11,8 @@ pub struct AppState {
     pub vault_dir: PathBuf,
     pub chats_dir: PathBuf,
     pub chat_id: Mutex<String>,
+    /// Throwaway sessions that are never saved or logged (see incognito.rs).
+    pub incognito: crate::incognito::Incognito,
 }
 
 impl AppState {

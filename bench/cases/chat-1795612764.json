@@ -1,0 +1,106 @@
+{
+  "chat": "chat-1795612764",
+  "source": "vault/.chats/chat-1795612764.md",
+  "labelled_by": "claude-opus-5.5 draft, 2026-11-26 - needs review",
+  "setup": [
+    "my name is Maksim",
+    "my favorite drink is black tea",
+    "my favorite drink is caramel macchiato"
+  ],
+  "turns": [
+    {
+      "n": 1,
+      "say": "Hi Karin",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 2,
+      "say": "Hi Karin",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 3,
+      "say": "How are you ?",
+      "intent": "social.how_are_you",
+      "respond": "answer"
+    },
+    {
+      "n": 4,
+      "say": "What is my name ?",
+      "intent": "user.name.ask",
+      "respond": "answer",
+      "slots": [
+        "Maksim"
+      ]
+    },
+    {
+      "n": 5,
+      "say": "What I like ?",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "black tea"
+      ]
+    },
+    {
+      "n": 6,
+      "say": "What drink do I like ?",
+      "intent": "likes.ask",
+      "respond": "answer",
+      "slots": [
+        "black tea",
+        "caramel macchiato"
+      ]
+    },
+    {
+      "n": 7,
+      "say": "What is your favorite drink ?",
+      "intent": "persona.likes",
+      "respond": "answer"
+    },
+    {
+      "n": 8,
+      "say": "What is your favorite drink ?",
+      "intent": "persona.likes",
+      "respond": "answer"
+    },
+    {
+      "n": 9,
+      "say": "Who are you ?",
+      "intent": "persona.identity",
+      "respond": "answer"
+    },
+    {
+      "n": 10,
+      "say": "What is your name ?",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    },
+    {
+      "n": 11,
+      "say": "What is your name ?",
+      "intent": "persona.name",
+      "respond": "answer",
+      "slots": [
+        "Karin"
+      ]
+    },
+    {
+      "n": 12,
+      "say": "Hii",
+      "intent": "social.greet",
+      "respond": "answer"
+    },
+    {
+      "n": 13,
+      "say": "Hi",
+      "intent": "social.greet",
+      "respond": "answer"
+    }
+  ]
+}

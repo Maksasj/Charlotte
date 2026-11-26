@@ -58,23 +58,23 @@ rule likes-teach-thing-topic
 when: "i like $thing $topic", topic_word(word=$topic)
 then:
   ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
-  => "Got it — I'll remember $thing as a $topic you like."
+  => "Got it - I'll remember $thing as a $topic you like."
 
 rule likes-teach-is-my-favorite
 when: "$thing is my favorite $topic", !intent(), $thing != "what", $thing != "who", $thing != "which", $thing != "it", $thing != "this", $thing != "that"
 then:
   ++rel(subj="user", pred="likes", topic=$topic, obj=$thing)
-  => "Got it — I'll remember $thing as a $topic you like."
+  => "Got it - I'll remember $thing as a $topic you like."
 
 rule likes-teach-listening
 when: "i started listening to $thing"
 then:
   ++rel(subj="user", pred="likes", topic="music", obj=$thing)
-  => "Nice — I'll remember you listen to $thing."
+  => "Nice - I'll remember you listen to $thing."
 
 rule likes-teach-listen
 when: "i listen to $thing"
 then:
   ++rel(subj="user", pred="likes", topic="music", obj=$thing)
-  => "Nice — I'll remember you listen to $thing."
+  => "Nice - I'll remember you listen to $thing."
 ```

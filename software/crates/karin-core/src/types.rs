@@ -121,6 +121,26 @@ pub struct CompetingMatch {
     pub name: String,
     pub score: f64,
     pub bindings: BTreeMap<String, String>,
+    /// What the score is made of ("text", "facts", "reply", "trust", ...).
+    #[serde(default)]
+    pub parts: Vec<ScorePart>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ScorePart {
+    pub label: String,
+    pub value: f64,
+}
+
+/// One way the language layer tried to read the input.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AttemptTrace {
+    /// "whole", "clause", "ellipsis" or "exact".
+    pub kind: String,
+    pub text: String,
+    pub answered: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -132,6 +152,9 @@ pub struct StepTrace {
     pub winner_name: String,
     pub bindings: BTreeMap<String, String>,
     pub effects: Vec<String>,
+    /// The canonical sentence this step matched against.
+    #[serde(default)]
+    pub text: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -150,6 +173,12 @@ pub struct TurnTrace {
     /// Clauses of the input that no pattern could handle.
     #[serde(default)]
     pub missed: Vec<String>,
+    /// Every reading that was tried, in order.
+    #[serde(default)]
+    pub attempts: Vec<AttemptTrace>,
+    /// Chat memory (facts with chat scope) as it stood after this turn.
+    #[serde(default)]
+    pub chat_memory: Vec<Fact>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

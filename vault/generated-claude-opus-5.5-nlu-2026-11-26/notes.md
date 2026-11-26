@@ -10,7 +10,7 @@ definition(topic="note", text="a short piece of text I keep in long-term memory 
 
 rule note-bare
 when: "make a note", !need_slot(goal="note", slot="text")
-then: +need_slot(goal="note", slot="text", prompt="Sure — what should the note say?")
+then: +need_slot(goal="note", slot="text", prompt="Sure - what should the note say?")
 
 rule note-from-slot
 when: slot_value(goal="note", slot="text", value=$text), !intent(name="save_note")

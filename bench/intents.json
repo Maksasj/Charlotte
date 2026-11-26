@@ -1,0 +1,107 @@
+{
+  "about": "Maps Karin's rule names to the intents used in bench/cases. A turn's detected intent is the intent of the rule that produced the reply; if that rule is 'neutral' (shared dialogue machinery), the closest earlier non-neutral rule in the same clause decides. '*' matches any characters.",
+
+  "neutral": [
+    "dialogue-ask-slot", "dialogue-capture-slot", "dialogue-cancel-slot",
+    "workflow-autofill-user-prop", "workflow-store-slot", "workflow-request-slot"
+  ],
+
+  "clarify": ["dialogue-ask-slot", "user-i-am-maybe-name", "workflow-request-slot"],
+
+  "intents": {
+    "social.greet": ["greet-*", "social-good-evening"],
+    "social.how_are_you": ["social-how-are-you"],
+    "social.thanks": ["thanks", "social-thanks"],
+    "social.sorry": ["social-sorry"],
+    "social.bye": ["goodbye*", "social-good-night"],
+    "social.stop": ["social-stop", "social-stop-it", "social-stop-that"],
+    "social.yes": ["social-yes-nothing-pending", "social-yeah"],
+    "social.compliment": [
+      "self-you-are-positive", "self-you-are-a-positive", "self-are-you-positive",
+      "self-are-you-a-positive", "self-my-friend"
+    ],
+    "social.complaint": [
+      "self-you-are-negative", "self-you-are-not-positive", "self-not-doing-well",
+      "social-stop-being", "self-apologize"
+    ],
+
+    "persona.name": ["self-name", "self-name-short", "self-name-confirm", "self-name-other"],
+    "persona.identity": ["who-are-you", "self-what-are-you"],
+    "persona.called": ["self-called"],
+    "persona.likes": ["self-favorite", "self-likes", "self-you-like", "self-do-you-like"],
+    "persona.statement": ["self-you-are-a-thing"],
+
+    "help.capabilities": ["help-*"],
+
+    "user.name.tell": [
+      "learn-user-name", "user-call-me", "user-confirm-name-*", "user-i-am-known-name",
+      "user-i-am-maybe-name"
+    ],
+    "user.name.ask": ["recall-user-name*", "user-who-am-i*"],
+    "user.state.tell": ["user-i-am-state-*"],
+    "user.role.tell": ["user-i-am-a", "user-i-am-an"],
+    "user.role.ask": ["user-what-am-i"],
+    "user.profile": ["recall-user-profile-*", "learn-user-city", "learn-user-work", "recall-user-workplace*"],
+
+    "likes.tell": [
+      "learn-user-like*", "learn-user-also-like-*", "likes-teach-*", "people-user-likes-by-name"
+    ],
+    "likes.ask": [
+      "ask-user-likes-*", "reply-user-likes-*", "run-likes-topic-collect", "likes-ask-*",
+      "induced-likes-topic-from-isa"
+    ],
+    "likes.correction": [
+      "correct-likes-*", "reply-correction-*", "approve-pending-rule-*", "reply-approval-*",
+      "confirm-*-yes", "decline-pending-approval", "decline-dialogue-confirm"
+    ],
+
+    "people.rel.tell": ["people-teach-my-rel*", "rel-teach-*"],
+    "people.rel.ask": [
+      "people-ask-*", "people-reply-my-rel*", "people-is-my-rel-*", "rel-ask-generic",
+      "rel-match-*", "rel-unknown-*"
+    ],
+    "people.who_is": ["people-who-is-*", "people-what-is-known"],
+    "people.likes.tell": ["people-other-likes"],
+    "people.likes.ask": ["people-what-does-like", "people-reply-their-likes*"],
+    "people.city.tell": ["people-lives-in"],
+    "people.city.ask": ["people-where-lives*", "rel-ask-where-*", "rel-ask-located-in"],
+
+    "fact.teach": ["graph-teach-*", "opus2-learn-*"],
+    "fact.ask": [
+      "graph-ask-*", "graph-is-a-*", "graph-what-is-entity", "graph-prop-*", "graph-used-for",
+      "graph-compare-*", "locx-*", "opus2-*"
+    ],
+    "define": [
+      "intent-define*", "define-*", "run-define-tool", "reply-definition*", "alias-define-tell-me"
+    ],
+
+    "note.create": [
+      "intent-note-remember", "intent-note-make", "intent-note-save", "note-*", "save-note",
+      "reply-note-saved"
+    ],
+    "note.list": ["intent-note-list-*", "list-notes", "reply-notes-listing"],
+    "reminder.create": ["workflow-start-reminder*", "workflow-finish-reminder"],
+    "reminder.list": ["recall-latest-reminder", "recall-reminders-empty"],
+
+    "weather.ask": [
+      "intent-weather-*", "intent-forecast-bare", "weather-use-known-user-city", "weather-need-city",
+      "weather-from-slot", "run-weather-tool", "reply-weather-*", "alias-weather-raining"
+    ],
+    "weather.cities": ["weather-known-cities*", "weather-reply-cities"],
+    "calc": [
+      "intent-calc-*", "calc-*", "run-calc-tool", "reply-calc-*", "alias-calc-how-much",
+      "formula-percent-of", "formula-tip", "formula-discount", "formula-split", "reply-formula-*"
+    ],
+    "convert": [
+      "intent-convert-*", "convert-*", "reply-conversion*", "alias-convert-into", "formula-temp-convert"
+    ],
+
+    "chat.repeat": ["social-repeat*", "social-what-did-i-say"],
+
+    "unsupported.new_chat": ["social-new-chat"],
+    "unsupported.app": ["social-overlord", "social-open-app", "social-start-app"],
+    "unsupported.how_to": ["social-how-do-i"],
+
+    "meta": ["meta-*", "reply-meta-result"]
+  }
+}
