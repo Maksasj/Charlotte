@@ -1,4 +1,4 @@
-export type Scope = 'working' | 'long_term';
+export type Scope = 'working' | 'chat' | 'long_term';
 
 export interface Fact {
   id: string;
@@ -66,6 +66,8 @@ export interface TurnTrace {
   steps: StepTrace[];
   firedPatternIds: string[];
   chunkedPatternId?: string | null;
+  understood?: string[];
+  missed?: string[];
 }
 
 export interface ChatMessage {

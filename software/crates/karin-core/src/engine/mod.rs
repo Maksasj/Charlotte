@@ -1,6 +1,7 @@
 mod learn;
 mod selftest;
 
+use crate::nlu::Lexicon;
 use crate::tools::{NewFact, run_world_tool};
 use crate::types::{
     Action, AgentState, ChainRecord, ChatMessage, CompetingMatch, Condition, Fact, Pattern,
@@ -12,6 +13,8 @@ use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
 
 const MAX_STEPS_PER_TURN: usize = 12;
+/// How many facts of one relation a chat remembers (oldest are forgotten first).
+const CHAT_MEMORY_PER_RELATION: usize = 32;
 const IMPASSE_REPLY: &str =
     "I don't know how to handle that yet (impasse). Teach me a reply or pattern and I'll learn it.";
 
@@ -73,6 +76,25 @@ impl Engine {
         scope: Scope,
         provenance: String,
     ) -> Fact {
+        let scope = if scope == Scope::Working && self.is_chat_memory(&rel) {
+            Scope::Chat
+        } else {
+            scope
+        };
+        if scope == Scope::Chat {
+            // Saying it again makes it the most recent; keep each relation bounded.
+            self.state
+                .facts
+                .retain(|f| !(f.scope == Scope::Chat && f.rel == rel && f.args == args));
+            let same: Vec<usize> = (0..self.state.facts.len())
+                .filter(|&i| {
+                    self.state.facts[i].scope == Scope::Chat && self.state.facts[i].rel == rel
+                })
+                .collect();
+            if same.len() >= CHAT_MEMORY_PER_RELATION {
+                self.state.facts.remove(same[0]);
+            }
+        }
         let fact = Fact {
             id: self.alloc_id("f"),
             rel,
@@ -116,17 +138,76 @@ impl Engine {
     }
 
     pub fn turn(&mut self, input: &str) -> TurnTrace {
-        let trimmed = input.trim().to_string();
-        let turn = self.prepare_turn(&trimmed);
+        let raw = input.trim().to_string();
+        let turn = self.prepare_turn(&raw);
+        let lex = Lexicon::from_facts(&self.state.facts);
+        let base = self.snapshot();
 
-        let mut steps = Vec::new();
-        let mut fired_ids = Vec::new();
+        // 1. The whole utterance, in canonical form.
+        let whole_text = lex.normalize(&lex.resolve_pronouns(&raw, &self.state.facts));
+        let mut chosen = self.attempt(&whole_text);
+
+        // 2. Several clauses ("Oscar is my friend and he lives in Venus"): used
+        //    when every clause is understood, or when the whole was not.
+        let clauses = lex.split_clauses(&raw);
+        if clauses.len() > 1 {
+            let after_whole = self.snapshot();
+            self.restore(base.clone(), &raw);
+            let split = self.attempt_clauses(&clauses, &lex);
+            let all = split.missed.is_empty() && !split.replies.is_empty();
+            if all || (!chosen.answered() && !split.replies.is_empty()) {
+                chosen = split;
+            } else {
+                self.restore(after_whole, &raw);
+            }
+        }
+
+        // 3. The exact text, for patterns taught on exact wording.
+        if chosen.replies.is_empty() && whole_text != raw {
+            self.restore(base.clone(), &raw);
+            let exact = self.attempt(&raw);
+            if exact.answered() {
+                chosen = exact;
+            }
+        }
+
+        if chosen.replies.is_empty() {
+            self.restore(base, &raw);
+            let hint = impasse_reply(&lex, &raw, &whole_text);
+            let failed = Attempt {
+                missed: vec![raw.clone()],
+                ..Attempt::default()
+            };
+            return self.record_turn(turn, raw, None, Some(hint), failed);
+        }
+        let mut reply = chosen
+            .replies
+            .iter()
+            .map(|r| {
+                let r = r.trim();
+                if chosen.replies.len() > 1 && !r.ends_with(['.', '!', '?', '"', ')']) {
+                    format!("{r}.")
+                } else {
+                    r.to_string()
+                }
+            })
+            .collect::<Vec<_>>()
+            .join(" ");
+        if !chosen.missed.is_empty() {
+            let missed: Vec<String> = chosen.missed.iter().map(|m| format!("\"{m}\"")).collect();
+            reply.push_str(&format!(" (I didn't catch {}.)", missed.join(", ")));
+        }
+        self.record_turn(turn, raw, Some(reply), None, chosen)
+    }
+
+    /// Run the rule loop on one canonical sentence. Rolls back on failure.
+    fn attempt(&mut self, text: &str) -> Attempt {
+        let before = self.snapshot();
         let mut fired_keys = HashSet::new();
-        let mut merged_bindings = Bindings::new();
-        let mut final_reply = None;
+        let mut out = Attempt::default();
 
         for step in 1..=MAX_STEPS_PER_TURN {
-            let mut candidates = self.match_active_patterns(&trimmed, &fired_keys);
+            let mut candidates = self.match_active_patterns(text, &fired_keys);
             if candidates.is_empty() {
                 break;
             }
@@ -135,11 +216,11 @@ impl Engine {
             let (winner, bindings, _) = candidates.remove(0);
 
             fired_keys.insert(fire_key(&winner.id, &bindings));
-            fired_ids.push(winner.id.clone());
-            merged_bindings.extend(bindings.clone());
+            out.fired.push(winner.id.clone());
+            out.bindings.extend(bindings.clone());
 
             let (effects, reply) = self.fire_pattern(&winner, &bindings);
-            steps.push(StepTrace {
+            out.steps.push(StepTrace {
                 step,
                 competing,
                 winner_id: winner.id,
@@ -149,32 +230,103 @@ impl Engine {
             });
 
             if let Some(text) = reply {
-                final_reply = Some(text);
+                out.replies.push(text);
                 break;
             }
         }
 
-        self.record_turn(
-            turn,
-            trimmed,
-            final_reply,
-            steps,
-            fired_ids,
-            merged_bindings,
-        )
+        if out.replies.is_empty() {
+            let user_text = self.current_user_text();
+            self.restore(before, &user_text);
+        } else {
+            out.understood.push(text.to_string());
+        }
+        out
+    }
+
+    /// Each clause in turn, with pronouns resolved against what the earlier
+    /// clauses just said, and ellipsis ("calculate 5 * 7 and 6 * 9") filled in
+    /// from the previous clause.
+    fn attempt_clauses(&mut self, clauses: &[String], lex: &Lexicon) -> Attempt {
+        let mut out = Attempt::default();
+        let mut previous: Option<(String, Bindings)> = None;
+        let raw = self.current_user_text();
+
+        for clause in clauses {
+            self.reset_working(&raw);
+            let text = lex.normalize(&lex.resolve_pronouns(clause, &self.state.facts));
+            let mut got = self.attempt(&text);
+            if !got.answered()
+                && let Some((prev_text, prev_bindings)) = &previous
+                && let Some(filled) = fill_ellipsis(prev_text, prev_bindings, &text)
+            {
+                self.reset_working(&raw);
+                got = self.attempt(&filled);
+            }
+            if got.answered() {
+                let used = got.understood.last().cloned().unwrap_or(text);
+                previous = Some((used, got.bindings.clone()));
+                out.absorb(got);
+            } else {
+                out.missed.push(clause.clone());
+            }
+        }
+        out
+    }
+
+    fn current_user_text(&self) -> String {
+        self.state
+            .facts
+            .iter()
+            .rev()
+            .find(|f| f.rel == "user_text")
+            .and_then(|f| f.args.get("text").cloned())
+            .unwrap_or_default()
+    }
+
+    fn snapshot(&self) -> Snapshot {
+        Snapshot {
+            facts: self.state.facts.clone(),
+            patterns: self.state.patterns.clone(),
+            episodes: self.state.episodes.clone(),
+            chains: self.state.chains.clone(),
+        }
+    }
+
+    fn restore(&mut self, snap: Snapshot, user_text: &str) {
+        self.state.facts = snap.facts;
+        self.state.patterns = snap.patterns;
+        self.state.episodes = snap.episodes;
+        self.state.chains = snap.chains;
+        self.reset_working(user_text);
+    }
+
+    /// Drop this turn's working facts (between clauses and attempts).
+    fn reset_working(&mut self, user_text: &str) {
+        self.state.facts.retain(|f| f.scope != Scope::Working);
+        let args = BTreeMap::from([("text".into(), user_text.to_string())]);
+        self.add_fact("user_text".into(), args, Scope::Working, "perceive".into());
     }
 
     fn prepare_turn(&mut self, input: &str) -> usize {
         self.state.turn += 1;
-        self.state.facts.retain(|fact| {
-            fact.scope == Scope::LongTerm
-                || fact.rel == "asked_slot"
-                || fact.rel.starts_with("dialogue_")
-        });
+        self.state.facts.retain(|fact| fact.scope != Scope::Working);
 
         let args = BTreeMap::from([("text".into(), input.to_string())]);
         self.add_fact("user_text".into(), args, Scope::Working, "perceive".into());
         self.state.turn
+    }
+
+    /// Relations the vault declares as chat memory (`chat_memory(rel=...)` or
+    /// `chat_memory(prefix=...)`): a working assert of one of them lives for the chat.
+    fn is_chat_memory(&self, rel: &str) -> bool {
+        self.state.facts.iter().any(|f| {
+            f.rel == "chat_memory"
+                && (f.args.get("rel").is_some_and(|r| r == rel)
+                    || f.args
+                        .get("prefix")
+                        .is_some_and(|p| !p.is_empty() && rel.starts_with(p.as_str())))
+        })
     }
 
     fn match_active_patterns(
@@ -252,20 +404,29 @@ impl Engine {
         turn: usize,
         input: String,
         final_reply: Option<String>,
-        steps: Vec<StepTrace>,
-        fired_ids: Vec<String>,
-        merged_bindings: Bindings,
+        impasse_reply: Option<String>,
+        attempt: Attempt,
     ) -> TurnTrace {
         let impasse = final_reply.is_none();
-        let reply = final_reply.unwrap_or_else(|| IMPASSE_REPLY.into());
+        let reply = final_reply
+            .or(impasse_reply)
+            .unwrap_or_else(|| IMPASSE_REPLY.into());
+        let Attempt {
+            steps,
+            fired,
+            bindings,
+            understood,
+            missed,
+            ..
+        } = attempt;
 
-        if !impasse && fired_ids.len() >= 2 {
+        if !impasse && fired.len() >= 2 {
             let chain = ChainRecord {
                 id: self.alloc_id("c"),
                 turn,
                 input: input.clone(),
-                pattern_ids: fired_ids.clone(),
-                bindings: merged_bindings,
+                pattern_ids: fired.clone(),
+                bindings,
                 chunked: false,
             };
             self.state.chains.push(chain);
@@ -277,9 +438,17 @@ impl Engine {
             reply: reply.clone(),
             impasse,
             steps,
-            fired_pattern_ids: fired_ids,
+            fired_pattern_ids: fired,
             chunked_pattern_id: None,
+            understood,
+            missed,
         };
+
+        // The chat remembers what was said (bounded like all chat memory).
+        for (by, text) in [("user", &input), ("karin", &reply)] {
+            let args = BTreeMap::from([("by".into(), by.into()), ("text".into(), text.clone())]);
+            self.add_fact("said".into(), args, Scope::Chat, "perceive".into());
+        }
 
         let user_msg = ChatMessage {
             id: self.alloc_id("m"),
@@ -436,4 +605,74 @@ fn score_pattern(pattern: &Pattern) -> f64 {
         score += 2.5;
     }
     score
+}
+
+#[derive(Clone)]
+struct Snapshot {
+    facts: Vec<Fact>,
+    patterns: Vec<Pattern>,
+    episodes: Vec<crate::types::Episode>,
+    chains: Vec<ChainRecord>,
+}
+
+#[derive(Default)]
+struct Attempt {
+    steps: Vec<StepTrace>,
+    fired: Vec<String>,
+    bindings: Bindings,
+    replies: Vec<String>,
+    understood: Vec<String>,
+    missed: Vec<String>,
+}
+
+impl Attempt {
+    fn answered(&self) -> bool {
+        !self.replies.is_empty() && self.missed.is_empty()
+    }
+
+    fn absorb(&mut self, other: Attempt) {
+        let offset = self.steps.len();
+        self.steps.extend(other.steps.into_iter().map(|mut s| {
+            s.step += offset;
+            s
+        }));
+        self.fired.extend(other.fired);
+        self.bindings.extend(other.bindings);
+        self.replies.extend(other.replies);
+        self.understood.extend(other.understood);
+    }
+}
+
+/// "calculate 5 * 7" + "6 * 9" -> "calculate 6 * 9": the previous clause's
+/// trailing captured value is replaced by the new clause.
+fn fill_ellipsis(prev_text: &str, prev_bindings: &Bindings, clause: &str) -> Option<String> {
+    let prev_norm = normalize(prev_text);
+    prev_bindings
+        .values()
+        .map(|v| normalize(v))
+        .filter(|v| !v.is_empty() && prev_norm.ends_with(v.as_str()) && prev_norm.len() > v.len())
+        .max_by_key(|v| v.len())
+        .map(|v| {
+            let head = &prev_norm[..prev_norm.len() - v.len()];
+            format!("{} {}", head.trim_end(), clause)
+        })
+}
+
+/// What to say when nothing matched: a hint if a keyword is known, a request
+/// to repeat for one-word fragments, otherwise an invitation to teach.
+fn impasse_reply(lex: &Lexicon, raw: &str, normalized: &str) -> String {
+    if let Some(hint) = lex.hint_for(normalized) {
+        return format!("I'm not sure what you meant. {hint}");
+    }
+    if Lexicon::token_count(normalized) == 1 {
+        return format!("I only caught \"{normalized}\". Could you say the whole sentence?");
+    }
+    let shown: String = if raw.chars().count() > 80 {
+        format!("{}...", raw.chars().take(80).collect::<String>())
+    } else {
+        raw.to_string()
+    };
+    format!(
+        "I don't understand \"{shown}\" yet. You can teach me a reply, or say \"help\" to hear what I can do."
+    )
 }

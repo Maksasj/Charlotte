@@ -1,4 +1,5 @@
 pub mod engine;
+pub mod nlu;
 pub mod store;
 pub mod tools;
 pub mod types;
