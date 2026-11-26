@@ -50,7 +50,12 @@ function understoodNote(t: TurnTrace): string | null {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // Remembered across reloads; first visit follows the system setting.
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('karin-theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
   const [state, setState] = useState<AgentState | null>(null);
   const [tools, setTools] = useState<ToolInfo[]>([]);
   const [tab, setTab] = useState<Tab>(() => {
@@ -303,6 +308,7 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('karin-theme', theme);
   }, [theme]);
 
   async function loadInitial() {
