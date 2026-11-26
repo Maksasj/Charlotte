@@ -6,6 +6,12 @@ use parser::ModuleParser;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+/// Parse one rule condition (exposed for unit tests elsewhere in the crate).
+#[cfg(test)]
+pub(crate) fn parse_condition_for_tests(raw: &str) -> Result<crate::types::Condition, String> {
+    syntax::parse_condition(raw)
+}
+
 pub fn default_vault_dir() -> PathBuf {
     if let Ok(env_dir) = std::env::var("VAULT_CORE_DIR") {
         return PathBuf::from(env_dir);

@@ -47,6 +47,8 @@ function condDsl(c: Condition): string {
       return `!${call(c.rel, c.args)}`;
     case 'not_eq':
       return `${val(c.left)} != ${val(c.right)}`;
+    case 'word_count':
+      return `words(${c.var}) ${c.op} ${c.n}`;
   }
 }
 

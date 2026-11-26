@@ -170,7 +170,9 @@ impl Engine {
             }
         }
 
-        // 3. The exact text, for patterns taught on exact wording.
+        // 3. The exact text, but only for replies taught on that exact wording: the
+        //    general rules already had their chance on the canonical form, and giving
+        //    catch-alls ("$x is a $y") a second go at raw noise stores garbage.
         if chosen.replies.is_empty() && whole_text != raw {
             self.restore(base.clone(), &raw);
             let exact = self.attempt("exact", &raw);
@@ -215,7 +217,7 @@ impl Engine {
         let mut out = Attempt::default();
 
         for step in 1..=MAX_STEPS_PER_TURN {
-            let mut candidates = self.match_active_patterns(text, &fired_keys);
+            let mut candidates = self.match_active_patterns(text, &fired_keys, kind == "exact");
             if candidates.is_empty() {
                 break;
             }
@@ -325,10 +327,39 @@ impl Engine {
     fn prepare_turn(&mut self, input: &str) -> usize {
         self.state.turn += 1;
         self.state.facts.retain(|fact| fact.scope != Scope::Working);
+        self.expire_chat_memory();
 
         let args = BTreeMap::from([("text".into(), input.to_string())]);
         self.add_fact("user_text".into(), args, Scope::Working, "perceive".into());
         self.state.turn
+    }
+
+    /// Chat facts the vault declares short-lived with `chat_expiry(rel=..., turns=N)` are
+    /// forgotten once N turns have passed since they were last said, e.g. a question
+    /// Karin asked that the user moved on from.
+    fn expire_chat_memory(&mut self) {
+        let limits: Vec<(String, usize)> = self
+            .state
+            .facts
+            .iter()
+            .filter(|f| f.rel == "chat_expiry")
+            .filter_map(|f| {
+                Some((
+                    f.args.get("rel")?.clone(),
+                    f.args.get("turns")?.trim().parse().ok()?,
+                ))
+            })
+            .collect();
+        if limits.is_empty() {
+            return;
+        }
+        let now = self.state.turn;
+        self.state.facts.retain(|f| {
+            f.scope != Scope::Chat
+                || !limits
+                    .iter()
+                    .any(|(rel, turns)| *rel == f.rel && now.saturating_sub(f.turn) > *turns)
+        });
     }
 
     /// Relations the vault declares as chat memory (`chat_memory(rel=...)` or
@@ -347,12 +378,14 @@ impl Engine {
         &self,
         input: &str,
         fired_keys: &HashSet<String>,
+        exact_only: bool,
     ) -> Vec<(Pattern, Bindings, f64)> {
         let mut candidates: Vec<(Pattern, Bindings, f64)> = self
             .state
             .patterns
             .iter()
             .filter(|pat| pat.status == PatternStatus::Active)
+            .filter(|pat| !exact_only || taught_on_exact_wording(pat))
             .filter_map(|pat| {
                 let bindings = match_conditions(&pat.when, &self.state.facts, input)?;
                 if fired_keys.contains(&fire_key(&pat.id, &bindings)) {
@@ -590,6 +623,11 @@ impl Engine {
     }
 }
 
+/// Patterns learned for one exact wording: taught replies and hand-added rules.
+fn taught_on_exact_wording(pattern: &Pattern) -> bool {
+    pattern.provenance.starts_with("taught") || pattern.provenance == "manual"
+}
+
 fn fire_key(pattern_id: &str, bindings: &Bindings) -> String {
     format!("{pattern_id}::{bindings:?}")
 }
@@ -630,7 +668,7 @@ fn score_parts(pattern: &Pattern) -> Vec<ScorePart> {
             Condition::Contains { .. } => contains += 1.0,
             Condition::Fact { .. } => facts += 2.0,
             Condition::NotFact { .. } => negations += 0.4,
-            Condition::NotEq { .. } => {}
+            Condition::NotEq { .. } | Condition::WordCount { .. } => {}
         }
     }
     let composite = if pattern.kind == PatternKind::Composite { 1.2 } else { 0.0 };
@@ -730,4 +768,44 @@ fn impasse_reply(lex: &Lexicon, raw: &str, normalized: &str) -> String {
     format!(
         "I don't understand \"{shown}\" yet. You can teach me a reply, or say \"help\" to hear what I can do."
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn engine() -> Engine {
+        Engine::from_vault_dir(&crate::vault::default_vault_dir()).expect("vault")
+    }
+
+    #[test]
+    fn unanswered_question_expires_after_one_turn() {
+        let mut eng = engine();
+        let ask = eng.turn("make a note");
+        assert!(ask.reply.contains("what should the note say"), "{}", ask.reply);
+        let _other = eng.turn("how do I bake bread");
+        let later = eng.turn("my dad just texted me");
+        assert!(
+            !later.reply.contains("Saved to long-term memory"),
+            "stale question captured: {}",
+            later.reply
+        );
+    }
+
+    #[test]
+    fn answered_question_still_captured_next_turn() {
+        let mut eng = engine();
+        eng.turn("make a note");
+        let saved = eng.turn("buy oat milk");
+        assert!(saved.reply.contains("buy oat milk"), "{}", saved.reply);
+    }
+
+    #[test]
+    fn name_guard_rejects_long_captures() {
+        let mut eng = engine();
+        let ok = eng.turn("Oscar is my friend");
+        assert!(ok.reply.contains("Oscar is your friend"), "{}", ok.reply);
+        let noise = eng.turn("can a roof is my best friend");
+        assert!(!noise.reply.contains("your best friend"), "{}", noise.reply);
+    }
 }

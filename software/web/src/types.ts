@@ -14,7 +14,8 @@ export type Condition =
   | { kind: 'contains'; phrase: string }
   | { kind: 'fact'; rel: string; args: Record<string, string> }
   | { kind: 'not_fact'; rel: string; args: Record<string, string> }
-  | { kind: 'not_eq'; left: string; right: string };
+  | { kind: 'not_eq'; left: string; right: string }
+  | { kind: 'word_count'; var: string; op: string; n: number };
 
 export type Action =
   | { kind: 'assert'; rel: string; args: Record<string, string>; scope: Scope }
