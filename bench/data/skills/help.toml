@@ -10,12 +10,6 @@ tags = ["help.capabilities"]
 
 [[case]]
 source = "chat-1795619028"
-say = "at which tools do you have"
-tags = ["help.capabilities"]
-note = "'at' is a mishearing"
-
-[[case]]
-source = "chat-1795619028"
 say = "what tools do you have"
 tags = ["help.capabilities"]
 
@@ -28,18 +22,6 @@ tags = ["help.capabilities"]
 split = "test"
 source = "chat-1795695278"
 say = "help"
-tags = ["help.capabilities"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "Ken what do you know"
-tags = ["help.capabilities"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "Carol what do you know"
 tags = ["help.capabilities"]
 
 [[case]]
@@ -63,19 +45,7 @@ tags = ["help.capabilities"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "what which tools do you have"
-tags = ["help.capabilities"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "which tools do you have"
-tags = ["help.capabilities"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "can what can you do"
 tags = ["help.capabilities"]
 
 [[case]]

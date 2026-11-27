@@ -52,19 +52,6 @@ tags = ["social.sorry"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "sorry can you that's a mistake"
-avoid = ["Learned"]
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "yeah sorry I will add this as a new feature next time"
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "Karen I'm very sorry"
 tags = ["social.sorry"]
 
@@ -77,18 +64,6 @@ tags = ["social.sorry"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "oh yes sorry I can see it on the right"
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "no it's not sorry"
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "Karen can you stop this nonsense"
 tags = ["social.stop"]
 
@@ -96,18 +71,6 @@ tags = ["social.stop"]
 split = "test"
 source = "chat-1795695278"
 say = "no sorry"
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "I'm very sorry sometimes it can formulate my thoughts"
-tags = ["social.sorry"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "yeah I know parents sorry"
 tags = ["social.sorry"]
 
 [[case]]

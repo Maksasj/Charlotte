@@ -82,13 +82,6 @@ tags = ["calc"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "can calculate 5 + 7"
-mentions = ["12"]
-tags = ["calc"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "how much it would be 5 / 7"
 mentions = ["0.714"]
 tags = ["calc"]

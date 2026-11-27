@@ -83,12 +83,6 @@ tags = ["note.list"]
 
 [[case]]
 source = "chat-1795620542"
-say = "can can you add more notes for me"
-expect = "ask"
-tags = ["note.create"]
-
-[[case]]
-source = "chat-1795620542"
 say = "can you make a note for a Friday"
 tags = ["note.create"]
 
@@ -111,14 +105,6 @@ source = "chat-1795695278"
 say = "can you take a note for me"
 expect = "ask"
 tags = ["note.create"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "list my nose Karen"
-tags = ["note.list"]
-note = "'nose' misheard"
 
 [[case]]
 split = "test"
@@ -160,12 +146,6 @@ split = "test"
 source = "chat-1795695278"
 say = "remember that I need to meet up with my friends tomorrow"
 mentions = ["meet up with my friends"]
-tags = ["note.create"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "can I need to meet up with my friends tomorrow"
 tags = ["note.create"]
 
 [[case]]

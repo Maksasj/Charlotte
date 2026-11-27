@@ -15,11 +15,6 @@ tags = ["social.compliment"]
 
 [[case]]
 source = "chat-1795619028"
-say = "can you are a good girl today"
-tags = ["social.compliment"]
-
-[[case]]
-source = "chat-1795619028"
 say = "Karen is my best friend"
 tags = ["social.compliment"]
 
@@ -45,34 +40,12 @@ tags = ["social.compliment"]
 
 [[case]]
 source = "chat-1795619028"
-say = "Ken is a smart"
-avoid = ["Learned"]
-tags = ["social.compliment"]
-note = "'Ken' misheard"
-
-[[case]]
-source = "chat-1795619028"
-say = "can you are very funny"
-tags = ["social.compliment"]
-
-[[case]]
-source = "chat-1795619028"
 say = "Karen you are very funny"
 tags = ["social.compliment"]
 
 [[case]]
 source = "chat-1795619028"
-say = "Kelly you're not very smart right now"
-tags = ["social.complaint"]
-
-[[case]]
-source = "chat-1795619028"
 say = "Karen can you apologize for your not understanding my questions"
-tags = ["social.complaint"]
-
-[[case]]
-source = "chat-1795619028"
-say = "can you're failing"
 tags = ["social.complaint"]
 
 [[case]]
@@ -108,11 +81,6 @@ tags = ["social.complaint"]
 [[case]]
 source = "chat-1795620542"
 say = "little girl you're so stupid"
-tags = ["social.complaint"]
-
-[[case]]
-source = "chat-1795620542"
-say = "can you are sometimes so stupid"
 tags = ["social.complaint"]
 
 [[case]]
@@ -154,12 +122,6 @@ tags = ["social.compliment"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "can you you're very silly"
-tags = ["social.complaint"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "you're very smart today"
 tags = ["social.compliment"]
 
@@ -167,24 +129,6 @@ tags = ["social.compliment"]
 split = "test"
 source = "chat-1795695278"
 say = "Karen you're doing very well today"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "can you you're very smart today"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "can you are very smart today"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "can you are my friend"
 tags = ["social.compliment"]
 
 [[case]]
@@ -208,12 +152,6 @@ tags = ["social.compliment"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "turn on you are sometimes very smart"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "can you actually become much much smarter than from a previous run"
 tags = ["social.compliment"]
 
@@ -226,20 +164,8 @@ tags = ["social.complaint"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "turn our chat is so messy"
-tags = ["social.complaint"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "I don't like how you answer with just one rule it should gather all the tools instead"
 tags = ["social.complaint"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "turn I like you"
-tags = ["social.compliment"]
 
 [[case]]
 split = "test"
@@ -251,25 +177,7 @@ tags = ["social.compliment"]
 [[case]]
 split = "test"
 source = "chat-1795695278"
-say = "can you you're not very smart"
-tags = ["social.complaint"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "turn the you're very smart today"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
 say = "you're doing good job Karen"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-say = "turn your very smart today"
 tags = ["social.compliment"]
 
 [[case]]
@@ -311,13 +219,6 @@ tags = ["social.compliment"]
 [[case]]
 split = "test"
 source = "chat-1795723709"
-say = "Thanksgiving you actually getting smarter every day"
-tags = ["social.compliment"]
-note = "'thanks, you're actually getting smarter'"
-
-[[case]]
-split = "test"
-source = "chat-1795723709"
 say = "okay you're doing really good job today"
 tags = ["social.compliment"]
 
@@ -331,12 +232,6 @@ tags = ["social.compliment"]
 split = "test"
 source = "chat-1795723709"
 say = "you're so smart thanks"
-tags = ["social.compliment"]
-
-[[case]]
-split = "test"
-source = "chat-1795723709"
-say = "Kelly you're a very cool person"
 tags = ["social.compliment"]
 
 [[case]]

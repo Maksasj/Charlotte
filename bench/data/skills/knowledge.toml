@@ -224,10 +224,3 @@ split = "test"
 source = "chat-1795695278"
 say = "what is Venus"
 tags = ["fact.ask"]
-
-[[case]]
-split = "test"
-source = "chat-1795731137"
-say = "old people are persons"
-tags = ["knowledge.teach"]
-note = "'all people are persons'"

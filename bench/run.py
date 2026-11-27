@@ -333,16 +333,24 @@ def previous(base: Path, current: Path, baseline: str | None) -> Path | None:
     return runs[-1] if runs else None
 
 
+def keyed(rows: list[dict]) -> dict:
+    """Turns keyed by file and wording (k-th time that wording appears in the file),
+    so adding or removing cases does not shift the comparison."""
+    seen, out = Counter(), {}
+    for r in rows:
+        k = (r.get("file") or r["chat"], r["say"])
+        seen[k] += 1
+        out[(*k, seen[k])] = r
+    return out
+
+
 def compare(rows: list[dict], prev_dir: Path | None) -> tuple[list, list]:
     if not prev_dir:
         return [], []
-    prev = {}
-    for line in (prev_dir / "results.jsonl").read_text(encoding="utf-8").splitlines():
-        r = json.loads(line)
-        prev[(r["chat"], r["n"])] = r
+    prev = keyed([json.loads(line) for line in (prev_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()])
     broken, fixed = [], []
-    for r in rows:
-        p = prev.get((r["chat"], r["n"]))
+    for key, r in keyed(rows).items():
+        p = prev.get(key)
         if not p or p["outcome"] == r["outcome"] or "skip" in (p["outcome"], r["outcome"]):
             continue
         (fixed if r["outcome"] == "pass" else broken).append((p, r))
