@@ -1,0 +1,9 @@
+title = "Fortran"
+url = "https://en.wikipedia.org/wiki/Fortran"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 7949
+sections = ["Naming", "Origins", "Modern Fortran", "Language features", "Science and engineering", "Portability", "Code examples", "Humor"]

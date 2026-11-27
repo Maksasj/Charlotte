@@ -1,0 +1,9 @@
+title = "Taj Mahal"
+url = "https://en.wikipedia.org/wiki/Taj_Mahal"
+topic = "landmarks"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5360
+sections = ["Etymology", "Inspiration", "Architecture and design", "Construction", "Later years", "Symbolism", "Tourism", "Myths"]

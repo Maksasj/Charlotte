@@ -1,0 +1,9 @@
+title = "Smalltalk"
+url = "https://en.wikipedia.org/wiki/Smalltalk"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 7857
+sections = ["History", "Influences", "Object-oriented programming", "Reflection", "Syntax", "Control structures", "Classes", "Integrated Development Environment", "Hello World example", "Image-based persistence", "Level of access", "Just-in-time compilation"]

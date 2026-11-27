@@ -1,0 +1,9 @@
+title = "Type system"
+url = "https://en.wikipedia.org/wiki/Type_system"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 6242
+sections = ["Usage overview", "Fundamentals", "Type checking", "Polymorphism and types", "Specialized type systems", "Explicit or implicit declaration and inference", "Decision problems", "Unified type system", "Compatibility: equivalence and subtyping"]

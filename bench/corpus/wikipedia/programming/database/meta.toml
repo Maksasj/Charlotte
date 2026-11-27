@@ -1,0 +1,9 @@
+title = "Database"
+url = "https://en.wikipedia.org/wiki/Database"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8473
+sections = ["Terminology", "History", "Use cases", "Classification terms", "Database management system", "Application", "Database languages", "Storage", "Security", "Transactions and concurrency", "Migration", "Building, maintaining, and tuning", "Backup and restore", "Static analysis", "Miscellaneous features", "Design and modeling", "Research"]

@@ -1,0 +1,9 @@
+title = "Romeo and Juliet"
+url = "https://en.wikipedia.org/wiki/Romeo_and_Juliet"
+topic = "literature"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 9254
+sections = ["Synopsis", "Date and text", "Themes and motifs", "Scene by scene"]

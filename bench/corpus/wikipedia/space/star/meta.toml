@@ -1,0 +1,9 @@
+title = "Star"
+url = "https://en.wikipedia.org/wiki/Star"
+topic = "space"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 10060
+sections = ["Etymology", "Observation history", "Designations", "Units of measurement", "Formation and evolution", "Distribution", "Characteristics", "Radiation", "Classification", "Variable stars", "Structure", "Nuclear fusion reaction pathways"]

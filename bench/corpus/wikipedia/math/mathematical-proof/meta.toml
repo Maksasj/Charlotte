@@ -1,0 +1,9 @@
+title = "Mathematical proof"
+url = "https://en.wikipedia.org/wiki/Mathematical_proof"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3015
+sections = ["History and etymology", "Nature and purpose", "Undecidable statements", "Heuristic mathematics and experimental mathematics", "Ending a proof"]

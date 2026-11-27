@@ -1,0 +1,9 @@
+title = "Hans Christian Andersen"
+url = "https://en.wikipedia.org/wiki/Hans_Christian_Andersen"
+topic = "literature"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4548
+sections = ["Early life", "Death", "Works", "General bibliography"]

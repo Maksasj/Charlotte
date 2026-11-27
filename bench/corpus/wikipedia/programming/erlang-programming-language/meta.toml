@@ -1,0 +1,9 @@
+title = "Erlang (programming language)"
+url = "https://en.wikipedia.org/wiki/Erlang_%28programming_language%29"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 2719
+sections = ["History", "Data types", "\"Let it crash\" coding style", "Concurrency and distribution orientation", "Implementation", "Examples", "Hot code loading and modules", "Distribution"]

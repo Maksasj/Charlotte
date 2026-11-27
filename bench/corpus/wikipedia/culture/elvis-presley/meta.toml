@@ -1,0 +1,9 @@
+title = "Elvis Presley"
+url = "https://en.wikipedia.org/wiki/Elvis_Presley"
+topic = "culture"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 15894
+sections = ["Death", "Legacy", "Achievements", "Discography", "Filmography"]

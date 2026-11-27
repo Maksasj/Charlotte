@@ -1,0 +1,9 @@
+title = "Tiger"
+url = "https://en.wikipedia.org/wiki/Tiger"
+topic = "nature"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8121
+sections = ["Etymology", "Taxonomy", "Description", "Distribution and habitat", "Behaviour and ecology", "Threats", "Conservation"]

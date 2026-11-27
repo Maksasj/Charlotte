@@ -1,0 +1,9 @@
+title = "Explainable artificial intelligence"
+url = "https://en.wikipedia.org/wiki/Explainable_artificial_intelligence"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4197
+sections = ["Background", "Goals", "Explainability and interpretability techniques", "History and methods", "Regulation", "Limitations", "Criticism", "Explainability in social choice"]

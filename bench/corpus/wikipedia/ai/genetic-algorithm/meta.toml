@@ -1,0 +1,9 @@
+title = "Genetic algorithm"
+url = "https://en.wikipedia.org/wiki/Genetic_algorithm"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5526
+sections = ["The building block hypothesis", "Limitations", "Problem domains", "History"]

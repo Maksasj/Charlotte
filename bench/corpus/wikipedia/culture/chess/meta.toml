@@ -1,0 +1,9 @@
+title = "Chess"
+url = "https://en.wikipedia.org/wiki/Chess"
+topic = "culture"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 13089
+sections = ["Rules", "Notation", "Problems and studies", "Chess in public spaces", "Online chess", "Computer chess", "Chess literature"]

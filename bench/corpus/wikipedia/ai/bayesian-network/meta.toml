@@ -1,0 +1,9 @@
+title = "Bayesian network"
+url = "https://en.wikipedia.org/wiki/Bayesian_network"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3757
+sections = ["Graphical model", "Example", "Inference and learning", "Statistical introduction", "Definitions and concepts", "Inference complexity and approximation algorithms", "Software", "History"]

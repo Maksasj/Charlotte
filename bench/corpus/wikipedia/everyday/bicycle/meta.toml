@@ -1,0 +1,9 @@
+title = "Bicycle"
+url = "https://en.wikipedia.org/wiki/Bicycle"
+topic = "everyday"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5577
+sections = ["Etymology", "Uses", "Technical aspects", "Parts", "Maintenance and repair", "Social and historical aspects"]

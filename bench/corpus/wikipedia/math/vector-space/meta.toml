@@ -1,0 +1,9 @@
+title = "Vector space"
+url = "https://en.wikipedia.org/wiki/Vector_space"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 6825
+sections = ["Definition and basic properties", "Bases, vector coordinates, and subspaces", "History", "Linear maps and matrices", "Basic constructions", "Vector spaces with additional structure"]

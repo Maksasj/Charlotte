@@ -1,0 +1,9 @@
+title = "Madrid"
+url = "https://en.wikipedia.org/wiki/Madrid"
+topic = "places"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 14207
+sections = ["Etymology", "History", "Geography", "Demographics", "Economy", "Education", "Transport", "Honours"]

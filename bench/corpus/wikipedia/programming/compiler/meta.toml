@@ -1,0 +1,9 @@
+title = "Compiler"
+url = "https://en.wikipedia.org/wiki/Compiler"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5776
+sections = ["Comparison with interpreter", "History", "Compiler construction", "Compiled vis-à-vis interpreted languages", "Types"]

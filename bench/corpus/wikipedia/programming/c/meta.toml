@@ -1,0 +1,9 @@
+title = "C++"
+url = "https://en.wikipedia.org/wiki/C%2B%2B"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 2604
+sections = ["History", "Language", "Standard library", "C++ Core Guidelines", "Compatibility"]

@@ -1,0 +1,9 @@
+title = "Fibonacci sequence"
+url = "https://en.wikipedia.org/wiki/Fibonacci_sequence"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 6119
+sections = ["Definition", "Matrix form", "Other identities", "Reciprocal sums", "Generalizations"]

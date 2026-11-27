@@ -1,0 +1,9 @@
+title = "Horse"
+url = "https://en.wikipedia.org/wiki/Horse"
+topic = "everyday"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8539
+sections = ["Lifespan and life stages", "Size and measurement", "Genetics", "Colors and markings", "Reproduction and development", "Movement", "Behavior", "Taxonomy and evolution", "Domestication and history", "Interaction with humans"]

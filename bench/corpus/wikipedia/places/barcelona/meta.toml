@@ -1,0 +1,9 @@
+title = "Barcelona"
+url = "https://en.wikipedia.org/wiki/Barcelona"
+topic = "places"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 11543
+sections = ["Names", "Demographics", "Administration", "Culture", "Sights", "Economy", "Education"]

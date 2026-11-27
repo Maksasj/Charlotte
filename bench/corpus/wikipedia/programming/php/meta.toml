@@ -1,0 +1,9 @@
+title = "PHP"
+url = "https://en.wikipedia.org/wiki/PHP"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 6727
+sections = ["History", "Mascot", "Syntax", "Implementations", "Licensing", "Development and community", "The PHP Foundation", "Installation and configuration", "Use", "Security"]

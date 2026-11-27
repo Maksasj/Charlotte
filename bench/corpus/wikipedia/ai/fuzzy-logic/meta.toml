@@ -1,0 +1,9 @@
+title = "Fuzzy logic"
+url = "https://en.wikipedia.org/wiki/Fuzzy_logic"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3840
+sections = ["Overview", "Forming a consensus of inputs and fuzzy rules", "Applications", "Logical analysis", "Compensatory fuzzy logic", "Markup language standardization"]

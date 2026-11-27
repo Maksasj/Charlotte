@@ -1,0 +1,9 @@
+title = "Sorting algorithm"
+url = "https://en.wikipedia.org/wiki/Sorting_algorithm"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4962
+sections = ["History and concepts", "Classification", "Comparison of algorithms", "Popular sorting algorithms", "Memory usage patterns and index sorting", "Related algorithms"]

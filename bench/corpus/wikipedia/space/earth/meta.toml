@@ -1,0 +1,9 @@
+title = "Earth"
+url = "https://en.wikipedia.org/wiki/Earth"
+topic = "space"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 9166
+sections = ["Etymology", "Composition and structure", "Atmosphere and climate", "Hydrosphere", "Biosphere", "Human geography", "In culture"]

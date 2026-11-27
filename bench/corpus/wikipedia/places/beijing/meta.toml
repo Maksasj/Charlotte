@@ -1,0 +1,9 @@
+title = "Beijing"
+url = "https://en.wikipedia.org/wiki/Beijing"
+topic = "places"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 13585
+sections = ["Etymology", "Geography", "Government", "Economy", "Demographics", "Education and research", "Culture", "Transportation", "Defence and aerospace", "Ecology", "International relations"]

@@ -1,0 +1,9 @@
+title = "Tokyo"
+url = "https://en.wikipedia.org/wiki/Tokyo"
+topic = "places"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 11189
+sections = ["Etymology", "Geography", "Demographics", "Economy", "Transportation", "Education", "Sports", "Sister cities and states"]

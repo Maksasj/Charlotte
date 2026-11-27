@@ -1,0 +1,9 @@
+title = "Cheese"
+url = "https://en.wikipedia.org/wiki/Cheese"
+topic = "everyday"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3926
+sections = ["Etymology", "Production", "Types", "Cooking and eating", "Cultural attitudes"]

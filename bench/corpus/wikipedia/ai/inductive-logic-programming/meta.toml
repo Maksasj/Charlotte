@@ -1,0 +1,9 @@
+title = "Inductive logic programming"
+url = "https://en.wikipedia.org/wiki/Inductive_logic_programming"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 2365
+sections = ["History", "Setting", "Approaches to ILP", "List of implementations", "Probabilistic inductive logic programming"]

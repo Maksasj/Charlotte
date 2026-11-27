@@ -1,0 +1,9 @@
+title = "Car"
+url = "https://en.wikipedia.org/wiki/Car"
+topic = "everyday"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5753
+sections = ["Etymology", "History", "Safety", "Costs and benefits", "Environmental effects", "Social issues", "Emerging car technologies", "Industry", "Alternatives", "Motorsport"]

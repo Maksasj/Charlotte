@@ -1,0 +1,9 @@
+title = "Checkers"
+url = "https://en.wikipedia.org/wiki/Checkers"
+topic = "games"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3600
+sections = ["General rules", "Naming", "Computer checkers", "Computational complexity", "Championships", "Federations", "Games sometimes confused with checkers variants"]

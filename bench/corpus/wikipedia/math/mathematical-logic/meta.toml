@@ -1,0 +1,9 @@
+title = "Mathematical logic"
+url = "https://en.wikipedia.org/wiki/Mathematical_logic"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5902
+sections = ["Subfields and scope", "History", "Formal logical systems", "Set theory", "Model theory", "Recursion theory", "Proof theory and constructive mathematics", "Applications", "Connections with computer science", "Foundations of mathematics"]

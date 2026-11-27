@@ -1,0 +1,9 @@
+title = "Backpropagation"
+url = "https://en.wikipedia.org/wiki/Backpropagation"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3874
+sections = ["Overview", "Matrix multiplication", "Adjoint graph", "Derivation", "Second-order gradient descent", "Loss function", "Limitations"]

@@ -1,0 +1,9 @@
+title = "Gödel's incompleteness theorems"
+url = "https://en.wikipedia.org/wiki/G%C3%B6del%27s_incompleteness_theorems"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 9579
+sections = ["Formal systems", "First incompleteness theorem", "Second incompleteness theorem", "Examples of undecidable statements", "Relationship with computability", "Proof sketch for the first theorem", "Proof sketch for the second theorem", "Discussion and implications", "History"]

@@ -1,0 +1,9 @@
+title = "Graph traversal"
+url = "https://en.wikipedia.org/wiki/Graph_traversal"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 1254
+sections = ["Redundancy", "Graph traversal algorithms", "Applications", "Graph exploration", "Universal traversal sequences"]

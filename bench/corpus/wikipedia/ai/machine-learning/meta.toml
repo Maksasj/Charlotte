@@ -1,0 +1,9 @@
+title = "Machine learning"
+url = "https://en.wikipedia.org/wiki/Machine_learning"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8383
+sections = ["History", "Theory", "Approaches", "Models", "Uses", "Limitations", "Model assessments", "Hardware", "Journals", "Conferences"]

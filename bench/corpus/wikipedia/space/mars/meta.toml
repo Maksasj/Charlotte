@@ -1,0 +1,9 @@
+title = "Mars"
+url = "https://en.wikipedia.org/wiki/Mars"
+topic = "space"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 9147
+sections = ["Physical characteristics", "Geography and features", "Atmosphere", "Hydrology", "Orbital motion", "Moons", "Human observations and exploration", "Habitability and habitation", "In culture"]

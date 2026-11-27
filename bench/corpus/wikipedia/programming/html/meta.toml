@@ -1,0 +1,9 @@
+title = "HTML"
+url = "https://en.wikipedia.org/wiki/HTML"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 6991
+sections = ["Markup", "Semantic HTML", "Delivery", "HTML4 variations", "WHATWG HTML versus HTML5", "WYSIWYG editors"]

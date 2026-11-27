@@ -1,0 +1,9 @@
+title = "Reinforcement learning"
+url = "https://en.wikipedia.org/wiki/Reinforcement_learning"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4992
+sections = ["Principles", "Exploration", "Algorithms for control learning", "Theory", "Research", "Comparison of key algorithms", "Statistical comparison of reinforcement learning algorithms", "Challenges and limitations", "In natural language processing"]

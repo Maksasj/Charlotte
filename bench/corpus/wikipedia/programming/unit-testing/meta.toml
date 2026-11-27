@@ -1,0 +1,9 @@
+title = "Unit testing"
+url = "https://en.wikipedia.org/wiki/Unit_testing"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 2946
+sections = ["History", "Unit", "Execution", "Testing criteria", "Parameterized test", "Code visibility", "Test-driven development", "Value", "Limitations and disadvantages", "As executable specifications"]

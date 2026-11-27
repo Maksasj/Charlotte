@@ -1,0 +1,9 @@
+title = "Prolog"
+url = "https://en.wikipedia.org/wiki/Prolog"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4890
+sections = ["History", "Syntax and semantics", "Programming in Prolog", "Design patterns of Prolog", "Higher-order programming", "Modules", "Parsing", "Meta-interpreters and reflection", "Turing completeness", "Extensions", "Interfaces to other languages"]

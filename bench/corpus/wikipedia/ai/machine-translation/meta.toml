@@ -1,0 +1,9 @@
+title = "Machine translation"
+url = "https://en.wikipedia.org/wiki/Machine_translation"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 4032
+sections = ["Approaches", "Issues", "Applications", "Evaluation", "Machine translation and signed languages", "Copyright"]

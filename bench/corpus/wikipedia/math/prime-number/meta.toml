@@ -1,0 +1,9 @@
+title = "Prime number"
+url = "https://en.wikipedia.org/wiki/Prime_number"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8098
+sections = ["Definition and examples", "History", "Analytic properties", "Computational methods", "Other applications"]

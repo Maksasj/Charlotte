@@ -1,0 +1,9 @@
+title = "Banana"
+url = "https://en.wikipedia.org/wiki/Banana"
+topic = "everyday"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 7249
+sections = ["Description", "Modern cultivation", "Breeding", "Production", "Ecology", "Pests", "Diseases", "Conservation of genetic diversity", "Nutrition"]

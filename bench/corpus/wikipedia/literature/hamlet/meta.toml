@@ -1,0 +1,9 @@
+title = "Hamlet"
+url = "https://en.wikipedia.org/wiki/Hamlet"
+topic = "literature"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 7921
+sections = ["Date", "Texts", "Influence", "Derivative works"]

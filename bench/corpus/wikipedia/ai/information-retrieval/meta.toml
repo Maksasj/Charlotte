@@ -1,0 +1,9 @@
+title = "Information retrieval"
+url = "https://en.wikipedia.org/wiki/Information_retrieval"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3353
+sections = ["Overview", "History", "Applications", "Model types", "Performance and correctness measures", "Libraries for searching and indexing", "Timeline", "Major conferences", "Awards in the field"]

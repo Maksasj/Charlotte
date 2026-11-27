@@ -1,0 +1,9 @@
+title = "Earthquake"
+url = "https://en.wikipedia.org/wiki/Earthquake"
+topic = "science"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5934
+sections = ["Terminology", "Major examples", "Occurrence", "Measurement and location", "Effects", "In culture", "Outside of Earth"]

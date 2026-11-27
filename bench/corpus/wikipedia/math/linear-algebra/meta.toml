@@ -1,0 +1,9 @@
+title = "Linear algebra"
+url = "https://en.wikipedia.org/wiki/Linear_algebra"
+topic = "math"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 5422
+sections = ["History", "Vector spaces", "Matrices", "Linear systems", "Endomorphisms and square matrices", "Duality", "Relationship with geometry", "Usage and applications", "Extensions and generalizations"]

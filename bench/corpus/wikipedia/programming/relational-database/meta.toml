@@ -1,0 +1,9 @@
+title = "Relational database"
+url = "https://en.wikipedia.org/wiki/Relational_database"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3115
+sections = ["History", "Relational model", "Keys", "Transactions", "Stored procedures", "Terminology", "Relations or tables", "Base and derived relations", "Constraints", "Relational operations", "Normalization", "RDBMS", "Distributed relational databases", "List of database engines"]

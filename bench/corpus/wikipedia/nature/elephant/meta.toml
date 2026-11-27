@@ -1,0 +1,9 @@
+title = "Elephant"
+url = "https://en.wikipedia.org/wiki/Elephant"
+topic = "nature"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 8926
+sections = ["Etymology", "Taxonomy", "Anatomy", "Behaviour and ecology"]

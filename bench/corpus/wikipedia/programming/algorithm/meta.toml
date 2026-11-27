@@ -1,0 +1,9 @@
+title = "Algorithm"
+url = "https://en.wikipedia.org/wiki/Algorithm"
+topic = "programming"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 3780
+sections = ["Etymology", "Definition", "Representations", "Algorithmic analysis", "Design", "Legal status", "Examples", "AI-assisted algorithm discovery"]

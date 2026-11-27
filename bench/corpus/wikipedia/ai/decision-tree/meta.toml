@@ -1,0 +1,9 @@
+title = "Decision tree"
+url = "https://en.wikipedia.org/wiki/Decision_tree"
+topic = "ai"
+source = "Wikipedia (English)"
+retrieved = 2026-11-27
+license = "CC BY-SA 4.0"
+license_url = "https://creativecommons.org/licenses/by-sa/4.0/"
+words = 2780
+sections = ["Overview", "Association rule induction", "Advantages and disadvantages", "Optimizing a decision tree", "Evaluating a decision tree"]
