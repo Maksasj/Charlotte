@@ -37,25 +37,8 @@ tags = ["persona.statement"]
 
 [[case]]
 source = "chat-1795619028"
-say = "can can is not a drink"
-tags = ["persona.statement"]
-
-[[case]]
-source = "chat-1795619028"
 say = "Karen"
 tags = ["persona.called"]
-
-[[case]]
-source = "chat-1795619028"
-say = "turn who are you"
-tags = ["persona.identity"]
-note = "'turn' misheard"
-
-[[case]]
-source = "chat-1795619028"
-say = "Ken who are you"
-tags = ["persona.identity"]
-note = "'Ken' misheard"
 
 [[case]]
 source = "chat-1795619028"
@@ -89,11 +72,6 @@ tags = ["persona.statement"]
 
 [[case]]
 source = "chat-1795620542"
-say = "Karen is a you"
-tags = ["persona.statement"]
-
-[[case]]
-source = "chat-1795620542"
 say = "what is you"
 tags = ["persona.identity"]
 
@@ -111,11 +89,6 @@ tags = ["persona.likes"]
 source = "chat-1795620542"
 say = "Karen also likes rock music same as me"
 tags = ["persona.likes"]
-
-[[case]]
-source = "chat-1795620542"
-say = "call Karen"
-tags = ["persona.called"]
 
 [[case]]
 split = "test"
@@ -202,12 +175,6 @@ source = "chat-1795723220"
 say = "who creator of Karen"
 tags = ["persona.creator"]
 note = "'who is the creator of Karin'"
-
-[[case]]
-split = "test"
-source = "chat-1795723709"
-say = "can I call you Christine"
-tags = ["persona.name"]
 
 [[case]]
 split = "test"

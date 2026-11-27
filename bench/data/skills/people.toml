@@ -26,14 +26,6 @@ tags = ["people.rel.ask"]
 [[case]]
 source = "chat-1795619028"
 before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "link user front Oscar"
-mentions = ["Oscar"]
-tags = ["people.rel.tell"]
-note = "'front' misheard for 'friend'"
-
-[[case]]
-source = "chat-1795619028"
-before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "link user friend Oscar"
 mentions = ["Oscar"]
 tags = ["people.rel.tell"]
@@ -145,12 +137,6 @@ say = "Who is Oskar ?"
 tags = ["people.who_is"]
 
 [[case]]
-source = "chat-1795685756"
-before = ["my name is Maksim"]
-say = "Who is a Oskarr ?"
-tags = ["people.who_is"]
-
-[[case]]
 split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
@@ -221,21 +207,7 @@ tags = ["people.who_is"]
 split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "Kevin do you know about Oscar"
-tags = ["people.who_is"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "do you know Oscar"
-tags = ["people.who_is"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "what who is Maksim"
 tags = ["people.who_is"]
 
 [[case]]

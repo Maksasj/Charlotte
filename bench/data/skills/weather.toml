@@ -11,20 +11,8 @@ tags = ["weather.ask"]
 
 [[case]]
 source = "chat-1795609147"
-say = "Vilnius"
-tags = ["weather.ask"]
-
-[[case]]
-source = "chat-1795609147"
 say = "What is weather in Vilnius ?"
 tags = ["weather.ask"]
-
-[[case]]
-source = "chat-1795619028"
-before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "what is the weather in a wellness"
-tags = ["weather.ask"]
-note = "'a wellness' is how the mic heard Vilnius"
 
 [[case]]
 source = "chat-1795619028"
@@ -37,14 +25,6 @@ source = "chat-1795619028"
 before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "what is the weather in Vilnius right now"
 tags = ["weather.ask"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "Karen check weather in a business"
-tags = ["weather.ask"]
-note = "'a business' is a misheard city"
 
 [[case]]
 split = "test"

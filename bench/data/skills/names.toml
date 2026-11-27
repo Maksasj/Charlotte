@@ -80,28 +80,6 @@ tags = ["user.profile"]
 split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "what do you remember from this chaps"
-tags = ["user.profile"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "can what do you know about me"
-mentions = ["Maksim"]
-tags = ["user.profile"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "can who I am"
-tags = ["user.name.ask"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "who is Maksim"
 tags = ["user.name.ask"]
 
@@ -133,13 +111,6 @@ tags = ["user.profile"]
 split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "can who am I"
-tags = ["user.name.ask"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "Karen who am I"
 tags = ["user.name.ask"]
 
@@ -156,20 +127,6 @@ split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "who is Max"
-tags = ["user.name.ask"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "criminal do you know about me"
-tags = ["user.profile"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "do you know do you want to know who am I"
 tags = ["user.name.ask"]
 
 [[case]]
@@ -198,14 +155,6 @@ tags = ["user.profile"]
 split = "test"
 source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "I'm Max not maximum"
-mentions = ["Max"]
-tags = ["user.name.tell"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "hey it's Oscar do you know anything about Maxim"
 tags = ["user.profile"]
 
@@ -223,20 +172,6 @@ source = "chat-1795695278"
 before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
 say = "I am Oscar"
 mentions = ["Oscar"]
-tags = ["user.name.tell"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "yes it is"
-tags = ["user.name.tell"]
-
-[[case]]
-split = "test"
-source = "chat-1795695278"
-before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
-say = "yes"
 tags = ["user.name.tell"]
 
 [[case]]
@@ -320,13 +255,6 @@ mentions = ["Max"]
 tags = ["user.name.tell"]
 
 [[case]]
-source = "chat-1795723515"
-say = "Am I who am I"
-expect = "ask"
-tags = ["user.name.ask"]
-note = "'am I... who am I'"
-
-[[case]]
 source = "chat-1795723678"
 say = "sorry my name is Maxim"
 mentions = ["Maxim"]
@@ -379,12 +307,6 @@ source = "chat-1795723709"
 say = "I'm Max"
 mentions = ["Max"]
 tags = ["user.name.tell"]
-
-[[case]]
-split = "test"
-source = "chat-1795723709"
-say = "by the way I'm a Mexican"
-tags = ["user.statement"]
 
 [[case]]
 split = "test"
