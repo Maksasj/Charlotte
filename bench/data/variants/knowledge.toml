@@ -2,9 +2,9 @@ suite = "variants-knowledge"
 
 about = "Questions about things (who made, what is, what color, do you know X). Karin may not know - but she should understand the question and say so honestly instead of being stuck."
 
-split = "test"
+split = "dev"
 
-labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes); dev since 2026-11-27: its failures informed the knowledge rules"
 
 tags = ["knowledge"]
 

@@ -1,7 +1,7 @@
 suite = "knowledge"
 about = "Probes: teaching facts and asking them back, chains (is-a), yes/no questions, unknown things."
-split = "test"
-labels = "written by claude-opus-5.5, 2026-11-27"
+split = "dev"
+labels = "written by claude-opus-5.5, 2026-11-27; dev since 2026-11-27: its failures informed the knowledge rules"
 tags = ["knowledge"]
 
 [[case]]

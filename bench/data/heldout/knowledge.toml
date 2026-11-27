@@ -1,0 +1,272 @@
+suite = "heldout-knowledge"
+about = """Held-out test for learning and asking about things (generic relations, articles, 'what do you know \
+about X', remarks that are not facts). Written after the knowledge rules of 2026-11-27, never used for fixes: if it \
+ever is, move it to split = "dev" and write a new one. Tags: listed = verbs/forms the rules cover, new things; \
+new-wording = relations or phrasings the rules do not cover; remark = must not be learned as a fact."""
+split = "test"
+labels = "written by claude-opus-5.5 on 2026-11-27, before running it once; not tuned on"
+
+# ---- listed: covered verbs and forms, new things ----
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "Tolkien wrote The Hobbit"
+
+[[case.turn]]
+tags = ["listed"]
+say = "who wrote The Hobbit"
+mentions = ["Tolkien"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "The Hobbit was written by Tolkien"
+
+[[case.turn]]
+tags = ["listed"]
+say = "who wrote The Hobbit"
+mentions = ["Tolkien"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "Marie Curie discovered radium"
+
+[[case.turn]]
+tags = ["listed"]
+say = "who discovered radium"
+mentions = ["Marie Curie"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "Linus Torvalds created Linux"
+
+[[case.turn]]
+tags = ["listed"]
+say = "who made Linux"
+mentions = ["Linus Torvalds"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "Steve Jobs founded Apple"
+
+[[case.turn]]
+tags = ["listed"]
+say = "who founded Apple"
+mentions = ["Steve Jobs"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "Van Gogh painted The Starry Night"
+
+[[case.turn]]
+tags = ["listed"]
+say = "what do you know about The Starry Night"
+mentions = ["Van Gogh"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "an eagle is a bird"
+
+[[case.turn]]
+tags = ["listed"]
+say = "is an eagle a bird"
+mentions = ["yes"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "a falcon is a bird"
+
+[[case.turn]]
+tags = ["listed"]
+say = "a bird is an animal"
+
+[[case.turn]]
+tags = ["listed"]
+say = "is a falcon an animal"
+mentions = ["yes"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "the Moon is a satellite"
+
+[[case.turn]]
+tags = ["listed"]
+say = "what is the Moon"
+mentions = ["satellite"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["listed"]
+say = "a violin is an instrument"
+
+[[case.turn]]
+tags = ["listed"]
+say = "what do you know about violins"
+mentions = ["instrument"]
+note = "plural mention of a singular thing"
+
+[[case]]
+tags = ["listed"]
+say = "what do you know about Tokyo"
+mentions = ["Japan"]
+
+[[case]]
+tags = ["listed"]
+say = "tell me about Python"
+mentions = ["programming language"]
+
+[[case]]
+tags = ["listed"]
+say = "who designed Esperanto"
+note = "nothing known: an honest answer, not stuck"
+
+# ---- new wording: relations / phrasings not covered ----
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "NASA launched Hubble"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "who launched Hubble"
+mentions = ["NASA"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Ford produced the Model T"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "who produced the Model T"
+mentions = ["Ford"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Tolkien is the author of The Hobbit"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "who wrote The Hobbit"
+mentions = ["Tolkien"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Google created Go"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "what did Google create"
+mentions = ["Go"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Rome is in Italy"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "where is Rome"
+mentions = ["Italy"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Kaunas is a city in Lithuania"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "where is Kaunas"
+mentions = ["Lithuania"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "dolphins are mammals"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "is a dolphin a mammal"
+mentions = ["yes"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "the capital of Latvia is Riga"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "what is the capital of Latvia"
+mentions = ["Riga"]
+
+[[case]]
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "Mozart composed The Magic Flute"
+
+[[case.turn]]
+tags = ["new-wording"]
+say = "who is the composer of The Magic Flute"
+mentions = ["Mozart"]
+
+# ---- remarks: not facts ----
+
+[[case]]
+tags = ["remark"]
+say = "that was fun"
+avoid = ["Learned"]
+
+[[case]]
+tags = ["remark"]
+say = "it is a bit late"
+avoid = ["Learned"]
+
+[[case]]
+tags = ["remark"]
+say = "this is a nice day"
+avoid = ["Learned"]
+
+[[case]]
+tags = ["remark"]
+say = "I made a typo"
+avoid = ["Learned"]
+
+[[case]]
+tags = ["remark"]
+say = "you made my day"
+avoid = ["Learned"]
+
+[[case]]
+tags = ["remark"]
+say = "that is a good point"
+avoid = ["Learned"]

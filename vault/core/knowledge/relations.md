@@ -33,12 +33,6 @@ then:
   ++rel(subj=$subj, pred="located_in", obj=$obj)
   => "Learned: $subj is located in $obj."
 
-rule rel-teach-created-by
-when: "$subj was created by $obj", $subj != $obj
-then:
-  ++rel(subj=$subj, pred="created_by", obj=$obj)
-  => "Learned: $subj was created by $obj."
-
 rule rel-teach-generic
 when: "link $subj $pred $obj", $subj != $obj
 then:
@@ -65,10 +59,6 @@ rule rel-ask-contains
 when: "what does $subj contain", !query_rel()
 then: +query_rel(subj=$subj, pred="contains")
 
-rule rel-ask-created-by
-when: "who created $subj", !query_rel()
-then: +query_rel(subj=$subj, pred="created_by")
-
 rule rel-ask-created
 when: "what did $subj create", !query_rel()
 then: +query_rel(subj=$subj, pred="created")
@@ -93,3 +83,51 @@ rule rel-unknown-plain
 when: query_rel(subj=$subj, pred=$pred), !rel(subj=$subj, pred=$pred), !inverse(pred=$pred)
 then: => "I don't have a $pred relation for $subj yet. Teach me with \"link $subj $pred ...\"."
 ```
+
+
+## Relations named by a verb (claude-opus-5.5, 2026-11-27)
+
+One set of rules for every relation a verb names: `relation_word(word, pred)`
+says which verb names which relation ("made", "created", "invented" ->
+`created`). The words are language, so they live in `language/knowledge.md`;
+these rules only say what a verb sentence means. Learned the active way round
+(`rel(subj=Google, pred="created", obj=Go)`); questions also find facts stored
+the other way round through `inverse` ("Rust created_by Mozilla").
+
+`not_thing(word)` marks words that are never a thing ("this", "it", "I"), so
+"this is a test" or "I made a mistake" is not learned as a fact.
+
+```karin
+rule rel-teach-verb
+when: "$s $v $o", relation_word(word=$v, pred=$p), $s != $o, words($s) <= 4, words($o) <= 4, !not_thing(word=$s), !not_thing(word=$o)
+then:
+  ++rel(subj=$s, pred=$p, obj=$o)
+  => "Learned: $s $v $o."
+
+rule rel-teach-verb-passive
+when: "$o was $v by $s", relation_word(word=$v, pred=$p), $s != $o, words($s) <= 4, words($o) <= 4, !not_thing(word=$o)
+then:
+  ++rel(subj=$s, pred=$p, obj=$o)
+  => "Learned: $o was $v by $s."
+
+rule rel-ask-who-verb
+when: "who $v $o", relation_word(word=$v, pred=$p), !query_who()
+then: +query_who(pred=$p, obj=$o, word=$v)
+
+rule rel-ask-who-verb-passive
+when: "who was $o $v by", relation_word(word=$v, pred=$p), !query_who()
+then: +query_who(pred=$p, obj=$o, word=$v)
+
+rule rel-who-direct
+when: query_who(pred=$p, obj=$o, word=$v), rel(subj=$s, pred=$p, obj=$o)
+then: => "$s $v $o."
+
+rule rel-who-inverse
+when: query_who(pred=$p, obj=$o, word=$v), !rel(pred=$p, obj=$o), inverse(pred=$p, inv=$i), rel(subj=$o, pred=$i, obj=$s)
+then: => "$s $v $o."
+
+rule rel-who-unknown
+when: query_who(pred=$p, obj=$o, word=$v), !rel(pred=$p, obj=$o), inverse(pred=$p, inv=$i), !rel(subj=$o, pred=$i)
+then: => "I don't know who $v $o. If you tell me (\"... $v $o\"), I'll remember."
+```
+

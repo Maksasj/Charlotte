@@ -56,6 +56,20 @@ pub fn bind_value(pattern_val: &str, actual_val: &str, bindings: &Bindings) -> O
 }
 
 pub fn match_text_template(template: &str, input: &str, bindings: &Bindings) -> Option<Bindings> {
+    match_text_each(template, input, bindings, &mut |b| Some(b))
+}
+
+/// Every way `template` matches `input` (shortest captures first), each
+/// handed to `then`; the first `Some` it returns is the result. So a rule's
+/// later conditions can pick the split of the sentence: `"$s $v $o"` with
+/// `relation_word(word=$v)` finds the verb in "Guido van Rossum created Python"
+/// instead of failing on the first split.
+pub fn match_text_each(
+    template: &str,
+    input: &str,
+    bindings: &Bindings,
+    then: &mut dyn FnMut(Bindings) -> Option<Bindings>,
+) -> Option<Bindings> {
     let pat_norm = normalize(template);
     let inp_norm = normalize(input);
     let pat_tokens: Vec<&str> = pat_norm.split_whitespace().collect();
@@ -70,7 +84,7 @@ pub fn match_text_template(template: &str, input: &str, bindings: &Bindings) -> 
         return None;
     }
 
-    match_tokens(&pat_tokens, &inp_tokens, &raw_tokens, 0, 0, bindings)
+    match_tokens(&pat_tokens, &inp_tokens, &raw_tokens, 0, 0, bindings, then)
 }
 
 fn match_tokens(
@@ -80,9 +94,10 @@ fn match_tokens(
     pi: usize,
     ii: usize,
     bindings: &Bindings,
+    then: &mut dyn FnMut(Bindings) -> Option<Bindings>,
 ) -> Option<Bindings> {
     if pi == pat.len() && ii == inp.len() {
-        return Some(bindings.clone());
+        return then(bindings.clone());
     }
     if pi == pat.len() || ii == inp.len() {
         return None;
@@ -97,19 +112,19 @@ fn match_tokens(
         let max_end = inp.len() - remaining_pat;
         if remaining_pat == 0 {
             let captured = slice_joined(raw, inp, ii, inp.len());
-            return bind_value(p, &captured, bindings);
+            return bind_value(p, &captured, bindings).and_then(|b| then(b));
         }
         for end in (ii + 1)..=max_end {
             let captured = slice_joined(raw, inp, ii, end);
             if let Some(next) = bind_value(p, &captured, bindings)
-                && let Some(done) = match_tokens(pat, inp, raw, pi + 1, end, &next)
+                && let Some(done) = match_tokens(pat, inp, raw, pi + 1, end, &next, then)
             {
                 return Some(done);
             }
         }
         None
     } else if p == inp[ii] {
-        match_tokens(pat, inp, raw, pi + 1, ii + 1, bindings)
+        match_tokens(pat, inp, raw, pi + 1, ii + 1, bindings, then)
     } else {
         None
     }
@@ -153,10 +168,9 @@ fn match_cond_rec(
     }
 
     match &conditions[idx] {
-        Condition::Text { template } => {
-            let next = match_text_template(template, input, bindings)?;
+        Condition::Text { template } => match_text_each(template, input, bindings, &mut |next| {
             match_cond_rec(conditions, idx + 1, facts, input, &next)
-        }
+        }),
         Condition::Contains { phrase } => {
             let inp = format!(" {} ", normalize(input));
             let ph = format!(" {} ", normalize(phrase));

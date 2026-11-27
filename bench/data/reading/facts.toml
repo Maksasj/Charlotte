@@ -1,7 +1,7 @@
 suite = "reading-facts"
 about = "Reading comprehension: a short factual text (categories and places), then questions."
-split = "test"
-labels = "written by claude-opus-5.5, 2026-11-27"
+split = "dev"
+labels = "written by claude-opus-5.5, 2026-11-27; dev since 2026-11-27: its failures informed the knowledge rules"
 tags = ["reading"]
 text = '''
 A husky is a dog. A dog is an animal. Rust is a programming language.

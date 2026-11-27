@@ -20,13 +20,13 @@ prop(entity="Tokyo", attr="country", value="Japan")
 
 ```karin
 rule graph-teach-is-a
-when: "$child is a $parent", $child != $parent, $child != "what", $child != "who", $child != "is"
+when: "$child is a $parent", $child != $parent, $child != "what", $child != "who", $child != "is", !not_thing(word=$child)
 then:
   ++is_a(child=$child, parent=$parent)
   => "Learned: $child is a $parent."
 
 rule graph-teach-is-an
-when: "$child is an $parent", $child != $parent, $child != "what", $child != "who", $child != "is"
+when: "$child is an $parent", $child != $parent, $child != "what", $child != "who", $child != "is", !not_thing(word=$child)
 then:
   ++is_a(child=$child, parent=$parent)
   => "Learned: $child is a $parent."
@@ -113,3 +113,64 @@ rule graph-used-for
 when: "what is $x used for", !query_prop()
 then: +query_prop(cur=$x, attr="purpose", orig=$x)
 ```
+
+
+## Articles: "a husky" is "husky" (claude-opus-5.5, 2026-11-27)
+
+A thing is stored without its article, so "a husky is a dog", "the husky is a
+dog" and "husky is a dog" are one fact, and "what is a husky" finds it.
+
+```karin
+rule graph-teach-a-is-a
+when: "a $child is a $parent", $child != $parent, !not_thing(word=$child)
+then:
+  ++is_a(child=$child, parent=$parent)
+  => "Learned: a $child is a $parent."
+
+rule graph-teach-a-is-an
+when: "a $child is an $parent", $child != $parent, !not_thing(word=$child)
+then:
+  ++is_a(child=$child, parent=$parent)
+  => "Learned: a $child is an $parent."
+
+rule graph-teach-an-is-a
+when: "an $child is a $parent", $child != $parent, !not_thing(word=$child)
+then:
+  ++is_a(child=$child, parent=$parent)
+  => "Learned: an $child is a $parent."
+
+rule graph-teach-the-is-a
+when: "the $child is a $parent", $child != $parent, !not_thing(word=$child)
+then:
+  ++is_a(child=$child, parent=$parent)
+  => "Learned: the $child is a $parent."
+
+rule graph-ask-a-is-a
+when: "is a $a a $b", !query_is_a()
+then: +query_is_a(cur=$a, target=$b, orig=$a)
+
+rule graph-ask-a-is-an
+when: "is a $a an $b", !query_is_a()
+then: +query_is_a(cur=$a, target=$b, orig=$a)
+
+rule graph-ask-is-an
+when: "is $a an $b", !query_is_a()
+then: +query_is_a(cur=$a, target=$b, orig=$a)
+
+rule graph-ask-the-is-a
+when: "is the $a a $b", !query_is_a()
+then: +query_is_a(cur=$a, target=$b, orig=$a)
+
+rule graph-what-is-a-entity
+when: "what is a $entity", is_a(child=$entity, parent=$parent)
+then: => "A $entity is a $parent."
+
+rule graph-what-is-an-entity
+when: "what is an $entity", is_a(child=$entity, parent=$parent)
+then: => "An $entity is a $parent."
+
+rule graph-what-is-the-entity
+when: "what is the $entity", is_a(child=$entity, parent=$parent)
+then: => "The $entity is a $parent."
+```
+
