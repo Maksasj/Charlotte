@@ -1992,6 +1992,43 @@ h6.src-h {
   line-height: 1.45;
 }
 
+/* Graph mode switch (inside the legend) and fact sentences in the card */
+.gv-mode {
+  display: inline-flex;
+  margin-bottom: 4px;
+  padding: 2px;
+  border-radius: 7px;
+  background: var(--surface-subtle);
+}
+
+.gv-mode button {
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.gv-mode button.on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--border);
+}
+
+.gv-fact {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gv-pred {
+  color: var(--muted);
+}
+
 /* Readings-tried marks: small outline icons instead of text glyphs */
 .attempt-mark {
   display: inline-flex;

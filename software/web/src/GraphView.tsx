@@ -8,8 +8,11 @@ import type { Fact, Pattern } from './types';
 //   rule --calls--> tool          (@tool(...))
 // ---------------------------------------------------------------------------
 
-type NodeKind = 'rule' | 'rel' | 'tool';
-type EdgeKind = 'read' | 'write' | 'call';
+type NodeKind = 'rule' | 'rel' | 'tool' | 'person' | 'karin' | 'thing' | 'category';
+type EdgeKind = 'read' | 'write' | 'call' | 'fact';
+
+/** Which graph is drawn: how rules connect, or what Karin knows. */
+export type GraphMode = 'rules' | 'facts';
 
 interface GNode {
   id: string;
@@ -24,19 +27,23 @@ interface GNode {
   vx: number;
   vy: number;
   pattern?: Pattern;
+  /** Facts mode: every name this entity answers to. */
+  names?: string[];
 }
 
 interface GEdge {
   s: GNode;
   t: GNode;
   kind: EdgeKind;
+  /** Facts mode: the relation, e.g. "friend", "likes (drink)", "is a". */
+  label?: string;
+  fact?: Fact;
 }
 
-/** Which pack a provenance belongs to: "core", a generated pack name, or "runtime". */
+/** Which vault module a provenance belongs to ("core", "language", "skills", ...), or "runtime". */
 function packOf(provenance: string): string {
   if (provenance.startsWith('vault:')) {
-    const first = provenance.slice('vault:'.length).split('/')[0];
-    return first.startsWith('generated-') ? first.replace(/^generated-/, '') : 'core';
+    return provenance.slice('vault:'.length).split('/')[0] || 'core';
   }
   return 'runtime';
 }
@@ -91,6 +98,94 @@ function buildGraph(patterns: Pattern[], facts: Fact[]) {
   return { nodes: [...nodes.values()], edges };
 }
 
+/** A node's first position: hashed from its id, so the same knowledge lays out the same way. */
+function seedNode(id: string, kind: NodeKind, label: string, group: string): GNode {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
+  const a = (((h >>> 0) % 3600) / 3600) * Math.PI * 2;
+  const d = 80 + (((h >>> 12) % 1000) / 1000) * 260;
+  return { id, kind, label, group, facts: 0, degree: 0, r: 4, x: Math.cos(a) * d, y: Math.sin(a) * d, vx: 0, vy: 0 };
+}
+
+/**
+ * What Karin knows: people and things as nodes, facts as labelled edges.
+ *   rel(subj, pred, obj [, topic])  subj --pred--> obj
+ *   is_a(child, parent)             child --is a--> parent (a category)
+ *   prop(entity, attr, value)       entity --attr--> value
+ * Entities (`entity`, `display_name`, `named`) give people their names, so
+ * "user" shows as "Maxim" and "Max" points at the same node.
+ */
+function buildFactGraph(facts: Fact[]) {
+  const nodes = new Map<string, GNode>();
+  const edges: GEdge[] = [];
+  const seen = new Set<string>();
+  const kindOf = new Map<string, string>();
+  const display = new Map<string, string>();
+  const names = new Map<string, string[]>();
+  const byName = new Map<string, string>();
+  for (const f of facts) {
+    const a = f.args;
+    if (f.rel === 'entity' && a.id) kindOf.set(a.id, a.kind ?? 'thing');
+    if (f.rel === 'display_name' && a.entity && a.value) display.set(a.entity, a.value);
+    if (f.rel === 'named' && a.entity && a.value) {
+      names.set(a.entity, [...(names.get(a.entity) ?? []), a.value]);
+      byName.set(a.value.toLowerCase(), a.entity);
+    }
+  }
+  // A value that is some entity's name means that entity.
+  const resolve = (v: string) => (kindOf.has(v) ? v : byName.get(v.toLowerCase()) ?? v);
+  const node = (raw: string, as: 'thing' | 'category' = 'thing'): GNode => {
+    const id = resolve(raw);
+    const key = `k:${id.toLowerCase()}`;
+    let n = nodes.get(key);
+    if (!n) {
+      const ek = kindOf.get(id);
+      const kind: NodeKind =
+        id === 'karin' || ek === 'assistant' ? 'karin' : ek === 'person' ? 'person' : as;
+      n = seedNode(key, kind, display.get(id) ?? raw, kind);
+      n.names = names.get(id);
+      nodes.set(key, n);
+    } else if (as === 'category' && n.kind === 'thing') {
+      n.kind = 'category';
+      n.group = 'category';
+    }
+    return n;
+  };
+  const edge = (s: GNode, t: GNode, label: string, fact: Fact) => {
+    const key = `${s.id}>${t.id}>${label}`;
+    if (seen.has(key) || s === t) return;
+    seen.add(key);
+    edges.push({ s, t, kind: 'fact', label, fact });
+  };
+  const words = (x: string) => x.replace(/_/g, ' ');
+  for (const f of facts) {
+    const a = f.args;
+    if (f.rel === 'rel' && a.subj && a.obj && a.pred) {
+      edge(node(a.subj), node(a.obj), a.topic ? `${words(a.pred)} (${a.topic})` : words(a.pred), f);
+    } else if (f.rel === 'is_a' && a.child && a.parent) {
+      edge(node(a.child), node(a.parent, 'category'), 'is a', f);
+    } else if (f.rel === 'prop' && a.entity && a.attr && a.value) {
+      edge(node(a.entity), node(a.value), words(a.attr), f);
+    }
+  }
+  // People Karin knows but has no facts about yet still appear.
+  for (const [id, k] of kindOf) if (k === 'person' || k === 'assistant') node(id);
+  for (const e of edges) {
+    e.s.degree++;
+    e.t.degree++;
+  }
+  for (const n of nodes.values()) {
+    n.facts = n.degree;
+    n.r =
+      n.kind === 'person' || n.kind === 'karin'
+        ? 9 + Math.sqrt(n.degree) * 1.6
+        : n.kind === 'category'
+          ? 6 + Math.sqrt(n.degree) * 1.5
+          : 4.5 + Math.sqrt(n.degree);
+  }
+  return { nodes: [...nodes.values()], edges };
+}
+
 // ---------------------------------------------------------------------------
 // Colours
 // ---------------------------------------------------------------------------
@@ -111,6 +206,8 @@ function readVars() {
     border: v('--border'),
     borderStrong: v('--border-strong'),
     runtime: v('--zone-runtime') || '#d97706',
+    brand: v('--brand'),
+    ok: v('--ok'),
     core: dark ? '#a1a1aa' : '#52525b',
   };
 }
@@ -130,12 +227,16 @@ export function GraphView({
   query: string;
   theme: string;
 }) {
+  const [mode, setMode] = useState<GraphMode>(() =>
+    localStorage.getItem('karin.graphMode') === 'rules' ? 'rules' : 'facts',
+  );
+  useEffect(() => localStorage.setItem('karin.graphMode', mode), [mode]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   // Keep node positions when the knowledge changes (e.g. after each chat turn).
   const positions = useRef(new Map<string, { x: number; y: number }>());
   const graph = useMemo(() => {
-    const g = buildGraph(patterns, facts);
+    const g = mode === 'facts' ? buildFactGraph(facts) : buildGraph(patterns, facts);
     let kept = 0;
     for (const n of g.nodes) {
       const old = positions.current.get(n.id);
@@ -147,7 +248,7 @@ export function GraphView({
     }
     (g as { kept?: number }).kept = kept;
     return g;
-  }, [patterns, facts]);
+  }, [patterns, facts, mode]);
   const [selected, setSelected] = useState<GNode | null>(null);
   const [, force] = useState(0);
 
@@ -168,6 +269,10 @@ export function GraphView({
     const c = colors.current;
     if (n.kind === 'rel') return c.textSecondary;
     if (n.kind === 'tool') return c.muted;
+    if (n.kind === 'person') return c.brand;
+    if (n.kind === 'karin') return c.ok;
+    if (n.kind === 'category') return c.textSecondary;
+    if (n.kind === 'thing') return c.muted;
     if (n.group === 'core') return c.core;
     if (n.group === 'runtime') return c.runtime;
     const i = packs.filter((p) => p !== 'core' && p !== 'runtime').indexOf(n.group);
@@ -310,12 +415,40 @@ export function GraphView({
       ctx.lineWidth = 1 / v.k;
       for (const e of edges) {
         const on = near ? e.s === focus || e.t === focus : !query;
-        ctx.globalAlpha = on ? (near ? 0.9 : e.kind === 'write' ? 0.28 : 0.12) : 0.05;
+        ctx.globalAlpha = on
+          ? near
+            ? 0.9
+            : e.kind === 'fact'
+              ? 0.45
+              : e.kind === 'write'
+                ? 0.28
+                : 0.12
+          : 0.05;
         ctx.strokeStyle = e.kind === 'write' ? colorOf(e.s) : c.borderStrong;
         ctx.beginPath();
         ctx.moveTo(e.s.x, e.s.y);
         ctx.lineTo(e.t.x, e.t.y);
         ctx.stroke();
+      }
+
+      // fact labels on edges: around the focused node, or everywhere when zoomed in
+      if (edges.length && edges[0].kind === 'fact') {
+        ctx.font = `${10 / v.k}px ui-sans-serif, system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for (const e of edges) {
+          const around = near && (e.s === focus || e.t === focus);
+          if (!around && (near || query || v.k < 1.6)) continue;
+          const mx = (e.s.x + e.t.x) / 2;
+          const my = (e.s.y + e.t.y) / 2;
+          const label = e.label ?? '';
+          const w = ctx.measureText(label).width + 6 / v.k;
+          ctx.globalAlpha = around ? 1 : 0.8;
+          ctx.fillStyle = c.bg;
+          ctx.fillRect(mx - w / 2, my - 7 / v.k, w, 14 / v.k);
+          ctx.fillStyle = around ? c.text : c.muted;
+          ctx.fillText(label, mx, my);
+        }
       }
 
       // nodes (never smaller than ~70% of their size on screen)
@@ -324,7 +457,7 @@ export function GraphView({
         ctx.globalAlpha = lit(n) ? 1 : 0.15;
         const col = colorOf(n);
         const r = size(n);
-        if (n.kind === 'rel') {
+        if (n.kind === 'rel' || n.kind === 'category') {
           ctx.fillStyle = c.bg;
           ctx.strokeStyle = col;
           ctx.lineWidth = 1.6 / Math.max(v.k, 0.6);
@@ -361,7 +494,11 @@ export function GraphView({
           (query && matches(n)) ||
           (!near &&
             !query &&
-            ((n.kind === 'rel' && (n.facts >= 8 || n.degree >= 8 || v.k > 1.1)) ||
+            (n.kind === 'person' ||
+              n.kind === 'karin' ||
+              (n.kind === 'category' && (n.degree >= 2 || v.k > 0.9)) ||
+              (n.kind === 'thing' && (n.degree >= 3 || v.k > 1.3)) ||
+              (n.kind === 'rel' && (n.facts >= 8 || n.degree >= 8 || v.k > 1.1)) ||
               v.k > 2.2 ||
               (n.kind === 'tool' && (n.degree >= 6 || v.k > 1.3))));
         if (!show) continue;
@@ -505,6 +642,64 @@ export function GraphView({
           ))}
         </div>
       );
+    if (mode === 'facts') {
+      const sentence = (e: GEdge, from: GNode) =>
+        e.s === from ? (
+          <>
+            <span className="gv-pred">{e.label}</span> {e.t.label}
+          </>
+        ) : (
+          <>
+            {e.s.label} <span className="gv-pred">{e.label}</span>
+          </>
+        );
+      const row = (e: GEdge) => {
+        const other = e.s === n ? e.t : e.s;
+        return (
+          <button
+            key={`${e.s.id}>${e.t.id}>${e.label}`}
+            className="gv-link"
+            onClick={() => setSelected(other)}
+            title={e.fact ? `${e.fact.rel}(${Object.entries(e.fact.args).map(([k, v]) => `${k}="${v}"`).join(', ')}) · ${e.fact.scope.replace('_', '-')}` : ''}
+          >
+            <span className="gv-dot" style={{ background: colorOf(other) }} />
+            <span className="gv-fact">{sentence(e, n)}</span>
+          </button>
+        );
+      };
+      const kindLabel =
+        n.kind === 'karin' ? 'Karin' : n.kind === 'person' ? 'person' : n.kind === 'category' ? 'category' : 'thing';
+      const extra = (n.names ?? []).filter((x) => x !== n.label);
+      return (
+        <div className="gv-card">
+          <div className="gv-card-head">
+            <span className="badge">{kindLabel}</span>
+            <strong>{n.label}</strong>
+            <button className="gv-close" onClick={() => setSelected(null)} title="Close">
+              ×
+            </button>
+          </div>
+          {extra.length > 0 && <div className="muted">also called {extra.join(', ')}</div>}
+          {outs.length > 0 && (
+            <div className="gv-list">
+              <div className="gv-list-title">
+                {n.label} <span className="vx-count">{outs.length}</span>
+              </div>
+              {outs.map(row)}
+            </div>
+          )}
+          {ins.length > 0 && (
+            <div className="gv-list">
+              <div className="gv-list-title">
+                Points here <span className="vx-count">{ins.length}</span>
+              </div>
+              {ins.map(row)}
+            </div>
+          )}
+          {outs.length + ins.length === 0 && <div className="muted gv-note">Karin knows the name, nothing more yet.</div>}
+        </div>
+      );
+    }
     return (
       <div className="gv-card">
         <div className="gv-card-head">
@@ -560,6 +755,55 @@ export function GraphView({
         style={{ cursor: 'grab', touchAction: 'none' }}
       />
       <div className="gv-legend">
+        <div className="gv-mode" role="tablist" aria-label="Graph">
+          <button
+            role="tab"
+            aria-selected={mode === 'facts'}
+            className={mode === 'facts' ? 'on' : ''}
+            onClick={() => {
+              setSelected(null);
+              setMode('facts');
+            }}
+          >
+            What Karin knows
+          </button>
+          <button
+            role="tab"
+            aria-selected={mode === 'rules'}
+            className={mode === 'rules' ? 'on' : ''}
+            onClick={() => {
+              setSelected(null);
+              setMode('rules');
+            }}
+          >
+            How rules connect
+          </button>
+        </div>
+        {mode === 'facts' ? (
+          <>
+            <div className="gv-legend-row muted">
+              {graph.nodes.length} people and things · {graph.edges.length} facts
+            </div>
+            <div className="gv-legend-row">
+              <span className="gv-dot" style={{ background: colors.current.brand }} />
+              person
+            </div>
+            <div className="gv-legend-row">
+              <span className="gv-dot" style={{ background: colors.current.ok }} />
+              Karin
+            </div>
+            <div className="gv-legend-row">
+              <span className="gv-dot" style={{ background: colors.current.muted }} />
+              thing
+            </div>
+            <div className="gv-legend-row">
+              <span className="gv-ring" />
+              category (is a)
+            </div>
+            <div className="gv-legend-row muted">hover a node to read its facts</div>
+          </>
+        ) : (
+          <>
         <div className="gv-legend-row muted">
           {ruleCount} rules · {relCount} relations · {graph.edges.length} links
         </div>
@@ -581,6 +825,8 @@ export function GraphView({
           tool
         </div>
         <div className="gv-legend-row muted">grey line = reads · coloured = writes</div>
+          </>
+        )}
         <button className="vx-tool" onClick={fit}>
           Fit to view
         </button>
