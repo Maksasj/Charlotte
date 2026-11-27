@@ -1,0 +1,19 @@
+chat = "chat-1795609147"
+split = "dev"
+source = "vault/.chats/chat-1795609147.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+
+[[turn]]
+say = "weather"
+expect = "ask"
+tags = ["weather.ask"]
+
+[[turn]]
+say = "Vilnius"
+mentions = ["Vilnius"]
+tags = ["weather.ask"]
+
+[[turn]]
+say = "What is weather in Vilnius ?"
+mentions = ["Vilnius"]
+tags = ["weather.ask"]

@@ -1,0 +1,139 @@
+chat = "chat-1795723220"
+split = "dev"
+source = "vault/.chats/chat-1795723220.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "who is Karen"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "no I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "who creator of Karen"
+tags = ["persona.creator"]
+note = "'who is the creator of Karin'"
+
+[[turn]]
+say = "on max"
+expect = "ignore"
+note = "'on max' - misheard"
+
+[[turn]]
+say = "I'm Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yes"
+tags = ["confirm"]
+
+[[turn]]
+say = "who is Max"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "I'm Max not Maxim"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "okay I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah"
+tags = ["confirm"]
+
+[[turn]]
+say = "yeah it's Oscar"
+mentions = ["Oscar"]
+tags = ["confirm"]
+
+[[turn]]
+say = "yes"
+tags = ["confirm"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "play Karen how am I"
+expect = "any"
+note = "garbled"
+
+[[turn]]
+say = "Karen who am I"
+mentions = ["Oscar"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "no Karen I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "who am I"
+mentions = ["Oscar"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "I am Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah it's Oscar"
+tags = ["confirm"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who am I"
+mentions = ["Oscar"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "correct I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hello Karen Max is back I'm here"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "Max is here"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "Karen are you here"
+tags = ["social.presence"]
+
+[[turn]]
+say = "MX"
+expect = "ignore"
+note = "'MX' - misheard"

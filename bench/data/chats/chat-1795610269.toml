@@ -1,0 +1,37 @@
+chat = "chat-1795610269"
+split = "dev"
+source = "vault/.chats/chat-1795610269.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+
+[[turn]]
+say = "What drink I like ?"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "I like black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "black tea is a drink"
+mentions = ["black tea"]
+tags = ["fact.teach"]
+
+[[turn]]
+say = "What drink I like ?"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite drink is a black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "What drink I like ?"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite drink is a black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]

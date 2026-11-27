@@ -1,0 +1,8 @@
+chat = "chat-1795689721"
+split = "test"
+source = "vault/.chats/chat-1795689721.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "I am Maksim"
+tags = ["user.name.tell"]

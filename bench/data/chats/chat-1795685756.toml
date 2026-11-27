@@ -1,0 +1,41 @@
+chat = "chat-1795685756"
+split = "dev"
+source = "vault/.chats/chat-1795685756.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my name is Maksim"]
+
+[[turn]]
+say = "Hi"
+tags = ["social.greet"]
+
+[[turn]]
+say = "How are you ?"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "What I just said ?"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "How are you Karin ?"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Who is Oskar ?"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "Who is a Oskarr ?"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "my name is Maksim"
+expect = "any"
+tags = ["people.rel.tell"]
+note = "sent by Claude as a smoke test, not by the user"
+
+[[turn]]
+say = "Oscar is my best friend and he lives in Venus"
+expect = "any"
+tags = ["people.rel.tell"]
+note = "sent by Claude as a smoke test, not by the user"

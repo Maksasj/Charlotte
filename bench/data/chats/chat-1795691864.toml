@@ -1,0 +1,17 @@
+chat = "chat-1795691864"
+split = "test"
+source = "vault/.chats/chat-1795691864.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "How are you today ?"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Can you remind me ?"
+expect = "ask"
+tags = ["reminder.create"]

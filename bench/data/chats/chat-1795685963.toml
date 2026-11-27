@@ -1,0 +1,28 @@
+chat = "chat-1795685963"
+split = "dev"
+source = "vault/.chats/chat-1795685963.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my name is Maksim"]
+
+[[turn]]
+say = "Hi"
+tags = ["social.greet"]
+
+[[turn]]
+say = "I am Maksim"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "Who am I ?"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "What I just said ?"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "I am Maksim"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]

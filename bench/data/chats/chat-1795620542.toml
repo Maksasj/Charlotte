@@ -1,0 +1,389 @@
+chat = "chat-1795620542"
+split = "dev"
+source = "vault/.chats/chat-1795620542.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+
+[[turn]]
+say = "Karina is a Karin"
+expect = "any"
+
+[[turn]]
+say = "What is Karina"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is Karin ?"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is Karina"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is Karin"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is Karin"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is Karina"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what is Karina"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "Karen is you"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "Karen is a you"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "what is you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "can you repeat after afterwards"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "what is a last message"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "Karen calculate 5 + 5"
+mentions = ["10"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate 5 + 5"
+mentions = ["10"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate square root of 5"
+mentions = ["2.23"]
+tags = ["calc"]
+note = "square root is not supported yet"
+
+[[turn]]
+say = "divided calculate 5.7"
+expect = "any"
+
+[[turn]]
+say = "divide 5 by 7"
+mentions = ["0.714"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate 5 / 7"
+mentions = ["0.714"]
+tags = ["calc"]
+
+[[turn]]
+say = "what is Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "what is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "no Karen is you not me"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "you is Maksim"
+expect = "ignore"
+
+[[turn]]
+say = "when is saying what do you"
+expect = "ignore"
+
+[[turn]]
+say = "sing it to me not to you"
+expect = "ignore"
+
+[[turn]]
+say = "what music do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite music is a rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what is my favorite music"
+mentions = ["rock"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite music is metalcore"
+mentions = ["metalcore"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "favorite music"
+mentions = ["rock", "metalcore"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what is a my favorite music"
+mentions = ["rock"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what Karen likes"
+tags = ["persona.likes"]
+
+[[turn]]
+say = "Karen also likes rock music same as me"
+tags = ["persona.likes"]
+
+[[turn]]
+say = "Karen is a smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "you're not smart Karen sorry"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "do you know a river gnome"
+expect = "ignore"
+
+[[turn]]
+say = "let me know is Amy"
+expect = "ignore"
+
+[[turn]]
+say = "are there any"
+expect = "ignore"
+
+[[turn]]
+say = "never know is Amy"
+expect = "ignore"
+
+[[turn]]
+say = "never know is"
+expect = "ignore"
+
+[[turn]]
+say = "regular is a maxim"
+expect = "ignore"
+
+[[turn]]
+say = "Heather gnome"
+expect = "ignore"
+
+[[turn]]
+say = "8 Maxim"
+expect = "ignore"
+
+[[turn]]
+say = "little girl you're so stupid"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "Karen stop it"
+tags = ["social.stop"]
+
+[[turn]]
+say = "Karen can you stop it please"
+tags = ["social.stop"]
+
+[[turn]]
+say = "can you stop please"
+tags = ["social.stop"]
+
+[[turn]]
+say = "Karen can you make a note on a Friday I will check my friends"
+mentions = ["friends"]
+tags = ["note.create"]
+
+[[turn]]
+say = "Karen can you take a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[turn]]
+say = "remember me to text my friends"
+mentions = ["text my friends"]
+tags = ["note.create"]
+
+[[turn]]
+say = "my notes"
+tags = ["note.list"]
+
+[[turn]]
+say = "list my notes please"
+tags = ["note.list"]
+
+[[turn]]
+say = "Karen list all my notes"
+tags = ["note.list"]
+
+[[turn]]
+say = "what is my"
+expect = "ignore"
+
+[[turn]]
+say = "Karen what is a note"
+mentions = ["note"]
+tags = ["define"]
+
+[[turn]]
+say = "can you are sometimes so stupid"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "Karen can you stop please being so stupid"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "okay you're very smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen you are very smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "can can you add more notes for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[turn]]
+say = "how do I make a banana bread"
+tags = ["unsupported.how_to"]
+
+[[turn]]
+say = "my dad just texted me"
+expect = "ignore"
+
+[[turn]]
+say = "can you make a note for a Friday"
+tags = ["note.create"]
+
+[[turn]]
+say = "can you make a to-do item for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[turn]]
+say = "recently I started listening some punk music"
+mentions = ["punk"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what is a very smart"
+expect = "ignore"
+
+[[turn]]
+say = "and can you stop being so stupid"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "Karen hello"
+tags = ["social.greet"]
+
+[[turn]]
+say = "pass a task to Overlord to make a new folder"
+tags = ["unsupported.app"]
+
+[[turn]]
+say = "Karen can you say a overlord agent to start a new sub-agent and so that sub-agent be working on a voice integration into Overlord so you have a dictation mode and also want to have a dictation mode for overload as well"
+tags = ["unsupported.app"]
+
+[[turn]]
+say = "yes"
+tags = ["social.yes"]
+
+[[turn]]
+say = "Liam"
+expect = "ignore"
+
+[[turn]]
+say = "yeah"
+tags = ["social.yes"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "Karen is a very smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen is smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "is Karen smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "is Karen a smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "is a smart a Karen"
+expect = "ignore"
+
+[[turn]]
+say = "is smart is a Karen"
+expect = "ignore"
+
+[[turn]]
+say = "sorry I'm wrong"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "call Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "and I just said nothing can you just repeat it"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "Chatsworth character"
+expect = "ignore"
+
+[[turn]]
+say = "are you like to keep Seafood"
+expect = "any"
+
+[[turn]]
+say = "maximum likes chicken"
+mentions = ["chicken"]
+avoid = ["maximum likes"]
+tags = ["likes.tell"]
+note = "'maximum' misheard for Maxim"
+
+[[turn]]
+say = "what is my favorite drink"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite food"
+tags = ["likes.ask"]
