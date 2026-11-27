@@ -1,0 +1,275 @@
+suite = "greetings"
+about = "Greetings and small talk: Hello, how are you, goodbye, thanks, small talk."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609016"
+say = "Hi !"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795609016"
+say = "How are you ?"
+tags = ["social.how_are_you"]
+
+[[case]]
+source = "chat-1795609223"
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795612764"
+say = "Hii"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795619028"
+say = "hey Karen how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+source = "chat-1795619028"
+say = "how are you today"
+tags = ["social.how_are_you"]
+
+[[case]]
+source = "chat-1795619028"
+say = "thanks"
+tags = ["social.thanks"]
+
+[[case]]
+source = "chat-1795619028"
+say = "how are you feeling today"
+tags = ["social.how_are_you"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen hello"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795619028"
+say = "hello Karen"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795619028"
+say = "hello"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795619028"
+say = "hi Karen"
+tags = ["social.greet"]
+
+[[case]]
+source = "chat-1795619028"
+say = "current how are you"
+tags = ["social.how_are_you"]
+note = "'current' misheard"
+
+[[case]]
+source = "chat-1795685756"
+say = "How are you Karin ?"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what you doing right now"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "friend how are you doing today"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I want to make you much smarter"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no thanks Karen you good"
+tags = ["social.thanks"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Ken how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "hello how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what you up to today"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "have you been doing anything besides"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen do you want to do anything"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how are you Karen"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen do you want to learn anything"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "hey girl"
+tags = ["social.greet"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "hey Karen"
+tags = ["social.greet"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how are you how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen what you want to do"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can what do you want to do"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what you wanted to do"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "bye"
+tags = ["social.bye"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "by Karen"
+tags = ["social.bye"]
+
+[[case]]
+split = "test"
+source = "chat-1795722233"
+say = "hi Karen how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "and how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "how are you Christine"
+tags = ["social.how_are_you"]
+note = "Karin misheard as Christine"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "yeah that's okay thanks it's nothing more"
+tags = ["social.thanks"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "hey"
+tags = ["social.greet"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "hey Karen how are you today"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Hey Kevin how are you"
+tags = ["social.how_are_you"]
+note = "Karin misheard as Kevin"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "what's up how are you doing today"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "that's nice"
+tags = ["social.smalltalk"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "how are you today Karen"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "hey how are you"
+tags = ["social.how_are_you"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "how are you doing"
+tags = ["social.how_are_you"]

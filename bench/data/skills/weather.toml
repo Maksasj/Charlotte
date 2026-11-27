@@ -1,0 +1,67 @@
+suite = "weather"
+about = "Weather: Weather questions."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609147"
+say = "weather"
+expect = "ask"
+tags = ["weather.ask"]
+
+[[case]]
+source = "chat-1795609147"
+say = "Vilnius"
+tags = ["weather.ask"]
+
+[[case]]
+source = "chat-1795609147"
+say = "What is weather in Vilnius ?"
+tags = ["weather.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what is the weather in a wellness"
+tags = ["weather.ask"]
+note = "'a wellness' is how the mic heard Vilnius"
+
+[[case]]
+source = "chat-1795619028"
+say = "which cities do you know"
+mentions = ["Vilnius"]
+tags = ["weather.cities"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what is the weather in Vilnius right now"
+tags = ["weather.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen check weather in a business"
+tags = ["weather.ask"]
+note = "'a business' is a misheard city"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "weather in Paris"
+tags = ["weather.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "what is the weather in The Villages"
+tags = ["weather.ask"]
+note = "unknown city: say so"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "sorry Karen what is the weather in Venice"
+tags = ["weather.ask"]

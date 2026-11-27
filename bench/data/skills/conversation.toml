@@ -1,0 +1,130 @@
+suite = "conversation"
+about = "Conversation control: Sorry, stop, and other ways of steering the chat."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "sorry I meant Karen"
+tags = ["social.sorry"]
+
+[[case]]
+source = "chat-1795619028"
+say = "sorry Karen"
+tags = ["social.sorry"]
+
+[[case]]
+source = "chat-1795619028"
+say = "sorry"
+tags = ["social.sorry"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen can you stop please"
+tags = ["social.stop"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen stop it"
+tags = ["social.stop"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen can you stop it please"
+tags = ["social.stop"]
+
+[[case]]
+source = "chat-1795620542"
+say = "can you stop please"
+tags = ["social.stop"]
+
+[[case]]
+source = "chat-1795620542"
+say = "sorry I'm wrong"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yeah okay sorry I haven't talked to you about this"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "sorry can you that's a mistake"
+avoid = ["Learned"]
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yeah sorry I will add this as a new feature next time"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen I'm very sorry"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "oh sorry"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "oh yes sorry I can see it on the right"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no it's not sorry"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen can you stop this nonsense"
+tags = ["social.stop"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no sorry"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I'm very sorry sometimes it can formulate my thoughts"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yeah I know parents sorry"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I'm sorry Karen"
+avoid = ["you're sorry"]
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no sorry it's all right"
+tags = ["social.sorry"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "oh yeah sorry"
+tags = ["social.sorry"]

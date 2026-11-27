@@ -1,0 +1,377 @@
+suite = "likes"
+about = "Likes: Telling and asking what you like."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609016"
+say = "What drink do I like ?"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795609016"
+say = "What drink I like ?"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795609016"
+say = "I like black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795609016"
+say = "my favorite drink is black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795609223"
+before = ["my name is Maksim", "my favorite drink is black tea"]
+say = "I like caramel macchiato"
+mentions = ["caramel macchiato"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795609223"
+before = ["my name is Maksim", "my favorite drink is black tea"]
+say = "What is my favorite drink ?"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795610269"
+say = "my favorite drink is a black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795610417"
+before = ["my favorite drink is black tea"]
+say = "What is my favorite drinks ?"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795610417"
+before = ["my favorite drink is black tea"]
+say = "Maksim likes black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795612764"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "What I like ?"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "things do I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "favorite drink"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I really like black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I love black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what's drink do I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what's I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "which drinks do I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what drink is my favorite"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like to draw"
+mentions = ["draw"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "to draw anime"
+mentions = ["anime"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like to draw anime"
+mentions = ["draw anime"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what do I like to draw"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen I like rock music"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Aaron I like rock music"
+mentions = ["rock"]
+tags = ["likes.tell"]
+note = "'Aaron' misheard"
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like is a rock music"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like rock music itself"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "what music do I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "my favorite music is a rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "what is my favorite music"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "my favorite music is metalcore"
+mentions = ["metalcore"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "favorite music"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "what is a my favorite music"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "recently I started listening some punk music"
+mentions = ["punk"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "maximum likes chicken"
+mentions = ["chicken"]
+avoid = ["maximum likes"]
+tags = ["likes.tell"]
+note = "'maximum' misheard for Maxim"
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "my favorite food"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "and I like to draw anime"
+mentions = ["draw anime"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen what music do I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "yeah I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what music genre I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "my favorite music genre is a rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I like caramel"
+mentions = ["caramel"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what do I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "turn I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "play music do I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "current what do I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "yeah right so you like caramel also like gummies"
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what is my favorite color"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "my favorite color is orange"
+mentions = ["orange"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "I like reading books"
+mentions = ["reading books"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey hey what do I like"
+tags = ["likes.ask"]
+
+[[case]]
+source = "chat-1795723678"
+say = "I like ice cream"
+mentions = ["ice cream"]
+tags = ["likes.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "I like black tea as well as caramel macchiato"
+mentions = ["black tea", "caramel macchiato"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "I like tea"
+mentions = ["tea"]
+tags = ["likes.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "yeah what do I like"
+tags = ["likes.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "I like talking with Karen"
+tags = ["likes.tell"]

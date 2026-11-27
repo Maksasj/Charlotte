@@ -23,7 +23,33 @@ intent names, so the tests survive any change to the vault's schema.
            = "ignore"                  noise: she must not act on it (stuck)
            = "any"                     not scored (still said, for context)
 
-Every file runs in its own incognito session (never saved, never logged).
+A file can instead be a *suite* of independent cases, each run in a fresh
+Karin (file-level `before`/`text`/`tags` apply to every case):
+
+    suite = "greetings"
+    about = "Greetings and small talk"
+    tags  = ["social.greet"]
+
+    [[case]]
+    say = "hey Karen"                  # a one-turn case, written inline
+
+    [[case]]
+    split  = "test"                    # per-case split and setup
+    source = "chat-1795695278"         # where the wording came from (free text)
+    before = ["Oscar is my friend"]
+    say    = "who is my friend"
+    mentions = ["Oscar"]
+
+    [[case]]                           # a short multi-turn case
+    [[case.turn]]
+    say = "weather"
+    expect = "ask"
+    [[case.turn]]
+    say = "Vilnius"
+    mentions = ["Vilnius"]
+
+Every conversation, and every case of a suite, runs in its own incognito
+session (never saved, never logged).
 
     python bench/run.py --start-server --cargo "cargo +stable-x86_64-pc-windows-msvc" --label my-change
     python bench/run.py --label my-change --baseline earlier-label
@@ -107,44 +133,92 @@ def git_version() -> str:
 
 EXPECTS = {"understand", "ask", "ignore", "any"}
 TURN_KEYS = {"say", "expect", "mentions", "avoid", "tags", "note"}
-FILE_KEYS = {"chat", "split", "source", "labels", "before", "text", "turn"}
+CASE_KEYS = TURN_KEYS | {"before", "text", "turn", "split", "source"}
+FILE_KEYS = {"chat", "suite", "about", "split", "source", "labels", "before", "text", "tags", "turn", "case"}
 
 
 # ---------------------------------------------------------------------------
 # Loading (strict: unknown keys and values are errors)
+#
+# A file is either a conversation (`[[turn]]`s, one session) or a suite of
+# independent cases (`[[case]]`s, each in a fresh session). A case is a single
+# turn written inline (`say = ...`) or several (`[[case.turn]]`). File-level
+# `before`/`text` run before every case; file-level `tags` apply to every turn
+# that has none.
 # ---------------------------------------------------------------------------
 
+def check_turn(t: dict, where: str) -> dict:
+    bad = set(t) - TURN_KEYS
+    if bad:
+        sys.exit(f"{where}: unknown keys {sorted(bad)}")
+    if not isinstance(t.get("say"), str) or not t["say"].strip():
+        sys.exit(f"{where}: needs say")
+    t.setdefault("expect", "understand")
+    if t["expect"] not in EXPECTS:
+        sys.exit(f"{where}: expect must be one of {sorted(EXPECTS)}")
+    if (t.get("mentions") or t.get("avoid")) and t["expect"] != "understand":
+        sys.exit(f"{where}: mentions and avoid only go with expect = understand")
+    return t
+
+
 def load(folder: Path, only: list[str], split: str | None) -> list[dict]:
-    tests = []
+    """Every *.toml under `folder`, as a list of sessions to run."""
+    sessions = []
     for path in sorted(folder.rglob("*.toml")):
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         where = path.relative_to(folder).as_posix()
         bad = set(data) - FILE_KEYS
         if bad:
             sys.exit(f"{where}: unknown keys {sorted(bad)}")
-        data.setdefault("chat", path.stem)
-        data.setdefault("split", "dev")
-        if data["split"] not in ("dev", "test"):
-            sys.exit(f"{where}: split must be dev or test")
-        for i, t in enumerate(data.get("turn", []), 1):
-            bad = set(t) - TURN_KEYS
-            if bad:
-                sys.exit(f"{where} turn {i}: unknown keys {sorted(bad)}")
-            if not isinstance(t.get("say"), str) or not t["say"].strip():
-                sys.exit(f"{where} turn {i}: needs say")
-            t.setdefault("expect", "understand")
-            if t["expect"] not in EXPECTS:
-                sys.exit(f"{where} turn {i}: expect must be one of {sorted(EXPECTS)}")
-            if (t.get("mentions") or t.get("avoid")) and t["expect"] != "understand":
-                sys.exit(f"{where} turn {i}: mentions and avoid only go with expect = understand")
-            t["n"] = i
-        data["file"] = where
-        if only and not any(o in data["chat"] for o in only):
-            continue
-        if split and data["split"] != split:
-            continue
-        tests.append(data)
-    return tests
+        if data.get("turn") and data.get("case"):
+            sys.exit(f"{where}: use either [[turn]] (a conversation) or [[case]] (a suite), not both")
+        fid = data.get("chat") or data.get("suite") or path.stem
+        fsplit = data.get("split", "dev")
+        ftags = data.get("tags", [])
+        n = 0
+
+        def turns_of(raw: list[dict], label: str) -> list[dict]:
+            nonlocal n
+            out = []
+            for i, t in enumerate(raw, 1):
+                t = check_turn(dict(t), f"{where} {label} turn {i}")
+                t.setdefault("tags", ftags)
+                n += 1
+                t["n"] = n
+                out.append(t)
+            return out
+
+        found = []
+        if data.get("case"):
+            for ci, c in enumerate(data["case"], 1):
+                bad = set(c) - CASE_KEYS
+                if bad:
+                    sys.exit(f"{where} case {ci}: unknown keys {sorted(bad)}")
+                inline = {k: v for k, v in c.items() if k in TURN_KEYS}
+                if inline and c.get("turn"):
+                    sys.exit(f"{where} case {ci}: write the turn inline (say = ...) or as [[case.turn]], not both")
+                raw = [inline] if inline else c.get("turn", [])
+                if not raw:
+                    sys.exit(f"{where} case {ci}: needs say or [[case.turn]]")
+                found.append({
+                    "chat": fid, "file": where, "case": ci, "split": c.get("split", fsplit),
+                    "before": data.get("before", []) + c.get("before", []),
+                    "text": "\n\n".join(x for x in (data.get("text", ""), c.get("text", "")) if x),
+                    "turn": turns_of(raw, f"case {ci}"),
+                })
+        else:
+            found.append({"chat": fid, "file": where, "case": None, "split": fsplit,
+                          "before": data.get("before", []), "text": data.get("text", ""),
+                          "turn": turns_of(data.get("turn", []), "")})
+        for sess in found:
+            if sess["split"] not in ("dev", "test"):
+                sys.exit(f"{where}: split must be dev or test")
+            if only and not any(o in sess["chat"] or o in where for o in only):
+                continue
+            if split and sess["split"] != split:
+                continue
+            sessions.append(sess)
+    return sessions
 
 
 def sentences(text: str) -> list[str]:
@@ -199,7 +273,8 @@ def run_test(api: Api, test: dict) -> list[dict]:
             stuck = bool(trace.get("impasse"))
             outcome, why = check(t, reply, stuck)
             rows.append({
-                "chat": test["chat"], "file": test["file"], "split": test["split"], "n": t["n"], "say": t["say"],
+                "chat": test["chat"], "file": test["file"], "case": test["case"], "split": test["split"],
+                "n": t["n"], "say": t["say"],
                 "kind": kind_of(t), "mentions": t.get("mentions", []), "avoid": t.get("avoid", []),
                 "tags": t.get("tags", []),
                 "outcome": outcome, "why": why, "stuck": stuck, "reply": reply,
@@ -221,6 +296,9 @@ def summarize(rows: list[dict]) -> dict:
     pct = lambda rs: round(sum(r["outcome"] == "pass" for r in rs) / len(rs), 4) if rs else None
     of = lambda *kinds: [r for r in scored if r["kind"] in kinds]
     handle = of("understand", "mentions", "ask")
+    by_file = defaultdict(Counter)
+    for r in scored:
+        by_file[r["file"]][r["outcome"]] += 1
     by_tag = defaultdict(Counter)
     for r in scored:
         for tag in r["tags"] or ["(untagged)"]:
@@ -235,6 +313,7 @@ def summarize(rows: list[dict]) -> dict:
         "asks": pct(of("ask")),
         "ignores": pct(of("ignore")),
         "counts": {k: len(of(k)) for k in ("understand", "mentions", "ask", "ignore")},
+        "by_file": {k: dict(v) for k, v in sorted(by_file.items())},
         "by_tag": {k: dict(v) for k, v in sorted(by_tag.items())},
     }
 
@@ -298,6 +377,11 @@ def report(meta: dict, s: dict, splits: dict, rows: list[dict], broken: list, fi
                 for p, r in pairs:
                     out.append(f"| {r['chat'][-6:]}·{r['n']} | {esc(r['say'])} | {p['outcome']} → **{r['outcome']}** {esc(r['why'])} |")
                 out.append("")
+    out += ["## By file", "", "| file | pass | scored | |", "|---|---|---|---|"]
+    for f, c in s["by_file"].items():
+        tot = c.get("pass", 0) + c.get("fail", 0)
+        out.append(f"| {f} | {c.get('pass', 0) / tot:.0%} | {tot} | {'█' * round(10 * c.get('pass', 0) / tot)} |")
+    out.append("")
     fails = [r for r in rows if r["outcome"] == "fail"]
     out += [f"## Failing turns ({len(fails)})", "", "| file · turn | said | why | reply |", "|---|---|---|---|"]
     for r in fails:
@@ -356,7 +440,7 @@ def main() -> int:
     s = summarize(rows)
     splits = {sp: summarize([r for r in rows if r["split"] == sp]) for sp in sorted({r["split"] for r in rows})}
     meta = {"format": FORMAT, "label": args.label, "time": stamp, "version": git_version(), "server": server,
-            "files": len(tests), "baseline": prev.name if prev else None}
+            "files": len({t["file"] for t in tests}), "baseline": prev.name if prev else None}
     (out_dir / "results.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows), encoding="utf-8")
     (out_dir / "summary.json").write_text(json.dumps({**meta, **s, "fixed": len(fixed), "broken": len(broken),
                                                       "splits": {k: {kk: v[kk] for kk in ("scored", "pass", "understood", "answers", "asks", "ignores")} for k, v in splits.items()}},
@@ -366,6 +450,17 @@ def main() -> int:
     print(headline(s))
     for sp, v in splits.items():
         print(f"  {sp:<4} {v['scored']:>3} scored: {headline(v)}")
+    folders = defaultdict(Counter)
+    for f, c in s["by_file"].items():
+        folders[f.split("/")[0] if "/" in f else "."].update(c)
+    for folder, c in sorted(folders.items()):
+        tot = c["pass"] + c["fail"]
+        print(f"  {folder + '/':<12} {c['pass'] / tot:6.1%} of {tot}")
+        if folder != "chats":
+            for f, fc in s["by_file"].items():
+                if f.startswith(folder + "/"):
+                    ft = fc.get("pass", 0) + fc.get("fail", 0)
+                    print(f"    {f[len(folder) + 1:]:<22} {fc.get('pass', 0) / ft:6.1%} of {ft}")
     if prev:
         print(f"  vs {prev.name}: {len(fixed)} fixed, {len(broken)} broken")
     print(f"  report: {out_dir / 'report.md'}")

@@ -1,0 +1,115 @@
+suite = "calc"
+about = "Calculation and units: Arithmetic and unit conversion."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609223"
+say = "calculate 6 * 7"
+mentions = ["42"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795609223"
+say = "calculate 5 * 7 and 6 * 9"
+mentions = ["35", "54"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795619028"
+say = "calculate 7 + 10"
+mentions = ["17"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795619028"
+say = "convert 5 kg to pounds"
+mentions = ["11.02"]
+tags = ["convert"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen calculate 5 + 5"
+mentions = ["10"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795620542"
+say = "calculate 5 + 5"
+mentions = ["10"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795620542"
+say = "calculate square root of 5"
+mentions = ["2.23"]
+tags = ["calc"]
+note = "square root is not supported yet"
+
+[[case]]
+source = "chat-1795620542"
+say = "divide 5 by 7"
+mentions = ["0.714"]
+tags = ["calc"]
+
+[[case]]
+source = "chat-1795620542"
+say = "calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how much would be 5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen calculate 5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how much it would be 5 / 7"
+mentions = ["0.714"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "so sorry Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "sorry Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]

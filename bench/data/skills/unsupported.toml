@@ -1,0 +1,182 @@
+suite = "unsupported"
+about = "Things Karin can't do: She should say so honestly, not be stuck."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "how many facts do you know"
+tags = ["unsupported.other"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen can you start a new chat for me"
+tags = ["unsupported.new_chat"]
+
+[[case]]
+source = "chat-1795619028"
+say = "praise rust"
+tags = ["unsupported.other"]
+note = "seed episode 'praise Rust'"
+
+[[case]]
+source = "chat-1795619028"
+say = "create a new chat for me"
+tags = ["unsupported.new_chat"]
+
+[[case]]
+source = "chat-1795619028"
+say = "learn much more stuff I want you to learn much much more stuff"
+tags = ["unsupported.other"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen can you start a new chat please"
+tags = ["unsupported.new_chat"]
+
+[[case]]
+source = "chat-1795619028"
+say = "how many messages do we have in our chat right now"
+tags = ["unsupported.other"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen can you start Overlord app"
+tags = ["unsupported.app"]
+
+[[case]]
+source = "chat-1795619028"
+say = "turn create a new chat in overall up under studio design"
+tags = ["unsupported.app"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can open teams app"
+tags = ["unsupported.app"]
+
+[[case]]
+source = "chat-1795620542"
+say = "how do I make a banana bread"
+tags = ["unsupported.how_to"]
+
+[[case]]
+source = "chat-1795620542"
+say = "pass a task to Overlord to make a new folder"
+tags = ["unsupported.app"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen can you say a overlord agent to start a new sub-agent and so that sub-agent be working on a voice integration into Overlord so you have a dictation mode and also want to have a dictation mode for overload as well"
+tags = ["unsupported.app"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can can you override previous a note I just made a mistake"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen can you delete my notes"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what do you think I should draw next"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen can you create a new chat"
+tags = ["unsupported.new_chat"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can how much 5 bucks is in euros"
+tags = ["unsupported.other"]
+note = "currency is not supported"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what time is it"
+tags = ["unsupported.time"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can do you want to play some games"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how many turns do we have in this chat Karen"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can can count till 10:00"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you ask me a question"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "ask me a question do you need to learn anything"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what's the time"
+avoid = ["definition"]
+tags = ["unsupported.time"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is time current"
+avoid = ["definition"]
+tags = ["unsupported.time"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what time it is right now"
+tags = ["unsupported.time"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you want me to teach you"
+tags = ["unsupported.other"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "hey spin off a few Overlord sub agents to work on the issues"
+tags = ["unsupported.app"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "what is Oscar doing tomorrow"
+tags = ["unsupported.other"]
+note = "she can't know"
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "ask me any question"
+tags = ["unsupported.other"]
