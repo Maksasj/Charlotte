@@ -79,11 +79,22 @@ export default function App() {
     return saved >= 20 && saved <= 80 ? saved : DEFAULT_SPLIT;
   });
   const [splitBeforeWide, setSplitBeforeWide] = useState<number>(DEFAULT_SPLIT);
-  const wideInspector = split <= WIDE_SPLIT + 1;
+  // Knowledge and Tools are work areas: they default to a wide inspector, remembered separately from Trace.
+  const [workSplit, setWorkSplit] = useState<number>(() => {
+    const saved = Number(localStorage.getItem('karin-split-work'));
+    return saved >= 20 && saved <= 80 ? saved : WIDE_SPLIT;
+  });
+  const activeSplit = tab === 'trace' ? split : workSplit;
+  const setActiveSplit = tab === 'trace' ? setSplit : setWorkSplit;
+  const defaultSplit = tab === 'trace' ? DEFAULT_SPLIT : WIDE_SPLIT;
+  const wideInspector = activeSplit <= WIDE_SPLIT + 1;
   const gridRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     localStorage.setItem('karin-split', String(Math.round(split * 10) / 10));
   }, [split]);
+  useEffect(() => {
+    localStorage.setItem('karin-split-work', String(Math.round(workSplit * 10) / 10));
+  }, [workSplit]);
 
   function startDrag(e: React.PointerEvent<HTMLDivElement>) {
     const grid = gridRef.current;
@@ -97,7 +108,7 @@ export default function App() {
       const min = (300 / rect.width) * 100;
       const max = 100 - (380 / rect.width) * 100;
       const pct = ((ev.clientX - rect.left) / rect.width) * 100;
-      setSplit(Math.min(Math.max(pct, min), max));
+      setActiveSplit(Math.min(Math.max(pct, min), max));
     };
     const up = () => {
       document.body.classList.remove('resizing');
@@ -110,10 +121,10 @@ export default function App() {
 
   function toggleWide() {
     if (wideInspector) {
-      setSplit(splitBeforeWide > WIDE_SPLIT + 1 ? splitBeforeWide : DEFAULT_SPLIT);
+      setActiveSplit(splitBeforeWide > WIDE_SPLIT + 1 ? splitBeforeWide : DEFAULT_SPLIT);
     } else {
-      setSplitBeforeWide(split);
-      setSplit(WIDE_SPLIT);
+      setSplitBeforeWide(activeSplit);
+      setActiveSplit(WIDE_SPLIT);
     }
   }
   const [showAddFact, setShowAddFact] = useState(false);
@@ -654,7 +665,7 @@ export default function App() {
       <div
         className="main-grid"
         ref={gridRef}
-        style={{ gridTemplateColumns: `minmax(0, ${split}%) 1px minmax(0, 1fr)` }}
+        style={{ gridTemplateColumns: `minmax(0, ${activeSplit}%) 1px minmax(0, 1fr)` }}
       >
         <section className="chat-pane">
           <div className="messages">
@@ -906,7 +917,7 @@ export default function App() {
           aria-label="Resize the inspector"
           title="Drag to resize · double-click to reset"
           onPointerDown={startDrag}
-          onDoubleClick={() => setSplit(DEFAULT_SPLIT)}
+          onDoubleClick={() => setActiveSplit(defaultSplit)}
         />
 
         <section className="inspector-pane">
