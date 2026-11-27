@@ -1,0 +1,178 @@
+suite = "variants-likes"
+
+about = "Telling and asking what you like, in the wordings the chats used."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["likes"]
+
+
+# from: yeah I like rock  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "yeah I like rock"
+avoid = ["Learned"]
+note = "variant of: yeah I like rock"
+
+[[case]]
+source = "chat-1795695278"
+say = "okay I like sushi"
+note = "variant of: yeah I like rock"
+
+[[case]]
+source = "chat-1795695278"
+say = "well I like hiking"
+note = "variant of: yeah I like rock"
+
+[[case]]
+source = "chat-1795695278"
+say = "I really like black tea"
+note = "variant of: yeah I like rock"
+
+
+# from: what music genre I like  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like rock music"]
+say = "what music genre I like"
+mentions = ["rock"]
+note = "variant of: what music genre I like"
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like rock music"]
+say = "what music do I like"
+mentions = ["rock"]
+note = "variant of: what music genre I like"
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like rock music"]
+say = "which music I like"
+mentions = ["rock"]
+note = "variant of: what music genre I like"
+
+
+# from: what do I like to draw  (chat-1795619028)
+
+[[case]]
+source = "chat-1795619028"
+before = ["I like to draw anime"]
+say = "what do I like to draw"
+mentions = ["anime"]
+note = "variant of: what do I like to draw"
+
+[[case]]
+source = "chat-1795619028"
+before = ["I love drawing anime"]
+say = "what do I love drawing"
+mentions = ["anime"]
+note = "variant of: what do I like to draw"
+
+[[case]]
+source = "chat-1795619028"
+before = ["I like to draw anime"]
+say = "what do I like to do"
+mentions = ["draw"]
+note = "variant of: what do I like to draw"
+
+
+# from: I like reading books  (chat-1795723678)
+
+[[case]]
+source = "chat-1795723678"
+say = "I like reading books"
+mentions = ["reading books"]
+note = "variant of: I like reading books"
+
+[[case]]
+source = "chat-1795723678"
+say = "I like playing games"
+mentions = ["playing games"]
+note = "variant of: I like reading books"
+
+[[case]]
+source = "chat-1795723678"
+say = "I enjoy watching movies"
+mentions = ["watching movies"]
+note = "variant of: I like reading books"
+
+
+# from: yeah right so you like caramel also like gummies  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "I also like gummies"
+mentions = ["gummies"]
+note = "variant of: yeah right so you like caramel also like gummies"
+
+[[case]]
+source = "chat-1795695278"
+say = "and I like caramel too"
+mentions = ["caramel"]
+note = "variant of: yeah right so you like caramel also like gummies"
+
+[[case]]
+source = "chat-1795695278"
+say = "I like caramel and gummies"
+mentions = ["caramel", "gummies"]
+note = "variant of: yeah right so you like caramel also like gummies"
+
+
+# from: I don't like coffee  (probes/likes)
+
+[[case]]
+source = "probes/likes"
+say = "I don't like coffee"
+avoid = ["you like coffee"]
+note = "variant of: I don't like coffee"
+
+[[case]]
+source = "probes/likes"
+say = "I hate mushrooms"
+avoid = ["you like"]
+note = "variant of: I don't like coffee"
+
+[[case]]
+source = "probes/likes"
+say = "I'm not a fan of coffee"
+avoid = ["you like coffee"]
+note = "variant of: I don't like coffee"
+
+[[case]]
+source = "probes/likes"
+before = ["I like tea"]
+say = "do I like coffee"
+note = "variant of: I don't like coffee"
+
+[[case]]
+source = "probes/likes"
+before = ["I like tea"]
+say = "do I like tea"
+mentions = ["yes"]
+note = "variant of: I don't like coffee"
+
+
+# from: Karen I like you  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "Karen I like you"
+avoid = ["you like you"]
+note = "variant of: Karen I like you"
+
+[[case]]
+source = "chat-1795695278"
+say = "I like you Karen"
+avoid = ["you like you"]
+note = "variant of: Karen I like you"
+
+[[case]]
+source = "chat-1795695278"
+say = "I like talking to you"
+avoid = ["Learned"]
+note = "variant of: Karen I like you"

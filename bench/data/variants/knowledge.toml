@@ -1,0 +1,212 @@
+suite = "variants-knowledge"
+
+about = "Questions about things (who made, what is, what color, do you know X). Karin may not know - but she should understand the question and say so honestly instead of being stuck."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["knowledge"]
+
+
+# from: who made rust  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "who made Rust"
+note = "variant of: who made rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "who created Python"
+note = "variant of: who made rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "who invented the telephone"
+note = "variant of: who made rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "who made go"
+note = "variant of: who made rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "who is the creator of Linux"
+note = "variant of: who made rust"
+
+
+# from: do you know go  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "do you know Go"
+note = "variant of: do you know go"
+
+[[case]]
+source = "chat-1795695278"
+say = "do you know Google"
+note = "variant of: do you know go"
+
+[[case]]
+source = "chat-1795695278"
+say = "have you heard of Rust"
+note = "variant of: do you know go"
+
+[[case]]
+source = "chat-1795695278"
+say = "do you know what Python is"
+note = "variant of: do you know go"
+
+
+# from: what do you know about rust  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what do you know about Rust"
+mentions = ["programming language"]
+note = "variant of: what do you know about rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "tell me about Rust"
+mentions = ["programming language"]
+note = "variant of: what do you know about rust"
+
+[[case]]
+source = "chat-1795695278"
+before = ["what is Rust"]
+say = "what else do you know about Rust"
+note = "variant of: what do you know about rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "what do you know about Earth"
+note = "variant of: what do you know about rust"
+
+[[case]]
+source = "chat-1795695278"
+say = "tell me about Paris"
+mentions = ["France"]
+note = "variant of: what do you know about rust"
+
+
+# from: Google created go  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "Google created Go"
+avoid = ["you like"]
+note = "variant of: Google created go"
+
+[[case]]
+source = "chat-1795695278"
+say = "Go was made by Google"
+note = "variant of: Google created go"
+
+[[case]]
+source = "chat-1795695278"
+say = "Google is the creator of Go"
+note = "variant of: Google created go"
+
+[[case]]
+source = "chat-1795695278"
+
+[[case.turn]]
+say = "Google created Go"
+note = "variant of: Google created go"
+
+[[case.turn]]
+say = "who created Go"
+mentions = ["Google"]
+
+[[case]]
+source = "chat-1795695278"
+
+[[case.turn]]
+say = "Mozilla made Rust"
+note = "variant of: Google created go"
+
+[[case.turn]]
+say = "who made Rust"
+mentions = ["Mozilla"]
+
+
+# from: what color is grass  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what color is grass"
+note = "variant of: what color is grass"
+
+[[case]]
+source = "chat-1795695278"
+say = "what color is the sky"
+note = "variant of: what color is grass"
+
+[[case]]
+source = "chat-1795695278"
+say = "what colour is snow"
+note = "variant of: what color is grass"
+
+[[case]]
+source = "chat-1795695278"
+
+[[case.turn]]
+say = "grass is green"
+note = "variant of: what color is grass"
+
+[[case.turn]]
+say = "what color is grass"
+mentions = ["green"]
+
+
+# from: What is caramel macchiato ?  (skills/knowledge)
+
+[[case]]
+source = "skills/knowledge"
+before = ["caramel macchiato is a drink"]
+say = "what is a caramel macchiato"
+mentions = ["drink"]
+note = "variant of: What is caramel macchiato ?"
+
+[[case]]
+source = "skills/knowledge"
+before = ["a husky is a dog"]
+say = "what's a husky"
+mentions = ["dog"]
+note = "variant of: What is caramel macchiato ?"
+
+[[case]]
+source = "skills/knowledge"
+before = ["a husky is a dog", "a dog is an animal"]
+say = "is a husky an animal"
+mentions = ["yes"]
+note = "variant of: What is caramel macchiato ?"
+
+
+# from: old people are persons  (chat-1795731137)
+
+[[case]]
+source = "chat-1795731137"
+say = "cats are animals"
+avoid = ["you like"]
+note = "variant of: old people are persons"
+
+[[case]]
+source = "chat-1795731137"
+say = "dogs are animals"
+avoid = ["you like"]
+note = "variant of: old people are persons"
+
+[[case]]
+source = "chat-1795731137"
+
+[[case.turn]]
+say = "cats are animals"
+note = "variant of: old people are persons"
+
+[[case.turn]]
+say = "is a cat an animal"
+mentions = ["yes"]

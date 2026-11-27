@@ -1,0 +1,30 @@
+suite = "variants-noise"
+
+about = "Real sentences that look like 'X is Y' but are remarks, not facts. Karin should not store them."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["noise"]
+
+
+# from: Ken is a smart / regular is a maxim  (chat-1795619028)
+
+[[case]]
+source = "chat-1795619028"
+say = "I think it is a bit bugged"
+avoid = ["Learned"]
+note = "variant of: Ken is a smart / regular is a maxim"
+
+[[case]]
+source = "chat-1795619028"
+say = "this is a test"
+avoid = ["Learned"]
+note = "variant of: Ken is a smart / regular is a maxim"
+
+[[case]]
+source = "chat-1795619028"
+say = "that is a good question"
+avoid = ["Learned"]
+note = "variant of: Ken is a smart / regular is a maxim"

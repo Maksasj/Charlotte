@@ -1,0 +1,74 @@
+suite = "variants-recall"
+
+about = "Asking what Karin knows or remembers, about you or in general."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["recall"]
+
+
+# from: what do you know  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "what do you know"
+note = "variant of: what do you know"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "what do you remember"
+mentions = ["black tea"]
+note = "variant of: what do you know"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "what do you remember about me"
+mentions = ["black tea"]
+note = "variant of: what do you know"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "what did I tell you"
+mentions = ["black tea"]
+note = "variant of: what do you know"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "what do you remember from this chat"
+mentions = ["black tea"]
+note = "variant of: what do you know"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "I like black tea"]
+say = "tell me everything you know about me"
+mentions = ["Maxim", "black tea"]
+note = "variant of: what do you know"
+
+
+# from: what did you just said  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["hi"]
+say = "what did you just say"
+note = "variant of: what did you just said"
+
+[[case]]
+source = "chat-1795695278"
+before = ["hi"]
+say = "can you repeat that"
+note = "variant of: what did you just said"
+
+[[case]]
+source = "chat-1795695278"
+before = ["hi"]
+say = "say that again"
+note = "variant of: what did you just said"

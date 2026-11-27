@@ -1,0 +1,205 @@
+suite = "variants-about-karin"
+
+about = "Asking Karin about herself, what she's doing and what she wants - small talk she should answer, not get stuck on."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["karin"]
+
+
+# from: what you doing right now  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what you doing right now"
+note = "variant of: what you doing right now"
+
+[[case]]
+source = "chat-1795695278"
+say = "what are you doing"
+note = "variant of: what you doing right now"
+
+[[case]]
+source = "chat-1795695278"
+say = "what you up to"
+note = "variant of: what you doing right now"
+
+[[case]]
+source = "chat-1795695278"
+say = "what are you up to today"
+note = "variant of: what you doing right now"
+
+[[case]]
+source = "chat-1795695278"
+say = "what have you been doing"
+note = "variant of: what you doing right now"
+
+[[case]]
+source = "chat-1795695278"
+say = "have you been doing anything"
+note = "variant of: what you doing right now"
+
+
+# from: Karen what you want to do  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what do you want to do"
+note = "variant of: Karen what you want to do"
+
+[[case]]
+source = "chat-1795695278"
+say = "what would you like to do"
+note = "variant of: Karen what you want to do"
+
+[[case]]
+source = "chat-1795695278"
+say = "Karen what you want to do"
+note = "variant of: Karen what you want to do"
+
+[[case]]
+source = "chat-1795695278"
+say = "do you want to do something"
+note = "variant of: Karen what you want to do"
+
+[[case]]
+source = "chat-1795695278"
+say = "what you wanted to do"
+note = "variant of: Karen what you want to do"
+
+
+# from: Karen do you want to learn anything  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "do you want to learn something"
+note = "variant of: Karen do you want to learn anything"
+
+[[case]]
+source = "chat-1795695278"
+say = "what do you want to learn"
+note = "variant of: Karen do you want to learn anything"
+
+[[case]]
+source = "chat-1795695278"
+say = "is there anything you want to learn"
+note = "variant of: Karen do you want to learn anything"
+
+[[case]]
+source = "chat-1795695278"
+say = "do you need to learn anything"
+note = "variant of: Karen do you want to learn anything"
+
+[[case]]
+source = "chat-1795695278"
+say = "what should I teach you"
+note = "variant of: Karen do you want to learn anything"
+
+[[case]]
+source = "chat-1795695278"
+say = "you want me to teach you"
+note = "variant of: Karen do you want to learn anything"
+
+
+# from: Karen are you here  (chat-1795723220)
+
+[[case]]
+source = "chat-1795723220"
+say = "are you there"
+note = "variant of: Karen are you here"
+
+[[case]]
+source = "chat-1795723220"
+say = "Karen are you there"
+note = "variant of: Karen are you here"
+
+[[case]]
+source = "chat-1795723220"
+say = "are you listening"
+note = "variant of: Karen are you here"
+
+[[case]]
+source = "chat-1795723220"
+say = "can you hear me"
+note = "variant of: Karen are you here"
+
+[[case]]
+source = "chat-1795723220"
+say = "you there"
+note = "variant of: Karen are you here"
+
+[[case]]
+source = "chat-1795723220"
+say = "so now you're listening yeah"
+note = "variant of: Karen are you here"
+
+
+# from: am I your creator  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Maxim"]
+say = "am I your creator"
+note = "variant of: am I your creator"
+
+[[case]]
+source = "chat-1795723709"
+say = "who created you"
+note = "variant of: am I your creator"
+
+[[case]]
+source = "chat-1795723709"
+say = "who is your creator"
+note = "variant of: am I your creator"
+
+[[case]]
+source = "chat-1795723709"
+say = "who creator of Karen"
+note = "variant of: am I your creator"
+
+[[case]]
+source = "chat-1795723709"
+say = "Max is your creator"
+avoid = ["Learned"]
+note = "variant of: am I your creator"
+
+
+# from: what is your style  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what is your style"
+mentions = ["direct"]
+note = "variant of: what is your style"
+
+[[case]]
+source = "chat-1795695278"
+say = "how would you describe yourself"
+mentions = ["direct"]
+note = "variant of: what is your style"
+
+[[case]]
+source = "chat-1795695278"
+say = "what's your personality"
+mentions = ["direct"]
+note = "variant of: what is your style"
+
+
+# from: can I call you Christine  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+say = "can I call you Kari"
+note = "variant of: can I call you Christine"
+
+[[case]]
+source = "chat-1795723709"
+say = "can I give you a nickname"
+note = "variant of: can I call you Christine"
+
+[[case]]
+source = "chat-1795723709"
+say = "what should I call you"
+note = "variant of: can I call you Christine"

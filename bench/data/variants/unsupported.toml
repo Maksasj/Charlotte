@@ -1,0 +1,124 @@
+suite = "variants-unsupported"
+
+about = "Things Karin can't do yet (time, money, games, music, email). She should understand the request and say honestly she can't - not 'I don't understand'."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["unsupported"]
+
+
+# from: what time is it  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what time is it"
+note = "variant of: what time is it"
+
+[[case]]
+source = "chat-1795695278"
+say = "what's the time"
+note = "variant of: what time is it"
+
+[[case]]
+source = "chat-1795695278"
+say = "what time it is right now"
+note = "variant of: what time is it"
+
+[[case]]
+source = "chat-1795695278"
+say = "what's the date today"
+note = "variant of: what time is it"
+
+[[case]]
+source = "chat-1795695278"
+say = "what day is it"
+note = "variant of: what time is it"
+
+
+# from: can how much 5 bucks is in euros  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "how much is 5 dollars in euros"
+note = "variant of: can how much 5 bucks is in euros"
+
+[[case]]
+source = "chat-1795695278"
+say = "convert 10 euros to dollars"
+note = "variant of: can how much 5 bucks is in euros"
+
+[[case]]
+source = "chat-1795695278"
+say = "what is 30 celsius in fahrenheit"
+note = "variant of: can how much 5 bucks is in euros"
+
+
+# from: can do you want to play some games  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "do you want to play a game"
+note = "variant of: can do you want to play some games"
+
+[[case]]
+source = "chat-1795695278"
+say = "let's play a game"
+note = "variant of: can do you want to play some games"
+
+[[case]]
+source = "chat-1795695278"
+say = "play some music"
+note = "variant of: can do you want to play some games"
+
+[[case]]
+source = "chat-1795695278"
+say = "send an email to Oscar"
+note = "variant of: can do you want to play some games"
+
+[[case]]
+source = "chat-1795695278"
+say = "order a pizza"
+note = "variant of: can do you want to play some games"
+
+
+# from: can you ask me a question  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "ask me a question"
+note = "variant of: can you ask me a question"
+
+[[case]]
+source = "chat-1795695278"
+say = "can you ask me something"
+note = "variant of: can you ask me a question"
+
+[[case]]
+source = "chat-1795695278"
+say = "ask me anything"
+note = "variant of: can you ask me a question"
+
+[[case]]
+source = "chat-1795695278"
+say = "quiz me"
+note = "variant of: can you ask me a question"
+
+
+# from: what do you think I should draw next  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "what should I draw next"
+note = "variant of: what do you think I should draw next"
+
+[[case]]
+source = "chat-1795695278"
+say = "give me an idea for a drawing"
+note = "variant of: what do you think I should draw next"
+
+[[case]]
+source = "chat-1795695278"
+say = "what should I do today"
+note = "variant of: what do you think I should draw next"

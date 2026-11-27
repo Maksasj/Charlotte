@@ -1,0 +1,126 @@
+suite = "variants-apologies"
+
+about = "An apology in front of a request ('sorry Karen, ...'): she should not stop at 'No worries' but do the request."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["apology"]
+
+
+# from: sorry Karen can you calculate 5 + 10 for me  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "sorry Karen can you calculate 4 + 4"
+mentions = ["8"]
+note = "variant of: sorry Karen can you calculate 5 + 10 for me"
+
+[[case]]
+source = "chat-1795695278"
+say = "sorry, calculate 7 * 6"
+mentions = ["42"]
+note = "variant of: sorry Karen can you calculate 5 + 10 for me"
+
+[[case]]
+source = "chat-1795695278"
+say = "so sorry, what is 9 + 1"
+mentions = ["10"]
+note = "variant of: sorry Karen can you calculate 5 + 10 for me"
+
+[[case]]
+source = "chat-1795695278"
+say = "oh sorry Karen what is 12 / 3"
+mentions = ["4"]
+note = "variant of: sorry Karen can you calculate 5 + 10 for me"
+
+
+# from: sorry Karen what is the weather in Venice  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+say = "sorry Karen what is the weather in Paris"
+mentions = ["Paris"]
+note = "variant of: sorry Karen what is the weather in Venice"
+
+[[case]]
+source = "chat-1795723709"
+say = "sorry, what's the weather in Tokyo"
+mentions = ["Tokyo"]
+note = "variant of: sorry Karen what is the weather in Venice"
+
+[[case]]
+source = "chat-1795723709"
+say = "sorry what is the weather like in London"
+mentions = ["London"]
+note = "variant of: sorry Karen what is the weather in Venice"
+
+
+# from: sorry my name is Maxim  (chat-1795723678)
+
+[[case]]
+source = "chat-1795723678"
+say = "sorry my name is Maxim"
+mentions = ["Maxim"]
+note = "variant of: sorry my name is Maxim"
+
+[[case]]
+source = "chat-1795723678"
+say = "sorry I'm Max"
+mentions = ["Max"]
+note = "variant of: sorry my name is Maxim"
+
+[[case]]
+source = "chat-1795723678"
+say = "sorry, I'm Oscar"
+mentions = ["Oscar"]
+note = "variant of: sorry my name is Maxim"
+
+[[case]]
+source = "chat-1795723678"
+say = "oh sorry my name is Oscar"
+mentions = ["Oscar"]
+note = "variant of: sorry my name is Maxim"
+
+
+# from: sorry can you that's a mistake  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "sorry that's a mistake"
+avoid = ["Learned"]
+note = "variant of: sorry can you that's a mistake"
+
+[[case]]
+source = "chat-1795695278"
+say = "sorry that was a mistake"
+avoid = ["Learned"]
+note = "variant of: sorry can you that's a mistake"
+
+[[case]]
+source = "chat-1795695278"
+say = "oops that's wrong"
+avoid = ["Learned"]
+note = "variant of: sorry can you that's a mistake"
+
+
+# from: I'm sorry Karen  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "I'm sorry Karen"
+avoid = ["you're sorry"]
+note = "variant of: I'm sorry Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "I'm so sorry"
+avoid = ["you're sorry"]
+note = "variant of: I'm sorry Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "my bad Karen"
+avoid = ["Learned"]
+note = "variant of: I'm sorry Karen"

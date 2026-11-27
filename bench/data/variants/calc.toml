@@ -1,0 +1,117 @@
+suite = "variants-calc"
+
+about = "Arithmetic in spoken shapes: bare expressions, 'how much would be', number words, 'times'."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["calc"]
+
+
+# from: 5 * 7  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "5 * 7"
+mentions = ["35"]
+note = "variant of: 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "3 + 4"
+mentions = ["7"]
+note = "variant of: 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "what's 5 * 7"
+mentions = ["35"]
+note = "variant of: 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "5 times 7"
+mentions = ["35"]
+note = "variant of: 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "what is 5 times 7"
+mentions = ["35"]
+note = "variant of: 5 * 7"
+
+
+# from: how much would be 5 * 7  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "how much would be 5 * 7"
+mentions = ["35"]
+note = "variant of: how much would be 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "how much is 5 + 7"
+mentions = ["12"]
+note = "variant of: how much would be 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "how much it would be 8 / 2"
+mentions = ["4"]
+note = "variant of: how much would be 5 * 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "how much is 10 minus 3"
+mentions = ["7"]
+note = "variant of: how much would be 5 * 7"
+
+
+# from: what is two plus two  (probes/tools)
+
+[[case]]
+source = "probes/tools"
+say = "what is two plus two"
+mentions = ["4"]
+note = "variant of: what is two plus two"
+
+[[case]]
+source = "probes/tools"
+say = "what is three times four"
+mentions = ["12"]
+note = "variant of: what is two plus two"
+
+[[case]]
+source = "probes/tools"
+say = "100 divided by 4"
+mentions = ["25"]
+note = "variant of: what is two plus two"
+
+[[case]]
+source = "probes/tools"
+say = "ten minus one"
+mentions = ["9"]
+note = "variant of: what is two plus two"
+
+
+# from: calculate square root of 5  (chat-1795620542)
+
+[[case]]
+source = "chat-1795620542"
+say = "square root of 16"
+mentions = ["4"]
+note = "variant of: calculate square root of 5"
+
+[[case]]
+source = "chat-1795620542"
+say = "what is 2 to the power of 3"
+mentions = ["8"]
+note = "variant of: calculate square root of 5"
+
+[[case]]
+source = "chat-1795620542"
+say = "what is 10 percent of 50"
+mentions = ["5"]
+note = "variant of: calculate square root of 5"

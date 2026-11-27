@@ -1,0 +1,245 @@
+suite = "variants-speaker"
+
+about = "Saying who is speaking in the ways the real chats did: coming back, correcting the name, switching person."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["speaker"]
+
+
+# from: hey it's Max I'm back  (chat-1795723678)
+
+[[case]]
+source = "chat-1795723678"
+say = "hey it's Max I'm back"
+mentions = ["Max"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "it's Maxim I'm back"
+mentions = ["Maxim"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "Maxim is back"
+mentions = ["Maxim"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "hey Karen it's Maxim again"
+mentions = ["Maxim"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "Max is here"
+mentions = ["Max"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "hello Karen, Max here"
+mentions = ["Max"]
+note = "variant of: hey it's Max I'm back"
+
+[[case]]
+source = "chat-1795723678"
+say = "it's me, Maxim"
+mentions = ["Maxim"]
+note = "variant of: hey it's Max I'm back"
+
+
+# from: I'm Max not Maxim  (chat-1795723220)
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim"]
+say = "I'm Max not Maxim"
+mentions = ["Max"]
+note = "variant of: I'm Max not Maxim"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim"]
+say = "my name is Max, not Maxim"
+mentions = ["Max"]
+note = "variant of: I'm Max not Maxim"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim"]
+say = "no, call me Max"
+mentions = ["Max"]
+note = "variant of: I'm Max not Maxim"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is maximum"]
+say = "it's Maxim not maximum"
+mentions = ["Maxim"]
+note = "variant of: I'm Max not Maxim"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is IMAX"]
+say = "you got my name wrong, it's Maxim"
+mentions = ["Maxim"]
+note = "variant of: I'm Max not Maxim"
+
+
+# from: no I'm Oscar  (chat-1795723220)
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "no I'm Oscar"
+mentions = ["Oscar"]
+note = "variant of: no I'm Oscar"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "no Karen I'm Oscar"
+mentions = ["Oscar"]
+note = "variant of: no I'm Oscar"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "actually I'm Oscar"
+mentions = ["Oscar"]
+note = "variant of: no I'm Oscar"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "this is Oscar now"
+mentions = ["Oscar"]
+note = "variant of: no I'm Oscar"
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "it's Oscar talking"
+mentions = ["Oscar"]
+note = "variant of: no I'm Oscar"
+
+
+# from: yeah it's Oscar  (chat-1795723220)
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+
+[[case.turn]]
+say = "I'm Oscar"
+expect = "ask"
+note = "variant of: yeah it's Oscar"
+
+[[case.turn]]
+say = "correct I'm Oscar"
+mentions = ["Oscar"]
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+
+[[case.turn]]
+say = "I am Oscar"
+expect = "ask"
+note = "variant of: yeah it's Oscar"
+
+[[case.turn]]
+say = "yes that's me"
+mentions = ["Oscar"]
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+
+[[case.turn]]
+say = "I'm Oscar"
+expect = "ask"
+note = "variant of: yeah it's Oscar"
+
+[[case.turn]]
+say = "right"
+mentions = ["Oscar"]
+
+[[case]]
+source = "chat-1795723220"
+before = ["my name is Maxim", "Oscar is my friend"]
+
+[[case.turn]]
+say = "I'm Oscar"
+expect = "ask"
+note = "variant of: yeah it's Oscar"
+
+[[case.turn]]
+say = "no it's still Maxim"
+mentions = ["Maxim"]
+
+
+# from: hey who am I  (chat-1795731137)
+
+[[case]]
+source = "chat-1795731137"
+say = "hey who am I"
+expect = "ask"
+note = "variant of: hey who am I"
+
+[[case]]
+source = "chat-1795731137"
+say = "do you know who I am"
+expect = "ask"
+note = "variant of: hey who am I"
+
+[[case]]
+source = "chat-1795731137"
+say = "Karen who is talking to you"
+expect = "ask"
+note = "variant of: hey who am I"
+
+[[case]]
+source = "chat-1795731137"
+say = "who's speaking"
+expect = "ask"
+note = "variant of: hey who am I"
+
+[[case]]
+source = "chat-1795731137"
+say = "guess who I am"
+expect = "ask"
+note = "variant of: hey who am I"
+
+
+# from: I'm called Maxim / you can call me Max  (probes/names)
+
+[[case]]
+source = "probes/names"
+say = "I go by Max"
+mentions = ["Max"]
+note = "variant of: I'm called Maxim / you can call me Max"
+
+[[case]]
+source = "probes/names"
+say = "everyone calls me Max"
+mentions = ["Max"]
+note = "variant of: I'm called Maxim / you can call me Max"
+
+[[case]]
+source = "probes/names"
+say = "the name's Maxim"
+mentions = ["Maxim"]
+note = "variant of: I'm called Maxim / you can call me Max"
+
+[[case]]
+source = "probes/names"
+say = "Maxim speaking"
+mentions = ["Maxim"]
+note = "variant of: I'm called Maxim / you can call me Max"

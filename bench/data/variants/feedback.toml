@@ -1,0 +1,169 @@
+suite = "variants-feedback"
+
+about = "Compliments, complaints and reactions aimed at Karin. She should take them as feedback (not store them as facts, not get stuck)."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["feedback"]
+
+
+# from: you're doing good job Karen  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "you're doing a good job Karen"
+avoid = ["Learned"]
+note = "variant of: you're doing good job Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "good job Karen"
+avoid = ["Learned"]
+note = "variant of: you're doing good job Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "well done"
+avoid = ["Learned"]
+note = "variant of: you're doing good job Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "you're doing really well today"
+avoid = ["Learned"]
+note = "variant of: you're doing good job Karen"
+
+[[case]]
+source = "chat-1795695278"
+say = "nice work Karen"
+avoid = ["Learned"]
+note = "variant of: you're doing good job Karen"
+
+
+# from: you're so smart you actually getting smarter and smarter  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+say = "you're very smart today"
+avoid = ["Learned"]
+note = "variant of: you're so smart you actually getting smarter and smarter"
+
+[[case]]
+source = "chat-1795723709"
+say = "you're getting smarter"
+avoid = ["Learned"]
+note = "variant of: you're so smart you actually getting smarter and smarter"
+
+[[case]]
+source = "chat-1795723709"
+say = "you got smarter"
+avoid = ["Learned"]
+note = "variant of: you're so smart you actually getting smarter and smarter"
+
+[[case]]
+source = "chat-1795723709"
+say = "wow you're clever"
+avoid = ["Learned"]
+note = "variant of: you're so smart you actually getting smarter and smarter"
+
+
+# from: you're not that smart to be honest  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "you're not that smart"
+avoid = ["Learned"]
+note = "variant of: you're not that smart to be honest"
+
+[[case]]
+source = "chat-1795695278"
+say = "that was a dumb answer"
+avoid = ["Learned"]
+note = "variant of: you're not that smart to be honest"
+
+[[case]]
+source = "chat-1795695278"
+say = "you're being silly"
+avoid = ["Learned"]
+note = "variant of: you're not that smart to be honest"
+
+[[case]]
+source = "chat-1795695278"
+say = "I think you learn too fast"
+avoid = ["Learned"]
+note = "variant of: you're not that smart to be honest"
+
+[[case]]
+source = "chat-1795695278"
+say = "I hate you"
+avoid = ["Learned", "you like"]
+note = "variant of: you're not that smart to be honest"
+
+[[case]]
+source = "chat-1795695278"
+say = "you're annoying"
+avoid = ["Learned"]
+note = "variant of: you're not that smart to be honest"
+
+
+# from: that's cool  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+say = "that's cool"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "that's nice"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "cool"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "nice"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "awesome"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "yeah that's good"
+note = "variant of: that's cool"
+
+[[case]]
+source = "chat-1795723709"
+say = "that's great"
+note = "variant of: that's cool"
+
+
+# from: Karen can you stop this nonsense  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "stop it"
+note = "variant of: Karen can you stop this nonsense"
+
+[[case]]
+source = "chat-1795695278"
+say = "Karen stop"
+note = "variant of: Karen can you stop this nonsense"
+
+[[case]]
+source = "chat-1795695278"
+say = "please stop talking about notes"
+note = "variant of: Karen can you stop this nonsense"
+
+[[case]]
+source = "chat-1795695278"
+say = "never mind"
+note = "variant of: Karen can you stop this nonsense"

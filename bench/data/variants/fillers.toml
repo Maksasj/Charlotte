@@ -1,0 +1,179 @@
+suite = "variants-fillers"
+
+about = "Requests wrapped in voice-transcription filler ('can', 'turn', 'current', 'so', 'okay', 'yeah', 'hey', 'Karen', 'by the way'). The filler should be dropped and the request understood."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["filler"]
+
+
+# from: can calculate 5 + 7  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "can you calculate 6 + 8"
+mentions = ["14"]
+note = "variant of: can calculate 5 + 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "so calculate 3 * 3"
+mentions = ["9"]
+note = "variant of: can calculate 5 + 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "okay calculate 10 / 2"
+mentions = ["5"]
+note = "variant of: can calculate 5 + 7"
+
+[[case]]
+source = "chat-1795695278"
+say = "Karen calculate 2 + 2"
+mentions = ["4"]
+note = "variant of: can calculate 5 + 7"
+
+
+# from: can who am I  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "so who am I"
+mentions = ["Maxim"]
+note = "variant of: can who am I"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "hey Karen who am I"
+mentions = ["Maxim"]
+note = "variant of: can who am I"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "okay who am I"
+mentions = ["Maxim"]
+note = "variant of: can who am I"
+
+
+# from: current what do I like  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like black tea"]
+say = "yeah what do I like"
+mentions = ["black tea"]
+note = "variant of: current what do I like"
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like black tea"]
+say = "hey hey what do I like"
+mentions = ["black tea"]
+note = "variant of: current what do I like"
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like black tea"]
+say = "so what do I like again"
+mentions = ["black tea"]
+note = "variant of: current what do I like"
+
+[[case]]
+source = "chat-1795695278"
+before = ["I like black tea"]
+say = "Karen what do I like"
+mentions = ["black tea"]
+note = "variant of: current what do I like"
+
+
+# from: turn how are you  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "so how are you"
+note = "variant of: turn how are you"
+
+[[case]]
+source = "chat-1795695278"
+say = "okay how are you today"
+note = "variant of: turn how are you"
+
+[[case]]
+source = "chat-1795695278"
+say = "Karen how are you"
+note = "variant of: turn how are you"
+
+[[case]]
+source = "chat-1795695278"
+say = "yeah how are you"
+note = "variant of: turn how are you"
+
+
+# from: can what can you do  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "so what can you do"
+note = "variant of: can what can you do"
+
+[[case]]
+source = "chat-1795695278"
+say = "okay Karen what can you do"
+note = "variant of: can what can you do"
+
+[[case]]
+source = "chat-1795695278"
+say = "which tools you have"
+note = "variant of: can what can you do"
+
+
+# from: can what do you know about me  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "so what do you know about me"
+mentions = ["Maxim"]
+note = "variant of: can what do you know about me"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "Karen what do you know about me"
+mentions = ["Maxim"]
+note = "variant of: can what do you know about me"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim"]
+say = "what you know about me"
+mentions = ["Maxim"]
+note = "variant of: can what do you know about me"
+
+
+# from: who's Karen by the way  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+say = "who are you by the way"
+note = "variant of: who's Karen by the way"
+
+[[case]]
+source = "chat-1795723709"
+say = "by the way who are you"
+note = "variant of: who's Karen by the way"
+
+[[case]]
+source = "chat-1795723709"
+say = "who's Karen by the way"
+note = "variant of: who's Karen by the way"
+
+[[case]]
+source = "chat-1795723709"
+say = "so who are you"
+note = "variant of: who's Karen by the way"

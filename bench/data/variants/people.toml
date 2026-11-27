@@ -1,0 +1,156 @@
+suite = "variants-people"
+
+about = "Asking whether Karin knows someone, and about the people she knows."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["people"]
+
+
+# from: do you know Oscar  (chat-1795723709)
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "do you know Oscar"
+mentions = ["Oscar"]
+note = "variant of: do you know Oscar"
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "Karen do you know Oscar"
+mentions = ["friend"]
+note = "variant of: do you know Oscar"
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "have you heard of Oscar"
+mentions = ["friend"]
+note = "variant of: do you know Oscar"
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "do you remember Oscar"
+mentions = ["friend"]
+note = "variant of: do you know Oscar"
+
+[[case]]
+source = "chat-1795723709"
+before = ["my name is Max"]
+say = "do you know Max"
+mentions = ["you"]
+note = "variant of: do you know Oscar"
+
+[[case]]
+source = "chat-1795723709"
+say = "do you know Eldar"
+note = "variant of: do you know Oscar"
+
+
+# from: which people do you know  (chat-1795731137)
+
+[[case]]
+source = "chat-1795731137"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "which people do you know"
+mentions = ["Oscar"]
+note = "variant of: which people do you know"
+
+[[case]]
+source = "chat-1795731137"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "who do you know"
+mentions = ["Oscar"]
+note = "variant of: which people do you know"
+
+[[case]]
+source = "chat-1795731137"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "what people do you know"
+mentions = ["Oscar"]
+note = "variant of: which people do you know"
+
+[[case]]
+source = "chat-1795731137"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "who are my friends"
+mentions = ["Oscar"]
+note = "variant of: which people do you know"
+
+[[case]]
+source = "chat-1795731137"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "list my friends"
+mentions = ["Oscar"]
+note = "variant of: which people do you know"
+
+
+# from: hey it's Oscar do you know anything about Maxim  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "Oscar is my friend", "Oscar likes ice cream"]
+say = "what do you know about Oscar"
+mentions = ["ice cream"]
+note = "variant of: hey it's Oscar do you know anything about Maxim"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "Oscar is my friend", "Oscar likes ice cream"]
+say = "tell me about Oscar"
+mentions = ["ice cream"]
+note = "variant of: hey it's Oscar do you know anything about Maxim"
+
+[[case]]
+source = "chat-1795695278"
+before = ["my name is Maxim", "Oscar is my friend", "Oscar likes ice cream"]
+say = "anything about Oscar"
+mentions = ["ice cream"]
+note = "variant of: hey it's Oscar do you know anything about Maxim"
+
+
+# from: Oscar like ice cream  (skills/people)
+
+[[case]]
+source = "skills/people"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "Oscar like ice cream"
+avoid = ["you like"]
+note = "variant of: Oscar like ice cream"
+
+[[case]]
+source = "skills/people"
+before = ["my name is Maxim", "Oscar is my friend"]
+say = "Oscar loves pizza"
+avoid = ["you like"]
+note = "variant of: Oscar like ice cream"
+
+[[case]]
+source = "skills/people"
+before = ["my name is Maxim"]
+say = "my friend Oscar likes tea"
+avoid = ["you like"]
+note = "variant of: Oscar like ice cream"
+
+
+# from: is Karen Maxim friend  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "are you my friend"
+note = "variant of: is Karen Maxim friend"
+
+[[case]]
+source = "chat-1795695278"
+say = "is Karen my friend"
+note = "variant of: is Karen Maxim friend"
+
+[[case]]
+source = "chat-1795695278"
+say = "are we friends"
+note = "variant of: is Karen Maxim friend"

@@ -1,0 +1,100 @@
+suite = "variants-notes"
+
+about = "Notes and reminders, asked the way the chats asked."
+
+split = "test"
+
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+
+tags = ["notes"]
+
+
+# from: do you have any notes about weekend  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note plans for the weekend"]
+say = "do you have any notes about the weekend"
+mentions = ["weekend"]
+note = "variant of: do you have any notes about weekend"
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note plans for the weekend"]
+say = "do I have plans for the weekend"
+mentions = ["weekend"]
+note = "variant of: do you have any notes about weekend"
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note buy milk"]
+say = "what notes do I have"
+mentions = ["milk"]
+note = "variant of: do you have any notes about weekend"
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note buy milk"]
+say = "show my notes"
+mentions = ["milk"]
+note = "variant of: do you have any notes about weekend"
+
+
+# from: Karen can you delete my notes  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note buy milk"]
+say = "delete my notes"
+note = "variant of: Karen can you delete my notes"
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note buy milk"]
+say = "remove the last note"
+note = "variant of: Karen can you delete my notes"
+
+[[case]]
+source = "chat-1795695278"
+before = ["make a note buy milk"]
+say = "I made a mistake in that note"
+note = "variant of: Karen can you delete my notes"
+
+
+# from: Can you remind me ?  (chat-1795691864)
+
+[[case]]
+source = "chat-1795691864"
+say = "can you remind me"
+expect = "ask"
+note = "variant of: Can you remind me ?"
+
+[[case]]
+source = "chat-1795691864"
+say = "remind me"
+expect = "ask"
+note = "variant of: Can you remind me ?"
+
+[[case]]
+source = "chat-1795691864"
+say = "set a reminder"
+expect = "ask"
+note = "variant of: Can you remind me ?"
+
+
+# from: can I need to meet up with my friends tomorrow  (chat-1795695278)
+
+[[case]]
+source = "chat-1795695278"
+say = "I need to meet my friends tomorrow"
+note = "variant of: can I need to meet up with my friends tomorrow"
+
+[[case]]
+source = "chat-1795695278"
+say = "remember that I meet Oscar tomorrow"
+note = "variant of: can I need to meet up with my friends tomorrow"
+
+[[case]]
+source = "chat-1795695278"
+say = "note that I'm meeting friends tomorrow"
+note = "variant of: can I need to meet up with my friends tomorrow"
