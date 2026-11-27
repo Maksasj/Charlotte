@@ -16,6 +16,8 @@
 //! | `fixed_phrase(text)`                   | never split inside ("rock and roll")                          |
 //! | `pronoun(word, kind)`                  | resolved against the chat's most recent `mention(entity, kind)`|
 //! | `hint(word, text)`                     | what to suggest when nothing matched                          |
+//! | `wrap(text, lead?)`                    | words around a request ("sorry $act"): `$act` is read as a    |
+//! |                                        | request of its own; `lead` is said before its reply           |
 //!
 //! Phrases are matched on whole lowercase tokens; untouched tokens keep their
 //! original spelling, so captured names stay capitalised ("Maksim").
@@ -55,6 +57,16 @@ pub struct Lexicon {
     fixed: Vec<Phrase>,
     pronouns: HashMap<String, String>,
     hints: Vec<(Phrase, String)>,
+    wraps: Vec<Wrap>,
+}
+
+/// Words that wrap another request: `wrap(text="sorry $act", lead="No worries.")`.
+#[derive(Clone, Debug)]
+pub struct Wrap {
+    pub text: String,
+    pub lead: Option<String>,
+    /// How many words of the wrapper are literal (not `$act`).
+    pub literals: usize,
 }
 
 fn phrase(s: &str) -> Phrase {
@@ -102,6 +114,12 @@ impl Lexicon {
                         .insert(a("word").to_lowercase(), a("kind").to_string());
                 }
                 "hint" => lex.hints.push((phrase(a("word")), a("text").to_string())),
+                "wrap" if a("text").contains("$act") => {
+                    let text = a("text").to_string();
+                    let literals = text.split_whitespace().filter(|w| *w != "$act").count();
+                    let lead = Some(a("lead").trim().to_string()).filter(|l| !l.is_empty());
+                    lex.wraps.push(Wrap { text, lead, literals });
+                }
                 _ => {}
             }
         }
@@ -109,6 +127,7 @@ impl Lexicon {
         for table in [&mut lex.aliases, &mut lex.rewrites] {
             table.sort_by_key(|(from, _)| std::cmp::Reverse(from.len()));
         }
+        lex.wraps.sort_by_key(|w| std::cmp::Reverse(w.literals));
         for table in [&mut lex.fill_start, &mut lex.fill_end, &mut lex.fill_any, &mut lex.vocatives] {
             table.sort_by_key(|p| std::cmp::Reverse(p.len()));
         }
@@ -247,6 +266,11 @@ impl Lexicon {
                 .find(|(p, _)| matches_at(&toks, i, p))
                 .map(|(_, h)| h.clone())
         })
+    }
+
+    /// The wrappers, most specific (most literal words) first.
+    pub fn wraps(&self) -> &[Wrap] {
+        &self.wraps
     }
 
     pub fn token_count(text: &str) -> usize {

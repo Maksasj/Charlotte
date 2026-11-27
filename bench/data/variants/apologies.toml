@@ -2,9 +2,9 @@ suite = "variants-apologies"
 
 about = "An apology in front of a request ('sorry Karen, ...'): she should not stop at 'No worries' but do the request."
 
-split = "test"
+split = "dev"
 
-labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes)"
+labels = "written by claude-opus-5.5 on 2026-11-27 from failing bench turns (variants, no fixes); dev since 2026-11-27: its failures informed language/wrappers.md"
 
 tags = ["apology"]
 

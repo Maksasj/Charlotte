@@ -1,0 +1,200 @@
+suite = "heldout-wrapped"
+about = """Held-out test for nested requests (requests wrapped in other words). Written after language/wrappers.md, \
+never used for fixes and never to be: if it is ever used to change the vault, move it to split = "dev" and write a \
+new one. Tags: control = the inner request alone; known-wrapper = a wrapper from wrappers.md in a new pairing; \
+new-wrapper = a wrapper that is not in wrappers.md (does the mechanism reach beyond the list?)."""
+split = "test"
+labels = "written by claude-opus-5.5 on 2026-11-27, before running it once; not tuned on"
+
+# ---- control: the inner requests on their own ----
+
+[[case]]
+say = "what is the weather in Berlin"
+mentions = ["Berlin"]
+tags = ["control"]
+
+[[case]]
+say = "calculate 6 * 7"
+mentions = ["42"]
+tags = ["control"]
+
+[[case]]
+say = "my name is Lukas"
+mentions = ["Lukas"]
+tags = ["control"]
+
+[[case]]
+before = ["my name is Lukas"]
+say = "what is my name"
+mentions = ["Lukas"]
+tags = ["control"]
+
+[[case]]
+before = ["I like green tea"]
+say = "what do I like"
+mentions = ["green tea"]
+tags = ["control"]
+
+[[case]]
+before = ["my name is Lukas", "Eldar is my friend"]
+say = "who is my friend"
+mentions = ["Eldar"]
+tags = ["control"]
+
+[[case]]
+say = "what can you do"
+tags = ["control"]
+
+[[case]]
+say = "make a note call the dentist"
+mentions = ["dentist"]
+tags = ["control"]
+
+[[case]]
+say = "I like chess"
+mentions = ["chess"]
+tags = ["control"]
+
+[[case]]
+say = "who are you"
+mentions = ["Karin"]
+tags = ["control"]
+
+# ---- known wrappers, new pairings ----
+
+[[case]]
+say = "my bad, what is the weather in Berlin"
+mentions = ["Berlin"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "sorry Karin, make a note call the dentist"
+mentions = ["dentist"]
+tags = ["known-wrapper"]
+
+[[case]]
+before = ["my name is Lukas", "Eldar is my friend"]
+say = "do you know who my friend is"
+mentions = ["Eldar"]
+tags = ["known-wrapper"]
+
+[[case]]
+before = ["my name is Lukas"]
+say = "do you remember what my name is"
+mentions = ["Lukas"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "I want to know what you can do"
+tags = ["known-wrapper"]
+
+[[case]]
+say = "hey, calculate 6 * 7"
+mentions = ["42"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "hello, my name is Lukas"
+mentions = ["Lukas"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "I like chess by the way"
+mentions = ["chess"]
+tags = ["known-wrapper"]
+
+[[case]]
+before = ["I like green tea"]
+say = "tell me what I like"
+mentions = ["green tea"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "I was wondering who you are"
+mentions = ["Karin"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "excuse me, what is the weather in Rome"
+mentions = ["Rome"]
+tags = ["known-wrapper"]
+
+[[case]]
+say = "sorry, do you know what the weather is in Oslo"
+mentions = ["Oslo"]
+tags = ["known-wrapper"]
+note = "two wrappers, embedded question order"
+
+# ---- new wrappers (not in wrappers.md) ----
+
+[[case]]
+say = "quick question, what is the weather in Berlin"
+mentions = ["Berlin"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "sorry to bother you, calculate 6 * 7"
+mentions = ["42"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "wait, my name is Lukas"
+mentions = ["Lukas"]
+tags = ["new-wrapper"]
+
+[[case]]
+before = ["my name is Lukas"]
+say = "would you happen to know what my name is"
+mentions = ["Lukas"]
+tags = ["new-wrapper"]
+
+[[case]]
+before = ["I like green tea"]
+say = "I'm curious, what do I like"
+mentions = ["green tea"]
+tags = ["new-wrapper"]
+
+[[case]]
+before = ["my name is Lukas", "Eldar is my friend"]
+say = "listen, who is my friend"
+mentions = ["Eldar"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "out of curiosity, what can you do"
+tags = ["new-wrapper"]
+
+[[case]]
+say = "before I forget, make a note call the dentist"
+mentions = ["dentist"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "hmm, I like chess"
+mentions = ["chess"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "let me ask you, who are you"
+mentions = ["Karin"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "ah sorry, what is the weather in Rome"
+mentions = ["Rome"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "one more thing, calculate 9 + 9"
+mentions = ["18"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "mind telling me who you are"
+mentions = ["Karin"]
+tags = ["new-wrapper"]
+
+[[case]]
+say = "real quick, what is the weather in Oslo"
+mentions = ["Oslo"]
+tags = ["new-wrapper"]

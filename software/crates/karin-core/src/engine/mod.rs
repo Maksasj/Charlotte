@@ -17,6 +17,8 @@ use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
 
 const MAX_STEPS_PER_TURN: usize = 12;
+/// How deep requests may be nested ("sorry, can you tell me what ...").
+const MAX_NESTING: usize = 3;
 /// How many facts of one relation a chat remembers (oldest are forgotten first).
 const CHAT_MEMORY_PER_RELATION: usize = 32;
 const IMPASSE_REPLY: &str =
@@ -157,7 +159,7 @@ impl Engine {
 
         // 1. The whole utterance, in canonical form.
         let whole_text = lex.normalize(&lex.resolve_pronouns(&raw, &self.state.facts));
-        let mut chosen = self.attempt("whole", &whole_text);
+        let mut chosen = self.understand("whole", &whole_text, &lex, 0);
 
         // 2. Several clauses ("Oscar is my friend and he lives in Venus"): used
         //    when every clause is understood, or when the whole was not.
@@ -230,6 +232,7 @@ impl Engine {
             let (winner, bindings, _) = candidates.remove(0);
 
             fired_keys.insert(fire_key(&winner.id, &bindings));
+            out.covered += literal_words(&winner);
             out.fired.push(winner.id.clone());
             out.bindings.extend(bindings.clone());
 
@@ -264,6 +267,54 @@ impl Engine {
         out
     }
 
+    /// One sentence, read two ways: as a whole, and - when a `wrap` in the
+    /// lexicon fits ("sorry $act", "do you know $act") - as a request nested
+    /// inside the wrapper, read recursively. The reading whose rules matched
+    /// more of the sentence's words wins; on a tie the whole reading does, so
+    /// a wrapper only changes anything when it explains more of what was said
+    /// ("sorry, what's the weather in Tokyo": the apology rule matches one word,
+    /// the nested reading matches the apology and the question).
+    fn understand(&mut self, kind: &str, text: &str, lex: &Lexicon, depth: usize) -> Attempt {
+        let base = (depth < MAX_NESTING && !lex.wraps().is_empty()).then(|| self.snapshot());
+        let mut best = self.attempt(kind, text);
+        let Some(base) = base else {
+            return best;
+        };
+        let user_text = self.current_user_text();
+        let mut best_state: Option<Snapshot> = None;
+        let empty = Bindings::new();
+        for wrap in lex.wraps() {
+            let Some(inner) = crate::unify::match_text_template(&wrap.text, text, &empty)
+                .and_then(|b| b.get("$act").cloned())
+            else {
+                continue;
+            };
+            let inner = lex.normalize(&lex.resolve_pronouns(&inner, &self.state.facts));
+            if inner.trim().is_empty() || normalize(&inner) == normalize(text) {
+                continue;
+            }
+            if best_state.is_none() {
+                best_state = Some(self.snapshot()); // the whole reading's outcome
+            }
+            self.restore(base.clone(), &user_text);
+            let mut got = self.understand("nested", &inner, lex, depth + 1);
+            got.covered += wrap.literals;
+            let better = got.answered() && (!best.answered() || got.covered > best.covered);
+            if better {
+                if let Some(lead) = &wrap.lead {
+                    got.replies.insert(0, lead.clone());
+                }
+                best = got;
+                best_state = Some(self.snapshot());
+            }
+            self.restore(base.clone(), &user_text);
+        }
+        if let Some(state) = best_state {
+            self.restore(state, &user_text);
+        }
+        best
+    }
+
     /// Each clause in turn, with pronouns resolved against what the earlier
     /// clauses just said, and ellipsis ("calculate 5 * 7 and 6 * 9") filled in
     /// from the previous clause.
@@ -275,7 +326,7 @@ impl Engine {
         for clause in clauses {
             self.reset_working(&raw);
             let text = lex.normalize(&lex.resolve_pronouns(clause, &self.state.facts));
-            let mut got = self.attempt("clause", &text);
+            let mut got = self.understand("clause", &text, &lex, 0);
             if !got.answered()
                 && let Some((prev_text, prev_bindings)) = &previous
                 && let Some(filled) = fill_ellipsis(prev_text, prev_bindings, &text)
@@ -679,6 +730,23 @@ impl Engine {
     }
 }
 
+/// How many words of the sentence a pattern matched literally: the fixed words
+/// of its text templates and `~"..."` phrases (variables match anything, so
+/// they don't count).
+fn literal_words(pattern: &Pattern) -> usize {
+    pattern
+        .when
+        .iter()
+        .map(|cond| match cond {
+            Condition::Text { template } => {
+                template.split_whitespace().filter(|tok| !is_var(tok)).count()
+            }
+            Condition::Contains { phrase } => phrase.split_whitespace().count(),
+            _ => 0,
+        })
+        .sum()
+}
+
 /// Patterns learned for one exact wording: taught replies and hand-added rules.
 fn taught_on_exact_wording(pattern: &Pattern) -> bool {
     pattern.provenance.starts_with("taught") || pattern.provenance == "manual"
@@ -799,6 +867,8 @@ struct Attempt {
     replies: Vec<String>,
     understood: Vec<String>,
     missed: Vec<String>,
+    /// Words of the sentence the fired rules matched literally (see `literal_words`).
+    covered: usize,
 }
 
 impl Attempt {
@@ -816,6 +886,7 @@ impl Attempt {
         self.bindings.extend(other.bindings);
         self.replies.extend(other.replies);
         self.understood.extend(other.understood);
+        self.covered += other.covered;
     }
 }
 
@@ -881,6 +952,21 @@ mod tests {
         eng.turn("make a note");
         let saved = eng.turn("buy oat milk");
         assert!(saved.reply.contains("buy oat milk"), "{}", saved.reply);
+    }
+
+    #[test]
+    fn wrapped_request_is_read_inside_its_wrapper() {
+        let mut eng = engine();
+        // The apology rule alone matches "sorry"; the nested reading also gets the name.
+        let named = eng.turn("sorry my name is Maxim");
+        assert!(named.reply.starts_with("No worries."), "{}", named.reply);
+        assert!(named.reply.contains("Maxim"), "{}", named.reply);
+        // Two wrappers deep: "sorry" around "karin can you ...".
+        let calc = eng.turn("sorry Karen can you calculate 4 + 4");
+        assert!(calc.reply.contains('8'), "{}", calc.reply);
+        // A wrapper with nothing understood inside leaves the whole reading alone.
+        let plain = eng.turn("sorry");
+        assert!(plain.reply.contains("No worries"), "{}", plain.reply);
     }
 
     #[test]

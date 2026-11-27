@@ -126,7 +126,7 @@ pub struct ScorePart {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AttemptTrace {
-    /// "whole", "clause", "ellipsis" or "exact".
+    /// "whole", "clause", "nested" (inside a wrapper), "ellipsis" or "exact".
     pub kind: String,
     pub text: String,
     pub answered: bool,
