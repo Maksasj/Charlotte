@@ -1,0 +1,176 @@
+suite = "notes"
+about = "Notes and reminders: Saving and listing notes, reminders."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "can you create a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can you create a to-do list for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can you save a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can I make a note"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen make a note"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen create a note"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen list my notes"
+tags = ["note.list"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen can you make a note on a Friday I will check my friends"
+mentions = ["friends"]
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen can you take a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795620542"
+say = "remember me to text my friends"
+mentions = ["text my friends"]
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "my notes"
+tags = ["note.list"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "list my notes please"
+tags = ["note.list"]
+
+[[case]]
+source = "chat-1795620542"
+before = ["my name is Maxim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+say = "Karen list all my notes"
+tags = ["note.list"]
+
+[[case]]
+source = "chat-1795620542"
+say = "can can you add more notes for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795620542"
+say = "can you make a note for a Friday"
+tags = ["note.create"]
+
+[[case]]
+source = "chat-1795620542"
+say = "can you make a to-do item for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+split = "test"
+source = "chat-1795691864"
+say = "Can you remind me ?"
+expect = "ask"
+tags = ["reminder.create"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you take a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "list my nose Karen"
+tags = ["note.list"]
+note = "'nose' misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "list my notes Karen"
+tags = ["note.list"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "do I have plans for weekend"
+tags = ["note.list"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "do you have any notes about weekend"
+tags = ["note.list"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "list my notes"
+tags = ["note.list"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what are my notes"
+tags = ["note.list"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "remember that I need to meet up with my friends tomorrow"
+mentions = ["meet up with my friends"]
+tags = ["note.create"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can I need to meet up with my friends tomorrow"
+tags = ["note.create"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "do you have any notes saved about me and my friends"
+tags = ["note.list"]

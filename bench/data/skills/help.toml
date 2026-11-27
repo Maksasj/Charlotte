@@ -1,0 +1,91 @@
+suite = "help"
+about = "Help: What can you do, how do you learn."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "hey Karen what tools do you have"
+tags = ["help.capabilities"]
+
+[[case]]
+source = "chat-1795619028"
+say = "at which tools do you have"
+tags = ["help.capabilities"]
+note = "'at' is a mishearing"
+
+[[case]]
+source = "chat-1795619028"
+say = "what tools do you have"
+tags = ["help.capabilities"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen what can you do"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "help"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Ken what do you know"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Carol what do you know"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what do you know"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen can you learn new facts"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you learn new rules"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what which tools do you have"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "which tools do you have"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can what can you do"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what can you do"
+tags = ["help.capabilities"]
+
+[[case]]
+split = "test"
+source = "chat-1795721859"
+say = "can you generalize episodes"
+tags = ["learning.meta"]

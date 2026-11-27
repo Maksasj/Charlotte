@@ -1,0 +1,233 @@
+suite = "knowledge"
+about = "Facts and definitions: Teaching and asking facts, definitions."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609135"
+say = "What is a Symbolic AI ?"
+mentions = ["symbolic ai"]
+tags = ["define"]
+
+[[case]]
+source = "chat-1795609223"
+say = "caramel macchiato is a drink"
+mentions = ["caramel macchiato"]
+tags = ["fact.teach"]
+
+[[case]]
+source = "chat-1795610269"
+say = "black tea is a drink"
+mentions = ["black tea"]
+tags = ["fact.teach"]
+
+[[case]]
+source = "chat-1795610417"
+say = "What is caramel macchiato ?"
+mentions = ["drink"]
+tags = ["fact.ask"]
+
+[[case]]
+source = "chat-1795619028"
+say = "what is a caramel macchiato"
+mentions = ["drink"]
+tags = ["fact.ask"]
+
+[[case]]
+source = "chat-1795619028"
+say = "what is rust used for"
+mentions = ["software"]
+tags = ["fact.ask"]
+
+[[case]]
+source = "chat-1795619028"
+say = "what is a rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+source = "chat-1795619028"
+say = "rust is a programming language"
+mentions = ["rust"]
+tags = ["fact.teach"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen what is the symbolic artificial intelligence"
+mentions = ["symbolic ai"]
+tags = ["define"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen what is symbolic AI"
+mentions = ["symbolic ai"]
+tags = ["define"]
+
+[[case]]
+source = "chat-1795619028"
+say = "what is the definition for programming language"
+mentions = ["programming language"]
+tags = ["define"]
+
+[[case]]
+source = "chat-1795619028"
+say = "is Karen a best friend"
+tags = ["fact.ask"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen what is a note"
+mentions = ["note"]
+tags = ["define"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "go is a programming language"
+mentions = ["go"]
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what do you know about rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "who is rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "who made rust"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "who made the go"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "do you know go"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is go"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "who made go"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "do you know Google"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is Google"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Google is a search engine"
+mentions = ["google"]
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Google create go"
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Google created go"
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Google is creator of go"
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what do you know about Earth"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is a creator"
+tags = ["fact.teach"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is GitHub"
+tags = ["define"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what color is grass"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "is go a programming language"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what else do you know about go"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is a programming language"
+tags = ["define"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is Venus"
+tags = ["fact.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "old people are persons"
+tags = ["knowledge.teach"]
+note = "'all people are persons'"

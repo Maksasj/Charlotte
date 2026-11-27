@@ -1,0 +1,408 @@
+suite = "names"
+about = "Who is speaking: Telling and asking your name, role and other things about yourself."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795609186"
+say = "my name is Maksim"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795609186"
+say = "What is my name ?"
+tags = ["user.name.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "who am I"
+tags = ["user.name.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "so what is my name"
+tags = ["user.name.ask"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "by the way I'm Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen I'm an artist"
+mentions = ["artist"]
+tags = ["user.role.tell"]
+
+[[case]]
+source = "chat-1795685963"
+before = ["my name is Maksim"]
+say = "I am Maksim"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "so who is Maksim"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I'm an artist"
+mentions = ["artist"]
+tags = ["user.role.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what do you remember"
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what do you remember from this chaps"
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "can what do you know about me"
+mentions = ["Maksim"]
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "can who I am"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "who is Maksim"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Maksim is me"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Max is me"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "what do you know about me"
+mentions = ["Maksim"]
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "can who am I"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen who am I"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "my name is Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "who is Max"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "criminal do you know about me"
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "do you know do you want to know who am I"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen do you know who am I"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "yeah I am most kind person ever"
+tags = ["user.state.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen what do you know about me"
+mentions = ["Max"]
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I'm Max not maximum"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "hey it's Oscar do you know anything about Maxim"
+tags = ["user.profile"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "hey I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "I am Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "yes it is"
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "yes"
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "my name is Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Oscar is me"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "hey it's Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "hey my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "no I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "I'm Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "I'm Max not Maxim"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "okay I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "no Karen I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "correct I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "hello Karen Max is back I'm here"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723220"
+say = "Max is here"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723515"
+say = "Am I who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+note = "'am I... who am I'"
+
+[[case]]
+source = "chat-1795723678"
+say = "sorry my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hi I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey it's Max I'm back"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey it's Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey it's Oscar again"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey it's Max again I'm back"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "it's Maxim I'm back"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[case]]
+source = "chat-1795723678"
+say = "hey Maksim is back"
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "I'm Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "by the way I'm a Mexican"
+tags = ["user.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "hey who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "sorry I'm a Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "I am Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]

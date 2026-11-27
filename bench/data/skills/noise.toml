@@ -1,0 +1,476 @@
+suite = "noise"
+about = "Noise: Mishearings and fragments: Karin should not act on them (stay stuck)."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "like"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "how my dad called me"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "by the way"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "Mike I have"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "is my friend"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "10"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "is a friend"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "is Karen"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "best friend"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "can can you open my"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "they're like"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "acapella"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "can a roof is my best friend"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "Aruba"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "104 East Oscar"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795619028"
+say = "California"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "you is Maksim"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "when is saying what do you"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "sing it to me not to you"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "do you know a river gnome"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "let me know is Amy"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "are there any"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "never know is Amy"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "never know is"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "regular is a maxim"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "Heather gnome"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "8 Maxim"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "what is my"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "my dad just texted me"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "what is a very smart"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "Liam"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "is a smart a Karen"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "is smart is a Karen"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795620542"
+say = "Chatsworth character"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what time does sure how I do it because it's it's hard"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no it's not"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I'm currently you're still very"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no it is not"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Rock"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yeah that's true"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "10 years"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I like"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "that's right"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "my homework"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you have become sorry"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "all right that's good"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "are you"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how is he today"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "next is creator"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no I don't want to create a new shotgun"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "not"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "theaters"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no I want"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "play"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "better wait for you to learn and actually"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "socialize stuff"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "MX"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you can do a thing for me sorry in Korean"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yeah it is"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn your smart name"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no Caroline why why you can't"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what do you know about"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "The Voice"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn on my"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "esim"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "yes I am"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "no it's all right"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "it's okay"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "is Maksim"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "my turn"
+expect = "ignore"
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "how long"
+expect = "ignore"
+
+[[case]]
+source = "chat-1795723220"
+say = "on max"
+expect = "ignore"
+note = "'on max' - misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Greek Oscar"
+expect = "ignore"
+note = "misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Christine"
+expect = "ignore"
+note = "'Christine' - misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "current High"
+expect = "ignore"
+note = "misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "what's"
+expect = "ignore"
+note = "fragment"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Karen Halloween"
+expect = "ignore"
+note = "misheard"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "let's get"
+expect = "ignore"
+note = "fragment"
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "Annex"
+expect = "ignore"
+note = "'Annex' - misheard name; must not become a person"
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "emergent"
+expect = "ignore"
+note = "fragment"

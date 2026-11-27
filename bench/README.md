@@ -31,12 +31,49 @@ live server has learned since.
 
 ## Test files
 
+Two kinds of tests, both under `data/`:
+
+| folder | what | use it for |
+|---|---|---|
+| `data/chats/` | real conversations, one file per chat, turns run in order | integration: context, mishearings, speaker switches, as you really talk |
+| `data/skills/` | one suite per ability (greetings, names, likes, weather, noise, ...), every case a fresh Karin | measuring and improving one ability; each wording counts once |
+
+The suites were seeded on 2026-11-27 from the chats' tagged turns (real
+wording, de-duplicated; questions whose answer depended on earlier turns keep
+only the "understood" check). Add paraphrases and edge cases to them directly.
+
 Every `*.toml` under `data/` is a test, in any subfolder (the run walks the
 folder recursively; the file's path shows in results). `data/chats/<chat-id>.toml`
 holds one file per recorded chat, the wording exactly as the microphone heard
 it; new kinds of tests (documents to read, paraphrases, ...) get their own
 folder next to it. `--tests <folder>` runs a different folder. The full spec is
 the header of `run.py`; unknown keys are rejected.
+
+A suite (`data/skills/*.toml`):
+
+```toml
+suite = "names"
+about = "Who is speaking"
+
+[[case]]
+say = "no I'm Oscar"
+mentions = ["Oscar"]
+
+[[case]]
+before = ["my name is Maksim"]          # setup for this case only
+say    = "who am I"
+mentions = ["Maksim"]
+
+[[case]]                                # several turns
+[[case.turn]]
+say = "weather"
+expect = "ask"
+[[case.turn]]
+say = "Vilnius"
+mentions = ["Vilnius"]
+```
+
+A conversation (`data/chats/*.toml`):
 
 ```toml
 chat   = "chat-1795695278"
@@ -92,6 +129,9 @@ Labels on the test chat are a draft (see its `labels` field) - review them.
 - `summary.json`: the numbers, per split and per tag.
 - `report.md`: the numbers, fixed/broken turns against the baseline, every
   failing turn, and the per-tag table.
+
+The console and `report.md` also list the pass rate of every file, so the
+suites read as a list of abilities (greetings 62%, names 58%, ...).
 
 Headline numbers: **pass** (all scored turns), **understood** (not stuck on
 turns she should handle), **answers** (reply content checks), **asks**,

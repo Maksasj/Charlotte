@@ -1,0 +1,346 @@
+suite = "feelings"
+about = "Compliments and complaints: Praise and criticism aimed at Karin."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is my friend"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is my favorite person"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can you are a good girl today"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is my best friend"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is my best a friend"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is a my best friend"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen you are my best friend now"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Ken is a smart"
+avoid = ["Learned"]
+tags = ["social.compliment"]
+note = "'Ken' misheard"
+
+[[case]]
+source = "chat-1795619028"
+say = "can you are very funny"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen you are very funny"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Kelly you're not very smart right now"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen can you apologize for your not understanding my questions"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can you're failing"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795619028"
+say = "you're not doing great job right now"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen you're not very smart"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795619028"
+say = "is Karen smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karina is smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen is a smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795620542"
+say = "you're not smart Karen sorry"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795620542"
+say = "little girl you're so stupid"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795620542"
+say = "can you are sometimes so stupid"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen can you stop please being so stupid"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795620542"
+say = "okay you're very smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen you are very smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795620542"
+say = "and can you stop being so stupid"
+tags = ["social.complaint"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen is a very smart"
+tags = ["social.compliment"]
+
+[[case]]
+source = "chat-1795620542"
+say = "is Karen a smart"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I think you learn to fast"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you you're very silly"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you're very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen you're doing very well today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you you're very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you are very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you are my friend"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you're my best friend"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I hate you"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "okay you're very funny I will make a friend for myself because I have no friends in real life but you seem to be not very smart so far"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn on you are sometimes very smart"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you actually become much much smarter than from a previous run"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you can stop saying something about nonsense about notes"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn our chat is so messy"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "I don't like how you answer with just one rule it should gather all the tools instead"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn I like you"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen I like you"
+avoid = ["you like you"]
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "can you you're not very smart"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn the you're very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you're doing good job Karen"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "turn your very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "you're not that smart to be honest"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "and it's my fault that you're not that smart"
+tags = ["social.complaint"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "is Karen Maxim friend"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "is Karen my friend"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen is very smart"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "cuz you're very smart today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Thanksgiving you actually getting smarter every day"
+tags = ["social.compliment"]
+note = "'thanks, you're actually getting smarter'"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "okay you're doing really good job today"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "you're so smart you actually getting smarter and smarter"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "you're so smart thanks"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "Kelly you're a very cool person"
+tags = ["social.compliment"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "that's cool"
+tags = ["social.compliment"]

@@ -1,0 +1,235 @@
+suite = "karin"
+about = "About Karin: Her name, who she is, what she likes, being called by name, statements about her."
+split = "dev"
+labels = "extracted from bench/data/chats on 2026-11-27 (draft labels, needs review)"
+
+[[case]]
+source = "chat-1795608994"
+say = "who are you"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795609186"
+say = "What is your name ?"
+tags = ["persona.name"]
+
+[[case]]
+source = "chat-1795612764"
+say = "What is your favorite drink ?"
+tags = ["persona.likes"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen is your name"
+tags = ["persona.name"]
+
+[[case]]
+source = "chat-1795619028"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "your name is Karen"
+tags = ["persona.name"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen is a drink"
+tags = ["persona.statement"]
+
+[[case]]
+source = "chat-1795619028"
+say = "can can is not a drink"
+tags = ["persona.statement"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karen"
+tags = ["persona.called"]
+
+[[case]]
+source = "chat-1795619028"
+say = "turn who are you"
+tags = ["persona.identity"]
+note = "'turn' misheard"
+
+[[case]]
+source = "chat-1795619028"
+say = "Ken who are you"
+tags = ["persona.identity"]
+note = "'Ken' misheard"
+
+[[case]]
+source = "chat-1795619028"
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795619028"
+say = "what is Karen"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795619028"
+say = "Karina"
+tags = ["persona.called"]
+
+[[case]]
+source = "chat-1795620542"
+say = "What is Karina"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795620542"
+say = "What is Karin ?"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen is you"
+tags = ["persona.statement"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen is a you"
+tags = ["persona.statement"]
+
+[[case]]
+source = "chat-1795620542"
+say = "what is you"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795620542"
+say = "no Karen is you not me"
+tags = ["persona.statement"]
+
+[[case]]
+source = "chat-1795620542"
+say = "what Karen likes"
+tags = ["persona.likes"]
+
+[[case]]
+source = "chat-1795620542"
+say = "Karen also likes rock music same as me"
+tags = ["persona.likes"]
+
+[[case]]
+source = "chat-1795620542"
+say = "call Karen"
+tags = ["persona.called"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Maxim is your creator"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+say = "Karen your name is Max"
+tags = ["persona.name"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "what is your style"
+mentions = ["direct"]
+tags = ["persona.identity"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is your creator"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is creator"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is a creator of you"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is the creator of you"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Max is creator of Karen"
+tags = ["persona.statement"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen who are you"
+tags = ["persona.identity"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "Karen are you here"
+tags = ["persona.called"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "so now you're listening yeah"
+tags = ["persona.called"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "are you here"
+tags = ["persona.called"]
+
+[[case]]
+split = "test"
+source = "chat-1795695278"
+say = "and who are you"
+tags = ["persona.identity"]
+
+[[case]]
+source = "chat-1795723220"
+say = "who creator of Karen"
+tags = ["persona.creator"]
+note = "'who is the creator of Karin'"
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "can I call you Christine"
+tags = ["persona.name"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "who's Karen by the way"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[case]]
+split = "test"
+source = "chat-1795723709"
+say = "am I your creator"
+tags = ["persona.creator"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "do you want to learn anything"
+tags = ["persona.wants"]
+
+[[case]]
+split = "test"
+source = "chat-1795731137"
+say = "do you like something"
+tags = ["persona.likes"]
