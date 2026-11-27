@@ -31,13 +31,13 @@ function ChatMemory({ facts, turn }: { facts: Fact[]; turn: number }) {
   const fresh = facts.filter((f) => f.turn === turn).length;
 
   return (
-    <div className="card">
-      <div className="card-head">
+    <details className="card card-collapsible">
+      <summary className="card-head">
         <span className="section-label">Chat memory after this turn</span>
         <span className="muted">
           {facts.length} facts{fresh > 0 && ` · ${fresh} new this turn`}
         </span>
-      </div>
+      </summary>
       <div className="memory-groups">
         {[...groups.entries()].map(([rel, list]) => {
           const items = [...list].reverse();
@@ -70,7 +70,7 @@ function ChatMemory({ facts, turn }: { facts: Fact[]; turn: number }) {
           );
         })}
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -154,7 +154,10 @@ function StepCard({ step, pattern }: { step: StepTrace; pattern?: Pattern }) {
       {winner && (
         <div className="trace-why">
           <span className="trace-label">Why it won</span>
-          <ScoreParts match={winner} />
+          <details className="score-details">
+            <summary className="mono">{round(winner.score)}</summary>
+            <ScoreParts match={winner} />
+          </details>
           {runnerUp && (
             <span className={`muted ${close ? 'close-call' : ''}`}>
               {margin! >= 0 ? `+${margin}` : margin} over {runnerUp.name}
@@ -264,14 +267,19 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
           <span className="row" style={{ gap: 6 }}>
             <span className="muted">
               {trace.steps.length} {trace.steps.length === 1 ? 'step' : 'steps'} ·{' '}
-              {new Set(trace.firedPatternIds).size} rules
+              {new Set(trace.firedPatternIds).size}{" "}
+              {new Set(trace.firedPatternIds).size === 1 ? 'rule' : 'rules'}
             </span>
             <span className={`badge ${status.cls}`}>{status.label}</span>
           </span>
         </div>
         <div className="trace-grid">
-          <span className="trace-label">Heard</span>
-          <span className="mono">{trace.input}</span>
+          {!(understood.length === 1 && understood[0].trim() === trace.input.trim()) && (
+            <>
+              <span className="trace-label">Heard</span>
+              <span className="mono">{trace.input}</span>
+            </>
+          )}
           {understood.length > 0 && (
             <>
               <span className="trace-label">Understood as</span>

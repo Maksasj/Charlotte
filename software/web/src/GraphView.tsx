@@ -253,6 +253,8 @@ export function GraphView({
   const [, force] = useState(0);
 
   // Mutable view state (kept out of React to animate at 60fps).
+  const autoFitted = useRef(0);
+  const [legendOpen, setLegendOpen] = useState(false);
   const view = useRef({ k: 1, tx: 0, ty: 0, w: 0, h: 0, alpha: 1, hover: null as GNode | null, dirty: true });
   const drag = useRef<{ node: GNode | null; panning: boolean; x: number; y: number; moved: boolean } | null>(null);
   const colors = useRef(readVars());
@@ -393,6 +395,13 @@ export function GraphView({
         n.y += n.vy;
       }
       v.alpha = Math.max(0, a * 0.994);
+      if (autoFitted.current === 0 && v.alpha < 0.8) {
+        autoFitted.current = 1;
+        fit();
+      } else if (autoFitted.current === 1 && v.alpha < 0.25) {
+        autoFitted.current = 2;
+        fit();
+      }
     };
 
     const draw = () => {
@@ -419,7 +428,7 @@ export function GraphView({
           ? near
             ? 0.9
             : e.kind === 'fact'
-              ? 0.45
+              ? 0.22
               : e.kind === 'write'
                 ? 0.28
                 : 0.12
@@ -615,7 +624,7 @@ export function GraphView({
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    const k = Math.min(v.w / (maxX - minX + 80), v.h / (maxY - minY + 80), 4);
+    const k = Math.min(v.w / (maxX - minX + 240), v.h / (maxY - minY + 240), 4);
     v.k = k;
     v.tx = v.w / 2 - ((minX + maxX) / 2) * k;
     v.ty = v.h / 2 - ((minY + maxY) / 2) * k;
@@ -754,7 +763,7 @@ export function GraphView({
         onWheel={onWheel}
         style={{ cursor: 'grab', touchAction: 'none' }}
       />
-      <div className="gv-legend">
+      <div className={`gv-legend ${legendOpen ? '' : 'collapsed'}`}>
         <div className="gv-mode" role="tablist" aria-label="Graph">
           <button
             role="tab"
@@ -765,7 +774,7 @@ export function GraphView({
               setMode('facts');
             }}
           >
-            What Karin knows
+            Facts
           </button>
           <button
             role="tab"
@@ -776,9 +785,11 @@ export function GraphView({
               setMode('rules');
             }}
           >
-            How rules connect
+            Rules
           </button>
         </div>
+        {legendOpen && (
+        <div className="gv-legend-body">
         {mode === 'facts' ? (
           <>
             <div className="gv-legend-row muted">
@@ -800,7 +811,7 @@ export function GraphView({
               <span className="gv-ring" />
               category (is a)
             </div>
-            <div className="gv-legend-row muted">hover a node to read its facts</div>
+            <div className="gv-legend-row muted">select a node to inspect it</div>
           </>
         ) : (
           <>
@@ -827,8 +838,13 @@ export function GraphView({
         <div className="gv-legend-row muted">grey line = reads · coloured = writes</div>
           </>
         )}
+        </div>
+        )}
+        <button className="vx-tool" onClick={() => setLegendOpen((o) => !o)} aria-expanded={legendOpen}>
+          {legendOpen ? 'Hide legend' : 'Legend'}
+        </button>
         <button className="vx-tool" onClick={fit}>
-          Fit to view
+          Fit
         </button>
       </div>
       {card}

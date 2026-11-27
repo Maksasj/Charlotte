@@ -332,9 +332,25 @@ export function VaultExplorer<T>({
     note = <div className="vx-empty">No {noun} match the filter.</div>;
   } else if (!current) {
     note = (
-      <div className="vx-empty">
+      <div className="vx-overview">
         <div className="vx-empty-title">{describe(items)}</div>
-        <div>Pick a folder, a file, or a single item in the tree.</div>
+        <div className="vx-overview-hint">Jump into a folder, or pick one in the tree.</div>
+        <div className="vx-overview-grid">
+          {[...nodes.values()]
+            .filter((n) => n.key.split('/').length === 2 && n.type === 'folder' && n.count > 0)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 8)
+            .map((n) => (
+              <button
+                key={n.key}
+                className={`vx-overview-card zone-${zoneOf(n.key)}`}
+                onClick={() => setSelection({ node: n.key })}
+              >
+                <span className="vx-overview-name">{n.key}</span>
+                <span className="vx-overview-count">{n.count}</span>
+              </button>
+            ))}
+        </div>
       </div>
     );
   } else {

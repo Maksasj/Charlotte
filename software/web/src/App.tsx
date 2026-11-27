@@ -588,7 +588,7 @@ export default function App() {
           <h1>Karin</h1>
           {state && (
             <span className="brand-stats">
-              {state.facts.length} facts · {state.patterns.length} patterns · turn {state.turn}
+              {state.facts.length} facts · {state.patterns.length} rules · turn {state.turn}
             </span>
           )}
         </div>
@@ -618,7 +618,7 @@ export default function App() {
                   ? 'Voice: On (F2)'
                   : 'Voice: Off'}
           </button>
-          <button className="btn btn-primary btn-sm" onClick={handleNewChat}>
+          <button className="btn btn-ghost btn-sm btn-strong" onClick={handleNewChat}>
             New Chat
           </button>
           <button
@@ -627,7 +627,8 @@ export default function App() {
           >
             {theme === 'light' ? 'Dark' : 'Light'}
           </button>
-          <button className="btn btn-ghost btn-sm" onClick={handleReset}>
+          <span className="topbar-sep" aria-hidden="true" />
+          <button className="btn btn-ghost btn-sm btn-quiet-danger" onClick={handleReset}>
             Reset
           </button>
         </div>
@@ -731,6 +732,15 @@ export default function App() {
                 </div>
               ))
             )}
+            {busy && (
+              <div className="msg-row agent pending" role="status" aria-label="Karin is thinking">
+                <div className="msg-bubble typing">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -757,7 +767,7 @@ export default function App() {
                   promote
                 </label>
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-ghost btn-sm btn-strong"
                   onClick={() => handleTeach(activeImpasse.input)}
                   disabled={busy}
                 >
@@ -974,12 +984,12 @@ export default function App() {
                   <input
                     type="text"
                     className="field"
-                    placeholder="Filter by name, value, condition, action or source…"
+                    placeholder="Filter rules and facts…"
                     value={knowFilter}
                     onChange={(e) => setKnowFilter(e.target.value)}
                   />
                   <button
-                    className={`btn btn-sm ${showAddFact ? 'btn-ghost' : 'btn-primary'}`}
+                    className={`btn btn-sm btn-ghost btn-strong`}
                     onClick={() => setShowAddFact((v) => !v)}
                   >
                     {showAddFact ? 'Cancel' : 'Add fact'}
