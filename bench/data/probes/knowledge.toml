@@ -1,0 +1,70 @@
+suite = "knowledge"
+about = "Probes: teaching facts and asking them back, chains (is-a), yes/no questions, unknown things."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["knowledge"]
+
+[[case]]
+say = "a husky is a dog"
+mentions = ["husky", "dog"]
+
+[[case]]
+before = ["a husky is a dog"]
+say = "what is a husky"
+mentions = ["dog"]
+
+[[case]]
+before = ["a husky is a dog", "a dog is an animal"]
+say = "is a husky an animal"
+mentions = ["yes"]
+
+[[case]]
+before = ["a husky is a dog"]
+say = "is a husky a cat"
+avoid = ["yes"]
+
+[[case]]
+before = ["Paris is in France"]
+say = "where is Paris"
+mentions = ["France"]
+
+[[case]]
+before = ["Paris is the capital of France"]
+say = "what is the capital of France"
+mentions = ["Paris"]
+
+[[case]]
+before = ["the sky is blue"]
+say = "what color is the sky"
+mentions = ["blue"]
+
+[[case]]
+before = ["Python is a programming language"]
+say = "tell me about Python"
+mentions = ["programming language"]
+
+[[case]]
+say = "what is a zorblax"
+note = "unknown word: say she doesn't know, don't be stuck"
+
+[[case]]
+say = "is the Earth a planet"
+mentions = ["yes"]
+note = "the vault's science pack knows planets"
+
+[[case]]
+say = "what is Mars"
+mentions = ["planet"]
+
+[[case]]
+say = "what is hydrogen"
+mentions = ["element"]
+
+[[case]]
+[[case.turn]]
+say = "tea is a drink"
+[[case.turn]]
+say = "coffee is a drink"
+[[case.turn]]
+say = "what drinks do you know"
+mentions = ["tea", "coffee"]

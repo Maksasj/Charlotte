@@ -1,0 +1,110 @@
+suite = "names"
+about = "Probes: telling and asking who you are, in new wordings, with setup and follow-ups."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["user.name"]
+
+# Telling your name (a fresh Karin does not know you yet)
+
+[[case]]
+say = "I'm called Maxim"
+mentions = ["Maxim"]
+
+[[case]]
+say = "my name's Maxim"
+mentions = ["Maxim"]
+
+[[case]]
+say = "you can call me Max"
+mentions = ["Max"]
+
+[[case]]
+say = "people call me Max"
+mentions = ["Max"]
+
+[[case]]
+say = "Maxim here"
+mentions = ["Maxim"]
+
+[[case]]
+say = "this is Oscar speaking"
+mentions = ["Oscar"]
+
+[[case]]
+say = "hi Karin, my name is Lena"
+mentions = ["Lena"]
+
+[[case]]
+say = "MY NAME IS MAXIM"
+mentions = ["Maxim"]
+
+# Asking (Karin knows your name)
+
+[[case]]
+before = ["my name is Maxim"]
+say = "what's my name again"
+mentions = ["Maxim"]
+
+[[case]]
+before = ["my name is Maxim"]
+say = "do you remember my name"
+mentions = ["Maxim"]
+
+[[case]]
+before = ["my name is Maxim"]
+say = "tell me my name"
+mentions = ["Maxim"]
+
+[[case]]
+before = ["my name is Maxim"]
+say = "do you know who I am"
+mentions = ["Maxim"]
+
+[[case]]
+before = ["my name is Maxim"]
+say = "whats my name"
+mentions = ["Maxim"]
+note = "no apostrophe"
+
+[[case]]
+before = ["my name is Maxim"]
+say = "who am i?"
+mentions = ["Maxim"]
+
+# Asking when Karin does not know you: she should ask
+
+[[case]]
+say = "do you know my name"
+expect = "ask"
+
+[[case]]
+say = "what's my name"
+expect = "ask"
+
+# Corrections and multi-turn
+
+[[case]]
+[[case.turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+[[case.turn]]
+say = "actually my name is Max"
+mentions = ["Max"]
+[[case.turn]]
+say = "what is my name"
+mentions = ["Max"]
+
+[[case]]
+[[case.turn]]
+say = "my name is Maxim"
+[[case.turn]]
+say = "and I like tea"
+mentions = ["tea"]
+[[case.turn]]
+say = "who am I"
+mentions = ["Maxim"]
+
+[[case]]
+say = "my name is Maxim and I like tea"
+mentions = ["Maxim", "tea"]
+tags = ["user.name", "multi"]

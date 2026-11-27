@@ -1,0 +1,39 @@
+suite = "reading-me"
+about = "Reading comprehension: someone describes themselves in one paragraph, then questions."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["reading"]
+text = '''
+Hi Karin, I am Maxim. I live in Vilnius and I work at a game studio.
+I like black tea and I love drawing anime. My goal is to finish Karin this year.
+I am working on a voice assistant.
+'''
+
+[[case]]
+say = "who am I"
+mentions = ["Maxim"]
+
+[[case]]
+say = "where do I live"
+mentions = ["Vilnius"]
+
+[[case]]
+say = "where do I work"
+mentions = ["game studio"]
+
+[[case]]
+say = "what do I like"
+mentions = ["black tea"]
+
+[[case]]
+say = "what is my goal"
+mentions = ["finish Karin"]
+
+[[case]]
+say = "what am I working on"
+mentions = ["voice assistant"]
+
+[[case]]
+say = "what's the weather"
+mentions = ["Vilnius"]
+note = "uses the city from the text"

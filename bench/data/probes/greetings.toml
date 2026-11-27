@@ -1,0 +1,67 @@
+suite = "greetings"
+about = "Probes: greetings, thanks and goodbyes in wordings the chats never used."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["social.greet"]
+
+[[case]]
+say = "good morning Karin"
+
+[[case]]
+say = "good afternoon"
+
+[[case]]
+say = "hey there"
+
+[[case]]
+say = "hiya"
+
+[[case]]
+say = "yo Karin"
+
+[[case]]
+say = "how's it going"
+tags = ["social.how_are_you"]
+
+[[case]]
+say = "how have you been"
+tags = ["social.how_are_you"]
+
+[[case]]
+say = "how are things"
+tags = ["social.how_are_you"]
+
+[[case]]
+say = "what's new"
+tags = ["social.smalltalk"]
+
+[[case]]
+say = "nice to meet you"
+
+[[case]]
+say = "thank you so much"
+tags = ["social.thanks"]
+
+[[case]]
+say = "thanks a lot Karin"
+tags = ["social.thanks"]
+
+[[case]]
+say = "cheers"
+tags = ["social.thanks"]
+
+[[case]]
+say = "see you later"
+tags = ["social.bye"]
+
+[[case]]
+say = "goodbye Karin"
+tags = ["social.bye"]
+
+[[case]]
+say = "good night"
+tags = ["social.bye"]
+
+[[case]]
+say = "talk to you tomorrow"
+tags = ["social.bye"]

@@ -1,0 +1,137 @@
+suite = "tools"
+about = "Probes: calculator, units, weather, notes and reminders in new wordings."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+
+# Calculator
+
+[[case]]
+say = "what's 12 times 3"
+mentions = ["36"]
+tags = ["calc"]
+
+[[case]]
+say = "add 4 and 5"
+mentions = ["9"]
+tags = ["calc"]
+
+[[case]]
+say = "what is two plus two"
+mentions = ["4"]
+tags = ["calc"]
+note = "numbers as words"
+
+[[case]]
+say = "100 divided by 4"
+mentions = ["25"]
+tags = ["calc"]
+
+[[case]]
+say = "what is 10 percent of 50"
+mentions = ["5"]
+tags = ["calc"]
+
+[[case]]
+say = "could you please calculate 7 * 8"
+mentions = ["56"]
+tags = ["calc", "polite"]
+
+[[case]]
+say = "how much is 9 minus 4"
+mentions = ["5"]
+tags = ["calc"]
+
+# Units
+
+[[case]]
+say = "how many meters in 3 km"
+mentions = ["3000"]
+tags = ["convert"]
+
+[[case]]
+say = "convert 10 miles to km"
+mentions = ["16"]
+tags = ["convert"]
+
+[[case]]
+say = "5 kg in grams"
+mentions = ["5000"]
+tags = ["convert"]
+
+[[case]]
+say = "what is 30 celsius in fahrenheit"
+mentions = ["86"]
+tags = ["convert"]
+
+# Weather
+
+[[case]]
+say = "will it rain in Paris"
+mentions = ["Paris"]
+tags = ["weather"]
+
+[[case]]
+say = "is it cold in Tokyo"
+mentions = ["Tokyo"]
+tags = ["weather"]
+
+[[case]]
+say = "what's the temperature in London"
+mentions = ["London"]
+tags = ["weather"]
+
+[[case]]
+say = "how's the weather today"
+expect = "ask"
+tags = ["weather"]
+note = "no city known: ask which"
+
+[[case]]
+before = ["I live in Vilnius"]
+say = "what's the weather like"
+mentions = ["Vilnius"]
+tags = ["weather"]
+
+[[case]]
+say = "could you tell me the weather in Paris please"
+mentions = ["Paris"]
+tags = ["weather", "polite"]
+
+# Notes and reminders
+
+[[case]]
+say = "note that I need to buy milk"
+mentions = ["milk"]
+tags = ["notes"]
+
+[[case]]
+say = "add buy eggs to my notes"
+mentions = ["eggs"]
+tags = ["notes"]
+
+[[case]]
+before = ["note that I need to buy milk"]
+say = "what's on my list"
+mentions = ["milk"]
+tags = ["notes"]
+
+[[case]]
+before = ["note that I need to buy milk"]
+say = "show me my notes"
+mentions = ["milk"]
+tags = ["notes"]
+
+[[case]]
+say = "remind me to call mom at 5"
+mentions = ["call mom"]
+tags = ["reminders"]
+
+[[case]]
+[[case.turn]]
+say = "remind me to water the plants"
+expect = "ask"
+tags = ["reminders"]
+[[case.turn]]
+say = "tomorrow morning"
+mentions = ["water the plants"]
+tags = ["reminders"]

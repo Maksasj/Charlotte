@@ -1,0 +1,70 @@
+suite = "noise"
+about = "Probes: things Karin should not act on, and things she can't do (she should say so, not invent)."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+
+# Not addressed to Karin / meaningless: don't learn anything from it
+
+[[case]]
+say = "the the the"
+expect = "ignore"
+tags = ["noise"]
+
+[[case]]
+say = "uh"
+expect = "ignore"
+tags = ["noise"]
+
+[[case]]
+say = "blah blah blah"
+expect = "ignore"
+tags = ["noise"]
+
+[[case]]
+say = "asdf qwerty"
+expect = "ignore"
+tags = ["noise"]
+
+# Sentences that look like facts but aren't: must not be learned
+
+[[case]]
+say = "I think it is a bit bugged"
+avoid = ["Learned"]
+tags = ["not-a-fact"]
+
+[[case]]
+say = "that is a good question"
+avoid = ["Learned"]
+tags = ["not-a-fact"]
+
+[[case]]
+say = "this is a test"
+avoid = ["Learned"]
+tags = ["not-a-fact"]
+
+# Can't do: say so honestly
+
+[[case]]
+say = "what time is it"
+avoid = ["definition"]
+tags = ["unsupported"]
+
+[[case]]
+say = "send an email to Oscar"
+avoid = ["Learned", "Noted"]
+tags = ["unsupported"]
+
+[[case]]
+say = "play some music"
+avoid = ["Learned", "Noted"]
+tags = ["unsupported"]
+
+[[case]]
+say = "order a pizza"
+avoid = ["Learned", "Noted"]
+tags = ["unsupported"]
+
+[[case]]
+say = "what's the date today"
+avoid = ["definition"]
+tags = ["unsupported"]

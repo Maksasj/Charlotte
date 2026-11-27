@@ -1,0 +1,38 @@
+suite = "reading-friends"
+about = "Reading comprehension: a short text about people, then questions. Karin reads the text sentence by sentence first."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["reading"]
+text = '''
+My name is Maxim. My best friend is Oscar. Oscar likes ice cream.
+He lives in Paris. My sister is Lena. Lena likes jazz.
+'''
+
+[[case]]
+say = "what is my name"
+mentions = ["Maxim"]
+
+[[case]]
+say = "who is my best friend"
+mentions = ["Oscar"]
+
+[[case]]
+say = "what does Oscar like"
+mentions = ["ice cream"]
+
+[[case]]
+say = "where does Oscar live"
+mentions = ["Paris"]
+note = "needs 'He' resolved to Oscar"
+
+[[case]]
+say = "who is Lena"
+mentions = ["sister"]
+
+[[case]]
+say = "what does Lena like"
+mentions = ["jazz"]
+
+[[case]]
+say = "who is Oscar"
+mentions = ["friend"]

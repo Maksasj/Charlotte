@@ -1,0 +1,29 @@
+suite = "reading-facts"
+about = "Reading comprehension: a short factual text (categories and places), then questions."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["reading"]
+text = '''
+A husky is a dog. A dog is an animal. Rust is a programming language.
+Vilnius is the capital of Lithuania. Lithuania is in Europe.
+'''
+
+[[case]]
+say = "what is a husky"
+mentions = ["dog"]
+
+[[case]]
+say = "is a husky an animal"
+mentions = ["yes"]
+
+[[case]]
+say = "what is Rust"
+mentions = ["programming language"]
+
+[[case]]
+say = "what is the capital of Lithuania"
+mentions = ["Vilnius"]
+
+[[case]]
+say = "where is Lithuania"
+mentions = ["Europe"]

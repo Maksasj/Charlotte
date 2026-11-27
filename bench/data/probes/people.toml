@@ -1,0 +1,96 @@
+suite = "people"
+about = "Probes: relations and other people - new relation words, possessives, pronouns, teach-then-ask."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["people"]
+
+[[case]]
+say = "Oscar is my brother"
+mentions = ["Oscar", "brother"]
+
+[[case]]
+say = "my sister is called Lena"
+mentions = ["Lena"]
+
+[[case]]
+say = "my mom's name is Anna"
+mentions = ["Anna"]
+
+[[case]]
+say = "Eldar is my colleague"
+mentions = ["Eldar"]
+
+[[case]]
+before = ["Oscar is my brother"]
+say = "who is Oscar"
+mentions = ["brother"]
+
+[[case]]
+before = ["Oscar is my brother"]
+say = "who is my brother"
+mentions = ["Oscar"]
+
+[[case]]
+before = ["my sister is called Lena"]
+say = "what is my sister's name"
+mentions = ["Lena"]
+
+[[case]]
+before = ["Lena is my sister"]
+say = "is Lena my sister"
+mentions = ["yes"]
+
+[[case]]
+before = ["Lena is my sister"]
+say = "is Lena my friend"
+avoid = ["yes"]
+
+[[case]]
+say = "I have two friends, Oscar and Eldar"
+mentions = ["Oscar", "Eldar"]
+
+[[case]]
+before = ["Oscar is my friend", "Eldar is my friend"]
+say = "who are my friends"
+mentions = ["Oscar", "Eldar"]
+
+# Pronouns
+
+[[case]]
+[[case.turn]]
+say = "Oscar is my friend"
+[[case.turn]]
+say = "he likes ice cream"
+[[case.turn]]
+say = "what does Oscar like"
+mentions = ["ice cream"]
+
+[[case]]
+[[case.turn]]
+say = "Lena is my sister"
+[[case.turn]]
+say = "she lives in Paris"
+[[case.turn]]
+say = "where does Lena live"
+mentions = ["Paris"]
+
+# Others' likes and places
+
+[[case]]
+before = ["Oscar likes pizza"]
+say = "what does Oscar like"
+mentions = ["pizza"]
+
+[[case]]
+before = ["Oscar lives in Tokyo"]
+say = "where does Oscar live"
+mentions = ["Tokyo"]
+
+[[case]]
+before = ["Oscar is my friend", "Oscar likes pizza"]
+say = "what do you know about Oscar"
+mentions = ["friend", "pizza"]
+
+[[case]]
+say = "who is Bartholomew"
+note = "never mentioned: she should say she doesn't know, not be stuck"

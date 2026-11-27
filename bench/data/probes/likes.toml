@@ -1,0 +1,109 @@
+suite = "likes"
+about = "Probes: likes in new wordings, negation, categories, lists, teach-then-ask."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+tags = ["likes"]
+
+[[case]]
+say = "I love pizza"
+mentions = ["pizza"]
+
+[[case]]
+say = "I adore jazz"
+mentions = ["jazz"]
+
+[[case]]
+say = "I'm into hiking"
+mentions = ["hiking"]
+
+[[case]]
+say = "I enjoy reading"
+mentions = ["reading"]
+
+[[case]]
+say = "pizza is my favorite food"
+mentions = ["pizza"]
+
+[[case]]
+say = "my favourite colour is green"
+mentions = ["green"]
+note = "British spelling"
+
+[[case]]
+say = "I really really like sushi"
+mentions = ["sushi"]
+
+# Negation: must not be stored as a like
+
+[[case]]
+say = "I don't like coffee"
+avoid = ["you like coffee"]
+
+[[case]]
+say = "I hate mushrooms"
+avoid = ["you like mushrooms"]
+
+[[case]]
+[[case.turn]]
+say = "I like tea"
+[[case.turn]]
+say = "I don't like coffee"
+[[case.turn]]
+say = "what do I like"
+mentions = ["tea"]
+avoid = ["coffee"]
+
+# Asking
+
+[[case]]
+before = ["I like tea", "I like jazz"]
+say = "what do I like"
+mentions = ["tea", "jazz"]
+
+[[case]]
+before = ["I like tea"]
+say = "do I like tea"
+mentions = ["yes"]
+
+[[case]]
+before = ["I like tea"]
+say = "do I like coffee"
+avoid = ["yes"]
+
+[[case]]
+before = ["my favorite food is pizza"]
+say = "what food do I like"
+mentions = ["pizza"]
+
+[[case]]
+before = ["my favorite food is pizza"]
+say = "what's my favorite food"
+mentions = ["pizza"]
+
+[[case]]
+before = ["I like tea"]
+say = "what are my hobbies"
+note = "no hobbies told: say so, don't be stuck"
+
+[[case]]
+say = "what do I like"
+note = "nothing told yet"
+
+# Several at once
+
+[[case]]
+[[case.turn]]
+say = "I like tea and coffee"
+mentions = ["tea", "coffee"]
+[[case.turn]]
+say = "what do I like"
+mentions = ["tea", "coffee"]
+
+[[case]]
+[[case.turn]]
+say = "I like tea"
+[[case.turn]]
+say = "I also like jazz"
+[[case.turn]]
+say = "what do I like"
+mentions = ["tea", "jazz"]

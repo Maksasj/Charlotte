@@ -1,0 +1,101 @@
+suite = "phrasing"
+about = "Probes: the same requests said differently - politeness, casing, punctuation, typos, filler, several requests in one sentence."
+split = "test"
+labels = "written by claude-opus-5.5, 2026-11-27"
+
+# Politeness wrappers
+
+[[case]]
+say = "can you please tell me who you are"
+mentions = ["Karin"]
+tags = ["polite"]
+
+[[case]]
+say = "would you mind telling me your name"
+mentions = ["Karin"]
+tags = ["polite"]
+
+[[case]]
+say = "I was wondering what you can do"
+tags = ["polite"]
+
+# Casing, punctuation, typos
+
+[[case]]
+say = "WHO ARE YOU"
+mentions = ["Karin"]
+tags = ["casing"]
+
+[[case]]
+say = "who are you???"
+mentions = ["Karin"]
+tags = ["punctuation"]
+
+[[case]]
+say = "hello!!!"
+tags = ["punctuation"]
+
+[[case]]
+say = "who r u"
+mentions = ["Karin"]
+tags = ["typo"]
+
+[[case]]
+say = "whats ur name"
+mentions = ["Karin"]
+tags = ["typo"]
+
+[[case]]
+say = "wats the weather in paris"
+mentions = ["Paris"]
+tags = ["typo"]
+
+[[case]]
+say = "calcualte 2 + 2"
+mentions = ["4"]
+tags = ["typo"]
+
+# Filler
+
+[[case]]
+say = "um so like what's your name"
+mentions = ["Karin"]
+tags = ["filler"]
+
+[[case]]
+say = "okay so basically what is 3 + 3"
+mentions = ["6"]
+tags = ["filler"]
+
+[[case]]
+say = "hmm I guess I like tea"
+mentions = ["tea"]
+tags = ["filler"]
+
+# Several requests in one sentence
+
+[[case]]
+say = "hi Karin, what's the weather in Paris"
+mentions = ["Paris"]
+tags = ["multi"]
+
+[[case]]
+say = "thanks, and what is 2 + 2"
+mentions = ["4"]
+tags = ["multi"]
+
+[[case]]
+say = "what is 2 + 2 and what is 3 + 3"
+mentions = ["4", "6"]
+tags = ["multi"]
+
+[[case]]
+say = "Oscar is my friend and he likes pizza"
+mentions = ["Oscar", "pizza"]
+tags = ["multi"]
+
+[[case]]
+say = "sorry, what's the weather in Tokyo"
+mentions = ["Tokyo"]
+tags = ["multi"]
+note = "the apology must not swallow the question"
