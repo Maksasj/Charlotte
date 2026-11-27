@@ -31,13 +31,13 @@ function ChatMemory({ facts, turn }: { facts: Fact[]; turn: number }) {
   const fresh = facts.filter((f) => f.turn === turn).length;
 
   return (
-    <div className="card">
-      <div className="card-head">
+    <details className="card card-collapsible">
+      <summary className="card-head">
         <span className="section-label">Chat memory after this turn</span>
         <span className="muted">
           {facts.length} facts{fresh > 0 && ` · ${fresh} new this turn`}
         </span>
-      </div>
+      </summary>
       <div className="memory-groups">
         {[...groups.entries()].map(([rel, list]) => {
           const items = [...list].reverse();
@@ -70,7 +70,7 @@ function ChatMemory({ facts, turn }: { facts: Fact[]; turn: number }) {
           );
         })}
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -154,7 +154,10 @@ function StepCard({ step, pattern }: { step: StepTrace; pattern?: Pattern }) {
       {winner && (
         <div className="trace-why">
           <span className="trace-label">Why it won</span>
-          <ScoreParts match={winner} />
+          <details className="score-details">
+            <summary className="mono">{round(winner.score)}</summary>
+            <ScoreParts match={winner} />
+          </details>
           {runnerUp && (
             <span className={`muted ${close ? 'close-call' : ''}`}>
               {margin! >= 0 ? `+${margin}` : margin} over {runnerUp.name}
@@ -247,6 +250,9 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
       ? { label: 'Partly understood', cls: 'warn' }
       : { label: 'Understood', cls: 'ok' };
 
+  const unmatchedOnly =
+    understood.length === 0 && missed.length === 1 && missed[0].trim() === trace.input.trim();
+
   // Steps grouped by the clause they ran on (in order of first appearance).
   const groups: { text: string; steps: StepTrace[] }[] = [];
   for (const s of trace.steps) {
@@ -262,16 +268,23 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
         <div className="card-head">
           <span className="card-title">Turn {trace.turn}</span>
           <span className="row" style={{ gap: 6 }}>
-            <span className="muted">
-              {trace.steps.length} {trace.steps.length === 1 ? 'step' : 'steps'} ·{' '}
-              {new Set(trace.firedPatternIds).size} rules
-            </span>
+            {trace.steps.length > 0 && (
+              <span className="muted">
+                {trace.steps.length} {trace.steps.length === 1 ? 'step' : 'steps'} ·{' '}
+                {new Set(trace.firedPatternIds).size}{" "}
+                {new Set(trace.firedPatternIds).size === 1 ? 'rule' : 'rules'}
+              </span>
+            )}
             <span className={`badge ${status.cls}`}>{status.label}</span>
           </span>
         </div>
         <div className="trace-grid">
-          <span className="trace-label">Heard</span>
-          <span className="mono">{trace.input}</span>
+          {!unmatchedOnly && !(understood.length === 1 && understood[0].trim() === trace.input.trim()) && (
+            <>
+              <span className="trace-label">Heard</span>
+              <span className="mono">{trace.input}</span>
+            </>
+          )}
           {understood.length > 0 && (
             <>
               <span className="trace-label">Understood as</span>
@@ -286,7 +299,7 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
           )}
           {missed.length > 0 && (
             <>
-              <span className="trace-label">Missed</span>
+              <span className="trace-label">{unmatchedOnly ? 'Unmatched input' : 'Missed'}</span>
               <span className="chip-row">
                 {missed.map((m, i) => (
                   <span key={i} className="clause-chip warn mono">
@@ -296,8 +309,12 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
               </span>
             </>
           )}
-          <span className="trace-label">Reply</span>
-          <span>{trace.reply}</span>
+          {!trace.impasse && (
+            <>
+              <span className="trace-label">Reply</span>
+              <span>{trace.reply}</span>
+            </>
+          )}
           {trace.chunkedPatternId && (
             <>
               <span className="trace-label">Learned</span>
@@ -307,7 +324,38 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
         </div>
       </div>
 
-      {attempts.length > 0 && (
+      {groups.map((g, gi) => (
+        <div key={gi} className="clause-group">
+          {(groups.length > 1 || (g.text && g.text !== trace.input)) && (
+            <div className="clause-head">
+              <span className="trace-label">Clause</span>
+              <span className="mono">{g.text}</span>
+            </div>
+          )}
+          {g.steps.map((s) => (
+            <StepCard key={s.step} step={s} pattern={byId.get(s.winnerId)} />
+          ))}
+        </div>
+      ))}
+
+      {attempts.length > 0 &&
+        (attempts.every((a) => a.answered) && !trace.impasse ? (
+          <details className="card card-collapsible">
+            <summary className="card-head">
+              <span className="section-label">Readings tried</span>
+              <span className="muted">{attempts.length === 1 ? '1 reading, matched' : `${attempts.length} readings, all matched`}</span>
+            </summary>
+            <ol className="attempts">
+              {attempts.map((a, i) => (
+                <li key={i} className={understood.includes(a.text) ? 'answered' : 'unused'}>
+                  <span className="attempt-mark">{understood.includes(a.text) ? <UsedIcon /> : <UnusedIcon />}</span>
+                  <span className="badge">{ATTEMPT_LABEL[a.kind] ?? a.kind}</span>
+                  <span className="mono">{a.text}</span>
+                </li>
+              ))}
+            </ol>
+          </details>
+        ) : (
         <div className="card">
           <div className="section-label">Readings tried</div>
           <ol className="attempts">
@@ -327,24 +375,10 @@ export function TracePanel({ trace, patterns }: { trace: TurnTrace; patterns: Pa
             })}
           </ol>
         </div>
-      )}
-
-      {groups.map((g, gi) => (
-        <div key={gi} className="clause-group">
-          {(groups.length > 1 || (g.text && g.text !== trace.input)) && (
-            <div className="clause-head">
-              <span className="trace-label">Clause</span>
-              <span className="mono">{g.text}</span>
-            </div>
-          )}
-          {g.steps.map((s) => (
-            <StepCard key={s.step} step={s} pattern={byId.get(s.winnerId)} />
-          ))}
-        </div>
-      ))}
+        ))}
 
       {trace.steps.length === 0 && (
-        <div className="muted">
+        <div className="trace-hint">
           No rule matched any reading. Teach a reply below the chat, or add a lexicon entry so
           this wording maps to one Karin knows.
         </div>

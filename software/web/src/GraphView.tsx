@@ -221,11 +221,13 @@ export function GraphView({
   facts,
   query,
   theme,
+  keyHandlerRef,
 }: {
   patterns: Pattern[];
   facts: Fact[];
   query: string;
   theme: string;
+  keyHandlerRef?: React.MutableRefObject<((e: React.KeyboardEvent) => void) | null>;
 }) {
   const [mode, setMode] = useState<GraphMode>(() =>
     localStorage.getItem('karin.graphMode') === 'rules' ? 'rules' : 'facts',
@@ -253,6 +255,8 @@ export function GraphView({
   const [, force] = useState(0);
 
   // Mutable view state (kept out of React to animate at 60fps).
+  const autoFitted = useRef(0);
+  const [legendOpen, setLegendOpen] = useState(false);
   const view = useRef({ k: 1, tx: 0, ty: 0, w: 0, h: 0, alpha: 1, hover: null as GNode | null, dirty: true });
   const drag = useRef<{ node: GNode | null; panning: boolean; x: number; y: number; moved: boolean } | null>(null);
   const colors = useRef(readVars());
@@ -393,6 +397,13 @@ export function GraphView({
         n.y += n.vy;
       }
       v.alpha = Math.max(0, a * 0.994);
+      if (autoFitted.current === 0 && v.alpha < 0.8) {
+        autoFitted.current = 1;
+        fit();
+      } else if (autoFitted.current === 1 && v.alpha < 0.25) {
+        autoFitted.current = 2;
+        fit();
+      }
     };
 
     const draw = () => {
@@ -419,7 +430,7 @@ export function GraphView({
           ? near
             ? 0.9
             : e.kind === 'fact'
-              ? 0.45
+              ? 0.32
               : e.kind === 'write'
                 ? 0.28
                 : 0.12
@@ -488,6 +499,7 @@ export function GraphView({
       ctx.font = `${11 / v.k}px ui-sans-serif, system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
+      const shown: GNode[] = [];
       for (const n of nodes) {
         const show =
           (near && (n === focus || near.has(n))) ||
@@ -501,10 +513,29 @@ export function GraphView({
               (n.kind === 'rel' && (n.facts >= 8 || n.degree >= 8 || v.k > 1.1)) ||
               v.k > 2.2 ||
               (n.kind === 'tool' && (n.degree >= 6 || v.k > 1.3))));
-        if (!show) continue;
+        if (show) shown.push(n);
+      }
+      // Greedy placement: most important labels first, skip any that would overlap.
+      shown.sort((x, y) => (x === focus ? -1 : y === focus ? 1 : y.degree - x.degree));
+      const placed: { x0: number; y0: number; x1: number; y1: number }[] = [];
+      const lh = 13 / v.k;
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 3.5 / v.k;
+      ctx.strokeStyle = c.bg;
+      for (const n of shown) {
+        const w = ctx.measureText(n.label).width;
+        const y0 = n.y + size(n) + 3 / v.k;
+        const box = { x0: n.x - w / 2 - 2 / v.k, y0, x1: n.x + w / 2 + 2 / v.k, y1: y0 + lh };
+        if (
+          n !== focus &&
+          placed.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)
+        )
+          continue;
+        placed.push(box);
         ctx.globalAlpha = lit(n) ? 1 : 0.3;
         ctx.fillStyle = n === focus ? c.text : c.textSecondary;
-        ctx.fillText(n.label, n.x, n.y + size(n) + 3 / v.k);
+        ctx.strokeText(n.label, n.x, y0);
+        ctx.fillText(n.label, n.x, y0);
       }
       ctx.globalAlpha = 1;
     };
@@ -551,6 +582,7 @@ export function GraphView({
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
+    autoFitted.current = 2;
     const p = local(e);
     const n = hit(p.x, p.y);
     drag.current = { node: n, panning: !n, x: p.x, y: p.y, moved: false };
@@ -596,6 +628,7 @@ export function GraphView({
     }
   };
   const onWheel = (e: React.WheelEvent) => {
+    autoFitted.current = 2;
     const p = local(e);
     const v = view.current;
     const factor = Math.exp(-e.deltaY * 0.0015);
@@ -615,10 +648,19 @@ export function GraphView({
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    const k = Math.min(v.w / (maxX - minX + 80), v.h / (maxY - minY + 80), 4);
+    const k = Math.min(v.w / (maxX - minX + 240), v.h / (maxY - minY + 340), 4);
     v.k = k;
     v.tx = v.w / 2 - ((minX + maxX) / 2) * k;
     v.ty = v.h / 2 - ((minY + maxY) / 2) * k;
+    v.dirty = true;
+  };
+
+  const zoomBy = (f: number) => {
+    const v = view.current;
+    const k = Math.min(6, Math.max(0.15, v.k * f));
+    v.tx = v.w / 2 - ((v.w / 2 - v.tx) * k) / v.k;
+    v.ty = v.h / 2 - ((v.h / 2 - v.ty) * k) / v.k;
+    v.k = k;
     v.dirty = true;
   };
 
@@ -737,6 +779,41 @@ export function GraphView({
     );
   })();
 
+  const q = query.trim().toLowerCase();
+  const results = q ? graph.nodes.filter((n) => n.label.toLowerCase().includes(q)) : [];
+  const jumpTo = (n: GNode) => {
+    const v = view.current;
+    autoFitted.current = 2;
+    const k = Math.max(v.k, 1.3);
+    v.k = k;
+    v.tx = v.w / 2 - n.x * k;
+    v.ty = v.h / 2 - n.y * k;
+    v.dirty = true;
+    setSelected(n);
+  };
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  useEffect(() => setActiveIdx(0), [query]);
+  useEffect(() => {
+    document.querySelector('.gv-result.active')?.scrollIntoView({ block: 'nearest' });
+  }, [activeIdx]);
+  const shownResults = results;
+  if (keyHandlerRef) {
+    keyHandlerRef.current = (e) => {
+      if (shownResults.length === 0) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIdx((i) => (i + 1) % shownResults.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIdx((i) => (i - 1 + shownResults.length) % shownResults.length);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        jumpTo(shownResults[Math.min(activeIdx, shownResults.length - 1)]);
+      }
+    };
+  }
+
   const ruleCount = graph.nodes.filter((n) => n.kind === 'rule').length;
   const relCount = graph.nodes.filter((n) => n.kind === 'rel').length;
 
@@ -754,7 +831,22 @@ export function GraphView({
         onWheel={onWheel}
         style={{ cursor: 'grab', touchAction: 'none' }}
       />
-      <div className="gv-legend">
+      {q && (
+        <div className="gv-results" role="listbox" aria-label="Search results">
+          {results.length === 0 ? (
+            <div className="gv-result-none">No nodes found</div>
+          ) : (
+            shownResults.map((n, i) => (
+              <button key={n.id} className={`gv-result ${i === activeIdx ? 'active' : ''}`} role="option" aria-selected={n === selected} onClick={() => jumpTo(n)}>
+                <span className="gv-dot" style={{ background: colorOf(n) }} />
+                <span className="gv-result-label">{n.label}</span>
+                <span className="gv-result-meta">{n.kind}</span>
+              </button>
+            ))
+          )}
+        </div>
+      )}
+      <div className={`gv-legend ${legendOpen ? '' : 'collapsed'}`}>
         <div className="gv-mode" role="tablist" aria-label="Graph">
           <button
             role="tab"
@@ -765,7 +857,7 @@ export function GraphView({
               setMode('facts');
             }}
           >
-            What Karin knows
+            Facts
           </button>
           <button
             role="tab"
@@ -776,9 +868,11 @@ export function GraphView({
               setMode('rules');
             }}
           >
-            How rules connect
+            Rules
           </button>
         </div>
+        {legendOpen && (
+        <div className="gv-legend-body">
         {mode === 'facts' ? (
           <>
             <div className="gv-legend-row muted">
@@ -800,7 +894,7 @@ export function GraphView({
               <span className="gv-ring" />
               category (is a)
             </div>
-            <div className="gv-legend-row muted">hover a node to read its facts</div>
+            <div className="gv-legend-row muted">select a node to inspect it</div>
           </>
         ) : (
           <>
@@ -827,9 +921,22 @@ export function GraphView({
         <div className="gv-legend-row muted">grey line = reads · coloured = writes</div>
           </>
         )}
-        <button className="vx-tool" onClick={fit}>
-          Fit to view
+        </div>
+        )}
+        <button className="vx-tool" onClick={() => setLegendOpen((o) => !o)} aria-expanded={legendOpen}>
+          {legendOpen ? 'Hide legend' : 'Legend'}
         </button>
+        <button className="vx-tool" onClick={fit}>
+          Fit
+        </button>
+        <span className="gv-zoom">
+          <button className="vx-tool" onClick={() => zoomBy(1 / 1.3)} aria-label="Zoom out" title="Zoom out">
+            −
+          </button>
+          <button className="vx-tool" onClick={() => zoomBy(1.3)} aria-label="Zoom in" title="Zoom in">
+            +
+          </button>
+        </span>
       </div>
       {card}
     </div>

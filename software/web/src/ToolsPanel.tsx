@@ -33,7 +33,7 @@ function source(p: Pattern) {
 function RuleGroups({
   rules,
   onOpen,
-  openFiles = 4,
+  openFiles = 1,
 }: {
   rules: Pattern[];
   onOpen: (p: Pattern) => void;
@@ -43,11 +43,14 @@ function RuleGroups({
   const groups = new Map<string, Pattern[]>();
   for (const r of rules) groups.set(source(r), [...(groups.get(source(r)) ?? []), r]);
   const entries = [...groups.entries()].sort((x, y) => y[1].length - x[1].length || x[0].localeCompare(y[0]));
-  const render = ([file, list]: [string, Pattern[]]) => (
-    <div key={file} className="tv-group-row">
-      <span className="tv-file mono" title={file}>
-        {file}
-      </span>
+  const render = ([file, list]: [string, Pattern[]], i: number) => (
+    <details key={file} className="tv-group-row" open={i < openFiles}>
+      <summary className="tv-file-summary">
+        <span className="tv-file mono" title={file}>
+          {file}
+        </span>
+        <span className="tv-file-count">{list.length}</span>
+      </summary>
       <span className="tv-pills">
         {list.map((r) => (
           <button key={r.id} className="tv-pill" onClick={() => onOpen(r)} title={`${r.provenance} — open in Knowledge`}>
@@ -55,23 +58,9 @@ function RuleGroups({
           </button>
         ))}
       </span>
-    </div>
+    </details>
   );
-  const shown = entries.slice(0, openFiles);
-  const rest = entries.slice(openFiles);
-  return (
-    <div className="tv-groups">
-      {shown.map(render)}
-      {rest.length > 0 && (
-        <details className="tv-more">
-          <summary>
-            Show {rest.length} more {rest.length === 1 ? 'file' : 'files'} ({rest.reduce((n, [, l]) => n + l.length, 0)} rules)
-          </summary>
-          {rest.map(render)}
-        </details>
-      )}
-    </div>
-  );
+  return <div className="tv-groups">{entries.map(render)}</div>;
 }
 
 export function ToolsPanel({
@@ -146,6 +135,23 @@ export function ToolsPanel({
             <KarinCode code={`then: ${callSnippet(tool)}`} />
           </section>
 
+          {(tool.args ?? []).length > 0 && (
+            <section>
+              <div className="trace-label">Arguments</div>
+              <table className="tv-table">
+                <tbody>
+                  {(tool.args ?? []).map((a) => (
+                    <tr key={a.name}>
+                      <td className="mono">{a.name}</td>
+                      <td>{a.required ? <span className="badge warn">required</span> : <span className="badge">optional</span>}</td>
+                      <td className="muted">{a.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          )}
+
           <section>
             <div className="trace-label">How it connects</div>
             <div className="tv-diagram">
@@ -199,26 +205,9 @@ export function ToolsPanel({
                 </span>
                 <span className="muted">{(readers.get(o.rel) ?? []).length} rules</span>
               </div>
-              <RuleGroups rules={readers.get(o.rel) ?? []} onOpen={onOpenRule} openFiles={3} />
+              <RuleGroups rules={readers.get(o.rel) ?? []} onOpen={onOpenRule} />
             </section>
           ))}
-
-          {(tool.args ?? []).length > 0 && (
-            <section>
-              <div className="trace-label">Arguments</div>
-              <table className="tv-table">
-                <tbody>
-                  {(tool.args ?? []).map((a) => (
-                    <tr key={a.name}>
-                      <td className="mono">{a.name}</td>
-                      <td>{a.required ? <span className="badge warn">required</span> : <span className="badge">optional</span>}</td>
-                      <td className="muted">{a.description}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
-          )}
 
           {(exampleCaller || exampleReader) && (
             <section>

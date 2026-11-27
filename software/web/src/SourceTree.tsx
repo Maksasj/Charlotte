@@ -121,6 +121,13 @@ export function VaultExplorer<T>({
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(['vault', 'runtime']));
   const [selection, setSelection] = useState<Selection>(null);
   const [view, setView] = useState<'source' | 'items'>('source');
+  const [recent, setRecent] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('karin-recent-files') ?? '[]') as string[];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     if (!focus) return;
@@ -183,6 +190,15 @@ export function VaultExplorer<T>({
   };
 
   const current = selection && nodes.has(selection.node) ? selection : null;
+  const currentFile = current && nodes.get(current.node)?.type === 'file' ? current.node : null;
+  useEffect(() => {
+    if (!currentFile) return;
+    setRecent((prev) => {
+      const next = [currentFile, ...prev.filter((k) => k !== currentFile)].slice(0, 5);
+      localStorage.setItem('karin-recent-files', JSON.stringify(next));
+      return next;
+    });
+  }, [currentFile]);
   const zoneOf = (key: string) => (key.split('/')[0] === 'runtime' ? 'runtime' : 'vault');
 
   /** Only the two roots get an icon: the vault on disk, and runtime memory. */
@@ -332,9 +348,58 @@ export function VaultExplorer<T>({
     note = <div className="vx-empty">No {noun} match the filter.</div>;
   } else if (!current) {
     note = (
-      <div className="vx-empty">
+      <div className="vx-overview">
         <div className="vx-empty-title">{describe(items)}</div>
-        <div>Pick a folder, a file, or a single item in the tree.</div>
+        <div className="vx-overview-hint">Jump into a folder, or pick one in the tree.</div>
+        <div className="vx-overview-grid">
+          {[...nodes.values()]
+            .filter((n) => n.key.split('/').length === 2 && n.type === 'folder' && n.count > 0)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 8)
+            .map((n) => (
+              <button
+                key={n.key}
+                className={`vx-overview-card zone-${zoneOf(n.key)}`}
+                onClick={() => setSelection({ node: n.key })}
+              >
+                <span className="vx-overview-name">{n.key}</span>
+                <span className="vx-overview-count">{n.count}</span>
+              </button>
+            ))}
+        </div>
+        {recent.filter((k) => nodes.get(k)?.type === 'file').length > 0 && (
+          <>
+            <div className="section-label vx-overview-sub">Recently opened</div>
+            <div className="vx-overview-files">
+              {recent
+                .filter((k) => nodes.get(k)?.type === 'file')
+                .slice(0, 4)
+                .map((k) => (
+                  <button key={k} className={`vx-overview-file zone-${zoneOf(k)}`} onClick={() => setSelection({ node: k })}>
+                    <span className="vx-overview-file-name">{k.replace(/\.md$/, '')}</span>
+                    <span className="vx-overview-count">{nodes.get(k)!.count}</span>
+                  </button>
+                ))}
+            </div>
+          </>
+        )}
+        <div className="section-label vx-overview-sub">Largest files</div>
+        <div className="vx-overview-files">
+          {[...nodes.values()]
+            .filter((n) => n.type === 'file' && n.count > 0)
+            .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key))
+            .slice(0, 6)
+            .map((n) => (
+              <button
+                key={n.key}
+                className={`vx-overview-file zone-${zoneOf(n.key)}`}
+                onClick={() => setSelection({ node: n.key })}
+              >
+                <span className="vx-overview-file-name">{n.key.replace(/\.md$/, '')}</span>
+                <span className="vx-overview-count">{n.count}</span>
+              </button>
+            ))}
+        </div>
       </div>
     );
   } else {
