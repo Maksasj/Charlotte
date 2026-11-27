@@ -9,7 +9,7 @@ import { FactRow, PatternRow } from './Rows';
 import { VaultExplorer, vaultPathOf } from './SourceTree';
 import { factDsl, patternDsl } from './VaultSource';
 import { GraphView } from './GraphView';
-import { KeyboardIcon, MicIcon } from './Icons';
+import { KeyboardIcon, MicIcon, MoonIcon, MoreIcon, SpeakerIcon, SunIcon } from './Icons';
 import { ToolsPanel } from './ToolsPanel';
 import { TracePanel } from './TracePanel';
 import type {
@@ -144,6 +144,10 @@ export default function App() {
 
   const [teachReply, setTeachReply] = useState('');
   const [teachPromote, setTeachPromote] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [taughtDismissed, setTaughtDismissed] = useState(false);
+  const [taught, setTaught] = useState<{ turn: number; input: string; active: boolean } | null>(null);
 
   const [factRel, setFactRel] = useState('weather_city');
   const [factArgsText, setFactArgsText] = useState('city=Berlin, condition=sunny, temp=21°C');
@@ -160,6 +164,10 @@ export default function App() {
   const [liveTranscript, setLiveTranscript] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const stickRef = useRef(true);
+  const teachInputRef = useRef<HTMLInputElement>(null);
+  const graphKeyRef = useRef<((e: React.KeyboardEvent) => void) | null>(null);
   const voiceLoopRunId = useRef(0);
   const listenHandleRef = useRef<ListenHandle | null>(null);
   const handsFreeRef = useRef(handsFree);
@@ -381,6 +389,30 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!statusMsg) return;
+    const id = window.setTimeout(() => setStatusMsg(null), 5000);
+    return () => window.clearTimeout(id);
+  }, [statusMsg]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = () => {
+      setMenuOpen(false);
+      setConfirmReset(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    const onDown = (e: PointerEvent) => {
+      if (!(e.target as Element).closest('.topbar-menu')) close();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onDown);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onDown);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('karin-theme', theme);
   }, [theme]);
@@ -443,8 +475,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    stickRef.current = true;
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [state?.messages.length]);
+
+  // Keep the newest message in view when the pane is resized or the teach card appears.
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+    };
+    const ro = new ResizeObserver(() => {
+      if (stickRef.current) el.scrollTop = el.scrollHeight;
+    });
+    ro.observe(el);
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   async function sendMessage(text: string) {
     const trimmed = text.trim();
@@ -474,9 +525,8 @@ export default function App() {
     try {
       const res = await api.teach(impasseInput, teachReply.trim(), teachPromote);
       setState(res.state);
-      setStatusMsg(
-        `Taught "${impasseInput}" (${teachPromote ? 'active' : 'candidate'}). Send it again to test.`
-      );
+      setTaught({ turn: activeImpasse?.turn ?? -1, input: impasseInput, active: teachPromote });
+      setTaughtDismissed(false);
       setTeachReply('');
     } catch (e) {
       setErrorMsg((e as Error).message);
@@ -537,7 +587,13 @@ export default function App() {
   const lastAgentMsg = state
     ? [...state.messages].reverse().find((m) => m.role === 'agent')
     : undefined;
-  const activeImpasse = lastAgentMsg?.trace?.impasse ? lastAgentMsg.trace : null;
+  const lastImpasse = lastAgentMsg?.trace?.impasse ? lastAgentMsg.trace : null;
+  const activeImpasse = lastImpasse && lastImpasse.turn !== taught?.turn ? lastImpasse : null;
+  const taughtNow = lastImpasse && lastImpasse.turn === taught?.turn ? taught : null;
+
+  useEffect(() => {
+    if (activeImpasse) teachInputRef.current?.focus({ preventScroll: true });
+  }, [activeImpasse?.turn]); // eslint-disable-line react-hooks/exhaustive-deps
   const candidateCount = state?.patterns.filter((p) => p.status === 'candidate').length ?? 0;
 
   const patternNames = new Map((state?.patterns ?? []).map((p) => [p.id, p.name]));
@@ -605,7 +661,8 @@ export default function App() {
         </div>
         <div className="topbar-actions">
           <button
-            className={`btn btn-sm ${voiceEnabled ? 'btn-primary' : 'btn-ghost'}`}
+            className={`btn btn-ghost btn-sm btn-icon ${voiceEnabled ? 'is-on' : ''}`}
+            aria-pressed={voiceEnabled}
             onClick={async () => {
               if (voiceEnabled) {
                 karinVoice.stop();
@@ -619,45 +676,89 @@ export default function App() {
                 }
               }
             }}
-            title="Speak Karin's replies using tiny-voca (F2 female voice)"
-          >
-            {voiceStatus === 'loading'
-              ? 'Loading Voice…'
-              : voiceStatus === 'speaking'
-                ? 'Speaking… (Stop)'
+            title={
+              voiceStatus === 'loading'
+                ? 'Loading voice…'
                 : voiceEnabled
-                  ? 'Voice: On (F2)'
-                  : 'Voice: Off'}
-          </button>
-          <button className="btn btn-ghost btn-sm btn-strong" onClick={handleNewChat}>
-            New Chat
+                  ? 'Spoken replies: on (F2 voice) - click to turn off'
+                  : 'Spoken replies: off - click to turn on'
+            }
+            aria-label="Toggle spoken replies"
+          >
+            <SpeakerIcon muted={!voiceEnabled} />
+            {voiceStatus === 'loading' && <span className="btn-icon-note">Loading…</span>}
+            {voiceStatus === 'speaking' && <span className="btn-icon-note">Speaking</span>}
           </button>
           <button
-            className="btn btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm btn-icon"
             onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}
+            title={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+            aria-label="Toggle theme"
           >
-            {theme === 'light' ? 'Dark' : 'Light'}
+            {theme === 'light' ? <MoonIcon /> : <SunIcon />}
           </button>
           <span className="topbar-sep" aria-hidden="true" />
-          <button className="btn btn-ghost btn-sm btn-quiet-danger" onClick={handleReset}>
-            Reset
+          <button className="btn btn-ghost btn-sm btn-strong" onClick={handleNewChat}>
+            New chat
           </button>
+          <div className="topbar-menu">
+            <button
+              className="btn btn-ghost btn-sm btn-icon"
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              aria-label="More actions"
+              title="More actions"
+              onClick={() => {
+                setMenuOpen((o) => !o);
+                setConfirmReset(false);
+              }}
+            >
+              <MoreIcon />
+            </button>
+            {menuOpen && (
+              <div className="menu-pop" role="menu">
+                {confirmReset ? (
+                  <>
+                    <div className="menu-note">Taught facts and rules will be lost.</div>
+                    <button
+                      className="menu-item danger"
+                      role="menuitem"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setConfirmReset(false);
+                        void handleReset();
+                      }}
+                    >
+                      Confirm reset
+                    </button>
+                    <button className="menu-item" role="menuitem" onClick={() => setConfirmReset(false)}>
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button className="menu-item danger" role="menuitem" onClick={() => setConfirmReset(true)}>
+                    Reset to seed state…
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {errorMsg && (
         <div className="toast err">
           <span>{errorMsg}</span>
-          <button className="meta-link" onClick={() => setErrorMsg(null)}>
-            dismiss
+          <button className="meta-link" onClick={() => setErrorMsg(null)} aria-label="Dismiss">
+            Dismiss
           </button>
         </div>
       )}
       {statusMsg && (
         <div className="toast">
           <span>{statusMsg}</span>
-          <button className="meta-link" onClick={() => setStatusMsg(null)}>
-            dismiss
+          <button className="meta-link" onClick={() => setStatusMsg(null)} aria-label="Dismiss">
+            Dismiss
           </button>
         </div>
       )}
@@ -668,7 +769,7 @@ export default function App() {
         style={{ gridTemplateColumns: `minmax(0, ${activeSplit}%) 1px minmax(0, 1fr)` }}
       >
         <section className="chat-pane">
-          <div className="messages">
+          <div className="messages" ref={messagesRef}>
             {!state || state.messages.length === 0 ? (
               <div className="empty-state">
                 <h2>Karin</h2>
@@ -689,6 +790,8 @@ export default function App() {
                 <div
                   key={m.id}
                   className={`msg-row ${m.role} ${m.trace?.impasse ? 'impasse' : ''} ${
+                    m.trace?.impasse && m.trace.turn === taught?.turn ? 'resolved' : ''
+                  } ${
                     m.trace && selectedTrace?.turn === m.trace.turn && selectedTrace.input === m.trace.input ? "selected" : ""
                   }`}
                 >
@@ -700,7 +803,9 @@ export default function App() {
                     <div className="msg-meta">
                       <span>
                         {m.trace.impasse
-                          ? 'Impasse'
+                          ? m.trace.turn === taught?.turn
+                            ? 'Impasse · taught'
+                            : 'Impasse'
                           : `${m.trace.steps.length} ${m.trace.steps.length === 1 ? 'step' : 'steps'}`}
                       </span>
                       <button
@@ -756,33 +861,67 @@ export default function App() {
           </div>
 
           {activeImpasse && (
-            <div className="teach-card">
-              <div className="teach-title">
-                No pattern matched &ldquo;{activeImpasse.input}&rdquo; - teach Karin
-              </div>
-              <div className="row">
-                <input
-                  type="text"
-                  className="field"
-                  style={{ flex: 1 }}
-                  placeholder="Type the reply Karin should give..."
-                  value={teachReply}
-                  onChange={(e) => setTeachReply(e.target.value)}
-                />
-                <label className="muted row" style={{ gap: 5 }}>
+            <div className="composer-wrap teach-wrap">
+              <div className="teach-card">
+                <div className="teach-title">
+                  Karin has no rule for &ldquo;{activeImpasse.input}&rdquo;. Teach a reply:
+                </div>
+                <div className="row">
                   <input
-                    type="checkbox"
-                    checked={teachPromote}
-                    onChange={(e) => setTeachPromote(e.target.checked)}
+                    ref={teachInputRef}
+                    type="text"
+                    className="field"
+                    style={{ flex: 1 }}
+                    placeholder="Type the reply Karin should give..."
+                    value={teachReply}
+                    onChange={(e) => setTeachReply(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && teachReply.trim() && !busy) handleTeach(activeImpasse.input);
+                    }}
                   />
-                  promote
-                </label>
-                <button
-                  className="btn btn-ghost btn-sm btn-strong"
-                  onClick={() => handleTeach(activeImpasse.input)}
-                  disabled={busy}
-                >
-                  Teach
+                  <label className="teach-check" title="Off saves it as a candidate rule to review later">
+                    <input
+                      type="checkbox"
+                      checked={teachPromote}
+                      onChange={(e) => setTeachPromote(e.target.checked)}
+                    />
+                    Activate now
+                  </label>
+                  <button
+                    className={`btn btn-sm ${teachReply.trim() ? 'btn-primary' : 'btn-ghost btn-strong'}`}
+                    onClick={() => handleTeach(activeImpasse.input)}
+                    disabled={busy || !teachReply.trim()}
+                  >
+                    Teach
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {taughtNow && !taughtDismissed && (
+            <div className="composer-wrap teach-wrap">
+              <div className="teach-card teach-done">
+                <span className="teach-done-text" title={taughtNow.input}>
+                  {taughtNow.active ? 'Rule activated' : 'Saved as a draft rule'} for &ldquo;{taughtNow.input}&rdquo;
+                </span>
+                {taughtNow.active ? (
+                  <button className="btn btn-sm btn-ok" onClick={() => void sendMessage(taughtNow.input)} disabled={busy}>
+                    Try again
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-ok"
+                    onClick={() => {
+                      setTab('knowledge');
+                      setKnowFilter(taughtNow.input);
+                    }}
+                  >
+                    Review draft
+                  </button>
+                )}
+                <button className="btn-x" aria-label="Dismiss" onClick={() => setTaughtDismissed(true)}>
+                  ×
                 </button>
               </div>
             </div>
@@ -995,9 +1134,10 @@ export default function App() {
                   <input
                     type="text"
                     className="field"
-                    placeholder="Filter rules and facts…"
+                    placeholder={knowView === 'graph' ? 'Search nodes…' : 'Filter rules and facts…'}
                     value={knowFilter}
                     onChange={(e) => setKnowFilter(e.target.value)}
+                    onKeyDown={(e) => knowView === 'graph' && graphKeyRef.current?.(e)}
                   />
                   <button
                     className={`btn btn-sm btn-ghost btn-strong`}
@@ -1044,6 +1184,7 @@ export default function App() {
                     facts={state.facts}
                     query={knowFilter}
                     theme={theme}
+                    keyHandlerRef={graphKeyRef}
                   />
                 ) : (
                 <VaultExplorer<KItem>
