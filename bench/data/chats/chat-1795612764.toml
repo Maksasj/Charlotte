@@ -1,0 +1,62 @@
+chat = "chat-1795612764"
+split = "dev"
+source = "vault/.chats/chat-1795612764.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my name is Maksim", "my favorite drink is black tea", "my favorite drink is caramel macchiato"]
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "How are you ?"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "What is my name ?"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "What I like ?"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "What drink do I like ?"
+mentions = ["black tea", "caramel macchiato"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "What is your favorite drink ?"
+tags = ["persona.likes"]
+
+[[turn]]
+say = "What is your favorite drink ?"
+tags = ["persona.likes"]
+
+[[turn]]
+say = "Who are you ?"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "What is your name ?"
+mentions = ["Karin"]
+tags = ["persona.name"]
+
+[[turn]]
+say = "What is your name ?"
+mentions = ["Karin"]
+tags = ["persona.name"]
+
+[[turn]]
+say = "Hii"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Hi"
+tags = ["social.greet"]

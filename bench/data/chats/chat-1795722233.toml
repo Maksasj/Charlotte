@@ -1,0 +1,12 @@
+chat = "chat-1795722233"
+split = "test"
+source = "vault/.chats/chat-1795722233.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "hi Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "bye"
+tags = ["social.bye"]

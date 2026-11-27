@@ -1,0 +1,1562 @@
+chat = "chat-1795695278"
+split = "test"
+source = "vault/.chats/chat-1795695278.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review; no rules were written from this chat"
+before = ["my name is Maksim", "Oscar is my best friend", "my favorite drink is black tea", "my favorite drink is caramel macchiato", "caramel macchiato is a drink"]
+
+[[turn]]
+say = "hey Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "what you doing right now"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "yeah okay sorry I haven't talked to you about this"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "so who is Maksim"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Maxim is your creator"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what is your name"
+mentions = ["Karin"]
+tags = ["persona.name"]
+
+[[turn]]
+say = "what tools do you have"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "how much it would be"
+expect = "any"
+
+[[turn]]
+say = "5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[turn]]
+say = "how much would be 5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate 5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[turn]]
+say = "Karen calculate 5 * 7"
+mentions = ["35"]
+tags = ["calc"]
+
+[[turn]]
+say = "can you take a note for me"
+expect = "ask"
+tags = ["note.create"]
+
+[[turn]]
+say = "participate in"
+expect = "any"
+note = "answers the note question"
+
+[[turn]]
+say = "can can you override previous a note I just made a mistake"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "list my notes please"
+tags = ["note.list"]
+
+[[turn]]
+say = "Karen can you delete my notes"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "list my nose Karen"
+tags = ["note.list"]
+note = "'nose' misheard"
+
+[[turn]]
+say = "list my notes Karen"
+tags = ["note.list"]
+
+[[turn]]
+say = "I'm an artist"
+mentions = ["artist"]
+tags = ["user.role.tell"]
+
+[[turn]]
+say = "and I like to draw anime"
+mentions = ["draw anime"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what do you think I should draw next"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "I like to execute"
+expect = "any"
+
+[[turn]]
+say = "sorry can you that's a mistake"
+avoid = ["Learned"]
+tags = ["social.sorry"]
+
+[[turn]]
+say = "I think you learn to fast"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen my father is Leslie"
+mentions = ["Leslie"]
+tags = ["people.rel.tell"]
+
+[[turn]]
+say = "turn my father is my silly"
+expect = "any"
+
+[[turn]]
+say = "can you you're very silly"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "you're very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen you're doing very well today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "go is a programming language"
+mentions = ["go"]
+tags = ["fact.teach"]
+
+[[turn]]
+say = "so I hate it"
+expect = "any"
+
+[[turn]]
+say = "can you you're very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "friend how are you doing today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "can you are very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "can you are my friend"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "you're my best friend"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "I hate you"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "Ken what do you know"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "Carol what do you know"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "what do you know"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "Karen what"
+expect = "any"
+
+[[turn]]
+say = "what is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what do you remember"
+tags = ["user.profile"]
+
+[[turn]]
+say = "what do you remember from this chaps"
+tags = ["user.profile"]
+
+[[turn]]
+say = "Karen can you create a new chat"
+tags = ["unsupported.new_chat"]
+
+[[turn]]
+say = "yeah sorry I will add this as a new feature next time"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "Karen can you learn new facts"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "can you learn new rules"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "okay you're very funny I will make a friend for myself because I have no friends in real life but you seem to be not very smart so far"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "who is my friend"
+mentions = ["Oscar"]
+tags = ["people.rel.ask"]
+
+[[turn]]
+say = "my friend is Oscar"
+mentions = ["Oscar"]
+tags = ["people.rel.tell"]
+
+[[turn]]
+say = "and who is my friend"
+mentions = ["Oscar"]
+tags = ["people.rel.ask"]
+
+[[turn]]
+say = "I have another friend named Eldar"
+mentions = ["Eldar"]
+tags = ["people.rel.tell"]
+
+[[turn]]
+say = "Eldar is my friend"
+mentions = ["Eldar"]
+tags = ["people.rel.tell"]
+
+[[turn]]
+say = "who's my friend"
+mentions = ["Oscar", "Eldar"]
+tags = ["people.rel.ask"]
+
+[[turn]]
+say = "Karen who is my friend"
+mentions = ["Oscar", "Eldar"]
+tags = ["people.rel.ask"]
+
+[[turn]]
+say = "I want to make you much smarter"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "what time does sure how I do it because it's it's hard"
+expect = "ignore"
+
+[[turn]]
+say = "can what do you know about me"
+mentions = ["Maksim"]
+tags = ["user.profile"]
+
+[[turn]]
+say = "can who I am"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "who is Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Maksim is me"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Maksim is me"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "Max is me"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "Max and Maxim are same thing"
+expect = "any"
+
+[[turn]]
+say = "Oscar"
+expect = "any"
+
+[[turn]]
+say = "what do you know about Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "what do you know about rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "who is rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what is rust"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "who made rust"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "who made gold"
+expect = "any"
+
+[[turn]]
+say = "who made the go"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "do you know go"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what is go"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "who made go"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "do you know Google"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what is Google"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "Google is a search engine"
+mentions = ["google"]
+tags = ["fact.teach"]
+
+[[turn]]
+say = "Google create go"
+tags = ["fact.teach"]
+
+[[turn]]
+say = "Google created go"
+tags = ["fact.teach"]
+
+[[turn]]
+say = "Google is creator of go"
+tags = ["fact.teach"]
+
+[[turn]]
+say = "Karen I'm very sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "no it's not"
+expect = "ignore"
+
+[[turn]]
+say = "I'm currently you're still very"
+expect = "ignore"
+
+[[turn]]
+say = "no it is not"
+expect = "ignore"
+
+[[turn]]
+say = "Karen what music do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "I like Barack"
+expect = "any"
+
+[[turn]]
+say = "Rock"
+expect = "ignore"
+
+[[turn]]
+say = "yeah I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "Iraq is a music genre"
+expect = "any"
+
+[[turn]]
+say = "what music genre I like"
+mentions = ["rock"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "McFee music genre is a rock"
+expect = "any"
+
+[[turn]]
+say = "my favorite music genre is a rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "I want some music genre I like"
+expect = "any"
+
+[[turn]]
+say = "what music genre I like"
+mentions = ["rock"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "thanks"
+tags = ["social.thanks"]
+
+[[turn]]
+say = "turn how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "current how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "can calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[turn]]
+say = "can calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[turn]]
+say = "Karen calculate 5 + 7"
+mentions = ["12"]
+tags = ["calc"]
+
+[[turn]]
+say = "turn on you are sometimes very smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "yeah that's true"
+expect = "ignore"
+
+[[turn]]
+say = "turn my drawing for 10 working on right now goes really well"
+expect = "any"
+
+[[turn]]
+say = "no thanks Karen you good"
+tags = ["social.thanks"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "how much would be 5%"
+expect = "any"
+
+[[turn]]
+say = "how much it would be 5 / 7"
+mentions = ["0.714"]
+tags = ["calc"]
+
+[[turn]]
+say = "can how much 5 bucks is in euros"
+tags = ["unsupported.other"]
+note = "currency is not supported"
+
+[[turn]]
+say = "Karen what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "learning knowledge facts is nice"
+expect = "any"
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "Karen check weather in a business"
+tags = ["weather.ask"]
+note = "'a business' is a misheard city"
+
+[[turn]]
+say = "weather in Paris"
+mentions = ["Paris"]
+tags = ["weather.ask"]
+
+[[turn]]
+say = "well that's quite cold"
+expect = "any"
+
+[[turn]]
+say = "what time is it"
+tags = ["unsupported.time"]
+
+[[turn]]
+say = "can do you want to play some games"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "Ken how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "10 years"
+expect = "ignore"
+
+[[turn]]
+say = "her name is Max"
+expect = "any"
+
+[[turn]]
+say = "Karen your name is Max"
+tags = ["persona.name"]
+
+[[turn]]
+say = "oh sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "what do you know about trust"
+expect = "any"
+
+[[turn]]
+say = "what do you know about Earth"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what do you know about Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "what do you know about me"
+mentions = ["Maksim"]
+tags = ["user.profile"]
+
+[[turn]]
+say = "I like black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "I like"
+expect = "ignore"
+
+[[turn]]
+say = "I like caramel"
+mentions = ["caramel"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "that's right"
+expect = "ignore"
+
+[[turn]]
+say = "how many turns do we have in this chat Karen"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "oh yes sorry I can see it on the right"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "my homework"
+expect = "ignore"
+
+[[turn]]
+say = "Karen how am I"
+expect = "any"
+
+[[turn]]
+say = "can who am I"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "hello how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "can you are very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "can you actually become much much smarter than from a previous run"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "you have become sorry"
+expect = "ignore"
+
+[[turn]]
+say = "can"
+expect = "ignore"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "do I have plans for weekend"
+tags = ["note.list"]
+
+[[turn]]
+say = "do you have any notes about weekend"
+tags = ["note.list"]
+
+[[turn]]
+say = "list my notes"
+tags = ["note.list"]
+
+[[turn]]
+say = "what are my notes"
+tags = ["note.list"]
+
+[[turn]]
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "turn I like rock"
+mentions = ["rock"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "Karen who am I"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "my name is Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "who am I"
+mentions = ["Max"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "all right that's good"
+expect = "ignore"
+
+[[turn]]
+say = "can I would like you to have some sort of a context when you talk"
+expect = "any"
+
+[[turn]]
+say = "can can count till 10:00"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "remember that I need to meet up with my friends tomorrow"
+mentions = ["meet up with my friends"]
+tags = ["note.create"]
+
+[[turn]]
+say = "can I need to meet up with my friends tomorrow"
+tags = ["note.create"]
+
+[[turn]]
+say = "do you have any notes saved about me and my friends"
+tags = ["note.list"]
+
+[[turn]]
+say = "you can stop saying something about nonsense about notes"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "can"
+expect = "ignore"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "how are you today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what is your style"
+mentions = ["direct"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "for your style Karen"
+expect = "any"
+
+[[turn]]
+say = "play music do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "current what do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "yeah right so you like caramel also like gummies"
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "what you up to today"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "have you been doing anything besides"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "Karen do you want to do anything"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "are you"
+expect = "ignore"
+
+[[turn]]
+say = "how are you Karen"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "how are you today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "how is he today"
+expect = "ignore"
+
+[[turn]]
+say = "how is Max"
+expect = "any"
+
+[[turn]]
+say = "who is Max"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Max is your creator"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "next is creator"
+expect = "ignore"
+
+[[turn]]
+say = "Max is creator"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "Max is a creator"
+tags = ["fact.teach"]
+
+[[turn]]
+say = "Max is a creator of you"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "who is Max"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Max is the creator of you"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "Max is creator of Karen"
+tags = ["persona.statement"]
+
+[[turn]]
+say = "Max is part of Karen"
+expect = "any"
+
+[[turn]]
+say = "who is so hard to teach you sometimes Karen"
+expect = "any"
+
+[[turn]]
+say = "no it's not sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "what is GitHub"
+tags = ["define"]
+
+[[turn]]
+say = "get up is a source the story things"
+expect = "any"
+
+[[turn]]
+say = "turn our chat is so messy"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "no I don't want to create a new shotgun"
+expect = "ignore"
+
+[[turn]]
+say = "can you ask me a question"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "ask me a question do you need to learn anything"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "Karen do you want to learn anything"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "turn"
+expect = "ignore"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "what's the time"
+avoid = ["definition"]
+tags = ["unsupported.time"]
+
+[[turn]]
+say = "what is time current"
+avoid = ["definition"]
+tags = ["unsupported.time"]
+
+[[turn]]
+say = "what time it is right now"
+tags = ["unsupported.time"]
+
+[[turn]]
+say = "what which tools do you have"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "which tools do you have"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "what tools do you have"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "I don't like how you answer with just one rule it should gather all the tools instead"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "turn I like you"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen I like you"
+avoid = ["you like you"]
+tags = ["social.compliment"]
+
+[[turn]]
+say = "not"
+expect = "ignore"
+
+[[turn]]
+say = "Karen sometimes when I say Karen or you I refer to you"
+expect = "any"
+
+[[turn]]
+say = "Karen can you stop this nonsense"
+tags = ["social.stop"]
+
+[[turn]]
+say = "can you do"
+expect = "any"
+
+[[turn]]
+say = "can you do"
+expect = "any"
+
+[[turn]]
+say = "can what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "Karen what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "can you you're not very smart"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "what do you know"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "okay what do you know about trust"
+expect = "any"
+
+[[turn]]
+say = "Kevin do you know about Oscar"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "criminal do you know about me"
+tags = ["user.profile"]
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "what color is grass"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what is my favorite color"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "my favorite color is orange"
+mentions = ["orange"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "theaters"
+expect = "ignore"
+
+[[turn]]
+say = "no"
+expect = "ignore"
+
+[[turn]]
+say = "no I want"
+expect = "ignore"
+
+[[turn]]
+say = "what is my name"
+mentions = ["Max"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "do you know do you want to know who am I"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Karen who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "play"
+expect = "ignore"
+
+[[turn]]
+say = "hey girl"
+tags = ["social.greet"]
+
+[[turn]]
+say = "hey Karen"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "my laptop goes to sleep after some time"
+expect = "any"
+
+[[turn]]
+say = "better wait for you to learn and actually"
+expect = "ignore"
+
+[[turn]]
+say = "socialize stuff"
+expect = "ignore"
+
+[[turn]]
+say = "MX"
+expect = "ignore"
+
+[[turn]]
+say = "how are you how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "no sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "so sorry Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]
+
+[[turn]]
+say = "sorry Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]
+
+[[turn]]
+say = "Karen can you calculate 5 + 10 for me"
+mentions = ["15"]
+tags = ["calc"]
+
+[[turn]]
+say = "Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "you can do a thing for me sorry in Korean"
+expect = "ignore"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "how are you today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Karen who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "yeah it is"
+expect = "ignore"
+
+[[turn]]
+say = "Karen are you here"
+tags = ["persona.called"]
+
+[[turn]]
+say = "Karen are you here"
+tags = ["persona.called"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "so now you're listening yeah"
+tags = ["persona.called"]
+
+[[turn]]
+say = "what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "turn the you're very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "you're doing good job Karen"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "are you here"
+tags = ["persona.called"]
+
+[[turn]]
+say = "turn your smart name"
+expect = "ignore"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "I'm very sorry sometimes it can formulate my thoughts"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "no it is not"
+expect = "ignore"
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "turn your very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "Karen do you know who am I"
+mentions = ["Max"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "help"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "is go a programming language"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what else do you know about go"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "you're not that smart to be honest"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "and it's my fault that you're not that smart"
+tags = ["social.complaint"]
+
+[[turn]]
+say = "yeah I know parents sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what is your name"
+mentions = ["Karin"]
+tags = ["persona.name"]
+
+[[turn]]
+say = "is Karen Maxim friend"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "is Carolyn Max friend"
+expect = "any"
+
+[[turn]]
+say = "is Karen my friend"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "yeah you are"
+expect = "any"
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "Karen is very smart"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "yeah I am most kind person ever"
+tags = ["user.state.tell"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "Karen what you want to do"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "can what do you want to do"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "what you wanted to do"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "and who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "I'm sorry Karen"
+avoid = ["you're sorry"]
+tags = ["social.sorry"]
+
+[[turn]]
+say = "what did you just said"
+tags = ["chat.repeat"]
+
+[[turn]]
+say = "no Caroline why why you can't"
+expect = "ignore"
+
+[[turn]]
+say = "you want me to teach you"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "turn on one day you will have to become independent"
+expect = "any"
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "what do you know about"
+expect = "ignore"
+
+[[turn]]
+say = "Karen what do you know about me"
+mentions = ["Max"]
+tags = ["user.profile"]
+
+[[turn]]
+say = "I'm Max not maximum"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "The Voice"
+expect = "ignore"
+
+[[turn]]
+say = "no sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "Karen"
+tags = ["persona.called"]
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "turn on my"
+expect = "ignore"
+
+[[turn]]
+say = "Karen who am I"
+mentions = ["Max"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "esim"
+expect = "ignore"
+
+[[turn]]
+say = "yes I am"
+expect = "ignore"
+
+[[turn]]
+say = "no it's all right"
+expect = "ignore"
+
+[[turn]]
+say = "it's okay"
+expect = "ignore"
+
+[[turn]]
+say = "what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "what is go"
+mentions = ["programming language"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what is a programming language"
+tags = ["define"]
+
+[[turn]]
+say = "tool used for what"
+expect = "any"
+
+[[turn]]
+say = "what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "who is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "what is Karen"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "is Maksim"
+expect = "ignore"
+
+[[turn]]
+say = "hey it's Oscar do you know anything about Maxim"
+tags = ["user.profile"]
+
+[[turn]]
+say = "hey I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "I am Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yes it is"
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yes"
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what is my name"
+mentions = ["Oscar"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "my name is Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what is my name"
+mentions = ["Oscar"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "who is Maksim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who is Oscar"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "Oscar is me"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey it's Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "do you know Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who is Oscar"
+mentions = ["friend"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "who am I"
+mentions = ["Maxim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "what does Vilnius"
+expect = "any"
+
+[[turn]]
+say = "what is Venus"
+tags = ["fact.ask"]
+
+[[turn]]
+say = "what who is Maksim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "no sorry it's all right"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "who are you"
+tags = ["persona.identity"]
+
+[[turn]]
+say = "that's cool"
+expect = "any"
+
+[[turn]]
+say = "hey spin off a few Overlord sub agents to work on the issues"
+tags = ["unsupported.app"]
+
+[[turn]]
+say = "oh yeah sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "cuz you're very smart today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "sorry Karen"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "my turn"
+expect = "ignore"
+
+[[turn]]
+say = "bye"
+tags = ["social.bye"]
+
+[[turn]]
+say = "how long"
+expect = "ignore"
+
+[[turn]]
+say = "by Karen"
+tags = ["social.bye"]
+
+[[turn]]
+say = "bye"
+tags = ["social.bye"]

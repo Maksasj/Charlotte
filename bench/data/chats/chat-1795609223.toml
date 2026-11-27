@@ -1,0 +1,56 @@
+chat = "chat-1795609223"
+split = "dev"
+source = "vault/.chats/chat-1795609223.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my name is Maksim", "my favorite drink is black tea"]
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Hi"
+tags = ["social.greet"]
+
+[[turn]]
+say = "Hi Karin"
+tags = ["social.greet"]
+
+[[turn]]
+say = "calculate 6 * 7"
+mentions = ["42"]
+tags = ["calc"]
+
+[[turn]]
+say = "calculate 5 * 7 and 6 * 9"
+mentions = ["35", "54"]
+tags = ["calc"]
+
+[[turn]]
+say = "What is my name ?"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "I like caramel macchiato"
+mentions = ["caramel macchiato"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "caramel macchiato is a drink"
+mentions = ["caramel macchiato"]
+tags = ["fact.teach"]
+
+[[turn]]
+say = "What is my favorite drink ?"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "What drink do I like ?"
+mentions = ["black tea"]
+tags = ["likes.ask"]

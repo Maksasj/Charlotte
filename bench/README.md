@@ -1,87 +1,102 @@
-# Karin language bench
+# Karin bench
 
-Measures how well Karin understands **real voice chats**: not just whether she
-replied, but whether she understood the right thing, pulled out the right
-values, and declined or asked to repeat when she should.
+Measures how well Karin understands **real voice chats**, by replaying them and
+checking her replies. Tests are written in plain TOML and checked only against
+what Karin **says** and whether she was **stuck** - never against rule or intent
+names - so they keep working whatever happens to the vault's schema.
 
 ```sh
-# against a running karin-server (needs the /api/incognito routes)
-python bench/run_bench.py --label my-change
+# start a private server just for the run (also what CI should do)
+python bench/run.py --start-server --cargo "cargo +stable-x86_64-pc-windows-msvc" --label my-change
 
-# start a private server just for the run (CI); add --cargo "cargo +<toolchain>" if needed
-python bench/run_bench.py --start-server --label ci
+# against a server you already run (needs the /api/incognito routes)
+python bench/run.py --label my-change
 
-# compare with a chosen earlier run (label or folder name) instead of the latest
-python bench/run_bench.py --label entity-v1 --baseline main-baseline
+# compare with a chosen earlier run instead of the latest; one split only
+python bench/run.py --start-server --label my-change --baseline main --split test
 
-# fail the run (exit 1) if it gets worse than a threshold
-python bench/run_bench.py --start-server --fail-under 0.85 --max-wrong 0.04
+# exit 1 if the pass rate drops below a threshold
+python bench/run.py --start-server --fail-under 0.80
 ```
 
-Standard library Python only. Exit codes: `0` ok, `1` a threshold failed,
-`2` server unreachable or too old.
+Standard library Python only (3.11+ for `tomllib`). Exit codes: `0` ok, `1` a
+threshold failed, `2` server unreachable or too old.
 
 ## Isolation
 
-Each chat runs in its own **incognito session**: a fresh engine loaded from the
-vault, never saved to `state.json` and never logged to `vault/.chats`. A bench
-run never touches Karin's live memory, and it tests the **vault**, not whatever
-the live server has learned since.
+Every file runs in its own **incognito session**: a fresh engine loaded from the
+vault, never saved to `state.json` and never logged to `vault/.chats`. A run
+never touches Karin's live memory, and it tests the **vault**, not whatever the
+live server has learned since.
 
-## Cases
+## Test files
 
-`cases/<chat-id>.json`: one file per recorded chat, the wording exactly as the
-microphone heard it. Each scored turn says what a sensible assistant should do:
+Every `*.toml` under `data/` is a test, in any subfolder (the run walks the
+folder recursively; the file's path shows in results). `data/chats/<chat-id>.toml`
+holds one file per recorded chat, the wording exactly as the microphone heard
+it; new kinds of tests (documents to read, paraphrases, ...) get their own
+folder next to it. `--tests <folder>` runs a different folder. The full spec is
+the header of `run.py`; unknown keys are rejected.
 
-```json
-{"n": 11, "say": "what is the weather in a wellness",
- "intent": "weather.ask", "respond": "answer", "slots": ["Vilnius"],
- "note": "'a wellness' is how the mic heard Vilnius"}
+```toml
+chat   = "chat-1795695278"
+split  = "test"                        # dev: rules were written from it · test: unseen
+source = "vault/.chats/chat-1795695278.md"
+before = ["my name is Maksim"]         # said first, not scored
+# text = '''Oscar moved to Paris. He loves tea.'''   # read sentence by sentence, not scored
+
+[[turn]]
+say      = "what is your name"
+mentions = ["Karin"]                   # the reply must contain each
+tags     = ["persona.name"]            # free labels for the per-topic breakdown
+
+[[turn]]
+say   = "Karen I like you"
+avoid = ["you like you"]               # the reply must contain none of these
+
+[[turn]]
+say    = "uh the the"
+expect = "ignore"                      # understand (default) · ask · ignore · any
+note   = "free text"
 ```
 
-| Field | Meaning |
+| `expect` | passes when |
 |---|---|
-| `intent` | the meaning (see `intents.json`), a list when one utterance says several things, or `noise` when nothing sensible can be recovered |
-| `respond` | `answer`, `clarify` (ask a question), `decline` (honest "can't do that yet"), `repeat` (noise), or a list of acceptable ones |
-| `slots` | values that must appear in what Karin did (reply, bindings, stored facts), case-insensitive |
-| `also` | other intents that are also fine |
-| `setup` (per chat) | unscored turns run first, for things the chat relied on from earlier chats |
-| `split` (per chat) | `dev` (default): chats the rules were written from, a regression check. `test`: chats no rule was written from, the honest generalisation score. Never write rules from a `test` chat; if one is used, move it to `dev`. |
-| `skip` | turn or chat not scored (duplicates, test messages) |
+| `understand` (default) | she is not stuck, and the reply has every `mentions` and no `avoid` |
+| `ask` | she is not stuck and asks a question back |
+| `ignore` | noise: she is stuck (does not act on it) |
+| `any` | not scored (said for context) |
 
-The first labels are a draft by Claude and need a human review.
+A turn with no `mentions`/`avoid` only checks that she wasn't stuck, so a
+confident wrong answer there passes. When a turn's meaning matters, give it
+`mentions` (what a right answer says) or `avoid` (what a wrong one says).
 
-## Scoring
+The `text` field means a test can also be a document followed by questions -
+reading comprehension, the long-term way to test understanding of arbitrary
+text without labelling any internal structure.
 
-| Outcome | When |
-|---|---|
-| correct | right intent, right kind of response, expected values present |
-| partial | right intent, wrong kind of response |
-| value_error | right intent and kind, an expected value missing |
-| **wrong** | answered with a different meaning (the worst outcome) |
-| missed | in scope, but Karin got stuck |
-| correct_reject | noise, and Karin got stuck or asked to repeat |
-| **false_accept** | noise, but answered as if understood |
+### Splits
 
-Headline: **accuracy** (correct + correct_reject over all turns) and **wrong-answer
-rate** (wrong + false_accept over all turns). A change is an improvement only if
-accuracy goes up and wrong answers don't.
+- **dev**: chats rules have been written from.
+- **test**: chats nobody wrote rules from (currently `chat-1795695278`). Keep
+  them unseen: fix things because of dev chats, measure on test.
 
-Karin's meaning is read from the trace: the rule that produced the reply is
-looked up in `intents.json` (shared dialogue rules defer to the rule before
-them). Rules missing from the map are listed under "Unmapped rules" in the report.
+Labels on the test chat are a draft (see its `labels` field) - review them.
 
 ## Results
 
-Each run writes `bench/results/<time>-<label>/` with `report.md`,
-`summary.json` and `results.jsonl`, and compares with the previous run
-(fixed / broken turns). Results stay on disk but are git-ignored.
+`results/<time>-<label>/` (git-ignored, kept on disk):
 
-`bench/replays/` holds the earlier whole-chat replays (impasse rate only) from
-`cargo run -p karin-core --example replay`, kept for reference.
+- `results.jsonl`: one line per turn: what was said, the check, outcome
+  (`pass`/`fail`/`skip`), why it failed, the reply.
+- `summary.json`: the numbers, per split and per tag.
+- `report.md`: the numbers, fixed/broken turns against the baseline, every
+  failing turn, and the per-tag table.
 
-## Caveat
+Headline numbers: **pass** (all scored turns), **understood** (not stuck on
+turns she should handle), **answers** (reply content checks), **asks**,
+**ignores noise**.
 
-All current cases are chats the rules were written from, so the score shows
-"the fixes still work", not "Karin understands new wording". Rephrasings of
-these chats come next as a separate set.
+Runs from before 2026-11-27 used an older intent-based bench (`run_bench.py`,
+`cases/*.json`, `intents.json`; in git history). Their results stay in
+`results/` but are never picked as a baseline.

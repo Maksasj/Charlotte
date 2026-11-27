@@ -1,0 +1,13 @@
+chat = "chat-1795721859"
+split = "test"
+source = "vault/.chats/chat-1795721859.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "calculate 6 + 7"
+mentions = ["13"]
+tags = ["calc"]
+
+[[turn]]
+say = "can you generalize episodes"
+tags = ["learning.meta"]

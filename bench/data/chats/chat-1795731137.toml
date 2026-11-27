@@ -1,0 +1,175 @@
+chat = "chat-1795731137"
+split = "test"
+source = "vault/.chats/chat-1795731137.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "hey Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "how many facts do you know"
+tags = ["persona.stats"]
+
+[[turn]]
+say = "oh yeah I see things"
+expect = "any"
+note = "reaction"
+
+[[turn]]
+say = "I think we need to work on more messy better matching so you will understand more of my text"
+expect = "any"
+note = "about Karin, to Claude"
+
+[[turn]]
+say = "you will understand soon you don't don't be"
+expect = "any"
+note = "garbled"
+
+[[turn]]
+say = "hey who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Annex"
+expect = "ignore"
+note = "'Annex' - misheard name; must not become a person"
+
+[[turn]]
+say = "sorry I'm a Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah that's good"
+tags = ["confirm"]
+
+[[turn]]
+say = "which people do you know"
+tags = ["people.list"]
+
+[[turn]]
+say = "Maxim is a person"
+tags = ["people.fact"]
+
+[[turn]]
+say = "is person a maximum"
+expect = "any"
+note = "garbled"
+
+[[turn]]
+say = "that's okay one day you will"
+expect = "any"
+note = "encouragement"
+
+[[turn]]
+say = "hey Karen how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "ask me any question"
+tags = ["unsupported.other"]
+
+[[turn]]
+say = "do you want to learn anything"
+tags = ["persona.wants"]
+
+[[turn]]
+say = "it'd be nice so you can like induct"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "I want to see a merchant behavior from you but it doesn't really"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "emergent"
+expect = "ignore"
+note = "fragment"
+
+[[turn]]
+say = "I want to from you to get an American Behavior"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "emergent"
+expect = "ignore"
+note = "fragment"
+
+[[turn]]
+say = "no sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "hey how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "who are you"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "do you like something"
+tags = ["persona.likes"]
+
+[[turn]]
+say = "I like talking with Karen"
+tags = ["likes.tell"]
+
+[[turn]]
+say = "who is Karen"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "who is Maksim likes to talk to"
+expect = "any"
+note = "garbled"
+
+[[turn]]
+say = "hey Karen Oscar is a person"
+tags = ["people.fact"]
+
+[[turn]]
+say = "old people are persons"
+tags = ["knowledge.teach"]
+note = "'all people are persons'"
+
+[[turn]]
+say = "how are you doing"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Who am I ?"
+mentions = ["Maxim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "I am Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what do i like ?"
+mentions = ["talking"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what do I like ?"
+mentions = ["talking"]
+tags = ["likes.ask"]

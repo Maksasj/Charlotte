@@ -10,3 +10,4 @@
 
 # Benchmark runs (kept on disk, not versioned)
 /bench/results/
+__pycache__/

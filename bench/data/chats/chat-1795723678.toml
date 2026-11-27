@@ -1,0 +1,158 @@
+chat = "chat-1795723678"
+split = "dev"
+source = "vault/.chats/chat-1795723678.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "Karen who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "IMAX"
+expect = "any"
+tags = ["user.name.tell"]
+note = "'IMAX' is probably 'I'm Max'"
+
+[[turn]]
+say = "who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "sorry my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what is my name"
+mentions = ["Maxim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "thanks"
+tags = ["social.thanks"]
+
+[[turn]]
+say = "hi I'm Oscar"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah"
+tags = ["confirm"]
+
+[[turn]]
+say = "do you know Max"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "do you know Maxim"
+mentions = ["Maxim"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "Maxim"
+expect = "any"
+note = "fragment"
+
+[[turn]]
+say = "do you know Max"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "do you know Maxim"
+mentions = ["Maxim"]
+tags = ["people.who_is"]
+
+[[turn]]
+say = "what do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "I like reading books"
+mentions = ["reading books"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["reading books"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "hey it's Max I'm back"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey it's Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey it's Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey hey what do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what do I like"
+tags = ["likes.ask"]
+
+[[turn]]
+say = "I like ice cream"
+mentions = ["ice cream"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "I like black tea as well as caramel macchiato"
+mentions = ["black tea", "caramel macchiato"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["ice cream"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "hey it's Oscar again"
+mentions = ["Oscar"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["reading books"]
+tags = ["likes.ask"]
+note = "Oscar said he likes reading books"
+
+[[turn]]
+say = "hey it's Max again I'm back"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "it's Maxim I'm back"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "hey Maksim is back"
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "my name is Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "what do I like"
+mentions = ["ice cream"]
+tags = ["likes.ask"]

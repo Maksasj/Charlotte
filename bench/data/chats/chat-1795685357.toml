@@ -1,0 +1,4 @@
+chat = "chat-1795685357"
+split = "dev"
+source = "vault/.chats/chat-1795685357.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"

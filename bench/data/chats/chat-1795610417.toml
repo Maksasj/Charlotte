@@ -1,0 +1,53 @@
+chat = "chat-1795610417"
+split = "dev"
+source = "vault/.chats/chat-1795610417.md"
+labels = "claude-opus-5.5 draft, 2026-11-26 - needs review"
+before = ["my favorite drink is black tea"]
+
+[[turn]]
+say = "What is my favorite drink ?"
+mentions = ["black tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what about caramel macchiato ?"
+mentions = ["caramel macchiato"]
+tags = ["likes.correction"]
+
+[[turn]]
+say = "yes"
+tags = ["likes.correction"]
+
+[[turn]]
+say = "What is my favorite drinks ?"
+mentions = ["black tea", "caramel macchiato"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "What is my favorite drink ?"
+mentions = ["black tea", "caramel macchiato"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "What is caramel macchiato ?"
+mentions = ["drink"]
+tags = ["fact.ask"]
+
+[[turn]]
+say = "What is my name ?"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "my name is Maksim"
+mentions = ["Maksim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "What is my name ?"
+mentions = ["Maksim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "Maksim likes black tea"
+mentions = ["black tea"]
+tags = ["likes.tell"]

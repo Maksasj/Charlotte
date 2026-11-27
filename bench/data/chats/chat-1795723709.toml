@@ -1,0 +1,408 @@
+chat = "chat-1795723709"
+split = "test"
+source = "vault/.chats/chat-1795723709.md"
+labels = "claude-opus-5.5 draft, 2026-11-27 - needs review"
+
+[[turn]]
+say = "Karen who am I"
+expect = "ask"
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "I like tea"
+mentions = ["tea"]
+tags = ["likes.tell"]
+
+[[turn]]
+say = "I'm Max"
+mentions = ["Max"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah what do I like"
+mentions = ["tea"]
+tags = ["likes.ask"]
+
+[[turn]]
+say = "what do Maxim Lakes"
+expect = "any"
+note = "garbled 'what does Maxim like'"
+
+[[turn]]
+say = "do you know Oscar"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "by the way I'm a Mexican"
+tags = ["user.statement"]
+
+[[turn]]
+say = "I'm Maxim"
+mentions = ["Maxim"]
+tags = ["user.name.tell"]
+
+[[turn]]
+say = "yeah"
+tags = ["confirm"]
+
+[[turn]]
+say = "who is Oscar"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "what is Oscar doing tomorrow"
+tags = ["unsupported.other"]
+note = "she can't know"
+
+[[turn]]
+say = "Thanksgiving you actually getting smarter every day"
+tags = ["social.compliment"]
+note = "'thanks, you're actually getting smarter'"
+
+[[turn]]
+say = "okay you're doing really good job today"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "can you are nice"
+expect = "any"
+note = "garbled"
+
+[[turn]]
+say = "sorry"
+tags = ["social.sorry"]
+
+[[turn]]
+say = "Greek Oscar"
+expect = "ignore"
+note = "misheard"
+
+[[turn]]
+say = "great Oscar"
+expect = "any"
+note = "fragment"
+
+[[turn]]
+say = "Oscar is a good person"
+tags = ["people.fact"]
+
+[[turn]]
+say = "who is Oscar"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "is Oscar a good person"
+tags = ["people.fact"]
+
+[[turn]]
+say = "you're so smart you actually getting smarter and smarter"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "very very very very slowly sorry"
+expect = "any"
+note = "fragment"
+
+[[turn]]
+say = "and how are you"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "Christine"
+expect = "ignore"
+note = "'Christine' - misheard"
+
+[[turn]]
+say = "how are you Christine"
+tags = ["social.how_are_you"]
+note = "Karin misheard as Christine"
+
+[[turn]]
+say = "can I call you Christine"
+tags = ["persona.name"]
+
+[[turn]]
+say = "who's Karen by the way"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "who is Karen"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "Karen do you know Max"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "do you know Maxim"
+tags = ["people.who_is"]
+
+[[turn]]
+say = "you're so smart thanks"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "yeah that's okay thanks it's nothing more"
+tags = ["social.thanks"]
+
+[[turn]]
+say = "sure"
+tags = ["confirm"]
+
+[[turn]]
+say = "what can you do"
+tags = ["help.capabilities"]
+
+[[turn]]
+say = "what is the weather in The Villages"
+tags = ["weather.ask"]
+note = "unknown city: say so"
+
+[[turn]]
+say = "Wellness"
+expect = "any"
+note = "'Vilnius' misheard"
+
+[[turn]]
+say = "sorry Karen what is the weather in Venice"
+mentions = ["Venice"]
+tags = ["weather.ask"]
+
+[[turn]]
+say = "Karen High"
+expect = "any"
+note = "'Karen hi'"
+
+[[turn]]
+say = "current High"
+expect = "ignore"
+note = "misheard"
+
+[[turn]]
+say = "Kelly you're a very cool person"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "hey"
+tags = ["social.greet"]
+
+[[turn]]
+say = "actually seems like Karen got actual much more smarter and I think that's enough for today can you please improve our like voice mode I want to see like"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "play voice like talking this like bar off you know sound going up and down"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "look at some way to just show it like it's"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "in particle what's it like can hear me"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "I know how to explain but it's like a lion that likes shows a sound Maybe"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "so I feel like this I think"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "also a hands-free checkbox let's work on the design because I think it's like default design on that button on that checkbox"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "so we need to also improve this"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "time"
+expect = "any"
+note = "fragment"
+
+[[turn]]
+say = "hey Karen how are you today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "really smooth"
+expect = "any"
+note = "answer to her 'running smoothly'"
+
+[[turn]]
+say = "what's"
+expect = "ignore"
+note = "fragment"
+
+[[turn]]
+say = "Hey Kevin how are you"
+tags = ["social.how_are_you"]
+note = "Karin misheard as Kevin"
+
+[[turn]]
+say = "hey Karen"
+tags = ["social.greet"]
+
+[[turn]]
+say = "what's up how are you doing today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "that's nice"
+tags = ["social.smalltalk"]
+
+[[turn]]
+say = "hey"
+tags = ["social.greet"]
+
+[[turn]]
+say = "I think this text input think it's a bit bugged"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "turn"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "Karen"
+expect = "any"
+note = "fake microphone test tone from Claude's headless screenshot run"
+
+[[turn]]
+say = "hey hey hey hey hey hey"
+expect = "any"
+note = "repeated greeting"
+
+[[turn]]
+say = "hey Karen"
+tags = ["social.greet"]
+
+[[turn]]
+say = "how are you today"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "I know it's just a bit"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "I have this thing like constantly going on and me my text under it so maybe we can improve it"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "Karen Halloween"
+expect = "ignore"
+note = "misheard"
+
+[[turn]]
+say = "hey"
+tags = ["social.greet"]
+
+[[turn]]
+say = "how are you today Karen"
+tags = ["social.how_are_you"]
+
+[[turn]]
+say = "High Court can you also make a all scrolling bars design consistent across our app"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "it was question for Claude"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "what is my name"
+mentions = ["Maxim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "who am I"
+mentions = ["Maxim"]
+tags = ["user.name.ask"]
+
+[[turn]]
+say = "am I your creator"
+tags = ["persona.creator"]
+
+[[turn]]
+say = "who are you"
+mentions = ["Karin"]
+tags = ["persona.identity"]
+
+[[turn]]
+say = "that's cool"
+tags = ["social.compliment"]
+
+[[turn]]
+say = "that's cool also called I'm not sure are like blow out points after the last Karen Massachusetts irrelevant really it's okay to have like a yellow highlighted messages but I don't like how last message she has like a blue outline around it that's not nice"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "can you run please benchmark"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "you can commit and push to a remote to this branch"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "let's get"
+expect = "ignore"
+note = "fragment"
+
+[[turn]]
+say = "cancel recording nothing"
+expect = "any"
+note = "said to Claude while dictating, not to Karin"
+
+[[turn]]
+say = "yeah sorry Karen nothing"
+expect = "any"
+note = "to Claude or Karin, unclear"
